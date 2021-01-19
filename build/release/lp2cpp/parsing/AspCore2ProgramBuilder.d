@@ -1,0 +1,22 @@
+build/release/lp2cpp/parsing/AspCore2ProgramBuilder.o: \
+ src/lp2cpp/parsing/AspCore2ProgramBuilder.cpp \
+ src/lp2cpp/parsing/AspCore2ProgramBuilder.h \
+ src/lp2cpp/parsing/../DLV2libs/input/InputBuilder.h \
+ src/lp2cpp/parsing/../language/Program.h \
+ src/lp2cpp/parsing/../language/Rule.h \
+ src/lp2cpp/parsing/../language/Atom.h \
+ src/lp2cpp/parsing/../language/../datastructures/TupleWithoutReasons.h \
+ src/lp2cpp/parsing/../language/../datastructures/TupleWithReasons.h \
+ src/lp2cpp/parsing/../language/../datastructures/TupleWithoutReasons.h \
+ src/lp2cpp/parsing/../language/../utils/ConstantsManager.h \
+ src/lp2cpp/parsing/../language/Literal.h \
+ src/lp2cpp/parsing/../language/Formula.h \
+ src/lp2cpp/parsing/../language/ArithmeticRelation.h \
+ src/lp2cpp/parsing/../language/ArithmeticExpression.h \
+ src/lp2cpp/parsing/../language/ArithmeticRelationWithAggregate.h \
+ src/lp2cpp/parsing/../language/Aggregate.h \
+ src/lp2cpp/parsing/../language/ArithmeticExpression.h \
+ src/lp2cpp/parsing/../utils/GraphWithTarjanAlgorithm.h \
+ src/lp2cpp/parsing/../language/ArithmeticRelation.h \
+ src/lp2cpp/parsing/../language/ArithmeticRelationWithAggregate.h \
+ src/lp2cpp/parsing/../language/Aggregate.h
