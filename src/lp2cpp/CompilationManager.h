@@ -52,6 +52,7 @@ public:
 
     
 private:
+    void eraseUndefJoinTuple()const;
     void printAggrEvaluation(const std::vector<const aspc::ArithmeticRelationWithAggregate*> aggregates,int rule_id,bool reason,std::vector<unsigned> joinOrder,const std::vector<const aspc::Formula*> body,const std::unordered_set<std::string> boundVariables,bool allTrue,const aspc::Rule& r);
     void evaluationEndingWithAggregate(const aspc::Rule & r,std::vector<unsigned> joinOrder,unsigned start);
     void propAggr(const aspc::ArithmeticRelationWithAggregate* aggregateRelation,std::string& aggregateIdentifier,bool withReason,std::string op);
@@ -64,7 +65,7 @@ private:
     bool checkTupleFormat(const aspc::Literal& li,std::string buildIndex,bool tuplePointer);
     void checkExistsShareVariableMap(int ruleId, int aggrIndex,std::string& sharedVariables,bool create);
     void updateUndefinedSharedVariablesMap(const aspc::Rule& r,int startLit);
-    void declareAuxMap(std::string mapVariableName,std::vector<unsigned> keyIndexes,std::string predicateName,bool createFalseAuxMap);
+    void declareAuxMap(std::string mapVariableName,std::vector<unsigned> keyIndexes,std::string predicateName,bool createFalseAuxMap,bool aggrStruct);
     void printVars(const aspc::Literal& li,std::string tupleName,std::unordered_set<std::string> & boundVars)const;
     void buildReason(std::string aggrIdentifier,const aspc::ArithmeticRelationWithAggregate* aggregateRelation,bool declareReason);
     void compileRule(const aspc::Rule& r,unsigned start, const aspc::Program& p) ;
@@ -120,8 +121,10 @@ private:
     std::unordered_map<std::string, std::vector<unsigned> > inequalityAggregateVariablesIndex;
     
     std::unordered_map<std::string, std::set<std::string> > predicateToAuxiliaryMaps;
+    std::unordered_map<std::string, std::set<std::string> > predicateToNegativeAuxiliaryMaps;
     
     std::unordered_map<std::string, std::set<std::string> > predicateToUndefAuxiliaryMaps;
+    std::unordered_map<std::string, std::set<std::string> > predicateToNegativeUndefAuxiliaryMaps;
 
     std::unordered_map<std::string, std::set<std::string> > predicateToFalseAuxiliaryMaps;
     
