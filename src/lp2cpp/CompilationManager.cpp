@@ -1376,7 +1376,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "const Tuple & tuple = atomsTable[uVar];\n";
         *out << ind << "std::unordered_map<const std::string*,int>::iterator sum_it;\n";
         *out << ind << "std::string minus = var < 0 ? \"-\" : \"\";\n";
-        *out << ind << "std::cout<<\"True \"<<minus;tuple.print();std::cout<<std::endl;\n";
+        // *out << ind << "std::cout<<\"True \"<<minus;tuple.print();std::cout<<std::endl;\n";
         // *out << ind << "std::cout<<\"True \"<<var<<std::endl;\n";
 
         
@@ -1965,23 +1965,23 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             }
         }
         
-        *out << ind << "std::cout<<\"True join tuple\"<<std::endl;\n";
-        *out << ind << "for(const Tuple* t : wa_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
-        *out << ind << "std::cout<<\"Undef join tuple\"<<std::endl;\n";
-        *out << ind << "for(const Tuple* t : ua_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
-        *out << ind << "std::cout<<\"Negative True join tuple\"<<std::endl;\n";
-        *out << ind << "for(const Tuple* t : nwa_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
-        *out << ind << "std::cout<<\"Negative Undef join tuple\"<<std::endl;\n";
-        *out << ind << "for(const Tuple* t : nua_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
-        *out << ind << "std::cout<<\"ActualSum: \"<<actualSum[0][{}]<<std::endl;\n";
-        *out << ind << "for(const std::vector<int>& key : trueAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
-        *out << ind << "std::cout<<\"PossibleSum: \"<<possibleSum[0][{}]<<std::endl;\n";
-        *out << ind << "for(const std::vector<int>& key : undefAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
-        *out << ind << "std::cout<<\"NegativeActualSum: \"<<actualNegativeSum[0][{}]<<std::endl;\n";
-        *out << ind << "for(const std::vector<int>& key : trueNegativeAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
-        *out << ind << "std::cout<<\"NegativPossibleSum: \"<<possibleNegativeSum[0][{}]<<std::endl;\n";
-        *out << ind << "for(const std::vector<int>& key : undefNegativeAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
-        *out << ind << "std::cout<<\"MaxNegativPossibleSum: \"<<maxPossibleNegativeSum[0][{}]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"True join tuple\"<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t : wa_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
+        // *out << ind << "std::cout<<\"Undef join tuple\"<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t : ua_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
+        // *out << ind << "std::cout<<\"Negative True join tuple\"<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t : nwa_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
+        // *out << ind << "std::cout<<\"Negative Undef join tuple\"<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t : nua_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
+        // *out << ind << "std::cout<<\"ActualSum: \"<<actualSum[0][{}]<<std::endl;\n";
+        // *out << ind << "for(const std::vector<int>& key : trueAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"PossibleSum: \"<<possibleSum[0][{}]<<std::endl;\n";
+        // *out << ind << "for(const std::vector<int>& key : undefAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"NegativeActualSum: \"<<actualNegativeSum[0][{}]<<std::endl;\n";
+        // *out << ind << "for(const std::vector<int>& key : trueNegativeAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"NegativPossibleSum: \"<<possibleNegativeSum[0][{}]<<std::endl;\n";
+        // *out << ind << "for(const std::vector<int>& key : undefNegativeAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"MaxNegativPossibleSum: \"<<maxPossibleNegativeSum[0][{}]<<std::endl;\n";
 #ifdef EAGER_DEBUG
         *out << ind << "std::cout<<\"on literal true \";\n";
         *out << ind << "std::cout<<var<<\"\\n\";\n";
@@ -2004,7 +2004,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::unordered_map<const std::string*,int>::iterator sum_it;\n";
         *out << ind << "std::string minus = var < 0 ? \"-\" : \"\";\n";
 
-        *out << ind << "std::cout<<\"Undef \"<<minus;tuple.print();std::cout<<std::endl;\n";
+        // *out << ind << "std::cout<<\"Undef \"<<minus;tuple.print();std::cout<<std::endl;\n";
         // *out << ind << "std::cout<<\"Unde \"<<minus<<var<<std::endl;\n";
         // *out << ind << "std::cout<<\"Undef \"<<std::endl;\n";
 #ifdef EAGER_DEBUG
@@ -2238,6 +2238,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         int buildLitIndex=0;
                         int ariety=0;
                         int close=0;
+                        
                         for(const aspc::Literal& buildLit:aggr->getAggregate().getAggregateLiterals()){
                             if(buildLitIndex!=startingLiteral){
                                 *out << ind << "Tuple literal({";
@@ -2274,8 +2275,19 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                 int ruleId = aggrIdentifier.first;
                                 int aggrIndex = aggrIdentifier.second;
                                 std::string key = std::to_string(ruleId)+":"+std::to_string(aggrIndex);
-
+                                
                                 *out << ind++ << "{\n";
+                                        boundVars.clear();
+                                        for(int i=0;i<starter.getAriety();i++){
+                                            if(starter.isVariableTermAt(i))
+                                                boundVars.insert(starter.getTermAt(i)); 
+                                        }
+                                        for(unsigned v : sharedVariablesIndexesMap[key]){
+                                            if(boundVars.count(aggregate->getAggregate().getTermAt(v))<=0){
+                                                boundVars.insert(aggregate->getAggregate().getTermAt(v));
+                                                *out << ind << "int "<<aggregate->getAggregate().getTermAt(v)<<" = t["<<v<<"];\n";
+                                            }
+                                        }
                                         //--------------------------UPDATE AGGREGATE VARIABLE STRUCTURE--------------------------
                                         *out << ind << "std::vector<int> aggrKey({";
                                         bool first=true;
@@ -2553,23 +2565,23 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             }
         }
         
-        *out << ind << "std::cout<<\"True join tuple\"<<std::endl;\n";
-        *out << ind << "for(const Tuple* t : wa_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
-        *out << ind << "std::cout<<\"Undef join tuple\"<<std::endl;\n";
-        *out << ind << "for(const Tuple* t : ua_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
-        *out << ind << "std::cout<<\"Negative True join tuple\"<<std::endl;\n";
-        *out << ind << "for(const Tuple* t : nwa_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
-        *out << ind << "std::cout<<\"Negative Undef join tuple\"<<std::endl;\n";
-        *out << ind << "for(const Tuple* t : nua_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
-        *out << ind << "std::cout<<\"ActualSum: \"<<actualSum[0][{}]<<std::endl;\n";
-        *out << ind << "for(const std::vector<int>& key : trueAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
-        *out << ind << "std::cout<<\"PossibleSum: \"<<possibleSum[0][{}]<<std::endl;\n";
-        *out << ind << "for(const std::vector<int>& key : undefAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
-        *out << ind << "std::cout<<\"NegativeActualSum: \"<<actualNegativeSum[0][{}]<<std::endl;\n";
-        *out << ind << "for(const std::vector<int>& key : trueNegativeAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
-        *out << ind << "std::cout<<\"NegativPossibleSum: \"<<possibleNegativeSum[0][{}]<<std::endl;\n";
-        *out << ind << "for(const std::vector<int>& key : undefNegativeAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
-        *out << ind << "std::cout<<\"MaxNegativPossibleSum: \"<<maxPossibleNegativeSum[0][{}]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"True join tuple\"<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t : wa_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
+        // *out << ind << "std::cout<<\"Undef join tuple\"<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t : ua_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
+        // *out << ind << "std::cout<<\"Negative True join tuple\"<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t : nwa_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
+        // *out << ind << "std::cout<<\"Negative Undef join tuple\"<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t : nua_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
+        // *out << ind << "std::cout<<\"ActualSum: \"<<actualSum[0][{}]<<std::endl;\n";
+        // *out << ind << "for(const std::vector<int>& key : trueAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"PossibleSum: \"<<possibleSum[0][{}]<<std::endl;\n";
+        // *out << ind << "for(const std::vector<int>& key : undefAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"NegativeActualSum: \"<<actualNegativeSum[0][{}]<<std::endl;\n";
+        // *out << ind << "for(const std::vector<int>& key : trueNegativeAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"NegativPossibleSum: \"<<possibleNegativeSum[0][{}]<<std::endl;\n";
+        // *out << ind << "for(const std::vector<int>& key : undefNegativeAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"MaxNegativPossibleSum: \"<<maxPossibleNegativeSum[0][{}]<<std::endl;\n";
     }
     *out << --ind << "}\n";
     // ---------------------- end onLiteralTrue(int var) --------------------------------------//
@@ -3590,13 +3602,17 @@ void CompilationManager::propAggr(const aspc::ArithmeticRelationWithAggregate* a
         
         aggrVarCount=0;
         aggrVarTuple="";
+        std::unordered_set<std::string> declared_aggr_var;
         for(int v : aggregateVariablesIndex[aggregateIdentifier]){
             if(aggrVarCount>0){
                 aggrVarTuple+=",";
             }
-            *out << ind << "int " << aggregateRelation->getAggregate().getTermAt(v) << " = " << "undefKey->at("+std::to_string(aggrVarCount)+");\n";
-            if(aggrVarCount<=0){
-                *out << ind << aggregateRelation->getAggregate().getTermAt(v) << "*=-1;\n";
+            if(declared_aggr_var.count(aggregateRelation->getAggregate().getTermAt(v))<=0){
+                *out << ind << "int " << aggregateRelation->getAggregate().getTermAt(v) << " = " << "undefKey->at("+std::to_string(aggrVarCount)+");\n";
+                if(aggrVarCount<=0){
+                    *out << ind << aggregateRelation->getAggregate().getTermAt(v) << "*=-1;\n";
+                }
+                declared_aggr_var.insert(aggregateRelation->getAggregate().getTermAt(v));
             }
             aggrVarTuple+=aggregateRelation->getAggregate().getTermAt(v);
             aggrVarCount++;
@@ -3826,13 +3842,17 @@ void CompilationManager::propAggr(const aspc::ArithmeticRelationWithAggregate* a
         pars++;
         aggrVarCount=0;
         aggrVarTuple="";
+        std::unordered_set<std::string> declared_aggr_var;
         for(int v : aggregateVariablesIndex[aggregateIdentifier]){
             if(aggrVarCount>0){
                 aggrVarTuple+=",";
             }
-            *out << ind << "int " << aggregateRelation->getAggregate().getTermAt(v) << " = " << "undefKey->at("+std::to_string(aggrVarCount)+");\n";
-            if(aggrVarCount<=0){
-                *out << ind << aggregateRelation->getAggregate().getTermAt(v) << "*=-1;\n";
+            if(declared_aggr_var.count(aggregateRelation->getAggregate().getTermAt(v))<=0){
+                *out << ind << "int " << aggregateRelation->getAggregate().getTermAt(v) << " = " << "undefKey->at("+std::to_string(aggrVarCount)+");\n";
+                if(aggrVarCount<=0){
+                    *out << ind << aggregateRelation->getAggregate().getTermAt(v) << "*=-1;\n";
+                }
+                declared_aggr_var.insert(aggregateRelation->getAggregate().getTermAt(v));
             }
             aggrVarTuple+=aggregateRelation->getAggregate().getTermAt(v);
             aggrVarCount++;
