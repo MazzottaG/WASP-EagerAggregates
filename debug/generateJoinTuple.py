@@ -133,149 +133,19 @@ if "--check" in sys.argv:
             # print("Computed result in wasp result")
                 i+=1
     exit(0)
-undef_a=[]
-undef_b=[]
-true_a=[]
-true_b=[]
-false_a=[]
-false_b=[]
-f = open("std_out","r")
-i=0
-for line in f.read().splitlines():
-    if "Undef " in line and "(" in line:
-        print(line)
-        line=line.split("Undef ")[1]
-        negated=False
-        if line[0]=="-":
-            negated=True
-            line=line[1:]
-        pred = line.split("(")[0]
-        terms_split = line.split("(")[1].split(")")[0].split(",")
-        terms=[]
-        for t in terms_split:
-            terms.append(int(t))
-        if pred == "a":
-            if negated:
-                if terms in false_a:
-                    false_a.remove(terms)
-            else:
-                if terms in true_a:
-                    true_a.remove(terms)
-            if terms not in undef_a:
-                undef_a.append(terms)
-        else:
-            if pred == "b":
-                if negated:
-                    if terms in false_b:
-                        false_b.remove(terms)
-                else:
-                    if terms in true_b:
-                        true_b.remove(terms)
-                if terms not in undef_b:
-                    undef_b.append(terms)
-        true_negative_join=[]
-        undef_negative_join=[]
-        true_join=[]
-        undef_join=[]
-        
-        for a in true_a+undef_a+false_a:
-            for b in true_b+undef_b+false_b:
-                if a[1]==b[0]:
-                    join = []
-                    for v in a:
-                        join.append(v)
-                    for v in b:
-                        join.append(v)
-                    if join[0]<0:
-                        if a in false_a or b in false_b:
-                            if join not in true_negative_join:
-                                true_negative_join.append(join)
-                        else:
-                            if a not in true_a or b not in true_b:
-                                if join not in undef_negative_join:
-                                    undef_negative_join.append(join)
-                    else:
-                        if a in true_a and b in true_b:
-                            if join not in true_join:
-                                true_join.append(join)
-                        else:
-                            if a not in false_a and b not in false_b:
-                                if join not in undef_join:
-                                    undef_join.append(join)
-        print("True join tuple")
-        actualSum=0
-        truAggrVars=[]
-        for j in true_join:
-            actualSum+=j[0]
-            if j[0] not in truAggrVars:
-                truAggrVars.append(j[0])
-            s = "a_X_Y_b_Y_("
-            for t in j:
-                s+=str(t)+","
-            s=s[:-1]
-            s+=")"
-            print(s)
-        print("Undef join tuple")
-        possibleSum=0
-        undefAggrVars=[]
-        for j in undef_join:
-            possibleSum+=j[0]
-            if j[0] not in undefAggrVars:
-                undefAggrVars.append(j[0])
-            
-            s = "a_X_Y_b_Y_("
-            for t in j:
-                s+=str(t)+","
-            s=s[:-1]
-            s+=")"
-            print(s)
-        print("Negative True join tuple")  
-        actualNegativeSum=0
-        trueNegativeAggrVars=[]
-        for j in true_negative_join:
-            actualNegativeSum+=j[0]*-1
-            if j[0]*-1 not in trueNegativeAggrVars:
-                trueNegativeAggrVars.append(j[0]*-1)
-            s = "a_X_Y_b_Y_("
-            for t in j:
-                s+=str(t)+","
-            s=s[:-1]
-            s+=")"
-            print(s)
-        print("Negative Undef join tuple")    
-        possibleNegativeSum=0
-        undefNegativeAggrVars=[]
-        for j in undef_negative_join:
-
-            possibleNegativeSum+=j[0]*-1
-            if j[0]*-1 not in undefNegativeAggrVars:
-                undefNegativeAggrVars.append(j[0]*-1)
-            s = "a_X_Y_b_Y_("
-            for t in j:
-                s+=str(t)+","
-            s=s[:-1]
-            s+=")"
-            print(s)
-        print("ActualSum: "+str(actualSum))
-        for t in truAggrVars:
-            print(t)
-        print("PossibleSum: "+str(possibleSum))
-        for t in undefAggrVars:
-            print(t)
-        print("NegativeActualSum: "+str(actualNegativeSum))
-        for t in trueNegativeAggrVars:
-            print(t)
-        
-        print("NegativPossibleSum: "+str(possibleNegativeSum))
-        for t in undefNegativeAggrVars:
-            print(t)
-        
-        print("{")
-        i+=1
-    else:
-        if "True " in line and "(" in line:
+if "--create" in sys.argv:
+    undef_a=[]
+    undef_b=[]
+    true_a=[]
+    true_b=[]
+    false_a=[]
+    false_b=[]
+    f = open("std_out","r")
+    i=0
+    for line in f.read().splitlines():
+        if "Undef " in line and "(" in line:
             print(line)
-            line=line.split("True ")[1]
+            line=line.split("Undef ")[1]
             negated=False
             if line[0]=="-":
                 negated=True
@@ -287,23 +157,23 @@ for line in f.read().splitlines():
                 terms.append(int(t))
             if pred == "a":
                 if negated:
-                    if terms not in false_a:
-                        false_a.append(terms)
+                    if terms in false_a:
+                        false_a.remove(terms)
                 else:
-                    if terms not in true_a:
-                        true_a.append(terms)
-                if terms in undef_a:
-                    undef_a.remove(terms)
+                    if terms in true_a:
+                        true_a.remove(terms)
+                if terms not in undef_a:
+                    undef_a.append(terms)
             else:
                 if pred == "b":
                     if negated:
-                        if terms not in false_b:
-                            false_b.append(terms)
+                        if terms in false_b:
+                            false_b.remove(terms)
                     else:
-                        if terms not in true_b:
-                            true_b.append(terms)
-                    if terms in undef_b:
-                        undef_b.remove(terms)
+                        if terms in true_b:
+                            true_b.remove(terms)
+                    if terms not in undef_b:
+                        undef_b.append(terms)
             true_negative_join=[]
             undef_negative_join=[]
             true_join=[]
@@ -403,5 +273,172 @@ for line in f.read().splitlines():
             
             print("{")
             i+=1
-print(i)
+        else:
+            if "True " in line and "(" in line:
+                print(line)
+                line=line.split("True ")[1]
+                negated=False
+                if line[0]=="-":
+                    negated=True
+                    line=line[1:]
+                pred = line.split("(")[0]
+                terms_split = line.split("(")[1].split(")")[0].split(",")
+                terms=[]
+                for t in terms_split:
+                    terms.append(int(t))
+                if pred == "a":
+                    if negated:
+                        if terms not in false_a:
+                            false_a.append(terms)
+                    else:
+                        if terms not in true_a:
+                            true_a.append(terms)
+                    if terms in undef_a:
+                        undef_a.remove(terms)
+                else:
+                    if pred == "b":
+                        if negated:
+                            if terms not in false_b:
+                                false_b.append(terms)
+                        else:
+                            if terms not in true_b:
+                                true_b.append(terms)
+                        if terms in undef_b:
+                            undef_b.remove(terms)
+                true_negative_join=[]
+                undef_negative_join=[]
+                true_join=[]
+                undef_join=[]
+                
+                for a in true_a+undef_a+false_a:
+                    for b in true_b+undef_b+false_b:
+                        if a[1]==b[0]:
+                            join = []
+                            for v in a:
+                                join.append(v)
+                            for v in b:
+                                join.append(v)
+                            if join[0]<0:
+                                if a in false_a or b in false_b:
+                                    if join not in true_negative_join:
+                                        true_negative_join.append(join)
+                                else:
+                                    if a not in true_a or b not in true_b:
+                                        if join not in undef_negative_join:
+                                            undef_negative_join.append(join)
+                            else:
+                                if a in true_a and b in true_b:
+                                    if join not in true_join:
+                                        true_join.append(join)
+                                else:
+                                    if a not in false_a and b not in false_b:
+                                        if join not in undef_join:
+                                            undef_join.append(join)
+                print("True join tuple")
+                actualSum=0
+                truAggrVars=[]
+                for j in true_join:
+                    actualSum+=j[0]
+                    if j[0] not in truAggrVars:
+                        truAggrVars.append(j[0])
+                    s = "a_X_Y_b_Y_("
+                    for t in j:
+                        s+=str(t)+","
+                    s=s[:-1]
+                    s+=")"
+                    print(s)
+                print("Undef join tuple")
+                possibleSum=0
+                undefAggrVars=[]
+                for j in undef_join:
+                    possibleSum+=j[0]
+                    if j[0] not in undefAggrVars:
+                        undefAggrVars.append(j[0])
+                    
+                    s = "a_X_Y_b_Y_("
+                    for t in j:
+                        s+=str(t)+","
+                    s=s[:-1]
+                    s+=")"
+                    print(s)
+                print("Negative True join tuple")  
+                actualNegativeSum=0
+                trueNegativeAggrVars=[]
+                for j in true_negative_join:
+                    actualNegativeSum+=j[0]*-1
+                    if j[0]*-1 not in trueNegativeAggrVars:
+                        trueNegativeAggrVars.append(j[0]*-1)
+                    s = "a_X_Y_b_Y_("
+                    for t in j:
+                        s+=str(t)+","
+                    s=s[:-1]
+                    s+=")"
+                    print(s)
+                print("Negative Undef join tuple")    
+                possibleNegativeSum=0
+                undefNegativeAggrVars=[]
+                for j in undef_negative_join:
+
+                    possibleNegativeSum+=j[0]*-1
+                    if j[0]*-1 not in undefNegativeAggrVars:
+                        undefNegativeAggrVars.append(j[0]*-1)
+                    s = "a_X_Y_b_Y_("
+                    for t in j:
+                        s+=str(t)+","
+                    s=s[:-1]
+                    s+=")"
+                    print(s)
+                print("ActualSum: "+str(actualSum))
+                for t in truAggrVars:
+                    print(t)
+                print("PossibleSum: "+str(possibleSum))
+                for t in undefAggrVars:
+                    print(t)
+                print("NegativeActualSum: "+str(actualNegativeSum))
+                for t in trueNegativeAggrVars:
+                    print(t)
+                
+                print("NegativPossibleSum: "+str(possibleNegativeSum))
+                for t in undefNegativeAggrVars:
+                    print(t)
+                
+                print("{")
+                i+=1
+    print(i)
+    f.close()
+    exit(0)
+total_a=[[-2,1],[-2,2],[-1,1],[-1,2],[1,1],[1,2],[2,1],[2,2]]
+total_b=[[1],[2]]
+f = open("../std_out","r")
+for line in f.read().splitlines():
+    lits=line.split(", ")
+
+    lits[0]=lits[0][1:]
+    lits[len(lits)-1]=lits[len(lits)-1][:-1]
+
+    lit_a_p=[]
+    lit_a_n=[]
+    lit_b=[]
+    if lits[0]!="" and len(lits)>0:
+        for l in lits:
+            split_lit=l.split(")")[0].split("(")
+            
+            lit=[]
+            for t in split_lit[1].split(","):
+                lit.append(int(t))
+            
+            if split_lit[0]=="a":
+                lit_a_p.append(lit)
+            else:
+                lit_b.append(lit)
+    key_set=set()
+    for a in lit_a_p:
+        for b in lit_b:
+            if a[1]==b[0]:
+                key_set.add(a[0])
+    sum=0
+    for k in key_set:
+        sum+=k
+    print(line)
+    print(sum)
 f.close()

@@ -95,6 +95,9 @@ std::unordered_map<char,std::string> convertToWordArithmeticOp={
 };
 void aspc::Aggregate::computeJoinTupleName(){
     tupleName="";
+    // for(std::string v : aggregateVariables){
+    //     tupleName+=v+"_";
+    // }
     for(const aspc::Literal& l : aggregateLiterals){
         if(l.isNegated())
             tupleName+="not_";
