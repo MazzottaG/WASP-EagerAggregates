@@ -31,6 +31,16 @@ class ReasonTable{
                         levelSize[level]--;
                         reason.erase(reason.begin()+i);
                         literalToLevel.erase(v);
+                        if(levelSize[level]==0){
+                            for(int v=level+1;v<=currentLevel;v++){
+                                for(int j=0;j<levelSize[v];j++,i++)
+                                    literalToLevel[reason[i]]--;
+                                levelSize[v-1]=levelSize[v];
+                            }
+                            levelSize.erase(currentLevel);
+                            currentLevel--;
+
+                        }
                         return;
                     }
                 }

@@ -33,20 +33,24 @@ using PredicateWSet = PredicateSet<Tuple, TuplesHash>;
 std::unordered_map<const std::string*, PredicateWSet*> predicateWSetMap;
 std::unordered_map<const std::string*, PredicateWSet*> predicateFSetMap;
 std::unordered_map<const std::string*, PredicateWSet*> predicateUSetMap;
+const std::string _a = "a";
+PredicateWSet wa(1);
+PredicateWSet ua(1);
+PredicateWSet fa(1);
 const std::string _b = "b";
-PredicateWSet wb(1);
-PredicateWSet ub(1);
-PredicateWSet fb(1);
+PredicateWSet wb(3);
+PredicateWSet ub(3);
+PredicateWSet fb(3);
 const std::string _c = "c";
 PredicateWSet wc(2);
 PredicateWSet uc(2);
 PredicateWSet fc(2);
-const std::string _c_W_U_c_V_X_not_b_X_WGTEV_VGTX_ = "c_W_U_c_V_X_not_b_X_WGTEV_VGTX_";
-PredicateWSet wc_W_U_c_V_X_not_b_X_WGTEV_VGTX_(5);
-PredicateWSet uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_(5);
-PredicateWSet nwc_W_U_c_V_X_not_b_X_WGTEV_VGTX_(5);
-PredicateWSet nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_(5);
-std::set<std::vector<int>> sharedVariables_0_ToAggregate_0;
+const std::string _b_V_Z_U_not_c_U_V_not_a_Z_ = "b_V_Z_U_not_c_U_V_not_a_Z_";
+PredicateWSet wb_V_Z_U_not_c_U_V_not_a_Z_(6);
+PredicateWSet ub_V_Z_U_not_c_U_V_not_a_Z_(6);
+PredicateWSet nwb_V_Z_U_not_c_U_V_not_a_Z_(6);
+PredicateWSet nub_V_Z_U_not_c_U_V_not_a_Z_(6);
+std::set<std::vector<int>> sharedVariables_0_ToAggregate_1;
 std::unordered_map<std::vector<int>,std::set<std::vector<int>>,TuplesHash> trueAggrVars[1];
 std::unordered_map<std::vector<int>,std::set<std::vector<int>>,TuplesHash> undefAggrVars[1];
 std::unordered_map<std::vector<int>,std::set<std::vector<int>>,TuplesHash> trueNegativeAggrVars[1];
@@ -114,53 +118,103 @@ std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToUndef
 std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToNegativeAuxiliaryMaps;
 std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToNegativeUndefAuxiliaryMaps;
 std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToFalseAuxiliaryMaps;
-AuxMap pc_0_1_({0,1});
-AuxMap uc_0_1_({0,1});
-AuxMap fc_0_1_({0,1});
-AuxMap pc_({});
-AuxMap uc_({});
-AuxMap fc_({});
-AuxMap pb_0_({0});
-AuxMap ub_0_({0});
-AuxMap fb_0_({0});
+AuxMap pb_0_1_2_({0,1,2});
+AuxMap ub_0_1_2_({0,1,2});
+AuxMap fb_0_1_2_({0,1,2});
 AuxMap pb_({});
 AuxMap ub_({});
 AuxMap fb_({});
-AuxMap pc_1_({1});
-AuxMap uc_1_({1});
-AuxMap fc_1_({1});
-AuxMap p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_({1,2,0,3});
-AuxMap u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_({1,2,0,3});
-AuxMap np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_({1,2,0,3});
-AuxMap nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_({1,2,0,3});
-AuxMap p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_({});
-AuxMap u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_({});
-AuxMap np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_({});
-AuxMap nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_({});
-AuxMap p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_({0,1});
-AuxMap u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_({0,1});
-AuxMap np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_({0,1});
-AuxMap nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_({0,1});
-AuxMap p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_({2,3});
-AuxMap u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_({2,3});
-AuxMap np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_({2,3});
-AuxMap nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_({2,3});
-AuxMap p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_({4});
-AuxMap u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_({4});
-AuxMap np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_({4});
-AuxMap nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_({4});
-AuxMap p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_1_2_0_3_({0,1,1,2,0,3});
-AuxMap u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_1_2_0_3_({0,1,1,2,0,3});
-AuxMap np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_1_2_0_3_({0,1,1,2,0,3});
-AuxMap nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_1_2_0_3_({0,1,1,2,0,3});
-AuxMap p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_1_2_0_3_({2,3,1,2,0,3});
-AuxMap u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_1_2_0_3_({2,3,1,2,0,3});
-AuxMap np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_1_2_0_3_({2,3,1,2,0,3});
-AuxMap nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_1_2_0_3_({2,3,1,2,0,3});
-AuxMap p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_1_2_0_3_({4,1,2,0,3});
-AuxMap u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_1_2_0_3_({4,1,2,0,3});
-AuxMap np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_1_2_0_3_({4,1,2,0,3});
-AuxMap nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_1_2_0_3_({4,1,2,0,3});
+AuxMap pc_0_1_({0,1});
+AuxMap uc_0_1_({0,1});
+AuxMap fc_0_1_({0,1});
+AuxMap pa_0_({0});
+AuxMap ua_0_({0});
+AuxMap fa_0_({0});
+AuxMap pc_({});
+AuxMap uc_({});
+AuxMap fc_({});
+AuxMap pb_0_2_({0,2});
+AuxMap ub_0_2_({0,2});
+AuxMap fb_0_2_({0,2});
+AuxMap pa_({});
+AuxMap ua_({});
+AuxMap fa_({});
+AuxMap pb_1_({1});
+AuxMap ub_1_({1});
+AuxMap fb_1_({1});
+AuxMap p_b_V_Z_U_not_c_U_V_not_a_Z_0_({0});
+AuxMap u_b_V_Z_U_not_c_U_V_not_a_Z_0_({0});
+AuxMap np_b_V_Z_U_not_c_U_V_not_a_Z_0_({0});
+AuxMap nu_b_V_Z_U_not_c_U_V_not_a_Z_0_({0});
+AuxMap p_b_V_Z_U_not_c_U_V_not_a_Z_({});
+AuxMap u_b_V_Z_U_not_c_U_V_not_a_Z_({});
+AuxMap np_b_V_Z_U_not_c_U_V_not_a_Z_({});
+AuxMap nu_b_V_Z_U_not_c_U_V_not_a_Z_({});
+AuxMap p_b_V_Z_U_not_c_U_V_not_a_Z_2_3_({2,3});
+AuxMap u_b_V_Z_U_not_c_U_V_not_a_Z_2_3_({2,3});
+AuxMap np_b_V_Z_U_not_c_U_V_not_a_Z_2_3_({2,3});
+AuxMap nu_b_V_Z_U_not_c_U_V_not_a_Z_2_3_({2,3});
+AuxMap p_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_({2,3,0});
+AuxMap u_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_({2,3,0});
+AuxMap np_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_({2,3,0});
+AuxMap nu_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_({2,3,0});
+AuxMap p_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_1_2_({2,3,0,1,2});
+AuxMap u_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_1_2_({2,3,0,1,2});
+AuxMap np_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_1_2_({2,3,0,1,2});
+AuxMap nu_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_1_2_({2,3,0,1,2});
+AuxMap p_b_V_Z_U_not_c_U_V_not_a_Z_2_3_3_4_({2,3,3,4});
+AuxMap u_b_V_Z_U_not_c_U_V_not_a_Z_2_3_3_4_({2,3,3,4});
+AuxMap np_b_V_Z_U_not_c_U_V_not_a_Z_2_3_3_4_({2,3,3,4});
+AuxMap nu_b_V_Z_U_not_c_U_V_not_a_Z_2_3_3_4_({2,3,3,4});
+AuxMap p_b_V_Z_U_not_c_U_V_not_a_Z_2_3_5_({2,3,5});
+AuxMap u_b_V_Z_U_not_c_U_V_not_a_Z_2_3_5_({2,3,5});
+AuxMap np_b_V_Z_U_not_c_U_V_not_a_Z_2_3_5_({2,3,5});
+AuxMap nu_b_V_Z_U_not_c_U_V_not_a_Z_2_3_5_({2,3,5});
+AuxMap p_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_({0,1,2});
+AuxMap u_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_({0,1,2});
+AuxMap np_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_({0,1,2});
+AuxMap nu_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_({0,1,2});
+AuxMap p_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_2_3_({0,1,2,2,3});
+AuxMap u_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_2_3_({0,1,2,2,3});
+AuxMap np_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_2_3_({0,1,2,2,3});
+AuxMap nu_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_2_3_({0,1,2,2,3});
+AuxMap p_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_2_3_0_({0,1,2,2,3,0});
+AuxMap u_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_2_3_0_({0,1,2,2,3,0});
+AuxMap np_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_2_3_0_({0,1,2,2,3,0});
+AuxMap nu_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_2_3_0_({0,1,2,2,3,0});
+AuxMap p_b_V_Z_U_not_c_U_V_not_a_Z_3_4_({3,4});
+AuxMap u_b_V_Z_U_not_c_U_V_not_a_Z_3_4_({3,4});
+AuxMap np_b_V_Z_U_not_c_U_V_not_a_Z_3_4_({3,4});
+AuxMap nu_b_V_Z_U_not_c_U_V_not_a_Z_3_4_({3,4});
+AuxMap p_b_V_Z_U_not_c_U_V_not_a_Z_3_4_2_3_({3,4,2,3});
+AuxMap u_b_V_Z_U_not_c_U_V_not_a_Z_3_4_2_3_({3,4,2,3});
+AuxMap np_b_V_Z_U_not_c_U_V_not_a_Z_3_4_2_3_({3,4,2,3});
+AuxMap nu_b_V_Z_U_not_c_U_V_not_a_Z_3_4_2_3_({3,4,2,3});
+AuxMap p_b_V_Z_U_not_c_U_V_not_a_Z_3_4_2_3_0_({3,4,2,3,0});
+AuxMap u_b_V_Z_U_not_c_U_V_not_a_Z_3_4_2_3_0_({3,4,2,3,0});
+AuxMap np_b_V_Z_U_not_c_U_V_not_a_Z_3_4_2_3_0_({3,4,2,3,0});
+AuxMap nu_b_V_Z_U_not_c_U_V_not_a_Z_3_4_2_3_0_({3,4,2,3,0});
+AuxMap p_b_V_Z_U_not_c_U_V_not_a_Z_5_({5});
+AuxMap u_b_V_Z_U_not_c_U_V_not_a_Z_5_({5});
+AuxMap np_b_V_Z_U_not_c_U_V_not_a_Z_5_({5});
+AuxMap nu_b_V_Z_U_not_c_U_V_not_a_Z_5_({5});
+AuxMap p_b_V_Z_U_not_c_U_V_not_a_Z_5_2_3_({5,2,3});
+AuxMap u_b_V_Z_U_not_c_U_V_not_a_Z_5_2_3_({5,2,3});
+AuxMap np_b_V_Z_U_not_c_U_V_not_a_Z_5_2_3_({5,2,3});
+AuxMap nu_b_V_Z_U_not_c_U_V_not_a_Z_5_2_3_({5,2,3});
+AuxMap p_b_V_Z_U_not_c_U_V_not_a_Z_5_2_3_0_({5,2,3,0});
+AuxMap u_b_V_Z_U_not_c_U_V_not_a_Z_5_2_3_0_({5,2,3,0});
+AuxMap np_b_V_Z_U_not_c_U_V_not_a_Z_5_2_3_0_({5,2,3,0});
+AuxMap nu_b_V_Z_U_not_c_U_V_not_a_Z_5_2_3_0_({5,2,3,0});
+AuxMap pb_2_({2});
+AuxMap ub_2_({2});
+AuxMap fb_2_({2});
+AuxMap pc_0_({0});
+AuxMap uc_0_({0});
+AuxMap fc_0_({0});
+AuxMap pb_1_2_({1,2});
+AuxMap ub_1_2_({1,2});
+AuxMap fb_1_2_({1,2});
 //printing aux maps needed for reasons of negative literals;
 //printing functions prototypes for reasons of negative literals;
 void explainPositiveLiteral(const Tuple *, std::unordered_set<std::string> &, std::vector<const Tuple*> &);
@@ -239,7 +293,7 @@ inline void Executor::onLiteralTrue(int var) {
             }
         }
     }
-    if(var<0 && ( tuple.getPredicateName() == &_b || tuple.getPredicateName() == &_c)){
+    if(var<0 && ( tuple.getPredicateName() == &_a || tuple.getPredicateName() == &_b || tuple.getPredicateName() == &_c)){
         std::unordered_map<const std::string*, PredicateWSet*>::iterator it_false = predicateFSetMap.find(tuple.getPredicateName());
         if (it_false == predicateFSetMap.end()) {
             } else {
@@ -251,405 +305,247 @@ inline void Executor::onLiteralTrue(int var) {
             }
         }
     }
-    if(tuple.getPredicateName() == &_c){
-        int W = tuple[0];
-        int U = tuple[1];
-        if(var > 0){
-            bool negative_join=false;
-            bool positive_join=false;
-            const std::vector<const Tuple*>* tuples1 = &pc_.getValues({});
-            for(int i_1=0;i_1<tuples1->size();i_1++){
-                const Tuple* tuple1=tuples1->at(i_1);
-                int V = tuple1->at(0);
-                int X = tuple1->at(1);
-                const Tuple negativeTuple2({X},&_b,true);
-                const Tuple* tuple2 = ub.find(Tuple({X},&_b));
-                if(wb.find(negativeTuple2)==NULL && tuple2==NULL){
-                    tuple2=&negativeTuple2;
-                    if(W >= V){
-                        if(V > X){
-                            Tuple t({W,U,V,X,X},&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_);
-                            {
-                                std::vector<int> aggrKey({t[1],t[2],t[0],t[3]});
-                                if(aggrKey[0]>0){
-                                    if(wc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(t)==NULL){
-                                        if(uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(t))
-                                            uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(t);
-                                        const auto& insertResult = wc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.insert(Tuple(t));
-                                        if (insertResult.second) {
-                                            for(AuxMap* auxMap : predicateToAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_]){
-                                                auxMap -> insert2(*insertResult.first);
-                                            }
-                                        }
-                                    }
-                                    auto& trueSet = trueAggrVars[0][{}];
-                                    auto& undefSet = undefAggrVars[0][{}];
-                                    if(undefSet.find(aggrKey)!=undefSet.end()){
-                                        undefSet.erase(aggrKey);
-                                        possibleSum[0][{}]-=aggrKey[0];
-                                    }
-                                    if(trueSet.find(aggrKey)==trueSet.end()){
-                                        trueSet.insert(aggrKey);
-                                        actualSum[0][{}]+=aggrKey[0];
-                                        auto& reas = positiveAggrReason[0][{}];
-                                        if(!reas.level(var)==-1){
-                                            reas.addLevel();
-                                            reas.insert(var);
-                                            tuple.print();std::cout<<"Added to positive reason"<<std::endl;
-                                        }
-                                        {
-                                            const auto & it = tupleToVar.find(*tuple1);
-                                            if(it != tupleToVar.end()) {
-                                                tuple1->print();std::cout<<"Added to positive reason"<<std::endl;
-                                                reas.insert(it->second);
-                                            }
-                                        }
-                                        {
-                                            const auto & it = tupleToVar.find(*tuple2);
-                                            if(it != tupleToVar.end()) {
-                                                tuple2->print();std::cout<<"Added to positive reason"<<std::endl;
-                                                reas.insert(it->second*-1);
-                                            }
-                                        }
-                                    }
-                                }else{
-                                    if(nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(t)){
-                                        nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(t);
-                                        auto& undefSet = undefNegativeAggrVars[0][{}];
-                                        if(nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_.getValues({aggrKey}).size()<=0){
-                                            aggrKey[0]*=-1;
-                                            if(undefSet.find(aggrKey)!=undefSet.end()){
-                                                undefSet.erase(aggrKey);
-                                                possibleNegativeSum[0][{}]-=aggrKey[0];
-                                            }
-                                        }
-                                        auto& reas = negativeAggrReason[0][{}];
-                                        if(reas.level(var)==-1){
-                                            reas.addLevel();
-                                            reas.insert(var);
-                                            tuple.print();std::cout<<"Added to negative reason"<<std::endl;
-                                        }
-                                        {
-                                            const auto & it = tupleToVar.find(*tuple1);
-                                            if(it != tupleToVar.end()) {
-                                                tuple1->print();std::cout<<"Added to negative reason"<<std::endl;
-                                                reas.insert(it->second);
-                                            }
-                                        }
-                                        {
-                                            const auto & it = tupleToVar.find(*tuple2);
-                                            if(it != tupleToVar.end()) {
-                                                tuple2->print();std::cout<<"Added to negative reason"<<std::endl;
-                                                reas.insert(it->second*-1);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }else{
-            const std::vector<const Tuple*>& tuplesU = u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_.getValues({W,U});
-            while(!tuplesU.empty()){
-                Tuple t(*tuplesU.back());
-                uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(*tuplesU.back());
-                {
-                    std::vector<int> aggrKey({t[1],t[2],t[0],t[3]});
-                    auto& undefSet = undefAggrVars[0][{}];
-                    if(u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_.getValues({aggrKey}).size()<=0){
-                        if(undefSet.find(aggrKey)!=undefSet.end()){
-                            undefSet.erase(aggrKey);
-                            possibleSum[0][{}]-=aggrKey[0];
-                        }
-                    }
-                    auto& reas = negativeAggrReason[0][{}];
-                    if(reas.level(var)==-1){
-                        reas.addLevel();
-                        reas.insert(var);
-                        tuple.print();std::cout<<"Added to negative reason"<<std::endl;
-                    }
-                }
-            }
-            const std::vector<const Tuple*>& tuplesNegativeU = nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_.getValues({W,U});
-            while(!tuplesNegativeU.empty()){
-                Tuple t(*tuplesNegativeU.back());
-                nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(t);
-                const auto& insertResult = nwc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.insert(Tuple(t));
-                if (insertResult.second) {
-                    for(AuxMap* auxMap : predicateToNegativeAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_]){
-                        auxMap -> insert2(*insertResult.first);
-                    }
-                }
-                {
-                    std::vector<int> aggrKey({t[1],t[2],t[0],t[3]});
-                    auto& undefSet = undefNegativeAggrVars[0][{}];
-                    auto& trueSet = trueNegativeAggrVars[0][{}];
-                    aggrKey[0]*=-1;
-                    if(undefSet.find(aggrKey)!=undefSet.end()){
-                        undefSet.erase(aggrKey);
-                        possibleNegativeSum[0][{}]-=aggrKey[0];
-                    }
-                    if(trueSet.find(aggrKey)==trueSet.end()){
-                        trueSet.insert(aggrKey);
-                        actualNegativeSum[0][{}]+=aggrKey[0];
-                        auto& reas = positiveAggrReason[0][{}];
-                        if(reas.level(var)==-1){
-                            reas.addLevel();
-                            reas.insert(var);
-                            tuple.print();std::cout<<"Added to negative reason"<<std::endl;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    if(tuple.getPredicateName() == &_c){
-        int V = tuple[0];
-        int X = tuple[1];
-        if(var > 0){
-            bool negative_join=false;
-            bool positive_join=false;
-            const std::vector<const Tuple*>* tuples0 = &pc_.getValues({});
-            for(int i_0=0;i_0<tuples0->size();i_0++){
-                const Tuple* tuple0=tuples0->at(i_0);
-                int W = tuple0->at(0);
-                int U = tuple0->at(1);
-                const Tuple negativeTuple2({X},&_b,true);
-                const Tuple* tuple2 = ub.find(Tuple({X},&_b));
-                if(wb.find(negativeTuple2)==NULL && tuple2==NULL){
-                    tuple2=&negativeTuple2;
-                    if(W >= V){
-                        if(V > X){
-                            Tuple t({W,U,V,X,X},&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_);
-                            {
-                                std::vector<int> aggrKey({t[1],t[2],t[0],t[3]});
-                                if(aggrKey[0]>0){
-                                    if(wc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(t)==NULL){
-                                        if(uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(t))
-                                            uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(t);
-                                        const auto& insertResult = wc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.insert(Tuple(t));
-                                        if (insertResult.second) {
-                                            for(AuxMap* auxMap : predicateToAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_]){
-                                                auxMap -> insert2(*insertResult.first);
-                                            }
-                                        }
-                                    }
-                                    auto& trueSet = trueAggrVars[0][{}];
-                                    auto& undefSet = undefAggrVars[0][{}];
-                                    if(undefSet.find(aggrKey)!=undefSet.end()){
-                                        undefSet.erase(aggrKey);
-                                        possibleSum[0][{}]-=aggrKey[0];
-                                    }
-                                    if(trueSet.find(aggrKey)==trueSet.end()){
-                                        trueSet.insert(aggrKey);
-                                        actualSum[0][{}]+=aggrKey[0];
-                                        auto& reas = positiveAggrReason[0][{}];
-                                        if(!reas.level(var)==-1){
-                                            reas.addLevel();
-                                            reas.insert(var);
-                                            tuple.print();std::cout<<"Added to positive reason"<<std::endl;
-                                        }
-                                        {
-                                            const auto & it = tupleToVar.find(*tuple0);
-                                            if(it != tupleToVar.end()) {
-                                                tuple0->print();std::cout<<"Added to positive reason"<<std::endl;
-                                                reas.insert(it->second);
-                                            }
-                                        }
-                                        {
-                                            const auto & it = tupleToVar.find(*tuple2);
-                                            if(it != tupleToVar.end()) {
-                                                tuple2->print();std::cout<<"Added to positive reason"<<std::endl;
-                                                reas.insert(it->second*-1);
-                                            }
-                                        }
-                                    }
-                                }else{
-                                    if(nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(t)){
-                                        nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(t);
-                                        auto& undefSet = undefNegativeAggrVars[0][{}];
-                                        if(nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_.getValues({aggrKey}).size()<=0){
-                                            aggrKey[0]*=-1;
-                                            if(undefSet.find(aggrKey)!=undefSet.end()){
-                                                undefSet.erase(aggrKey);
-                                                possibleNegativeSum[0][{}]-=aggrKey[0];
-                                            }
-                                        }
-                                        auto& reas = negativeAggrReason[0][{}];
-                                        if(reas.level(var)==-1){
-                                            reas.addLevel();
-                                            reas.insert(var);
-                                            tuple.print();std::cout<<"Added to negative reason"<<std::endl;
-                                        }
-                                        {
-                                            const auto & it = tupleToVar.find(*tuple0);
-                                            if(it != tupleToVar.end()) {
-                                                tuple0->print();std::cout<<"Added to negative reason"<<std::endl;
-                                                reas.insert(it->second);
-                                            }
-                                        }
-                                        {
-                                            const auto & it = tupleToVar.find(*tuple2);
-                                            if(it != tupleToVar.end()) {
-                                                tuple2->print();std::cout<<"Added to negative reason"<<std::endl;
-                                                reas.insert(it->second*-1);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }else{
-            const std::vector<const Tuple*>& tuplesU = u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_.getValues({V,X});
-            while(!tuplesU.empty()){
-                Tuple t(*tuplesU.back());
-                uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(*tuplesU.back());
-                {
-                    std::vector<int> aggrKey({t[1],t[2],t[0],t[3]});
-                    auto& undefSet = undefAggrVars[0][{}];
-                    if(u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_.getValues({aggrKey}).size()<=0){
-                        if(undefSet.find(aggrKey)!=undefSet.end()){
-                            undefSet.erase(aggrKey);
-                            possibleSum[0][{}]-=aggrKey[0];
-                        }
-                    }
-                    auto& reas = negativeAggrReason[0][{}];
-                    if(reas.level(var)==-1){
-                        reas.addLevel();
-                        reas.insert(var);
-                        tuple.print();std::cout<<"Added to negative reason"<<std::endl;
-                    }
-                }
-            }
-            const std::vector<const Tuple*>& tuplesNegativeU = nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_.getValues({V,X});
-            while(!tuplesNegativeU.empty()){
-                Tuple t(*tuplesNegativeU.back());
-                nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(t);
-                const auto& insertResult = nwc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.insert(Tuple(t));
-                if (insertResult.second) {
-                    for(AuxMap* auxMap : predicateToNegativeAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_]){
-                        auxMap -> insert2(*insertResult.first);
-                    }
-                }
-                {
-                    std::vector<int> aggrKey({t[1],t[2],t[0],t[3]});
-                    auto& undefSet = undefNegativeAggrVars[0][{}];
-                    auto& trueSet = trueNegativeAggrVars[0][{}];
-                    aggrKey[0]*=-1;
-                    if(undefSet.find(aggrKey)!=undefSet.end()){
-                        undefSet.erase(aggrKey);
-                        possibleNegativeSum[0][{}]-=aggrKey[0];
-                    }
-                    if(trueSet.find(aggrKey)==trueSet.end()){
-                        trueSet.insert(aggrKey);
-                        actualNegativeSum[0][{}]+=aggrKey[0];
-                        auto& reas = positiveAggrReason[0][{}];
-                        if(reas.level(var)==-1){
-                            reas.addLevel();
-                            reas.insert(var);
-                            tuple.print();std::cout<<"Added to negative reason"<<std::endl;
-                        }
-                    }
-                }
-            }
-        }
-    }
     if(tuple.getPredicateName() == &_b){
-        int X = tuple[0];
+        int V = tuple[0];
+        int Z = tuple[1];
+        int U = tuple[2];
+        if(var > 0){
+            bool negative_join=false;
+            bool positive_join=false;
+            const Tuple negativeTuple1({U,V},&_c,true);
+            const Tuple* tuple1 = uc.find(Tuple({U,V},&_c));
+            if(wc.find(negativeTuple1)==NULL && tuple1==NULL){
+                tuple1=&negativeTuple1;
+                const Tuple negativeTuple2({Z},&_a,true);
+                const Tuple* tuple2 = ua.find(Tuple({Z},&_a));
+                if(wa.find(negativeTuple2)==NULL && tuple2==NULL){
+                    tuple2=&negativeTuple2;
+                    Tuple t({V,Z,U,U,V,Z},&_b_V_Z_U_not_c_U_V_not_a_Z_);
+                    {
+                        std::vector<int> aggrKey({t[0]});
+                        if(aggrKey[0]>0){
+                            if(wb_V_Z_U_not_c_U_V_not_a_Z_.find(t)==NULL){
+                                if(ub_V_Z_U_not_c_U_V_not_a_Z_.find(t))
+                                    ub_V_Z_U_not_c_U_V_not_a_Z_.erase(t);
+                                const auto& insertResult = wb_V_Z_U_not_c_U_V_not_a_Z_.insert(Tuple(t));
+                                if (insertResult.second) {
+                                    for(AuxMap* auxMap : predicateToAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_]){
+                                        auxMap -> insert2(*insertResult.first);
+                                    }
+                                }
+                            }
+                            auto& trueSet = trueAggrVars[0][{U,U}];
+                            auto& undefSet = undefAggrVars[0][{U,U}];
+                            if(undefSet.find(aggrKey)!=undefSet.end()){
+                                undefSet.erase(aggrKey);
+                                possibleSum[0][{U,U}]-=aggrKey[0];
+                            }
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                trueSet.insert(aggrKey);
+                                actualSum[0][{U,U}]+=aggrKey[0];
+                                auto& reas = positiveAggrReason[0][{U,U}];
+                                if(reas.level(var)==-1){
+                                    reas.addLevel();
+                                    reas.insert(var);
+                                    tuple.print();std::cout<<"Added to positive reason"<<std::endl;
+                                }
+                                {
+                                    const auto & it = tupleToVar.find(*tuple1);
+                                    if(it != tupleToVar.end()) {
+                                        tuple1->print();std::cout<<"Added to positive reason"<<std::endl;
+                                        reas.insert(it->second*-1);
+                                    }
+                                }
+                                {
+                                    const auto & it = tupleToVar.find(*tuple2);
+                                    if(it != tupleToVar.end()) {
+                                        tuple2->print();std::cout<<"Added to positive reason"<<std::endl;
+                                        reas.insert(it->second*-1);
+                                    }
+                                }
+                            }
+                        }else{
+                            if(nub_V_Z_U_not_c_U_V_not_a_Z_.find(t)){
+                                nub_V_Z_U_not_c_U_V_not_a_Z_.erase(t);
+                                auto& undefSet = undefNegativeAggrVars[0][{U,U}];
+                                if(nu_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,t[0]}).size()<=0){
+                                    aggrKey[0]*=-1;
+                                    if(undefSet.find(aggrKey)!=undefSet.end()){
+                                        undefSet.erase(aggrKey);
+                                        possibleNegativeSum[0][{U,U}]-=aggrKey[0];
+                                    }
+                                }
+                                auto& reas = negativeAggrReason[0][{U,U}];
+                                if(reas.level(var)==-1){
+                                    reas.addLevel();
+                                    reas.insert(var);
+                                    tuple.print();std::cout<<"Added to negative reason"<<std::endl;
+                                }
+                                {
+                                    const auto & it = tupleToVar.find(*tuple1);
+                                    if(it != tupleToVar.end()) {
+                                        tuple1->print();std::cout<<"Added to negative reason"<<std::endl;
+                                        reas.insert(it->second*-1);
+                                    }
+                                }
+                                {
+                                    const auto & it = tupleToVar.find(*tuple2);
+                                    if(it != tupleToVar.end()) {
+                                        tuple2->print();std::cout<<"Added to negative reason"<<std::endl;
+                                        reas.insert(it->second*-1);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }else{
+            const std::vector<const Tuple*>& tuplesU = u_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_.getValues({V,Z,U});
+            while(!tuplesU.empty()){
+                Tuple t(*tuplesU.back());
+                ub_V_Z_U_not_c_U_V_not_a_Z_.erase(*tuplesU.back());
+                {
+                    //bound var2
+                    //bound var3
+                    std::vector<int> aggrKey({t[0]});
+                    auto& undefSet = undefAggrVars[0][{U,U}];
+                    if(u_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,t[0]}).size()<=0){
+                        if(undefSet.find(aggrKey)!=undefSet.end()){
+                            undefSet.erase(aggrKey);
+                            possibleSum[0][{U,U}]-=aggrKey[0];
+                        }
+                    }
+                    auto& reas = negativeAggrReason[0][{U,U}];
+                    if(reas.level(var)==-1){
+                        reas.addLevel();
+                        reas.insert(var);
+                        tuple.print();std::cout<<"Added to negative reason"<<std::endl;
+                    }
+                }
+            }
+            const std::vector<const Tuple*>& tuplesNegativeU = nu_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_.getValues({V,Z,U});
+            while(!tuplesNegativeU.empty()){
+                Tuple t(*tuplesNegativeU.back());
+                nub_V_Z_U_not_c_U_V_not_a_Z_.erase(t);
+                const auto& insertResult = nwb_V_Z_U_not_c_U_V_not_a_Z_.insert(Tuple(t));
+                if (insertResult.second) {
+                    for(AuxMap* auxMap : predicateToNegativeAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_]){
+                        auxMap -> insert2(*insertResult.first);
+                    }
+                }
+                {
+                    //bound var2
+                    //bound var3
+                    std::vector<int> aggrKey({t[0]});
+                    auto& undefSet = undefNegativeAggrVars[0][{U,U}];
+                    auto& trueSet = trueNegativeAggrVars[0][{U,U}];
+                    aggrKey[0]*=-1;
+                    if(undefSet.find(aggrKey)!=undefSet.end()){
+                        undefSet.erase(aggrKey);
+                        possibleNegativeSum[0][{U,U}]-=aggrKey[0];
+                    }
+                    if(trueSet.find(aggrKey)==trueSet.end()){
+                        trueSet.insert(aggrKey);
+                        actualNegativeSum[0][{U,U}]+=aggrKey[0];
+                        auto& reas = positiveAggrReason[0][{U,U}];
+                        if(reas.level(var)==-1){
+                            reas.addLevel();
+                            reas.insert(var);
+                            tuple.print();std::cout<<"Added to negative reason"<<std::endl;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if(tuple.getPredicateName() == &_c){
+        int U = tuple[0];
+        int V = tuple[1];
         if(var < 0){
             bool negative_join=false;
             bool positive_join=false;
-            const std::vector<const Tuple*>* tuples0 = &pc_.getValues({});
+            const std::vector<const Tuple*>* tuples0 = &pb_0_2_.getValues({V,U});
             for(int i_0=0;i_0<tuples0->size();i_0++){
                 const Tuple* tuple0=tuples0->at(i_0);
-                int W = tuple0->at(0);
-                int U = tuple0->at(1);
-                const std::vector<const Tuple*>* tuples1 = &pc_1_.getValues({X});
-                for(int i_1=0;i_1<tuples1->size();i_1++){
-                    const Tuple* tuple1=tuples1->at(i_1);
-                    int V = tuple1->at(0);
-                    if(W >= V){
-                        if(V > X){
-                            Tuple t({W,U,V,X,X},&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_);
-                            {
-                                std::vector<int> aggrKey({t[1],t[2],t[0],t[3]});
-                                if(aggrKey[0]>0){
-                                    if(wc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(t)==NULL){
-                                        if(uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(t))
-                                            uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(t);
-                                        const auto& insertResult = wc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.insert(Tuple(t));
-                                        if (insertResult.second) {
-                                            for(AuxMap* auxMap : predicateToAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_]){
-                                                auxMap -> insert2(*insertResult.first);
-                                            }
-                                        }
+                int Z = tuple0->at(1);
+                const Tuple negativeTuple2({Z},&_a,true);
+                const Tuple* tuple2 = ua.find(Tuple({Z},&_a));
+                if(wa.find(negativeTuple2)==NULL && tuple2==NULL){
+                    tuple2=&negativeTuple2;
+                    Tuple t({V,Z,U,U,V,Z},&_b_V_Z_U_not_c_U_V_not_a_Z_);
+                    {
+                        std::vector<int> aggrKey({t[0]});
+                        if(aggrKey[0]>0){
+                            if(wb_V_Z_U_not_c_U_V_not_a_Z_.find(t)==NULL){
+                                if(ub_V_Z_U_not_c_U_V_not_a_Z_.find(t))
+                                    ub_V_Z_U_not_c_U_V_not_a_Z_.erase(t);
+                                const auto& insertResult = wb_V_Z_U_not_c_U_V_not_a_Z_.insert(Tuple(t));
+                                if (insertResult.second) {
+                                    for(AuxMap* auxMap : predicateToAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_]){
+                                        auxMap -> insert2(*insertResult.first);
                                     }
-                                    auto& trueSet = trueAggrVars[0][{}];
-                                    auto& undefSet = undefAggrVars[0][{}];
+                                }
+                            }
+                            auto& trueSet = trueAggrVars[0][{U,U}];
+                            auto& undefSet = undefAggrVars[0][{U,U}];
+                            if(undefSet.find(aggrKey)!=undefSet.end()){
+                                undefSet.erase(aggrKey);
+                                possibleSum[0][{U,U}]-=aggrKey[0];
+                            }
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                trueSet.insert(aggrKey);
+                                actualSum[0][{U,U}]+=aggrKey[0];
+                                auto& reas = positiveAggrReason[0][{U,U}];
+                                if(reas.level(var)==-1){
+                                    reas.addLevel();
+                                    reas.insert(var);
+                                    tuple.print();std::cout<<"Added to positive reason"<<std::endl;
+                                }
+                                {
+                                    const auto & it = tupleToVar.find(*tuple0);
+                                    if(it != tupleToVar.end()) {
+                                        tuple0->print();std::cout<<"Added to positive reason"<<std::endl;
+                                        reas.insert(it->second);
+                                    }
+                                }
+                                {
+                                    const auto & it = tupleToVar.find(*tuple2);
+                                    if(it != tupleToVar.end()) {
+                                        tuple2->print();std::cout<<"Added to positive reason"<<std::endl;
+                                        reas.insert(it->second*-1);
+                                    }
+                                }
+                            }
+                        }else{
+                            if(nub_V_Z_U_not_c_U_V_not_a_Z_.find(t)){
+                                nub_V_Z_U_not_c_U_V_not_a_Z_.erase(t);
+                                auto& undefSet = undefNegativeAggrVars[0][{U,U}];
+                                if(nu_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,t[0]}).size()<=0){
+                                    aggrKey[0]*=-1;
                                     if(undefSet.find(aggrKey)!=undefSet.end()){
                                         undefSet.erase(aggrKey);
-                                        possibleSum[0][{}]-=aggrKey[0];
+                                        possibleNegativeSum[0][{U,U}]-=aggrKey[0];
                                     }
-                                    if(trueSet.find(aggrKey)==trueSet.end()){
-                                        trueSet.insert(aggrKey);
-                                        actualSum[0][{}]+=aggrKey[0];
-                                        auto& reas = positiveAggrReason[0][{}];
-                                        if(!reas.level(var)==-1){
-                                            reas.addLevel();
-                                            reas.insert(var);
-                                            tuple.print();std::cout<<"Added to positive reason"<<std::endl;
-                                        }
-                                        {
-                                            const auto & it = tupleToVar.find(*tuple0);
-                                            if(it != tupleToVar.end()) {
-                                                tuple0->print();std::cout<<"Added to positive reason"<<std::endl;
-                                                reas.insert(it->second);
-                                            }
-                                        }
-                                        {
-                                            const auto & it = tupleToVar.find(*tuple1);
-                                            if(it != tupleToVar.end()) {
-                                                tuple1->print();std::cout<<"Added to positive reason"<<std::endl;
-                                                reas.insert(it->second);
-                                            }
-                                        }
+                                }
+                                auto& reas = negativeAggrReason[0][{U,U}];
+                                if(reas.level(var)==-1){
+                                    reas.addLevel();
+                                    reas.insert(var);
+                                    tuple.print();std::cout<<"Added to negative reason"<<std::endl;
+                                }
+                                {
+                                    const auto & it = tupleToVar.find(*tuple0);
+                                    if(it != tupleToVar.end()) {
+                                        tuple0->print();std::cout<<"Added to negative reason"<<std::endl;
+                                        reas.insert(it->second);
                                     }
-                                }else{
-                                    if(nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(t)){
-                                        nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(t);
-                                        auto& undefSet = undefNegativeAggrVars[0][{}];
-                                        if(nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_.getValues({aggrKey}).size()<=0){
-                                            aggrKey[0]*=-1;
-                                            if(undefSet.find(aggrKey)!=undefSet.end()){
-                                                undefSet.erase(aggrKey);
-                                                possibleNegativeSum[0][{}]-=aggrKey[0];
-                                            }
-                                        }
-                                        auto& reas = negativeAggrReason[0][{}];
-                                        if(reas.level(var)==-1){
-                                            reas.addLevel();
-                                            reas.insert(var);
-                                            tuple.print();std::cout<<"Added to negative reason"<<std::endl;
-                                        }
-                                        {
-                                            const auto & it = tupleToVar.find(*tuple0);
-                                            if(it != tupleToVar.end()) {
-                                                tuple0->print();std::cout<<"Added to negative reason"<<std::endl;
-                                                reas.insert(it->second);
-                                            }
-                                        }
-                                        {
-                                            const auto & it = tupleToVar.find(*tuple1);
-                                            if(it != tupleToVar.end()) {
-                                                tuple1->print();std::cout<<"Added to negative reason"<<std::endl;
-                                                reas.insert(it->second);
-                                            }
-                                        }
+                                }
+                                {
+                                    const auto & it = tupleToVar.find(*tuple2);
+                                    if(it != tupleToVar.end()) {
+                                        tuple2->print();std::cout<<"Added to negative reason"<<std::endl;
+                                        reas.insert(it->second*-1);
                                     }
                                 }
                             }
@@ -658,20 +554,22 @@ inline void Executor::onLiteralTrue(int var) {
                 }
             }
         }else{
-            const std::vector<const Tuple*>& tuplesU = u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_.getValues({X});
+            const std::vector<const Tuple*>& tuplesU = u_b_V_Z_U_not_c_U_V_not_a_Z_3_4_.getValues({U,V});
             while(!tuplesU.empty()){
                 Tuple t(*tuplesU.back());
-                uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(*tuplesU.back());
+                ub_V_Z_U_not_c_U_V_not_a_Z_.erase(*tuplesU.back());
                 {
-                    std::vector<int> aggrKey({t[1],t[2],t[0],t[3]});
-                    auto& undefSet = undefAggrVars[0][{}];
-                    if(u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_.getValues({aggrKey}).size()<=0){
+                    //bound var2
+                    //bound var3
+                    std::vector<int> aggrKey({t[0]});
+                    auto& undefSet = undefAggrVars[0][{U,U}];
+                    if(u_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,t[0]}).size()<=0){
                         if(undefSet.find(aggrKey)!=undefSet.end()){
                             undefSet.erase(aggrKey);
-                            possibleSum[0][{}]-=aggrKey[0];
+                            possibleSum[0][{U,U}]-=aggrKey[0];
                         }
                     }
-                    auto& reas = negativeAggrReason[0][{}];
+                    auto& reas = negativeAggrReason[0][{U,U}];
                     if(reas.level(var)==-1){
                         reas.addLevel();
                         reas.insert(var);
@@ -679,29 +577,31 @@ inline void Executor::onLiteralTrue(int var) {
                     }
                 }
             }
-            const std::vector<const Tuple*>& tuplesNegativeU = nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_.getValues({X});
+            const std::vector<const Tuple*>& tuplesNegativeU = nu_b_V_Z_U_not_c_U_V_not_a_Z_3_4_.getValues({U,V});
             while(!tuplesNegativeU.empty()){
                 Tuple t(*tuplesNegativeU.back());
-                nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(t);
-                const auto& insertResult = nwc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.insert(Tuple(t));
+                nub_V_Z_U_not_c_U_V_not_a_Z_.erase(t);
+                const auto& insertResult = nwb_V_Z_U_not_c_U_V_not_a_Z_.insert(Tuple(t));
                 if (insertResult.second) {
-                    for(AuxMap* auxMap : predicateToNegativeAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_]){
+                    for(AuxMap* auxMap : predicateToNegativeAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_]){
                         auxMap -> insert2(*insertResult.first);
                     }
                 }
                 {
-                    std::vector<int> aggrKey({t[1],t[2],t[0],t[3]});
-                    auto& undefSet = undefNegativeAggrVars[0][{}];
-                    auto& trueSet = trueNegativeAggrVars[0][{}];
+                    //bound var2
+                    //bound var3
+                    std::vector<int> aggrKey({t[0]});
+                    auto& undefSet = undefNegativeAggrVars[0][{U,U}];
+                    auto& trueSet = trueNegativeAggrVars[0][{U,U}];
                     aggrKey[0]*=-1;
                     if(undefSet.find(aggrKey)!=undefSet.end()){
                         undefSet.erase(aggrKey);
-                        possibleNegativeSum[0][{}]-=aggrKey[0];
+                        possibleNegativeSum[0][{U,U}]-=aggrKey[0];
                     }
                     if(trueSet.find(aggrKey)==trueSet.end()){
                         trueSet.insert(aggrKey);
-                        actualNegativeSum[0][{}]+=aggrKey[0];
-                        auto& reas = positiveAggrReason[0][{}];
+                        actualNegativeSum[0][{U,U}]+=aggrKey[0];
+                        auto& reas = positiveAggrReason[0][{U,U}];
                         if(reas.level(var)==-1){
                             reas.addLevel();
                             reas.insert(var);
@@ -709,6 +609,167 @@ inline void Executor::onLiteralTrue(int var) {
                         }
                     }
                 }
+            }
+        }
+    }
+    if(tuple.getPredicateName() == &_a){
+        int Z = tuple[0];
+        if(var < 0){
+            bool negative_join=false;
+            bool positive_join=false;
+            const std::vector<const Tuple*>* tuples0 = &pb_1_.getValues({Z});
+            for(int i_0=0;i_0<tuples0->size();i_0++){
+                const Tuple* tuple0=tuples0->at(i_0);
+                int V = tuple0->at(0);
+                int U = tuple0->at(2);
+                const Tuple negativeTuple1({U,V},&_c,true);
+                const Tuple* tuple1 = uc.find(Tuple({U,V},&_c));
+                if(wc.find(negativeTuple1)==NULL && tuple1==NULL){
+                    tuple1=&negativeTuple1;
+                    Tuple t({V,Z,U,U,V,Z},&_b_V_Z_U_not_c_U_V_not_a_Z_);
+                    {
+                        std::vector<int> aggrKey({t[0]});
+                        if(aggrKey[0]>0){
+                            if(wb_V_Z_U_not_c_U_V_not_a_Z_.find(t)==NULL){
+                                if(ub_V_Z_U_not_c_U_V_not_a_Z_.find(t))
+                                    ub_V_Z_U_not_c_U_V_not_a_Z_.erase(t);
+                                const auto& insertResult = wb_V_Z_U_not_c_U_V_not_a_Z_.insert(Tuple(t));
+                                if (insertResult.second) {
+                                    for(AuxMap* auxMap : predicateToAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_]){
+                                        auxMap -> insert2(*insertResult.first);
+                                    }
+                                }
+                            }
+                            auto& trueSet = trueAggrVars[0][{U,U}];
+                            auto& undefSet = undefAggrVars[0][{U,U}];
+                            if(undefSet.find(aggrKey)!=undefSet.end()){
+                                undefSet.erase(aggrKey);
+                                possibleSum[0][{U,U}]-=aggrKey[0];
+                            }
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                trueSet.insert(aggrKey);
+                                actualSum[0][{U,U}]+=aggrKey[0];
+                                auto& reas = positiveAggrReason[0][{U,U}];
+                                if(reas.level(var)==-1){
+                                    reas.addLevel();
+                                    reas.insert(var);
+                                    tuple.print();std::cout<<"Added to positive reason"<<std::endl;
+                                }
+                                {
+                                    const auto & it = tupleToVar.find(*tuple0);
+                                    if(it != tupleToVar.end()) {
+                                        tuple0->print();std::cout<<"Added to positive reason"<<std::endl;
+                                        reas.insert(it->second);
+                                    }
+                                }
+                                {
+                                    const auto & it = tupleToVar.find(*tuple1);
+                                    if(it != tupleToVar.end()) {
+                                        tuple1->print();std::cout<<"Added to positive reason"<<std::endl;
+                                        reas.insert(it->second*-1);
+                                    }
+                                }
+                            }
+                        }else{
+                            if(nub_V_Z_U_not_c_U_V_not_a_Z_.find(t)){
+                                nub_V_Z_U_not_c_U_V_not_a_Z_.erase(t);
+                                auto& undefSet = undefNegativeAggrVars[0][{U,U}];
+                                if(nu_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,t[0]}).size()<=0){
+                                    aggrKey[0]*=-1;
+                                    if(undefSet.find(aggrKey)!=undefSet.end()){
+                                        undefSet.erase(aggrKey);
+                                        possibleNegativeSum[0][{U,U}]-=aggrKey[0];
+                                    }
+                                }
+                                auto& reas = negativeAggrReason[0][{U,U}];
+                                if(reas.level(var)==-1){
+                                    reas.addLevel();
+                                    reas.insert(var);
+                                    tuple.print();std::cout<<"Added to negative reason"<<std::endl;
+                                }
+                                {
+                                    const auto & it = tupleToVar.find(*tuple0);
+                                    if(it != tupleToVar.end()) {
+                                        tuple0->print();std::cout<<"Added to negative reason"<<std::endl;
+                                        reas.insert(it->second);
+                                    }
+                                }
+                                {
+                                    const auto & it = tupleToVar.find(*tuple1);
+                                    if(it != tupleToVar.end()) {
+                                        tuple1->print();std::cout<<"Added to negative reason"<<std::endl;
+                                        reas.insert(it->second*-1);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }else{
+            const std::vector<const Tuple*>& tuplesU = u_b_V_Z_U_not_c_U_V_not_a_Z_5_.getValues({Z});
+            while(!tuplesU.empty()){
+                Tuple t(*tuplesU.back());
+                ub_V_Z_U_not_c_U_V_not_a_Z_.erase(*tuplesU.back());
+                {
+                    int U = t[2];
+                    //bound var3
+                    std::vector<int> aggrKey({t[0]});
+                    auto& undefSet = undefAggrVars[0][{U,U}];
+                    if(u_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,t[0]}).size()<=0){
+                        if(undefSet.find(aggrKey)!=undefSet.end()){
+                            undefSet.erase(aggrKey);
+                            possibleSum[0][{U,U}]-=aggrKey[0];
+                        }
+                    }
+                    auto& reas = negativeAggrReason[0][{U,U}];
+                    if(reas.level(var)==-1){
+                        reas.addLevel();
+                        reas.insert(var);
+                        tuple.print();std::cout<<"Added to negative reason"<<std::endl;
+                    }
+                }
+            }
+            const std::vector<const Tuple*>& tuplesNegativeU = nu_b_V_Z_U_not_c_U_V_not_a_Z_5_.getValues({Z});
+            while(!tuplesNegativeU.empty()){
+                Tuple t(*tuplesNegativeU.back());
+                nub_V_Z_U_not_c_U_V_not_a_Z_.erase(t);
+                const auto& insertResult = nwb_V_Z_U_not_c_U_V_not_a_Z_.insert(Tuple(t));
+                if (insertResult.second) {
+                    for(AuxMap* auxMap : predicateToNegativeAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_]){
+                        auxMap -> insert2(*insertResult.first);
+                    }
+                }
+                {
+                    int U = t[2];
+                    //bound var3
+                    std::vector<int> aggrKey({t[0]});
+                    auto& undefSet = undefNegativeAggrVars[0][{U,U}];
+                    auto& trueSet = trueNegativeAggrVars[0][{U,U}];
+                    aggrKey[0]*=-1;
+                    if(undefSet.find(aggrKey)!=undefSet.end()){
+                        undefSet.erase(aggrKey);
+                        possibleNegativeSum[0][{U,U}]-=aggrKey[0];
+                    }
+                    if(trueSet.find(aggrKey)==trueSet.end()){
+                        trueSet.insert(aggrKey);
+                        actualNegativeSum[0][{U,U}]+=aggrKey[0];
+                        auto& reas = positiveAggrReason[0][{U,U}];
+                        if(reas.level(var)==-1){
+                            reas.addLevel();
+                            reas.insert(var);
+                            tuple.print();std::cout<<"Added to negative reason"<<std::endl;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if(tuple.getPredicateName() == &_a){
+        int U = tuple.at(0);
+        {
+            if(!sharedVariables_0_ToAggregate_1.count({U,U})){
+                sharedVariables_0_ToAggregate_1.insert({U,U});
             }
         }
     }
@@ -728,7 +789,7 @@ inline void Executor::onLiteralUndef(int var) {
             wSetIt->second->erase(tuple);
         }
     }
-    if(var<0 && ( tuple.getPredicateName() == &_b || tuple.getPredicateName() == &_c)){
+    if(var<0 && ( tuple.getPredicateName() == &_a || tuple.getPredicateName() == &_b || tuple.getPredicateName() == &_c)){
         std::unordered_map<const std::string*, PredicateWSet*>::iterator falseSetIt = predicateFSetMap.find(tuple.getPredicateName());
         if (falseSetIt != predicateFSetMap.end()) {
             falseSetIt->second->erase(tuple);
@@ -744,251 +805,39 @@ inline void Executor::onLiteralUndef(int var) {
             }
         }
     }
-    if(tuple.getPredicateName() == &_c && tuple.size()==2){
-        int W = tuple[0];
-        int U = tuple[1];
-        if(var > 0){
-            const std::vector<const Tuple*>& tuples = p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_.getValues({W,U});
-            while(!tuples.empty()){
-                Tuple t(*tuples.back());
-                wc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(*tuples.back());
-                if(uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(Tuple(t)) == NULL){
-                    const auto& insertResult = uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.insert(Tuple(t));
-                    if (insertResult.second) {
-                        for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_]){
-                            auxMap -> insert2(*insertResult.first);
-                        }
-                        {
-                            std::vector<int> aggrKey({t[1],t[2],t[0],t[3]});
-                            auto& trueSet = trueAggrVars[0][{}];
-                            auto& undefSet = undefAggrVars[0][{}];
-                            if(p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_.getValues({aggrKey}).size()<=0){
-                                if(trueSet.find(aggrKey)!=trueSet.end()){
-                                    trueSet.erase(aggrKey);
-                                    actualSum[0][{}]-=aggrKey[0];
-                                    auto& reas = positiveAggrReason[0][{}];
-                                    int starter_level=reas.level(var);
-                                    reas.erase(var,starter_level);
-                                    {
-                                        const auto & it = tupleToVar.find(Tuple({t[2],t[3]},&_c));
-                                        if(it != tupleToVar.end()) {
-                                            reas.erase(it->second,starter_level);
-                                        }
-                                    }
-                                    {
-                                        const auto & it = tupleToVar.find(Tuple({t[4]},&_b));
-                                        if(it != tupleToVar.end()) {
-                                            reas.erase(-1*it->second,starter_level);
-                                        }
-                                    }
-                                }
-                            }
-                            if(undefSet.find(aggrKey)==undefSet.end()){
-                                if(trueSet.find(aggrKey)==trueSet.end()){
-                                    undefSet.insert(aggrKey);
-                                    possibleSum[0][{}]+=aggrKey[0];
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }else{
-            const std::vector<const Tuple*>& tuplesNegative = np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_.getValues({W,U});
-            for(const Tuple* tt : tuplesNegative){
-                Tuple t(*tt);
-                Tuple literal({t[2],t[3]},&_c);
-                if(uc.find(literal)!=NULL || wc.find(literal)!=NULL){
-                    Tuple literal({t[4]},&_b);
-                    if(wb.find(literal)==NULL){
-                        nwc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(t);
-                        if(nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(t)==NULL){
-                            const auto& insertResult = nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.insert(Tuple(t));
-                            if (insertResult.second) {
-                                for(AuxMap* auxMap : predicateToNegativeUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_]){
-                                    auxMap -> insert2(*insertResult.first);
-                                }
-                            }
-                        }
-                        {
-                            std::vector<int> aggrKey({t[1],t[2],t[0],t[3]});
-                            auto& trueSet = trueNegativeAggrVars[0][{}];
-                            auto& undefSet = undefNegativeAggrVars[0][{}];
-                            std::cout<<"aggr key:"<<aggrKey[0]<<std::endl;
-                            if(np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_.getValues({aggrKey}).size()<=0){
-                                aggrKey[0]*=-1;
-                                std::cout<<"aggr key:"<<aggrKey[0]<<std::endl;
-                                if(trueSet.find(aggrKey)!=trueSet.end()){
-                                    trueSet.erase(aggrKey);
-                                    actualNegativeSum[0][{}]-=aggrKey[0];
-                                    auto& reas = positiveAggrReason[0][{}];
-                                    reas.erase(var,reas.level(var));
-                                }
-                                if(undefSet.find(aggrKey)==undefSet.end()){
-                                    if(trueSet.find(aggrKey)==trueSet.end()){
-                                        undefSet.insert(aggrKey);
-                                        possibleNegativeSum[0][{}]+=aggrKey[0];
-                                        int sum = possibleNegativeSum[0][{}];
-                                        if(sum > maxPossibleNegativeSum[0][{}])
-                                            maxPossibleNegativeSum[0][{}]=sum;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        const std::vector<const Tuple*>& tuples1 = pc_.getValues({});
-        const std::vector<const Tuple*>& tuplesU1 = uc_.getValues({});
-        for(int i_1=0;i_1<tuples1.size()+tuplesU1.size();i_1++){
-            const Tuple* tuple1;
-            bool undef1=false;
-            if(i_1<tuples1.size())                tuple1=tuples1[i_1];
-            else{
-                tuple1=tuplesU1[i_1-tuples1.size()];
-                undef1=true;
-            }
-            int V = tuple1->at(0);
-            int X = tuple1->at(1);
-            const Tuple negativeTuple2({X},&_b,true);
-            const Tuple* tuple2 = ub.find(Tuple({X},&_b));
-            bool undef2 = false;
-            if(tuple2!=NULL){
-                undef2 = true;
-            }else if(wb.find(negativeTuple2)==NULL){
-                tuple2=&negativeTuple2;
-            }
-            if(tuple2!=NULL){
-                if(W >= V){
-                    if(V > X){
-                        Tuple t({W,U,V,X,X},&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_);
-                        {
-                            std::vector<int> aggrKey({t[1],t[2],t[0],t[3]});
-                            if(aggrKey[0]>0){
-                                if(uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(Tuple(t))==NULL){
-                                    if(wc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(t))
-                                        wc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(t);
-                                    const auto& insertResult = uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.insert(Tuple(t));
-                                    if (insertResult.second) {
-                                        for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_]){
-                                            auxMap -> insert2(*insertResult.first);
-                                        }
-                                    }
-                                }
-                                auto& trueSet = trueAggrVars[0][{}];
-                                auto& undefSet = undefAggrVars[0][{}];
-                                if(p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_.getValues({aggrKey}).size()<=0){
-                                    if(trueSet.find(aggrKey)!=trueSet.end()){
-                                        trueSet.erase(aggrKey);
-                                        actualSum[0][{}]-=aggrKey[0];
-                                        auto& reas = positiveAggrReason[0][{}];
-                                        int starter_level=reas.level(var);
-                                        reas.erase(var,reas.level(var));
-                                        {
-                                            const auto & it = tupleToVar.find(*tuple1);
-                                            if(it != tupleToVar.end()) {
-                                                std::cout<<"Erasing from reason";tuple1->print();std::cout<<std::endl;
-                                                reas.erase(it->second,starter_level);
-                                            }
-                                        }
-                                        {
-                                            const auto & it = tupleToVar.find(*tuple2);
-                                            if(it != tupleToVar.end()) {
-                                                std::cout<<"Erasing from reason";tuple2->print();std::cout<<std::endl;
-                                                reas.erase(-1*it->second,starter_level);
-                                            }
-                                        }
-                                    }
-                                }
-                                if(undefSet.find(aggrKey)==undefSet.end()){
-                                    if(trueSet.find(aggrKey)==trueSet.end()){
-                                        undefSet.insert(aggrKey);
-                                        possibleSum[0][{}]+=aggrKey[0];
-                                    }
-                                }
-                            }else{
-                                if(nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(Tuple(t))==NULL){
-                                    const auto& insertResult = nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.insert(Tuple(t));
-                                    if (insertResult.second) {
-                                        for(AuxMap* auxMap : predicateToNegativeUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_]){
-                                            auxMap -> insert2(*insertResult.first);
-                                        }
-                                        auto& trueSet = trueNegativeAggrVars[0][{}];
-                                        auto& undefSet = undefNegativeAggrVars[0][{}];
-                                        aggrKey[0]*=-1;
-                                        if(undefSet.find(aggrKey)==undefSet.end()){
-                                            if(trueSet.find(aggrKey)==trueSet.end()){
-                                                undefSet.insert(aggrKey);
-                                                possibleNegativeSum[0][{}]+=aggrKey[0];
-                                                int sum = possibleNegativeSum[0][{}];
-                                                if(sum > maxPossibleNegativeSum[0][{}])
-                                                    maxPossibleNegativeSum[0][{}]=sum;
-                                            }
-                                        }
-                                        if(var > 0 && !undef1 && !undef2){
-                                            auto& reas = negativeAggrReason[0][{}];
-                                            int starter_level=reas.level(var);
-                                            {
-                                                const auto & it = tupleToVar.find(*tuple1);
-                                                if(it != tupleToVar.end()) {
-                                                    std::cout<<"Erasing from reason";tuple1->print();std::cout<<std::endl;
-                                                    reas.erase(it->second,starter_level);
-                                                }
-                                            }
-                                            {
-                                                const auto & it = tupleToVar.find(*tuple2);
-                                                if(it != tupleToVar.end()) {
-                                                    std::cout<<"Erasing from reason";tuple2->print();std::cout<<std::endl;
-                                                    reas.erase(-1*it->second,starter_level);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        for(auto& pair : negativeAggrReason[0]){
-            pair.second.erase(var,pair.second.level(var));
-        }
-    }
-    if(tuple.getPredicateName() == &_c && tuple.size()==2){
+    if(tuple.getPredicateName() == &_b && tuple.size()==3){
         int V = tuple[0];
-        int X = tuple[1];
+        int Z = tuple[1];
+        int U = tuple[2];
         if(var > 0){
-            const std::vector<const Tuple*>& tuples = p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_.getValues({V,X});
+            const std::vector<const Tuple*>& tuples = p_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_.getValues({V,Z,U});
             while(!tuples.empty()){
                 Tuple t(*tuples.back());
-                wc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(*tuples.back());
-                if(uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(Tuple(t)) == NULL){
-                    const auto& insertResult = uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.insert(Tuple(t));
+                wb_V_Z_U_not_c_U_V_not_a_Z_.erase(*tuples.back());
+                if(ub_V_Z_U_not_c_U_V_not_a_Z_.find(Tuple(t)) == NULL){
+                    const auto& insertResult = ub_V_Z_U_not_c_U_V_not_a_Z_.insert(Tuple(t));
                     if (insertResult.second) {
-                        for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_]){
+                        for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_]){
                             auxMap -> insert2(*insertResult.first);
                         }
                         {
-                            std::vector<int> aggrKey({t[1],t[2],t[0],t[3]});
-                            auto& trueSet = trueAggrVars[0][{}];
-                            auto& undefSet = undefAggrVars[0][{}];
-                            if(p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_.getValues({aggrKey}).size()<=0){
+                            std::vector<int> aggrKey({t[0]});
+                            auto& trueSet = trueAggrVars[0][{U,U}];
+                            auto& undefSet = undefAggrVars[0][{U,U}];
+                            if(p_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,t[0]}).size()<=0){
                                 if(trueSet.find(aggrKey)!=trueSet.end()){
                                     trueSet.erase(aggrKey);
-                                    actualSum[0][{}]-=aggrKey[0];
-                                    auto& reas = positiveAggrReason[0][{}];
+                                    actualSum[0][{U,U}]-=aggrKey[0];
+                                    auto& reas = positiveAggrReason[0][{U,U}];
                                     int starter_level=reas.level(var);
-                                    reas.erase(var,starter_level);
                                     {
-                                        const auto & it = tupleToVar.find(Tuple({t[0],t[1]},&_c));
+                                        const auto & it = tupleToVar.find(Tuple({t[3],t[4]},&_c));
                                         if(it != tupleToVar.end()) {
-                                            reas.erase(it->second,starter_level);
+                                            reas.erase(-1*it->second,starter_level);
                                         }
                                     }
                                     {
-                                        const auto & it = tupleToVar.find(Tuple({t[4]},&_b));
+                                        const auto & it = tupleToVar.find(Tuple({t[5]},&_a));
                                         if(it != tupleToVar.end()) {
                                             reas.erase(-1*it->second,starter_level);
                                         }
@@ -998,7 +847,7 @@ inline void Executor::onLiteralUndef(int var) {
                             if(undefSet.find(aggrKey)==undefSet.end()){
                                 if(trueSet.find(aggrKey)==trueSet.end()){
                                     undefSet.insert(aggrKey);
-                                    possibleSum[0][{}]+=aggrKey[0];
+                                    possibleSum[0][{U,U}]+=aggrKey[0];
                                 }
                             }
                         }
@@ -1006,43 +855,43 @@ inline void Executor::onLiteralUndef(int var) {
                 }
             }
         }else{
-            const std::vector<const Tuple*>& tuplesNegative = np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_.getValues({V,X});
+            const std::vector<const Tuple*>& tuplesNegative = np_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_.getValues({V,Z,U});
             for(const Tuple* tt : tuplesNegative){
                 Tuple t(*tt);
-                Tuple literal({t[0],t[1]},&_c);
-                if(uc.find(literal)!=NULL || wc.find(literal)!=NULL){
-                    Tuple literal({t[4]},&_b);
-                    if(wb.find(literal)==NULL){
-                        nwc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(t);
-                        if(nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(t)==NULL){
-                            const auto& insertResult = nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.insert(Tuple(t));
+                Tuple literal({t[3],t[4]},&_c);
+                if(wc.find(literal)==NULL){
+                    Tuple literal({t[5]},&_a);
+                    if(wa.find(literal)==NULL){
+                        nwb_V_Z_U_not_c_U_V_not_a_Z_.erase(t);
+                        if(nub_V_Z_U_not_c_U_V_not_a_Z_.find(t)==NULL){
+                            const auto& insertResult = nub_V_Z_U_not_c_U_V_not_a_Z_.insert(Tuple(t));
                             if (insertResult.second) {
-                                for(AuxMap* auxMap : predicateToNegativeUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_]){
+                                for(AuxMap* auxMap : predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_]){
                                     auxMap -> insert2(*insertResult.first);
                                 }
                             }
                         }
                         {
-                            std::vector<int> aggrKey({t[1],t[2],t[0],t[3]});
-                            auto& trueSet = trueNegativeAggrVars[0][{}];
-                            auto& undefSet = undefNegativeAggrVars[0][{}];
+                            std::vector<int> aggrKey({t[0]});
+                            auto& trueSet = trueNegativeAggrVars[0][{U,U}];
+                            auto& undefSet = undefNegativeAggrVars[0][{U,U}];
                             std::cout<<"aggr key:"<<aggrKey[0]<<std::endl;
-                            if(np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_.getValues({aggrKey}).size()<=0){
+                            if(np_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,t[0]}).size()<=0){
                                 aggrKey[0]*=-1;
                                 std::cout<<"aggr key:"<<aggrKey[0]<<std::endl;
                                 if(trueSet.find(aggrKey)!=trueSet.end()){
                                     trueSet.erase(aggrKey);
-                                    actualNegativeSum[0][{}]-=aggrKey[0];
-                                    auto& reas = positiveAggrReason[0][{}];
+                                    actualNegativeSum[0][{U,U}]-=aggrKey[0];
+                                    auto& reas = positiveAggrReason[0][{U,U}];
                                     reas.erase(var,reas.level(var));
                                 }
                                 if(undefSet.find(aggrKey)==undefSet.end()){
                                     if(trueSet.find(aggrKey)==trueSet.end()){
                                         undefSet.insert(aggrKey);
-                                        possibleNegativeSum[0][{}]+=aggrKey[0];
-                                        int sum = possibleNegativeSum[0][{}];
-                                        if(sum > maxPossibleNegativeSum[0][{}])
-                                            maxPossibleNegativeSum[0][{}]=sum;
+                                        possibleNegativeSum[0][{U,U}]+=aggrKey[0];
+                                        int sum = possibleNegativeSum[0][{U,U}];
+                                        if(sum > maxPossibleNegativeSum[0][{U,U}])
+                                            maxPossibleNegativeSum[0][{U,U}]=sum;
                                     }
                                 }
                             }
@@ -1051,110 +900,103 @@ inline void Executor::onLiteralUndef(int var) {
                 }
             }
         }
-        const std::vector<const Tuple*>& tuples0 = pc_.getValues({});
-        const std::vector<const Tuple*>& tuplesU0 = uc_.getValues({});
-        for(int i_0=0;i_0<tuples0.size()+tuplesU0.size();i_0++){
-            const Tuple* tuple0;
-            bool undef0=false;
-            if(i_0<tuples0.size())                tuple0=tuples0[i_0];
-            else{
-                tuple0=tuplesU0[i_0-tuples0.size()];
-                undef0=true;
-            }
-            int W = tuple0->at(0);
-            int U = tuple0->at(1);
-            const Tuple negativeTuple2({X},&_b,true);
-            const Tuple* tuple2 = ub.find(Tuple({X},&_b));
+        const Tuple negativeTuple1({U,V},&_c,true);
+        const Tuple* tuple1 = uc.find(Tuple({U,V},&_c));
+        bool undef1 = false;
+        if(tuple1!=NULL){
+            undef1 = true;
+        }else if(wc.find(negativeTuple1)==NULL){
+            tuple1=&negativeTuple1;
+        }
+        if(tuple1!=NULL){
+            const Tuple negativeTuple2({Z},&_a,true);
+            const Tuple* tuple2 = ua.find(Tuple({Z},&_a));
             bool undef2 = false;
             if(tuple2!=NULL){
                 undef2 = true;
-            }else if(wb.find(negativeTuple2)==NULL){
+            }else if(wa.find(negativeTuple2)==NULL){
                 tuple2=&negativeTuple2;
             }
             if(tuple2!=NULL){
-                if(W >= V){
-                    if(V > X){
-                        Tuple t({W,U,V,X,X},&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_);
-                        {
-                            std::vector<int> aggrKey({t[1],t[2],t[0],t[3]});
-                            if(aggrKey[0]>0){
-                                if(uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(Tuple(t))==NULL){
-                                    if(wc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(t))
-                                        wc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(t);
-                                    const auto& insertResult = uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.insert(Tuple(t));
-                                    if (insertResult.second) {
-                                        for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_]){
-                                            auxMap -> insert2(*insertResult.first);
-                                        }
+                Tuple t({V,Z,U,U,V,Z},&_b_V_Z_U_not_c_U_V_not_a_Z_);
+                {
+                    std::vector<int> aggrKey({t[0]});
+                    if(aggrKey[0]>0){
+                        if(ub_V_Z_U_not_c_U_V_not_a_Z_.find(Tuple(t))==NULL){
+                            if(wb_V_Z_U_not_c_U_V_not_a_Z_.find(t))
+                                wb_V_Z_U_not_c_U_V_not_a_Z_.erase(t);
+                            const auto& insertResult = ub_V_Z_U_not_c_U_V_not_a_Z_.insert(Tuple(t));
+                            if (insertResult.second) {
+                                for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_]){
+                                    auxMap -> insert2(*insertResult.first);
+                                }
+                            }
+                        }
+                        auto& trueSet = trueAggrVars[0][{U,U}];
+                        auto& undefSet = undefAggrVars[0][{U,U}];
+                        if(p_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,t[0]}).size()<=0){
+                            if(trueSet.find(aggrKey)!=trueSet.end()){
+                                trueSet.erase(aggrKey);
+                                actualSum[0][{U,U}]-=aggrKey[0];
+                                auto& reas = positiveAggrReason[0][{U,U}];
+                                int starter_level=reas.level(var);
+                                reas.erase(var,reas.level(var));
+                                {
+                                    const auto & it = tupleToVar.find(*tuple1);
+                                    if(it != tupleToVar.end()) {
+                                        std::cout<<"Erasing from reason";tuple1->print();std::cout<<std::endl;
+                                        reas.erase(-1*it->second,starter_level);
                                     }
                                 }
-                                auto& trueSet = trueAggrVars[0][{}];
-                                auto& undefSet = undefAggrVars[0][{}];
-                                if(p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_.getValues({aggrKey}).size()<=0){
-                                    if(trueSet.find(aggrKey)!=trueSet.end()){
-                                        trueSet.erase(aggrKey);
-                                        actualSum[0][{}]-=aggrKey[0];
-                                        auto& reas = positiveAggrReason[0][{}];
-                                        int starter_level=reas.level(var);
-                                        reas.erase(var,reas.level(var));
-                                        {
-                                            const auto & it = tupleToVar.find(*tuple0);
-                                            if(it != tupleToVar.end()) {
-                                                std::cout<<"Erasing from reason";tuple0->print();std::cout<<std::endl;
-                                                reas.erase(it->second,starter_level);
-                                            }
-                                        }
-                                        {
-                                            const auto & it = tupleToVar.find(*tuple2);
-                                            if(it != tupleToVar.end()) {
-                                                std::cout<<"Erasing from reason";tuple2->print();std::cout<<std::endl;
-                                                reas.erase(-1*it->second,starter_level);
-                                            }
-                                        }
+                                {
+                                    const auto & it = tupleToVar.find(*tuple2);
+                                    if(it != tupleToVar.end()) {
+                                        std::cout<<"Erasing from reason";tuple2->print();std::cout<<std::endl;
+                                        reas.erase(-1*it->second,starter_level);
                                     }
                                 }
+                            }
+                        }
+                        if(undefSet.find(aggrKey)==undefSet.end()){
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                undefSet.insert(aggrKey);
+                                possibleSum[0][{U,U}]+=aggrKey[0];
+                            }
+                        }
+                    }else{
+                        if(nub_V_Z_U_not_c_U_V_not_a_Z_.find(Tuple(t))==NULL){
+                            const auto& insertResult = nub_V_Z_U_not_c_U_V_not_a_Z_.insert(Tuple(t));
+                            if (insertResult.second) {
+                                for(AuxMap* auxMap : predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_]){
+                                    auxMap -> insert2(*insertResult.first);
+                                }
+                                auto& trueSet = trueNegativeAggrVars[0][{U,U}];
+                                auto& undefSet = undefNegativeAggrVars[0][{U,U}];
+                                aggrKey[0]*=-1;
                                 if(undefSet.find(aggrKey)==undefSet.end()){
                                     if(trueSet.find(aggrKey)==trueSet.end()){
                                         undefSet.insert(aggrKey);
-                                        possibleSum[0][{}]+=aggrKey[0];
+                                        possibleNegativeSum[0][{U,U}]+=aggrKey[0];
+                                        int sum = possibleNegativeSum[0][{U,U}];
+                                        if(sum > maxPossibleNegativeSum[0][{U,U}])
+                                            maxPossibleNegativeSum[0][{U,U}]=sum;
                                     }
                                 }
-                            }else{
-                                if(nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(Tuple(t))==NULL){
-                                    const auto& insertResult = nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.insert(Tuple(t));
-                                    if (insertResult.second) {
-                                        for(AuxMap* auxMap : predicateToNegativeUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_]){
-                                            auxMap -> insert2(*insertResult.first);
+                                if(var > 0 && !undef1 && !undef2){
+                                    auto& reas = negativeAggrReason[0][{U,U}];
+                                    int starter_level=reas.level(var);
+                                    {
+                                        const auto & it = tupleToVar.find(*tuple1);
+                                        if(it != tupleToVar.end()) {
+                                            std::cout<<"Erasing from reason";tuple1->print();std::cout<<std::endl;
+                                            reas.erase(-1*it->second,starter_level);
                                         }
-                                        auto& trueSet = trueNegativeAggrVars[0][{}];
-                                        auto& undefSet = undefNegativeAggrVars[0][{}];
-                                        aggrKey[0]*=-1;
-                                        if(undefSet.find(aggrKey)==undefSet.end()){
-                                            if(trueSet.find(aggrKey)==trueSet.end()){
-                                                undefSet.insert(aggrKey);
-                                                possibleNegativeSum[0][{}]+=aggrKey[0];
-                                                int sum = possibleNegativeSum[0][{}];
-                                                if(sum > maxPossibleNegativeSum[0][{}])
-                                                    maxPossibleNegativeSum[0][{}]=sum;
-                                            }
-                                        }
-                                        if(var > 0 && !undef0 && !undef2){
-                                            auto& reas = negativeAggrReason[0][{}];
-                                            int starter_level=reas.level(var);
-                                            {
-                                                const auto & it = tupleToVar.find(*tuple0);
-                                                if(it != tupleToVar.end()) {
-                                                    std::cout<<"Erasing from reason";tuple0->print();std::cout<<std::endl;
-                                                    reas.erase(it->second,starter_level);
-                                                }
-                                            }
-                                            {
-                                                const auto & it = tupleToVar.find(*tuple2);
-                                                if(it != tupleToVar.end()) {
-                                                    std::cout<<"Erasing from reason";tuple2->print();std::cout<<std::endl;
-                                                    reas.erase(-1*it->second,starter_level);
-                                                }
-                                            }
+                                    }
+                                    {
+                                        const auto & it = tupleToVar.find(*tuple2);
+                                        if(it != tupleToVar.end()) {
+                                            std::cout<<"Erasing from reason";tuple2->print();std::cout<<std::endl;
+                                            reas.erase(-1*it->second,starter_level);
                                         }
                                     }
                                 }
@@ -1167,41 +1009,44 @@ inline void Executor::onLiteralUndef(int var) {
         for(auto& pair : negativeAggrReason[0]){
             pair.second.erase(var,pair.second.level(var));
         }
+        for(auto& pair : positiveAggrReason[0]){
+            pair.second.erase(var,pair.second.level(var));
+        }
     }
-    if(tuple.getPredicateName() == &_b && tuple.size()==1){
-        int X = tuple[0];
+    if(tuple.getPredicateName() == &_c && tuple.size()==2){
+        int U = tuple[0];
+        int V = tuple[1];
         if(var < 0){
-            const std::vector<const Tuple*>& tuples = p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_.getValues({X});
+            const std::vector<const Tuple*>& tuples = p_b_V_Z_U_not_c_U_V_not_a_Z_3_4_.getValues({U,V});
             while(!tuples.empty()){
                 Tuple t(*tuples.back());
-                wc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(*tuples.back());
-                if(uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(Tuple(t)) == NULL){
-                    const auto& insertResult = uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.insert(Tuple(t));
+                wb_V_Z_U_not_c_U_V_not_a_Z_.erase(*tuples.back());
+                if(ub_V_Z_U_not_c_U_V_not_a_Z_.find(Tuple(t)) == NULL){
+                    const auto& insertResult = ub_V_Z_U_not_c_U_V_not_a_Z_.insert(Tuple(t));
                     if (insertResult.second) {
-                        for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_]){
+                        for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_]){
                             auxMap -> insert2(*insertResult.first);
                         }
                         {
-                            std::vector<int> aggrKey({t[1],t[2],t[0],t[3]});
-                            auto& trueSet = trueAggrVars[0][{}];
-                            auto& undefSet = undefAggrVars[0][{}];
-                            if(p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_.getValues({aggrKey}).size()<=0){
+                            std::vector<int> aggrKey({t[0]});
+                            auto& trueSet = trueAggrVars[0][{U,U}];
+                            auto& undefSet = undefAggrVars[0][{U,U}];
+                            if(p_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,t[0]}).size()<=0){
                                 if(trueSet.find(aggrKey)!=trueSet.end()){
                                     trueSet.erase(aggrKey);
-                                    actualSum[0][{}]-=aggrKey[0];
-                                    auto& reas = positiveAggrReason[0][{}];
+                                    actualSum[0][{U,U}]-=aggrKey[0];
+                                    auto& reas = positiveAggrReason[0][{U,U}];
                                     int starter_level=reas.level(var);
-                                    reas.erase(var,starter_level);
                                     {
-                                        const auto & it = tupleToVar.find(Tuple({t[0],t[1]},&_c));
+                                        const auto & it = tupleToVar.find(Tuple({t[0],t[1],t[2]},&_b));
                                         if(it != tupleToVar.end()) {
                                             reas.erase(it->second,starter_level);
                                         }
                                     }
                                     {
-                                        const auto & it = tupleToVar.find(Tuple({t[2],t[3]},&_c));
+                                        const auto & it = tupleToVar.find(Tuple({t[5]},&_a));
                                         if(it != tupleToVar.end()) {
-                                            reas.erase(it->second,starter_level);
+                                            reas.erase(-1*it->second,starter_level);
                                         }
                                     }
                                 }
@@ -1209,7 +1054,7 @@ inline void Executor::onLiteralUndef(int var) {
                             if(undefSet.find(aggrKey)==undefSet.end()){
                                 if(trueSet.find(aggrKey)==trueSet.end()){
                                     undefSet.insert(aggrKey);
-                                    possibleSum[0][{}]+=aggrKey[0];
+                                    possibleSum[0][{U,U}]+=aggrKey[0];
                                 }
                             }
                         }
@@ -1217,43 +1062,43 @@ inline void Executor::onLiteralUndef(int var) {
                 }
             }
         }else{
-            const std::vector<const Tuple*>& tuplesNegative = np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_.getValues({X});
+            const std::vector<const Tuple*>& tuplesNegative = np_b_V_Z_U_not_c_U_V_not_a_Z_3_4_.getValues({U,V});
             for(const Tuple* tt : tuplesNegative){
                 Tuple t(*tt);
-                Tuple literal({t[0],t[1]},&_c);
-                if(uc.find(literal)!=NULL || wc.find(literal)!=NULL){
-                    Tuple literal({t[2],t[3]},&_c);
-                    if(uc.find(literal)!=NULL || wc.find(literal)!=NULL){
-                        nwc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(t);
-                        if(nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(t)==NULL){
-                            const auto& insertResult = nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.insert(Tuple(t));
+                Tuple literal({t[0],t[1],t[2]},&_b);
+                if(ub.find(literal)!=NULL || wb.find(literal)!=NULL){
+                    Tuple literal({t[5]},&_a);
+                    if(wa.find(literal)==NULL){
+                        nwb_V_Z_U_not_c_U_V_not_a_Z_.erase(t);
+                        if(nub_V_Z_U_not_c_U_V_not_a_Z_.find(t)==NULL){
+                            const auto& insertResult = nub_V_Z_U_not_c_U_V_not_a_Z_.insert(Tuple(t));
                             if (insertResult.second) {
-                                for(AuxMap* auxMap : predicateToNegativeUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_]){
+                                for(AuxMap* auxMap : predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_]){
                                     auxMap -> insert2(*insertResult.first);
                                 }
                             }
                         }
                         {
-                            std::vector<int> aggrKey({t[1],t[2],t[0],t[3]});
-                            auto& trueSet = trueNegativeAggrVars[0][{}];
-                            auto& undefSet = undefNegativeAggrVars[0][{}];
+                            std::vector<int> aggrKey({t[0]});
+                            auto& trueSet = trueNegativeAggrVars[0][{U,U}];
+                            auto& undefSet = undefNegativeAggrVars[0][{U,U}];
                             std::cout<<"aggr key:"<<aggrKey[0]<<std::endl;
-                            if(np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_.getValues({aggrKey}).size()<=0){
+                            if(np_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,t[0]}).size()<=0){
                                 aggrKey[0]*=-1;
                                 std::cout<<"aggr key:"<<aggrKey[0]<<std::endl;
                                 if(trueSet.find(aggrKey)!=trueSet.end()){
                                     trueSet.erase(aggrKey);
-                                    actualNegativeSum[0][{}]-=aggrKey[0];
-                                    auto& reas = positiveAggrReason[0][{}];
+                                    actualNegativeSum[0][{U,U}]-=aggrKey[0];
+                                    auto& reas = positiveAggrReason[0][{U,U}];
                                     reas.erase(var,reas.level(var));
                                 }
                                 if(undefSet.find(aggrKey)==undefSet.end()){
                                     if(trueSet.find(aggrKey)==trueSet.end()){
                                         undefSet.insert(aggrKey);
-                                        possibleNegativeSum[0][{}]+=aggrKey[0];
-                                        int sum = possibleNegativeSum[0][{}];
-                                        if(sum > maxPossibleNegativeSum[0][{}])
-                                            maxPossibleNegativeSum[0][{}]=sum;
+                                        possibleNegativeSum[0][{U,U}]+=aggrKey[0];
+                                        int sum = possibleNegativeSum[0][{U,U}];
+                                        if(sum > maxPossibleNegativeSum[0][{U,U}])
+                                            maxPossibleNegativeSum[0][{U,U}]=sum;
                                     }
                                 }
                             }
@@ -1262,8 +1107,8 @@ inline void Executor::onLiteralUndef(int var) {
                 }
             }
         }
-        const std::vector<const Tuple*>& tuples0 = pc_.getValues({});
-        const std::vector<const Tuple*>& tuplesU0 = uc_.getValues({});
+        const std::vector<const Tuple*>& tuples0 = pb_0_2_.getValues({V,U});
+        const std::vector<const Tuple*>& tuplesU0 = ub_0_2_.getValues({V,U});
         for(int i_0=0;i_0<tuples0.size()+tuplesU0.size();i_0++){
             const Tuple* tuple0;
             bool undef0=false;
@@ -1272,102 +1117,95 @@ inline void Executor::onLiteralUndef(int var) {
                 tuple0=tuplesU0[i_0-tuples0.size()];
                 undef0=true;
             }
-            int W = tuple0->at(0);
-            int U = tuple0->at(1);
-            const std::vector<const Tuple*>& tuples1 = pc_1_.getValues({X});
-            const std::vector<const Tuple*>& tuplesU1 = uc_1_.getValues({X});
-            for(int i_1=0;i_1<tuples1.size()+tuplesU1.size();i_1++){
-                const Tuple* tuple1;
-                bool undef1=false;
-                if(i_1<tuples1.size())                    tuple1=tuples1[i_1];
-                else{
-                    tuple1=tuplesU1[i_1-tuples1.size()];
-                    undef1=true;
-                }
-                int V = tuple1->at(0);
-                if(W >= V){
-                    if(V > X){
-                        Tuple t({W,U,V,X,X},&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_);
-                        {
-                            std::vector<int> aggrKey({t[1],t[2],t[0],t[3]});
-                            if(aggrKey[0]>0){
-                                if(uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(Tuple(t))==NULL){
-                                    if(wc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(t))
-                                        wc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.erase(t);
-                                    const auto& insertResult = uc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.insert(Tuple(t));
-                                    if (insertResult.second) {
-                                        for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_]){
-                                            auxMap -> insert2(*insertResult.first);
-                                        }
+            int Z = tuple0->at(1);
+            const Tuple negativeTuple2({Z},&_a,true);
+            const Tuple* tuple2 = ua.find(Tuple({Z},&_a));
+            bool undef2 = false;
+            if(tuple2!=NULL){
+                undef2 = true;
+            }else if(wa.find(negativeTuple2)==NULL){
+                tuple2=&negativeTuple2;
+            }
+            if(tuple2!=NULL){
+                Tuple t({V,Z,U,U,V,Z},&_b_V_Z_U_not_c_U_V_not_a_Z_);
+                {
+                    std::vector<int> aggrKey({t[0]});
+                    if(aggrKey[0]>0){
+                        if(ub_V_Z_U_not_c_U_V_not_a_Z_.find(Tuple(t))==NULL){
+                            if(wb_V_Z_U_not_c_U_V_not_a_Z_.find(t))
+                                wb_V_Z_U_not_c_U_V_not_a_Z_.erase(t);
+                            const auto& insertResult = ub_V_Z_U_not_c_U_V_not_a_Z_.insert(Tuple(t));
+                            if (insertResult.second) {
+                                for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_]){
+                                    auxMap -> insert2(*insertResult.first);
+                                }
+                            }
+                        }
+                        auto& trueSet = trueAggrVars[0][{U,U}];
+                        auto& undefSet = undefAggrVars[0][{U,U}];
+                        if(p_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,t[0]}).size()<=0){
+                            if(trueSet.find(aggrKey)!=trueSet.end()){
+                                trueSet.erase(aggrKey);
+                                actualSum[0][{U,U}]-=aggrKey[0];
+                                auto& reas = positiveAggrReason[0][{U,U}];
+                                int starter_level=reas.level(var);
+                                reas.erase(var,reas.level(var));
+                                {
+                                    const auto & it = tupleToVar.find(*tuple0);
+                                    if(it != tupleToVar.end()) {
+                                        std::cout<<"Erasing from reason";tuple0->print();std::cout<<std::endl;
+                                        reas.erase(it->second,starter_level);
                                     }
                                 }
-                                auto& trueSet = trueAggrVars[0][{}];
-                                auto& undefSet = undefAggrVars[0][{}];
-                                if(p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_.getValues({aggrKey}).size()<=0){
-                                    if(trueSet.find(aggrKey)!=trueSet.end()){
-                                        trueSet.erase(aggrKey);
-                                        actualSum[0][{}]-=aggrKey[0];
-                                        auto& reas = positiveAggrReason[0][{}];
-                                        int starter_level=reas.level(var);
-                                        reas.erase(var,reas.level(var));
-                                        {
-                                            const auto & it = tupleToVar.find(*tuple0);
-                                            if(it != tupleToVar.end()) {
-                                                std::cout<<"Erasing from reason";tuple0->print();std::cout<<std::endl;
-                                                reas.erase(it->second,starter_level);
-                                            }
-                                        }
-                                        {
-                                            const auto & it = tupleToVar.find(*tuple1);
-                                            if(it != tupleToVar.end()) {
-                                                std::cout<<"Erasing from reason";tuple1->print();std::cout<<std::endl;
-                                                reas.erase(it->second,starter_level);
-                                            }
-                                        }
+                                {
+                                    const auto & it = tupleToVar.find(*tuple2);
+                                    if(it != tupleToVar.end()) {
+                                        std::cout<<"Erasing from reason";tuple2->print();std::cout<<std::endl;
+                                        reas.erase(-1*it->second,starter_level);
                                     }
                                 }
+                            }
+                        }
+                        if(undefSet.find(aggrKey)==undefSet.end()){
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                undefSet.insert(aggrKey);
+                                possibleSum[0][{U,U}]+=aggrKey[0];
+                            }
+                        }
+                    }else{
+                        if(nub_V_Z_U_not_c_U_V_not_a_Z_.find(Tuple(t))==NULL){
+                            const auto& insertResult = nub_V_Z_U_not_c_U_V_not_a_Z_.insert(Tuple(t));
+                            if (insertResult.second) {
+                                for(AuxMap* auxMap : predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_]){
+                                    auxMap -> insert2(*insertResult.first);
+                                }
+                                auto& trueSet = trueNegativeAggrVars[0][{U,U}];
+                                auto& undefSet = undefNegativeAggrVars[0][{U,U}];
+                                aggrKey[0]*=-1;
                                 if(undefSet.find(aggrKey)==undefSet.end()){
                                     if(trueSet.find(aggrKey)==trueSet.end()){
                                         undefSet.insert(aggrKey);
-                                        possibleSum[0][{}]+=aggrKey[0];
+                                        possibleNegativeSum[0][{U,U}]+=aggrKey[0];
+                                        int sum = possibleNegativeSum[0][{U,U}];
+                                        if(sum > maxPossibleNegativeSum[0][{U,U}])
+                                            maxPossibleNegativeSum[0][{U,U}]=sum;
                                     }
                                 }
-                            }else{
-                                if(nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.find(Tuple(t))==NULL){
-                                    const auto& insertResult = nuc_W_U_c_V_X_not_b_X_WGTEV_VGTX_.insert(Tuple(t));
-                                    if (insertResult.second) {
-                                        for(AuxMap* auxMap : predicateToNegativeUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_]){
-                                            auxMap -> insert2(*insertResult.first);
+                                if(var > 0 && !undef0 && !undef2){
+                                    auto& reas = negativeAggrReason[0][{U,U}];
+                                    int starter_level=reas.level(var);
+                                    {
+                                        const auto & it = tupleToVar.find(*tuple0);
+                                        if(it != tupleToVar.end()) {
+                                            std::cout<<"Erasing from reason";tuple0->print();std::cout<<std::endl;
+                                            reas.erase(it->second,starter_level);
                                         }
-                                        auto& trueSet = trueNegativeAggrVars[0][{}];
-                                        auto& undefSet = undefNegativeAggrVars[0][{}];
-                                        aggrKey[0]*=-1;
-                                        if(undefSet.find(aggrKey)==undefSet.end()){
-                                            if(trueSet.find(aggrKey)==trueSet.end()){
-                                                undefSet.insert(aggrKey);
-                                                possibleNegativeSum[0][{}]+=aggrKey[0];
-                                                int sum = possibleNegativeSum[0][{}];
-                                                if(sum > maxPossibleNegativeSum[0][{}])
-                                                    maxPossibleNegativeSum[0][{}]=sum;
-                                            }
-                                        }
-                                        if(var > 0 && !undef0 && !undef1){
-                                            auto& reas = negativeAggrReason[0][{}];
-                                            int starter_level=reas.level(var);
-                                            {
-                                                const auto & it = tupleToVar.find(*tuple0);
-                                                if(it != tupleToVar.end()) {
-                                                    std::cout<<"Erasing from reason";tuple0->print();std::cout<<std::endl;
-                                                    reas.erase(it->second,starter_level);
-                                                }
-                                            }
-                                            {
-                                                const auto & it = tupleToVar.find(*tuple1);
-                                                if(it != tupleToVar.end()) {
-                                                    std::cout<<"Erasing from reason";tuple1->print();std::cout<<std::endl;
-                                                    reas.erase(it->second,starter_level);
-                                                }
-                                            }
+                                    }
+                                    {
+                                        const auto & it = tupleToVar.find(*tuple2);
+                                        if(it != tupleToVar.end()) {
+                                            std::cout<<"Erasing from reason";tuple2->print();std::cout<<std::endl;
+                                            reas.erase(-1*it->second,starter_level);
                                         }
                                     }
                                 }
@@ -1379,6 +1217,228 @@ inline void Executor::onLiteralUndef(int var) {
         }
         for(auto& pair : negativeAggrReason[0]){
             pair.second.erase(var,pair.second.level(var));
+        }
+        for(auto& pair : positiveAggrReason[0]){
+            pair.second.erase(var,pair.second.level(var));
+        }
+    }
+    if(tuple.getPredicateName() == &_a && tuple.size()==1){
+        int Z = tuple[0];
+        if(var < 0){
+            const std::vector<const Tuple*>& tuples = p_b_V_Z_U_not_c_U_V_not_a_Z_5_.getValues({Z});
+            while(!tuples.empty()){
+                Tuple t(*tuples.back());
+                wb_V_Z_U_not_c_U_V_not_a_Z_.erase(*tuples.back());
+                if(ub_V_Z_U_not_c_U_V_not_a_Z_.find(Tuple(t)) == NULL){
+                    const auto& insertResult = ub_V_Z_U_not_c_U_V_not_a_Z_.insert(Tuple(t));
+                    if (insertResult.second) {
+                        for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_]){
+                            auxMap -> insert2(*insertResult.first);
+                        }
+                        {
+                            int U = t[2];
+                            std::vector<int> aggrKey({t[0]});
+                            auto& trueSet = trueAggrVars[0][{U,U}];
+                            auto& undefSet = undefAggrVars[0][{U,U}];
+                            if(p_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,t[0]}).size()<=0){
+                                if(trueSet.find(aggrKey)!=trueSet.end()){
+                                    trueSet.erase(aggrKey);
+                                    actualSum[0][{U,U}]-=aggrKey[0];
+                                    auto& reas = positiveAggrReason[0][{U,U}];
+                                    int starter_level=reas.level(var);
+                                    {
+                                        const auto & it = tupleToVar.find(Tuple({t[0],t[1],t[2]},&_b));
+                                        if(it != tupleToVar.end()) {
+                                            reas.erase(it->second,starter_level);
+                                        }
+                                    }
+                                    {
+                                        const auto & it = tupleToVar.find(Tuple({t[3],t[4]},&_c));
+                                        if(it != tupleToVar.end()) {
+                                            reas.erase(-1*it->second,starter_level);
+                                        }
+                                    }
+                                }
+                            }
+                            if(undefSet.find(aggrKey)==undefSet.end()){
+                                if(trueSet.find(aggrKey)==trueSet.end()){
+                                    undefSet.insert(aggrKey);
+                                    possibleSum[0][{U,U}]+=aggrKey[0];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }else{
+            const std::vector<const Tuple*>& tuplesNegative = np_b_V_Z_U_not_c_U_V_not_a_Z_5_.getValues({Z});
+            for(const Tuple* tt : tuplesNegative){
+                Tuple t(*tt);
+                Tuple literal({t[0],t[1],t[2]},&_b);
+                if(ub.find(literal)!=NULL || wb.find(literal)!=NULL){
+                    Tuple literal({t[3],t[4]},&_c);
+                    if(wc.find(literal)==NULL){
+                        nwb_V_Z_U_not_c_U_V_not_a_Z_.erase(t);
+                        if(nub_V_Z_U_not_c_U_V_not_a_Z_.find(t)==NULL){
+                            const auto& insertResult = nub_V_Z_U_not_c_U_V_not_a_Z_.insert(Tuple(t));
+                            if (insertResult.second) {
+                                for(AuxMap* auxMap : predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_]){
+                                    auxMap -> insert2(*insertResult.first);
+                                }
+                            }
+                        }
+                        {
+                            int U = t[2];
+                            std::vector<int> aggrKey({t[0]});
+                            auto& trueSet = trueNegativeAggrVars[0][{U,U}];
+                            auto& undefSet = undefNegativeAggrVars[0][{U,U}];
+                            std::cout<<"aggr key:"<<aggrKey[0]<<std::endl;
+                            if(np_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,t[0]}).size()<=0){
+                                aggrKey[0]*=-1;
+                                std::cout<<"aggr key:"<<aggrKey[0]<<std::endl;
+                                if(trueSet.find(aggrKey)!=trueSet.end()){
+                                    trueSet.erase(aggrKey);
+                                    actualNegativeSum[0][{U,U}]-=aggrKey[0];
+                                    auto& reas = positiveAggrReason[0][{U,U}];
+                                    reas.erase(var,reas.level(var));
+                                }
+                                if(undefSet.find(aggrKey)==undefSet.end()){
+                                    if(trueSet.find(aggrKey)==trueSet.end()){
+                                        undefSet.insert(aggrKey);
+                                        possibleNegativeSum[0][{U,U}]+=aggrKey[0];
+                                        int sum = possibleNegativeSum[0][{U,U}];
+                                        if(sum > maxPossibleNegativeSum[0][{U,U}])
+                                            maxPossibleNegativeSum[0][{U,U}]=sum;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        const std::vector<const Tuple*>& tuples0 = pb_1_.getValues({Z});
+        const std::vector<const Tuple*>& tuplesU0 = ub_1_.getValues({Z});
+        for(int i_0=0;i_0<tuples0.size()+tuplesU0.size();i_0++){
+            const Tuple* tuple0;
+            bool undef0=false;
+            if(i_0<tuples0.size())                tuple0=tuples0[i_0];
+            else{
+                tuple0=tuplesU0[i_0-tuples0.size()];
+                undef0=true;
+            }
+            int V = tuple0->at(0);
+            int U = tuple0->at(2);
+            const Tuple negativeTuple1({U,V},&_c,true);
+            const Tuple* tuple1 = uc.find(Tuple({U,V},&_c));
+            bool undef1 = false;
+            if(tuple1!=NULL){
+                undef1 = true;
+            }else if(wc.find(negativeTuple1)==NULL){
+                tuple1=&negativeTuple1;
+            }
+            if(tuple1!=NULL){
+                Tuple t({V,Z,U,U,V,Z},&_b_V_Z_U_not_c_U_V_not_a_Z_);
+                {
+                    std::vector<int> aggrKey({t[0]});
+                    if(aggrKey[0]>0){
+                        if(ub_V_Z_U_not_c_U_V_not_a_Z_.find(Tuple(t))==NULL){
+                            if(wb_V_Z_U_not_c_U_V_not_a_Z_.find(t))
+                                wb_V_Z_U_not_c_U_V_not_a_Z_.erase(t);
+                            const auto& insertResult = ub_V_Z_U_not_c_U_V_not_a_Z_.insert(Tuple(t));
+                            if (insertResult.second) {
+                                for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_]){
+                                    auxMap -> insert2(*insertResult.first);
+                                }
+                            }
+                        }
+                        auto& trueSet = trueAggrVars[0][{U,U}];
+                        auto& undefSet = undefAggrVars[0][{U,U}];
+                        if(p_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,t[0]}).size()<=0){
+                            if(trueSet.find(aggrKey)!=trueSet.end()){
+                                trueSet.erase(aggrKey);
+                                actualSum[0][{U,U}]-=aggrKey[0];
+                                auto& reas = positiveAggrReason[0][{U,U}];
+                                int starter_level=reas.level(var);
+                                reas.erase(var,reas.level(var));
+                                {
+                                    const auto & it = tupleToVar.find(*tuple0);
+                                    if(it != tupleToVar.end()) {
+                                        std::cout<<"Erasing from reason";tuple0->print();std::cout<<std::endl;
+                                        reas.erase(it->second,starter_level);
+                                    }
+                                }
+                                {
+                                    const auto & it = tupleToVar.find(*tuple1);
+                                    if(it != tupleToVar.end()) {
+                                        std::cout<<"Erasing from reason";tuple1->print();std::cout<<std::endl;
+                                        reas.erase(-1*it->second,starter_level);
+                                    }
+                                }
+                            }
+                        }
+                        if(undefSet.find(aggrKey)==undefSet.end()){
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                undefSet.insert(aggrKey);
+                                possibleSum[0][{U,U}]+=aggrKey[0];
+                            }
+                        }
+                    }else{
+                        if(nub_V_Z_U_not_c_U_V_not_a_Z_.find(Tuple(t))==NULL){
+                            const auto& insertResult = nub_V_Z_U_not_c_U_V_not_a_Z_.insert(Tuple(t));
+                            if (insertResult.second) {
+                                for(AuxMap* auxMap : predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_]){
+                                    auxMap -> insert2(*insertResult.first);
+                                }
+                                auto& trueSet = trueNegativeAggrVars[0][{U,U}];
+                                auto& undefSet = undefNegativeAggrVars[0][{U,U}];
+                                aggrKey[0]*=-1;
+                                if(undefSet.find(aggrKey)==undefSet.end()){
+                                    if(trueSet.find(aggrKey)==trueSet.end()){
+                                        undefSet.insert(aggrKey);
+                                        possibleNegativeSum[0][{U,U}]+=aggrKey[0];
+                                        int sum = possibleNegativeSum[0][{U,U}];
+                                        if(sum > maxPossibleNegativeSum[0][{U,U}])
+                                            maxPossibleNegativeSum[0][{U,U}]=sum;
+                                    }
+                                }
+                                if(var > 0 && !undef0 && !undef1){
+                                    auto& reas = negativeAggrReason[0][{U,U}];
+                                    int starter_level=reas.level(var);
+                                    {
+                                        const auto & it = tupleToVar.find(*tuple0);
+                                        if(it != tupleToVar.end()) {
+                                            std::cout<<"Erasing from reason";tuple0->print();std::cout<<std::endl;
+                                            reas.erase(it->second,starter_level);
+                                        }
+                                    }
+                                    {
+                                        const auto & it = tupleToVar.find(*tuple1);
+                                        if(it != tupleToVar.end()) {
+                                            std::cout<<"Erasing from reason";tuple1->print();std::cout<<std::endl;
+                                            reas.erase(-1*it->second,starter_level);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for(auto& pair : negativeAggrReason[0]){
+            pair.second.erase(var,pair.second.level(var));
+        }
+        for(auto& pair : positiveAggrReason[0]){
+            pair.second.erase(var,pair.second.level(var));
+        }
+    }
+    if(tuple.getPredicateName() == &_a){
+        int U = tuple.at(0);
+        {
+            if(!sharedVariables_0_ToAggregate_1.count({U,U})){
+                sharedVariables_0_ToAggregate_1.insert({U,U});
+            }
         }
     }
     std::cout<<"Negative Reason size: "<<negativeAggrReason[0][{}].size()<<std::endl;
@@ -1398,65 +1458,118 @@ void Executor::clear() {
 }
 void Executor::init() {
     createFunctionsMap();
-    predicateWSetMap[&_c]=&wc;
-    predicateFSetMap[&_c]=&fc;
-    predicateUSetMap[&_c]=&uc;
-    stringToUniqueStringPointer["c"] = &_c;
-    predicateWSetMap[&_c]=&wc;
-    predicateFSetMap[&_c]=&fc;
-    predicateUSetMap[&_c]=&uc;
-    stringToUniqueStringPointer["c"] = &_c;
+    predicateWSetMap[&_a]=&wa;
+    predicateUSetMap[&_a]=&ua;
+    stringToUniqueStringPointer["a"] = &_a;
     predicateWSetMap[&_b]=&wb;
     predicateFSetMap[&_b]=&fb;
     predicateUSetMap[&_b]=&ub;
     stringToUniqueStringPointer["b"] = &_b;
-    predicateToAuxiliaryMaps[&_b].push_back(&pb_);
-    predicateToAuxiliaryMaps[&_b].push_back(&pb_0_);
-    predicateToAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_);
-    predicateToAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_);
-    predicateToAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_1_2_0_3_);
-    predicateToAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_);
-    predicateToAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_);
-    predicateToAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_1_2_0_3_);
-    predicateToAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_);
-    predicateToAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&p_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_1_2_0_3_);
+    predicateWSetMap[&_c]=&wc;
+    predicateFSetMap[&_c]=&fc;
+    predicateUSetMap[&_c]=&uc;
+    stringToUniqueStringPointer["c"] = &_c;
+    predicateWSetMap[&_a]=&wa;
+    predicateFSetMap[&_a]=&fa;
+    predicateUSetMap[&_a]=&ua;
+    stringToUniqueStringPointer["a"] = &_a;
+    predicateToAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&p_b_V_Z_U_not_c_U_V_not_a_Z_);
+    predicateToAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&p_b_V_Z_U_not_c_U_V_not_a_Z_0_);
+    predicateToAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&p_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_);
+    predicateToAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&p_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_2_3_);
+    predicateToAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&p_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_2_3_0_);
+    predicateToAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&p_b_V_Z_U_not_c_U_V_not_a_Z_2_3_);
+    predicateToAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&p_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_);
+    predicateToAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&p_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_1_2_);
+    predicateToAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&p_b_V_Z_U_not_c_U_V_not_a_Z_2_3_3_4_);
+    predicateToAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&p_b_V_Z_U_not_c_U_V_not_a_Z_2_3_5_);
+    predicateToAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&p_b_V_Z_U_not_c_U_V_not_a_Z_3_4_);
+    predicateToAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&p_b_V_Z_U_not_c_U_V_not_a_Z_3_4_2_3_);
+    predicateToAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&p_b_V_Z_U_not_c_U_V_not_a_Z_3_4_2_3_0_);
+    predicateToAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&p_b_V_Z_U_not_c_U_V_not_a_Z_5_);
+    predicateToAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&p_b_V_Z_U_not_c_U_V_not_a_Z_5_2_3_);
+    predicateToAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&p_b_V_Z_U_not_c_U_V_not_a_Z_5_2_3_0_);
+    predicateToAuxiliaryMaps[&_a].push_back(&pa_);
+    predicateToAuxiliaryMaps[&_a].push_back(&pa_0_);
     predicateToAuxiliaryMaps[&_c].push_back(&pc_);
+    predicateToAuxiliaryMaps[&_c].push_back(&pc_0_);
     predicateToAuxiliaryMaps[&_c].push_back(&pc_0_1_);
-    predicateToAuxiliaryMaps[&_c].push_back(&pc_1_);
-    predicateToNegativeAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_);
-    predicateToNegativeAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_);
-    predicateToNegativeAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_1_2_0_3_);
-    predicateToNegativeAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_);
-    predicateToNegativeAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_);
-    predicateToNegativeAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_1_2_0_3_);
-    predicateToNegativeAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_);
-    predicateToNegativeAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&np_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_1_2_0_3_);
-    predicateToUndefAuxiliaryMaps[&_b].push_back(&ub_);
-    predicateToUndefAuxiliaryMaps[&_b].push_back(&ub_0_);
-    predicateToUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_);
-    predicateToUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_);
-    predicateToUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_1_2_0_3_);
-    predicateToUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_);
-    predicateToUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_);
-    predicateToUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_1_2_0_3_);
-    predicateToUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_);
-    predicateToUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_1_2_0_3_);
+    predicateToAuxiliaryMaps[&_b].push_back(&pb_);
+    predicateToAuxiliaryMaps[&_b].push_back(&pb_0_1_2_);
+    predicateToAuxiliaryMaps[&_b].push_back(&pb_0_2_);
+    predicateToAuxiliaryMaps[&_b].push_back(&pb_1_);
+    predicateToAuxiliaryMaps[&_b].push_back(&pb_1_2_);
+    predicateToAuxiliaryMaps[&_b].push_back(&pb_2_);
+    predicateToNegativeAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&np_b_V_Z_U_not_c_U_V_not_a_Z_);
+    predicateToNegativeAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&np_b_V_Z_U_not_c_U_V_not_a_Z_0_);
+    predicateToNegativeAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&np_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_);
+    predicateToNegativeAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&np_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_2_3_);
+    predicateToNegativeAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&np_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_2_3_0_);
+    predicateToNegativeAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&np_b_V_Z_U_not_c_U_V_not_a_Z_2_3_);
+    predicateToNegativeAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&np_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_);
+    predicateToNegativeAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&np_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_1_2_);
+    predicateToNegativeAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&np_b_V_Z_U_not_c_U_V_not_a_Z_2_3_3_4_);
+    predicateToNegativeAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&np_b_V_Z_U_not_c_U_V_not_a_Z_2_3_5_);
+    predicateToNegativeAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&np_b_V_Z_U_not_c_U_V_not_a_Z_3_4_);
+    predicateToNegativeAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&np_b_V_Z_U_not_c_U_V_not_a_Z_3_4_2_3_);
+    predicateToNegativeAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&np_b_V_Z_U_not_c_U_V_not_a_Z_3_4_2_3_0_);
+    predicateToNegativeAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&np_b_V_Z_U_not_c_U_V_not_a_Z_5_);
+    predicateToNegativeAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&np_b_V_Z_U_not_c_U_V_not_a_Z_5_2_3_);
+    predicateToNegativeAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&np_b_V_Z_U_not_c_U_V_not_a_Z_5_2_3_0_);
+    predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&u_b_V_Z_U_not_c_U_V_not_a_Z_);
+    predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&u_b_V_Z_U_not_c_U_V_not_a_Z_0_);
+    predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&u_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_);
+    predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&u_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_2_3_);
+    predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&u_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_2_3_0_);
+    predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&u_b_V_Z_U_not_c_U_V_not_a_Z_2_3_);
+    predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&u_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_);
+    predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&u_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_1_2_);
+    predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&u_b_V_Z_U_not_c_U_V_not_a_Z_2_3_3_4_);
+    predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&u_b_V_Z_U_not_c_U_V_not_a_Z_2_3_5_);
+    predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&u_b_V_Z_U_not_c_U_V_not_a_Z_3_4_);
+    predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&u_b_V_Z_U_not_c_U_V_not_a_Z_3_4_2_3_);
+    predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&u_b_V_Z_U_not_c_U_V_not_a_Z_3_4_2_3_0_);
+    predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&u_b_V_Z_U_not_c_U_V_not_a_Z_5_);
+    predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&u_b_V_Z_U_not_c_U_V_not_a_Z_5_2_3_);
+    predicateToUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&u_b_V_Z_U_not_c_U_V_not_a_Z_5_2_3_0_);
+    predicateToUndefAuxiliaryMaps[&_a].push_back(&ua_);
+    predicateToUndefAuxiliaryMaps[&_a].push_back(&ua_0_);
     predicateToUndefAuxiliaryMaps[&_c].push_back(&uc_);
+    predicateToUndefAuxiliaryMaps[&_c].push_back(&uc_0_);
     predicateToUndefAuxiliaryMaps[&_c].push_back(&uc_0_1_);
-    predicateToUndefAuxiliaryMaps[&_c].push_back(&uc_1_);
-    predicateToNegativeUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_);
-    predicateToNegativeUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_);
-    predicateToNegativeUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_0_1_1_2_0_3_);
-    predicateToNegativeUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_);
-    predicateToNegativeUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_);
-    predicateToNegativeUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_2_3_1_2_0_3_);
-    predicateToNegativeUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_);
-    predicateToNegativeUndefAuxiliaryMaps[&_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_].push_back(&nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_4_1_2_0_3_);
-    predicateToFalseAuxiliaryMaps[&_b].push_back(&fb_);
-    predicateToFalseAuxiliaryMaps[&_b].push_back(&fb_0_);
+    predicateToUndefAuxiliaryMaps[&_b].push_back(&ub_);
+    predicateToUndefAuxiliaryMaps[&_b].push_back(&ub_0_1_2_);
+    predicateToUndefAuxiliaryMaps[&_b].push_back(&ub_0_2_);
+    predicateToUndefAuxiliaryMaps[&_b].push_back(&ub_1_);
+    predicateToUndefAuxiliaryMaps[&_b].push_back(&ub_1_2_);
+    predicateToUndefAuxiliaryMaps[&_b].push_back(&ub_2_);
+    predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&nu_b_V_Z_U_not_c_U_V_not_a_Z_);
+    predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&nu_b_V_Z_U_not_c_U_V_not_a_Z_0_);
+    predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&nu_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_);
+    predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&nu_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_2_3_);
+    predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&nu_b_V_Z_U_not_c_U_V_not_a_Z_0_1_2_2_3_0_);
+    predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&nu_b_V_Z_U_not_c_U_V_not_a_Z_2_3_);
+    predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&nu_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_);
+    predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&nu_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_1_2_);
+    predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&nu_b_V_Z_U_not_c_U_V_not_a_Z_2_3_3_4_);
+    predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&nu_b_V_Z_U_not_c_U_V_not_a_Z_2_3_5_);
+    predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&nu_b_V_Z_U_not_c_U_V_not_a_Z_3_4_);
+    predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&nu_b_V_Z_U_not_c_U_V_not_a_Z_3_4_2_3_);
+    predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&nu_b_V_Z_U_not_c_U_V_not_a_Z_3_4_2_3_0_);
+    predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&nu_b_V_Z_U_not_c_U_V_not_a_Z_5_);
+    predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&nu_b_V_Z_U_not_c_U_V_not_a_Z_5_2_3_);
+    predicateToNegativeUndefAuxiliaryMaps[&_b_V_Z_U_not_c_U_V_not_a_Z_].push_back(&nu_b_V_Z_U_not_c_U_V_not_a_Z_5_2_3_0_);
+    predicateToFalseAuxiliaryMaps[&_a].push_back(&fa_);
+    predicateToFalseAuxiliaryMaps[&_a].push_back(&fa_0_);
     predicateToFalseAuxiliaryMaps[&_c].push_back(&fc_);
+    predicateToFalseAuxiliaryMaps[&_c].push_back(&fc_0_);
     predicateToFalseAuxiliaryMaps[&_c].push_back(&fc_0_1_);
-    predicateToFalseAuxiliaryMaps[&_c].push_back(&fc_1_);
+    predicateToFalseAuxiliaryMaps[&_b].push_back(&fb_);
+    predicateToFalseAuxiliaryMaps[&_b].push_back(&fb_0_1_2_);
+    predicateToFalseAuxiliaryMaps[&_b].push_back(&fb_0_2_);
+    predicateToFalseAuxiliaryMaps[&_b].push_back(&fb_1_);
+    predicateToFalseAuxiliaryMaps[&_b].push_back(&fb_1_2_);
+    predicateToFalseAuxiliaryMaps[&_b].push_back(&fb_2_);
 }
 void Executor::executeProgramOnFacts(const std::vector<aspc::Literal*> & facts) {}
 void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
@@ -1469,11 +1582,31 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
         {
             const Tuple * tupleU = NULL;
             bool tupleUNegated = false;
-            {
-                if(actualSum[0][{}]+actualNegativeSum[0][{}]>=4+maxPossibleNegativeSum[0][{}]){
-                    tupleU=NULL;
+            const std::vector<const Tuple* >* tuples;
+            tuples = &pa_.getValues({});
+            const std::vector<const Tuple* >* tuplesU = &EMPTY_TUPLES;
+            if(tupleU == NULL){
+                tuplesU = &ua_.getValues({});
+            }
+            for( unsigned i=0; i< tuples->size() + tuplesU->size();i++){
+                const Tuple * tuple0 = NULL;
+                if(i<tuples->size()){
+                    tuple0 = tuples->at(i);
+                    if(tuplesU != &EMPTY_TUPLES) {
+                        tupleU = NULL;
+                    }
+                }
+                else {
+                    tuple0 = tuplesU->at(i-tuples->size());
+                    tupleU = tuple0;
+                    tupleUNegated = false;
+                }
+                int U = (*tuple0)[0];
+                int undefPlusTrue = actualSum[0][{U,U}]+possibleSum[0][{U,U}]+actualNegativeSum[0][{U,U}]+possibleNegativeSum[0][{U,U}];
+                //U
+                if(!(undefPlusTrue>=U+maxPossibleNegativeSum[0][{U,U}])){
                     if(tupleU == NULL){
-                        std::cout<<"propagation started from Aggr"<<std::endl;
+                        std::cout<<"propagation started from literal"<<std::endl;
                         std::cout<<"conflict detected on propagator Ending with aggr"<<std::endl;
                         propagatedLiteralsAndReasons.insert({-1, std::vector<int>()});
                     }else{
@@ -1483,131 +1616,118 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                             propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
                         }
                     }
-                }//close aggr true if
-                bool propagated=false;
-                {
-                    tupleU=NULL;
-                    if(tupleU == NULL){
-                        for(auto undefKey = undefAggrVars[0][{}].rbegin();undefKey!=undefAggrVars[0][{}].rend();undefKey++){
-                            if(actualSum[0][{}]+actualNegativeSum[0][{}]+undefKey->at(0) < 4+maxPossibleNegativeSum[0][{}])
-                                break;
-                            else{
-                                const std::vector<const Tuple*>* undefinedTuples = &u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_.getValues({undefKey->at(0),undefKey->at(1),undefKey->at(2),undefKey->at(3)});
-                                for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
-                                    bool found=false;
-                                    if(!found){
-                                        const Tuple* aggrTupleU0 = uc.find(Tuple({undefinedTuples->at(iUndef)->at(0), undefinedTuples->at(iUndef)->at(1)},&_c));
-                                        const Tuple* tuple1 = wc.find(Tuple({undefinedTuples->at(iUndef)->at(2), undefinedTuples->at(iUndef)->at(3)},&_c));
-                                        const Tuple* tupleU1 = uc.find(Tuple({undefinedTuples->at(iUndef)->at(2), undefinedTuples->at(iUndef)->at(3)},&_c));
-                                        const Tuple* tuple2 = wb.find(Tuple({undefinedTuples->at(iUndef)->at(4)},&_b));
-                                        const Tuple* tupleU2 = ub.find(Tuple({undefinedTuples->at(iUndef)->at(4)},&_b));
-                                        const Tuple negativeTuple2 ({undefinedTuples->at(iUndef)->at(4)},&_b,true);
-                                        if(aggrTupleU0!=NULL && (tuple1!=NULL || tupleU1==aggrTupleU0)&& (tuple2==NULL && tupleU2==NULL)){
-                                            const auto & it = tupleToVar.find(*aggrTupleU0);
-                                            if(it != tupleToVar.end()) {
+                }
+                if(tupleU == NULL){
+                    {
+                        int undefPlusTrue = actualSum[0][{U,U}]+possibleSum[0][{U,U}];
+                        bool propagated=false;
+                        {
+                            for(auto undefKey = undefAggrVars[0][{U,U}].rbegin();undefKey!=undefAggrVars[0][{U,U}].rend();undefKey++){
+                                if(undefPlusTrue-undefKey->at(0)>=U+maxPossibleNegativeSum[0][{U,U}])
+                                    break;
+                                else{
+                                    const std::vector<const Tuple*>* undefinedTuples = &u_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,undefKey->at(0)});
+                                    if(undefinedTuples->size()==1){
+
+                                        const Tuple* tuple0 = ub.find(Tuple({undefinedTuples->at(0)->at(0),undefinedTuples->at(0)->at(1),undefinedTuples->at(0)->at(2)},&_b));
+                                        if(tuple0!=NULL){
+                                            const auto & it0 = tupleToVar.find(*tuple0);
+                                            if(it0 != tupleToVar.end()) {
                                                 propagated=true;
-                                                int sign = 1;
-                                                std::cout<<"Propagation positive 0 ";aggrTupleU0->print();std::cout<<std::endl;
-                                                found=true;
-                                                propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
-                                            }
-                                        }
-                                    }
-                                    if(!found){
-                                        const Tuple* aggrTupleU1 = uc.find(Tuple({undefinedTuples->at(iUndef)->at(2), undefinedTuples->at(iUndef)->at(3)},&_c));
-                                        const Tuple* tuple0 = wc.find(Tuple({undefinedTuples->at(iUndef)->at(0), undefinedTuples->at(iUndef)->at(1)},&_c));
-                                        const Tuple* tupleU0 = uc.find(Tuple({undefinedTuples->at(iUndef)->at(0), undefinedTuples->at(iUndef)->at(1)},&_c));
-                                        const Tuple* tuple2 = wb.find(Tuple({undefinedTuples->at(iUndef)->at(4)},&_b));
-                                        const Tuple* tupleU2 = ub.find(Tuple({undefinedTuples->at(iUndef)->at(4)},&_b));
-                                        const Tuple negativeTuple2 ({undefinedTuples->at(iUndef)->at(4)},&_b,true);
-                                        if(aggrTupleU1!=NULL && (tuple0!=NULL || tupleU0==aggrTupleU1)&& (tuple2==NULL && tupleU2==NULL)){
-                                            const auto & it = tupleToVar.find(*aggrTupleU1);
-                                            if(it != tupleToVar.end()) {
-                                                propagated=true;
-                                                int sign = 1;
-                                                std::cout<<"Propagation positive 0 ";aggrTupleU1->print();std::cout<<std::endl;
-                                                found=true;
-                                                propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
-                                            }
-                                        }
-                                    }
-                                    if(!found){
-                                        const Tuple* aggrTupleU2 = ub.find(Tuple({undefinedTuples->at(iUndef)->at(4)},&_b));
-                                        const Tuple* tuple0 = wc.find(Tuple({undefinedTuples->at(iUndef)->at(0), undefinedTuples->at(iUndef)->at(1)},&_c));
-                                        const Tuple* tupleU0 = uc.find(Tuple({undefinedTuples->at(iUndef)->at(0), undefinedTuples->at(iUndef)->at(1)},&_c));
-                                        const Tuple* tuple1 = wc.find(Tuple({undefinedTuples->at(iUndef)->at(2), undefinedTuples->at(iUndef)->at(3)},&_c));
-                                        const Tuple* tupleU1 = uc.find(Tuple({undefinedTuples->at(iUndef)->at(2), undefinedTuples->at(iUndef)->at(3)},&_c));
-                                        if(aggrTupleU2!=NULL && tuple0!=NULL && tuple1!=NULL ){
-                                            const auto & it = tupleToVar.find(*aggrTupleU2);
-                                            if(it != tupleToVar.end()) {
-                                                propagated=true;
+                                                std::cout<<"Propagation Negated";tuple0->print();std::cout<<std::endl;
                                                 int sign = -1;
-                                                std::cout<<"Propagation positive 0 ";aggrTupleU2->print();std::cout<<std::endl;
-                                                found=true;
-                                                propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
+                                                propagatedLiteralsAndReasons.insert({it0->second*sign, std::vector<int>()}).first->second;
+                                            }
+                                        }
+                                        const Tuple* tuple1 = uc.find(Tuple({undefinedTuples->at(0)->at(3),undefinedTuples->at(0)->at(4)},&_c));
+                                        if(tuple1!=NULL){
+                                            const auto & it1 = tupleToVar.find(*tuple1);
+                                            if(it1 != tupleToVar.end()) {
+                                                propagated=true;
+                                                std::cout<<"Propagation Negated";tuple1->print();std::cout<<std::endl;
+                                                int sign = 1;
+                                                propagatedLiteralsAndReasons.insert({it1->second*sign, std::vector<int>()}).first->second;
+                                            }
+                                        }
+                                        const Tuple* tuple2 = ua.find(Tuple({undefinedTuples->at(0)->at(5)},&_a));
+                                        if(tuple2!=NULL){
+                                            const auto & it2 = tupleToVar.find(*tuple2);
+                                            if(it2 != tupleToVar.end()) {
+                                                propagated=true;
+                                                std::cout<<"Propagation Negated";tuple2->print();std::cout<<std::endl;
+                                                int sign = 1;
+                                                propagatedLiteralsAndReasons.insert({it2->second*sign, std::vector<int>()}).first->second;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            for(auto undefKey = undefNegativeAggrVars[0][{U,U}].rbegin();undefKey!=undefNegativeAggrVars[0][{U,U}].rend();undefKey++){
+                                int V = undefKey->at(0);
+                                V*=-1;
+                                if(undefPlusTrue-undefKey->at(0)>=U+maxPossibleNegativeSum[0][{U,U}])
+                                    break;
+                                else{
+                                    const std::vector<const Tuple*>* undefinedTuples = &nu_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,V});
+                                    if(undefinedTuples->size()==1){
+
+                                        bool negativeJoinPropagated=false;
+                                        const Tuple* tupleU0 = ub.find(Tuple({undefinedTuples->at(0)->at(0),undefinedTuples->at(0)->at(1),undefinedTuples->at(0)->at(2)},&_b));
+                                        if(tupleU0!=NULL && !negativeJoinPropagated){
+                                            Tuple tuple1 ({undefinedTuples->at(0)->at(3),undefinedTuples->at(0)->at(4)},&_c);
+                                            if(wc.find(tuple1)==NULL && uc.find(tuple1)==NULL){
+                                                Tuple tuple2 ({undefinedTuples->at(0)->at(5)},&_a);
+                                                if(wa.find(tuple2)==NULL && ua.find(tuple2)==NULL){
+                                                    const auto & it0 = tupleToVar.find(*tupleU0);
+                                                    if(it0 != tupleToVar.end()) {
+                                                        negativeJoinPropagated=true;
+                                                        std::cout<<"Propagation Negated Negative join";tupleU0->print();std::cout<<std::endl;
+                                                        int sign = 1;
+                                                        propagatedLiteralsAndReasons.insert({it0->second*sign, std::vector<int>()}).first->second;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        const Tuple* tupleU1 = uc.find(Tuple({undefinedTuples->at(0)->at(3),undefinedTuples->at(0)->at(4)},&_c));
+                                        if(tupleU1!=NULL && !negativeJoinPropagated){
+                                            Tuple tuple0 ({undefinedTuples->at(0)->at(0),undefinedTuples->at(0)->at(1),undefinedTuples->at(0)->at(2)},&_b);
+                                            if(wb.find(tuple0)!=NULL){
+                                                Tuple tuple2 ({undefinedTuples->at(0)->at(5)},&_a);
+                                                if(wa.find(tuple2)==NULL && ua.find(tuple2)==NULL){
+                                                    const auto & it1 = tupleToVar.find(*tupleU1);
+                                                    if(it1 != tupleToVar.end()) {
+                                                        negativeJoinPropagated=true;
+                                                        std::cout<<"Propagation Negated Negative join";tupleU1->print();std::cout<<std::endl;
+                                                        int sign = -1;
+                                                        propagatedLiteralsAndReasons.insert({it1->second*sign, std::vector<int>()}).first->second;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        const Tuple* tupleU2 = ua.find(Tuple({undefinedTuples->at(0)->at(5)},&_a));
+                                        if(tupleU2!=NULL && !negativeJoinPropagated){
+                                            Tuple tuple0 ({undefinedTuples->at(0)->at(0),undefinedTuples->at(0)->at(1),undefinedTuples->at(0)->at(2)},&_b);
+                                            if(wb.find(tuple0)!=NULL){
+                                                Tuple tuple1 ({undefinedTuples->at(0)->at(3),undefinedTuples->at(0)->at(4)},&_c);
+                                                if(wc.find(tuple1)==NULL && uc.find(tuple1)==NULL){
+                                                    const auto & it2 = tupleToVar.find(*tupleU2);
+                                                    if(it2 != tupleToVar.end()) {
+                                                        negativeJoinPropagated=true;
+                                                        std::cout<<"Propagation Negated Negative join";tupleU2->print();std::cout<<std::endl;
+                                                        int sign = -1;
+                                                        propagatedLiteralsAndReasons.insert({it2->second*sign, std::vector<int>()}).first->second;
+                                                    }
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
                         }
-                        for(auto undefKey = undefNegativeAggrVars[0][{}].rbegin();undefKey!=undefNegativeAggrVars[0][{}].rend();undefKey++){
-                            int U = undefKey->at(0);
-                            U*=-1;
-                            int V = undefKey->at(1);
-                            int W = undefKey->at(2);
-                            int X = undefKey->at(3);
-                            if(actualSum[0][{}]+actualNegativeSum[0][{}]+undefKey->at(0) < 4+maxPossibleNegativeSum[0][{}])
-                                break;
-                            else{
-                                const std::vector<const Tuple*>* undefinedTuples = &nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_.getValues({U,V,W,X});
-                                for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
-                                    {
-                                        Tuple tuple0 ({undefinedTuples->at(iUndef)->at(0), undefinedTuples->at(iUndef)->at(1)},&_c);
-                                        if(uc.find(tuple0)!=NULL){
-                                            const auto & it = tupleToVar.find(tuple0);
-                                            if(it != tupleToVar.end()) {
-                                                propagated=true;
-                                                int sign = -1;
-                                                std::cout<<"Propagation positive negative join0 ";tuple0.print();std::cout<<std::endl;
-                                                propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
-                                            }
-                                        }
-                                    }
-                                    {
-                                        Tuple tuple1 ({undefinedTuples->at(iUndef)->at(2), undefinedTuples->at(iUndef)->at(3)},&_c);
-                                        if(uc.find(tuple1)!=NULL){
-                                            const auto & it = tupleToVar.find(tuple1);
-                                            if(it != tupleToVar.end()) {
-                                                propagated=true;
-                                                int sign = -1;
-                                                std::cout<<"Propagation positive negative join0 ";tuple1.print();std::cout<<std::endl;
-                                                propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
-                                            }
-                                        }
-                                    }
-                                    {
-                                        Tuple tuple2 ({undefinedTuples->at(iUndef)->at(4)},&_b);
-                                        if(ub.find(tuple2)!=NULL){
-                                            const auto & it = tupleToVar.find(tuple2);
-                                            if(it != tupleToVar.end()) {
-                                                propagated=true;
-                                                int sign = 1;
-                                                std::cout<<"Propagation positive negative join0 ";tuple2.print();std::cout<<std::endl;
-                                                propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>()}).first->second;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                        if(!propagated){
                         }
                     }
-                }//close can prop if
-                if(!propagated){
-                    tupleU=NULL;
-                    if(tupleU == NULL){
-                    }
-                }//close prop multi join
+                }
             }
         }//close local scope
     }//close decision level == -1
@@ -1615,21 +1735,24 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
         unsigned factVar = facts[i] > 0 ? facts[i] : -facts[i];
         Tuple starter = atomsTable[factVar];
         starter.setNegated(facts[i]<0);
-        {
-            bool tupleUNegated = false;
-            const Tuple * tupleU = NULL;
-            if(starter.getPredicateName()== &_c || starter.getPredicateName()== &_c || starter.getPredicateName()== &_b){
+        if(starter.getPredicateName() == &_a) { 
+            const Tuple * tuple0 = &starter;
+            if(facts[i] > 0){
                 {
-                    if(actualSum[0][{}]+actualNegativeSum[0][{}]>=4+maxPossibleNegativeSum[0][{}]){
-                        tupleU=NULL;
+                    const Tuple * tupleU = NULL;
+                    bool tupleUNegated = false;
+                    int U = (*tuple0)[0];
+                    int undefPlusTrue = actualSum[0][{U,U}]+possibleSum[0][{U,U}]+actualNegativeSum[0][{U,U}]+possibleNegativeSum[0][{U,U}];
+                    //U
+                    if(!(undefPlusTrue>=U+maxPossibleNegativeSum[0][{U,U}])){
                         std::vector<int> local_reason;
-                        local_reason.insert(local_reason.end(),positiveAggrReason[0][{}].begin(), positiveAggrReason[0][{}].end());
+                        local_reason.insert(local_reason.end(),negativeAggrReason[0][{U,U}].begin(), negativeAggrReason[0][{U,U}].end());
                         const auto & it = tupleToVar.find(Tuple(starter));
                         if(it!=tupleToVar.end()){
                             local_reason.push_back(it->second * (starter.isNegated() ? -1:1));
                         }
                         if(tupleU == NULL){
-                            std::cout<<"propagation started from Aggr"<<std::endl;
+                            std::cout<<"propagation started from literal"<<std::endl;
                             std::cout<<"conflict detected on propagator Ending with aggr"<<std::endl;
                             propagatedLiteralsAndReasons.insert({-1, std::vector<int>(local_reason)});
                         }else{
@@ -1639,179 +1762,292 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                 propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(local_reason)}).first->second;
                             }
                         }
-                    }//close aggr true if
-                    bool propagated=false;
-                    {
-                        tupleU=NULL;
-                        if(tupleU == NULL){
+                    }
+                    if(tupleU == NULL){
+                        {
+                            int undefPlusTrue = actualSum[0][{U,U}]+possibleSum[0][{U,U}];
+                            bool propagated=false;
+                            {
+                                std::vector<int> local_reason;
+                                local_reason.insert(local_reason.end(),negativeAggrReason[0][{U,U}].begin(), negativeAggrReason[0][{U,U}].end());
+                                if(tuple0!=tupleU){
+                                    const auto & it = tupleToVar.find(Tuple(*tuple0));
+                                    if(it!=tupleToVar.end()){
+                                        local_reason.push_back(it->second);
+                                    }
+                                }
+                                for(auto undefKey = undefAggrVars[0][{U,U}].rbegin();undefKey!=undefAggrVars[0][{U,U}].rend();undefKey++){
+                                    if(undefPlusTrue-undefKey->at(0)>=U+maxPossibleNegativeSum[0][{U,U}])
+                                        break;
+                                    else{
+                                        const std::vector<const Tuple*>* undefinedTuples = &u_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,undefKey->at(0)});
+                                        if(undefinedTuples->size()==1){
+
+                                            const Tuple* tuple0 = ub.find(Tuple({undefinedTuples->at(0)->at(0),undefinedTuples->at(0)->at(1),undefinedTuples->at(0)->at(2)},&_b));
+                                            if(tuple0!=NULL){
+                                                const auto & it0 = tupleToVar.find(*tuple0);
+                                                if(it0 != tupleToVar.end()) {
+                                                    propagated=true;
+                                                    std::cout<<"Propagation Negated";tuple0->print();std::cout<<std::endl;
+                                                    int sign = -1;
+                                                    propagatedLiteralsAndReasons.insert({it0->second*sign, std::vector<int>(local_reason)}).first->second;
+                                                }
+                                            }
+                                            const Tuple* tuple1 = uc.find(Tuple({undefinedTuples->at(0)->at(3),undefinedTuples->at(0)->at(4)},&_c));
+                                            if(tuple1!=NULL){
+                                                const auto & it1 = tupleToVar.find(*tuple1);
+                                                if(it1 != tupleToVar.end()) {
+                                                    propagated=true;
+                                                    std::cout<<"Propagation Negated";tuple1->print();std::cout<<std::endl;
+                                                    int sign = 1;
+                                                    propagatedLiteralsAndReasons.insert({it1->second*sign, std::vector<int>(local_reason)}).first->second;
+                                                }
+                                            }
+                                            const Tuple* tuple2 = ua.find(Tuple({undefinedTuples->at(0)->at(5)},&_a));
+                                            if(tuple2!=NULL){
+                                                const auto & it2 = tupleToVar.find(*tuple2);
+                                                if(it2 != tupleToVar.end()) {
+                                                    propagated=true;
+                                                    std::cout<<"Propagation Negated";tuple2->print();std::cout<<std::endl;
+                                                    int sign = 1;
+                                                    propagatedLiteralsAndReasons.insert({it2->second*sign, std::vector<int>(local_reason)}).first->second;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                for(auto undefKey = undefNegativeAggrVars[0][{U,U}].rbegin();undefKey!=undefNegativeAggrVars[0][{U,U}].rend();undefKey++){
+                                    int V = undefKey->at(0);
+                                    V*=-1;
+                                    if(undefPlusTrue-undefKey->at(0)>=U+maxPossibleNegativeSum[0][{U,U}])
+                                        break;
+                                    else{
+                                        const std::vector<const Tuple*>* undefinedTuples = &nu_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,V});
+                                        if(undefinedTuples->size()==1){
+
+                                            bool negativeJoinPropagated=false;
+                                            const Tuple* tupleU0 = ub.find(Tuple({undefinedTuples->at(0)->at(0),undefinedTuples->at(0)->at(1),undefinedTuples->at(0)->at(2)},&_b));
+                                            if(tupleU0!=NULL && !negativeJoinPropagated){
+                                                Tuple tuple1 ({undefinedTuples->at(0)->at(3),undefinedTuples->at(0)->at(4)},&_c);
+                                                if(wc.find(tuple1)==NULL && uc.find(tuple1)==NULL){
+                                                    Tuple tuple2 ({undefinedTuples->at(0)->at(5)},&_a);
+                                                    if(wa.find(tuple2)==NULL && ua.find(tuple2)==NULL){
+                                                        const auto & it0 = tupleToVar.find(*tupleU0);
+                                                        if(it0 != tupleToVar.end()) {
+                                                            negativeJoinPropagated=true;
+                                                            std::cout<<"Propagation Negated Negative join";tupleU0->print();std::cout<<std::endl;
+                                                            int sign = 1;
+                                                            propagatedLiteralsAndReasons.insert({it0->second*sign, std::vector<int>(local_reason)}).first->second;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            const Tuple* tupleU1 = uc.find(Tuple({undefinedTuples->at(0)->at(3),undefinedTuples->at(0)->at(4)},&_c));
+                                            if(tupleU1!=NULL && !negativeJoinPropagated){
+                                                Tuple tuple0 ({undefinedTuples->at(0)->at(0),undefinedTuples->at(0)->at(1),undefinedTuples->at(0)->at(2)},&_b);
+                                                if(wb.find(tuple0)!=NULL){
+                                                    Tuple tuple2 ({undefinedTuples->at(0)->at(5)},&_a);
+                                                    if(wa.find(tuple2)==NULL && ua.find(tuple2)==NULL){
+                                                        const auto & it1 = tupleToVar.find(*tupleU1);
+                                                        if(it1 != tupleToVar.end()) {
+                                                            negativeJoinPropagated=true;
+                                                            std::cout<<"Propagation Negated Negative join";tupleU1->print();std::cout<<std::endl;
+                                                            int sign = -1;
+                                                            propagatedLiteralsAndReasons.insert({it1->second*sign, std::vector<int>(local_reason)}).first->second;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            const Tuple* tupleU2 = ua.find(Tuple({undefinedTuples->at(0)->at(5)},&_a));
+                                            if(tupleU2!=NULL && !negativeJoinPropagated){
+                                                Tuple tuple0 ({undefinedTuples->at(0)->at(0),undefinedTuples->at(0)->at(1),undefinedTuples->at(0)->at(2)},&_b);
+                                                if(wb.find(tuple0)!=NULL){
+                                                    Tuple tuple1 ({undefinedTuples->at(0)->at(3),undefinedTuples->at(0)->at(4)},&_c);
+                                                    if(wc.find(tuple1)==NULL && uc.find(tuple1)==NULL){
+                                                        const auto & it2 = tupleToVar.find(*tupleU2);
+                                                        if(it2 != tupleToVar.end()) {
+                                                            negativeJoinPropagated=true;
+                                                            std::cout<<"Propagation Negated Negative join";tupleU2->print();std::cout<<std::endl;
+                                                            int sign = -1;
+                                                            propagatedLiteralsAndReasons.insert({it2->second*sign, std::vector<int>(local_reason)}).first->second;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if(!propagated){
+                            }
+                        }
+                    }
+                }//close loop nested join
+            }//close loop nested join
+        }//close predicate joins
+        {
+            bool tupleUNegated = false;
+            const Tuple * tupleU = NULL;
+            if(starter.getPredicateName()== &_b || starter.getPredicateName()== &_c || starter.getPredicateName()== &_a){
+                for(const auto & sharedVarTuple0_1 : sharedVariables_0_ToAggregate_1){
+                    int U = sharedVarTuple0_1[0];
+                    tupleU=NULL;
+                    const Tuple * tuple1 = (wa.find(Tuple({U},&_a)));
+                    if(!tuple1 && !tupleU ){
+                        tuple1 = tupleU = (ua.find(Tuple({U},&_a)));
+                        tupleUNegated = false;
+                    }
+                    if(tuple1){
+                        int undefPlusTrue = actualSum[0][{U,U}]+possibleSum[0][{U,U}]+actualNegativeSum[0][{U,U}]+possibleNegativeSum[0][{U,U}];
+                        //U
+                        if(!(undefPlusTrue>=U+maxPossibleNegativeSum[0][{U,U}])){
                             std::vector<int> local_reason;
-                            local_reason.insert(local_reason.end(),positiveAggrReason[0][{}].begin(), positiveAggrReason[0][{}].end());
+                            local_reason.insert(local_reason.end(),negativeAggrReason[0][{U,U}].begin(), negativeAggrReason[0][{U,U}].end());
                             const auto & it = tupleToVar.find(Tuple(starter));
                             if(it!=tupleToVar.end()){
                                 local_reason.push_back(it->second * (starter.isNegated() ? -1:1));
                             }
-                            for(auto undefKey = undefAggrVars[0][{}].rbegin();undefKey!=undefAggrVars[0][{}].rend();undefKey++){
-                                if(actualSum[0][{}]+actualNegativeSum[0][{}]+undefKey->at(0) < 4+maxPossibleNegativeSum[0][{}])
-                                    break;
-                                else{
-                                    const std::vector<const Tuple*>* undefinedTuples = &u_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_.getValues({undefKey->at(0),undefKey->at(1),undefKey->at(2),undefKey->at(3)});
-                                    for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
-                                        bool found=false;
-                                        if(!found){
-                                            const Tuple* aggrTupleU0 = uc.find(Tuple({undefinedTuples->at(iUndef)->at(0), undefinedTuples->at(iUndef)->at(1)},&_c));
-                                            const Tuple* tuple1 = wc.find(Tuple({undefinedTuples->at(iUndef)->at(2), undefinedTuples->at(iUndef)->at(3)},&_c));
-                                            const Tuple* tupleU1 = uc.find(Tuple({undefinedTuples->at(iUndef)->at(2), undefinedTuples->at(iUndef)->at(3)},&_c));
-                                            const Tuple* tuple2 = wb.find(Tuple({undefinedTuples->at(iUndef)->at(4)},&_b));
-                                            const Tuple* tupleU2 = ub.find(Tuple({undefinedTuples->at(iUndef)->at(4)},&_b));
-                                            const Tuple negativeTuple2 ({undefinedTuples->at(iUndef)->at(4)},&_b,true);
-                                            if(aggrTupleU0!=NULL && (tuple1!=NULL || tupleU1==aggrTupleU0)&& (tuple2==NULL && tupleU2==NULL)){
-                                                std::vector<int> propagationReason(local_reason);
+                            if(tuple1!=tupleU){
+                                const auto & it = tupleToVar.find(Tuple(*tuple1));
+                                if(it!=tupleToVar.end()){
+                                    local_reason.push_back(it->second);
+                                }
+                            }
+                            if(tupleU == NULL){
+                                std::cout<<"propagation started from Aggr"<<std::endl;
+                                std::cout<<"conflict detected on propagator Ending with aggr"<<std::endl;
+                                propagatedLiteralsAndReasons.insert({-1, std::vector<int>(local_reason)});
+                            }else{
+                                const auto & it = tupleToVar.find(*tupleU);
+                                if(it != tupleToVar.end()) {
+                                    int sign = tupleUNegated ? -1 : 1;
+                                    propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(local_reason)}).first->second;
+                                }
+                            }
+                        }else{
+                            bool propagated=false;
+                            {
+                                if(tupleU == NULL){
+                                    std::vector<int> local_reason;
+                                    local_reason.insert(local_reason.end(),negativeAggrReason[0][{U,U}].begin(), negativeAggrReason[0][{U,U}].end());
+                                    const auto & it = tupleToVar.find(Tuple(starter));
+                                    if(it!=tupleToVar.end()){
+                                        local_reason.push_back(it->second * (starter.isNegated() ? -1:1));
+                                    }
+                                    if(tuple1!=tupleU){
+                                        const auto & it = tupleToVar.find(Tuple(*tuple1));
+                                        if(it!=tupleToVar.end()){
+                                            local_reason.push_back(it->second);
+                                        }
+                                    }
+                                    for(auto undefKey = undefAggrVars[0][{U,U}].rbegin();undefKey!=undefAggrVars[0][{U,U}].rend();undefKey++){
+                                        if(undefPlusTrue-undefKey->at(0)>=U+maxPossibleNegativeSum[0][{U,U}])
+                                            break;
+                                        else{
+                                            const std::vector<const Tuple*>* undefinedTuples = &u_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,undefKey->at(0)});
+                                            if(undefinedTuples->size()==1){
+
+                                                const Tuple* tuple0 = ub.find(Tuple({undefinedTuples->at(0)->at(0),undefinedTuples->at(0)->at(1),undefinedTuples->at(0)->at(2)},&_b));
+                                                if(tuple0!=NULL){
+                                                    const auto & it0 = tupleToVar.find(*tuple0);
+                                                    if(it0 != tupleToVar.end()) {
+                                                        propagated=true;
+                                                        std::cout<<"Propagation Negated";tuple0->print();std::cout<<std::endl;
+                                                        int sign = -1;
+                                                        propagatedLiteralsAndReasons.insert({it0->second*sign, std::vector<int>(local_reason)}).first->second;
+                                                    }
+                                                }
+                                                const Tuple* tuple1 = uc.find(Tuple({undefinedTuples->at(0)->at(3),undefinedTuples->at(0)->at(4)},&_c));
                                                 if(tuple1!=NULL){
-                                                    const auto & it_tuple1 = tupleToVar.find(*tuple1);
-                                                    if(it_tuple1!=tupleToVar.end()){
-                                                        propagationReason.push_back(it_tuple1->second * 1);
-                                                    }//closing if
-                                                }//closing if
-                                                if(tupleU2 == NULL){
-                                                    const auto & it_negativeTuple2 = tupleToVar.find(negativeTuple2);
-                                                    if(it_negativeTuple2!=tupleToVar.end()){
-                                                        propagationReason.push_back(it_negativeTuple2->second * -1);
-                                                    }//closing if
-                                                }//closing if
-                                                const auto & it = tupleToVar.find(*aggrTupleU0);
-                                                if(it != tupleToVar.end()) {
-                                                    propagated=true;
-                                                    int sign = 1;
-                                                    std::cout<<"Propagation positive 0 ";aggrTupleU0->print();std::cout<<std::endl;
-                                                    found=true;
-                                                    propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(propagationReason)}).first->second;
+                                                    const auto & it1 = tupleToVar.find(*tuple1);
+                                                    if(it1 != tupleToVar.end()) {
+                                                        propagated=true;
+                                                        std::cout<<"Propagation Negated";tuple1->print();std::cout<<std::endl;
+                                                        int sign = 1;
+                                                        propagatedLiteralsAndReasons.insert({it1->second*sign, std::vector<int>(local_reason)}).first->second;
+                                                    }
+                                                }
+                                                const Tuple* tuple2 = ua.find(Tuple({undefinedTuples->at(0)->at(5)},&_a));
+                                                if(tuple2!=NULL){
+                                                    const auto & it2 = tupleToVar.find(*tuple2);
+                                                    if(it2 != tupleToVar.end()) {
+                                                        propagated=true;
+                                                        std::cout<<"Propagation Negated";tuple2->print();std::cout<<std::endl;
+                                                        int sign = 1;
+                                                        propagatedLiteralsAndReasons.insert({it2->second*sign, std::vector<int>(local_reason)}).first->second;
+                                                    }
                                                 }
                                             }
                                         }
-                                        if(!found){
-                                            const Tuple* aggrTupleU1 = uc.find(Tuple({undefinedTuples->at(iUndef)->at(2), undefinedTuples->at(iUndef)->at(3)},&_c));
-                                            const Tuple* tuple0 = wc.find(Tuple({undefinedTuples->at(iUndef)->at(0), undefinedTuples->at(iUndef)->at(1)},&_c));
-                                            const Tuple* tupleU0 = uc.find(Tuple({undefinedTuples->at(iUndef)->at(0), undefinedTuples->at(iUndef)->at(1)},&_c));
-                                            const Tuple* tuple2 = wb.find(Tuple({undefinedTuples->at(iUndef)->at(4)},&_b));
-                                            const Tuple* tupleU2 = ub.find(Tuple({undefinedTuples->at(iUndef)->at(4)},&_b));
-                                            const Tuple negativeTuple2 ({undefinedTuples->at(iUndef)->at(4)},&_b,true);
-                                            if(aggrTupleU1!=NULL && (tuple0!=NULL || tupleU0==aggrTupleU1)&& (tuple2==NULL && tupleU2==NULL)){
-                                                std::vector<int> propagationReason(local_reason);
-                                                if(tuple0!=NULL){
-                                                    const auto & it_tuple0 = tupleToVar.find(*tuple0);
-                                                    if(it_tuple0!=tupleToVar.end()){
-                                                        propagationReason.push_back(it_tuple0->second * 1);
-                                                    }//closing if
-                                                }//closing if
-                                                if(tupleU2 == NULL){
-                                                    const auto & it_negativeTuple2 = tupleToVar.find(negativeTuple2);
-                                                    if(it_negativeTuple2!=tupleToVar.end()){
-                                                        propagationReason.push_back(it_negativeTuple2->second * -1);
-                                                    }//closing if
-                                                }//closing if
-                                                const auto & it = tupleToVar.find(*aggrTupleU1);
-                                                if(it != tupleToVar.end()) {
-                                                    propagated=true;
-                                                    int sign = 1;
-                                                    std::cout<<"Propagation positive 0 ";aggrTupleU1->print();std::cout<<std::endl;
-                                                    found=true;
-                                                    propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(propagationReason)}).first->second;
+                                    }
+                                    for(auto undefKey = undefNegativeAggrVars[0][{U,U}].rbegin();undefKey!=undefNegativeAggrVars[0][{U,U}].rend();undefKey++){
+                                        int V = undefKey->at(0);
+                                        V*=-1;
+                                        if(undefPlusTrue-undefKey->at(0)>=U+maxPossibleNegativeSum[0][{U,U}])
+                                            break;
+                                        else{
+                                            const std::vector<const Tuple*>* undefinedTuples = &nu_b_V_Z_U_not_c_U_V_not_a_Z_2_3_0_.getValues({U,U,V});
+                                            if(undefinedTuples->size()==1){
+
+                                                bool negativeJoinPropagated=false;
+                                                const Tuple* tupleU0 = ub.find(Tuple({undefinedTuples->at(0)->at(0),undefinedTuples->at(0)->at(1),undefinedTuples->at(0)->at(2)},&_b));
+                                                if(tupleU0!=NULL && !negativeJoinPropagated){
+                                                    Tuple tuple1 ({undefinedTuples->at(0)->at(3),undefinedTuples->at(0)->at(4)},&_c);
+                                                    if(wc.find(tuple1)==NULL && uc.find(tuple1)==NULL){
+                                                        Tuple tuple2 ({undefinedTuples->at(0)->at(5)},&_a);
+                                                        if(wa.find(tuple2)==NULL && ua.find(tuple2)==NULL){
+                                                            const auto & it0 = tupleToVar.find(*tupleU0);
+                                                            if(it0 != tupleToVar.end()) {
+                                                                negativeJoinPropagated=true;
+                                                                std::cout<<"Propagation Negated Negative join";tupleU0->print();std::cout<<std::endl;
+                                                                int sign = 1;
+                                                                propagatedLiteralsAndReasons.insert({it0->second*sign, std::vector<int>(local_reason)}).first->second;
+                                                            }
+                                                        }
+                                                    }
                                                 }
-                                            }
-                                        }
-                                        if(!found){
-                                            const Tuple* aggrTupleU2 = ub.find(Tuple({undefinedTuples->at(iUndef)->at(4)},&_b));
-                                            const Tuple* tuple0 = wc.find(Tuple({undefinedTuples->at(iUndef)->at(0), undefinedTuples->at(iUndef)->at(1)},&_c));
-                                            const Tuple* tupleU0 = uc.find(Tuple({undefinedTuples->at(iUndef)->at(0), undefinedTuples->at(iUndef)->at(1)},&_c));
-                                            const Tuple* tuple1 = wc.find(Tuple({undefinedTuples->at(iUndef)->at(2), undefinedTuples->at(iUndef)->at(3)},&_c));
-                                            const Tuple* tupleU1 = uc.find(Tuple({undefinedTuples->at(iUndef)->at(2), undefinedTuples->at(iUndef)->at(3)},&_c));
-                                            if(aggrTupleU2!=NULL && tuple0!=NULL && tuple1!=NULL ){
-                                                std::vector<int> propagationReason(local_reason);
-                                                if(tuple0!=NULL){
-                                                    const auto & it_tuple0 = tupleToVar.find(*tuple0);
-                                                    if(it_tuple0!=tupleToVar.end()){
-                                                        propagationReason.push_back(it_tuple0->second * 1);
-                                                    }//closing if
-                                                }//closing if
-                                                if(tuple1!=NULL){
-                                                    const auto & it_tuple1 = tupleToVar.find(*tuple1);
-                                                    if(it_tuple1!=tupleToVar.end()){
-                                                        propagationReason.push_back(it_tuple1->second * 1);
-                                                    }//closing if
-                                                }//closing if
-                                                const auto & it = tupleToVar.find(*aggrTupleU2);
-                                                if(it != tupleToVar.end()) {
-                                                    propagated=true;
-                                                    int sign = -1;
-                                                    std::cout<<"Propagation positive 0 ";aggrTupleU2->print();std::cout<<std::endl;
-                                                    found=true;
-                                                    propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(propagationReason)}).first->second;
+                                                const Tuple* tupleU1 = uc.find(Tuple({undefinedTuples->at(0)->at(3),undefinedTuples->at(0)->at(4)},&_c));
+                                                if(tupleU1!=NULL && !negativeJoinPropagated){
+                                                    Tuple tuple0 ({undefinedTuples->at(0)->at(0),undefinedTuples->at(0)->at(1),undefinedTuples->at(0)->at(2)},&_b);
+                                                    if(wb.find(tuple0)!=NULL){
+                                                        Tuple tuple2 ({undefinedTuples->at(0)->at(5)},&_a);
+                                                        if(wa.find(tuple2)==NULL && ua.find(tuple2)==NULL){
+                                                            const auto & it1 = tupleToVar.find(*tupleU1);
+                                                            if(it1 != tupleToVar.end()) {
+                                                                negativeJoinPropagated=true;
+                                                                std::cout<<"Propagation Negated Negative join";tupleU1->print();std::cout<<std::endl;
+                                                                int sign = -1;
+                                                                propagatedLiteralsAndReasons.insert({it1->second*sign, std::vector<int>(local_reason)}).first->second;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                const Tuple* tupleU2 = ua.find(Tuple({undefinedTuples->at(0)->at(5)},&_a));
+                                                if(tupleU2!=NULL && !negativeJoinPropagated){
+                                                    Tuple tuple0 ({undefinedTuples->at(0)->at(0),undefinedTuples->at(0)->at(1),undefinedTuples->at(0)->at(2)},&_b);
+                                                    if(wb.find(tuple0)!=NULL){
+                                                        Tuple tuple1 ({undefinedTuples->at(0)->at(3),undefinedTuples->at(0)->at(4)},&_c);
+                                                        if(wc.find(tuple1)==NULL && uc.find(tuple1)==NULL){
+                                                            const auto & it2 = tupleToVar.find(*tupleU2);
+                                                            if(it2 != tupleToVar.end()) {
+                                                                negativeJoinPropagated=true;
+                                                                std::cout<<"Propagation Negated Negative join";tupleU2->print();std::cout<<std::endl;
+                                                                int sign = -1;
+                                                                propagatedLiteralsAndReasons.insert({it2->second*sign, std::vector<int>(local_reason)}).first->second;
+                                                            }
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
                             }
-                            for(auto undefKey = undefNegativeAggrVars[0][{}].rbegin();undefKey!=undefNegativeAggrVars[0][{}].rend();undefKey++){
-                                int U = undefKey->at(0);
-                                U*=-1;
-                                int V = undefKey->at(1);
-                                int W = undefKey->at(2);
-                                int X = undefKey->at(3);
-                                if(actualSum[0][{}]+actualNegativeSum[0][{}]+undefKey->at(0) < 4+maxPossibleNegativeSum[0][{}])
-                                    break;
-                                else{
-                                    const std::vector<const Tuple*>* undefinedTuples = &nu_c_W_U_c_V_X_not_b_X_WGTEV_VGTX_1_2_0_3_.getValues({U,V,W,X});
-                                    for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
-                                        {
-                                            Tuple tuple0 ({undefinedTuples->at(iUndef)->at(0), undefinedTuples->at(iUndef)->at(1)},&_c);
-                                            if(uc.find(tuple0)!=NULL){
-                                                std::vector<int> propagationReason(local_reason);
-                                                const auto & it = tupleToVar.find(tuple0);
-                                                if(it != tupleToVar.end()) {
-                                                    propagated=true;
-                                                    int sign = -1;
-                                                    std::cout<<"Propagation positive negative join0 ";tuple0.print();std::cout<<std::endl;
-                                                    propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(propagationReason)}).first->second;
-                                                }
-                                            }
-                                        }
-                                        {
-                                            Tuple tuple1 ({undefinedTuples->at(iUndef)->at(2), undefinedTuples->at(iUndef)->at(3)},&_c);
-                                            if(uc.find(tuple1)!=NULL){
-                                                std::vector<int> propagationReason(local_reason);
-                                                const auto & it = tupleToVar.find(tuple1);
-                                                if(it != tupleToVar.end()) {
-                                                    propagated=true;
-                                                    int sign = -1;
-                                                    std::cout<<"Propagation positive negative join0 ";tuple1.print();std::cout<<std::endl;
-                                                    propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(propagationReason)}).first->second;
-                                                }
-                                            }
-                                        }
-                                        {
-                                            Tuple tuple2 ({undefinedTuples->at(iUndef)->at(4)},&_b);
-                                            if(ub.find(tuple2)!=NULL){
-                                                std::vector<int> propagationReason(local_reason);
-                                                const auto & it = tupleToVar.find(tuple2);
-                                                if(it != tupleToVar.end()) {
-                                                    propagated=true;
-                                                    int sign = 1;
-                                                    std::cout<<"Propagation positive negative join0 ";tuple2.print();std::cout<<std::endl;
-                                                    propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>(propagationReason)}).first->second;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                            if(tupleU == NULL && !propagated){
                             }
                         }
-                    }//close can prop if
-                    if(!propagated){
-                        tupleU=NULL;
-                        if(tupleU == NULL){
-                        }
-                    }//close prop multi join
+                    }
+                    //nested join closed
                 }
             }
         }//local scope

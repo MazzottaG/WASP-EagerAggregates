@@ -1590,7 +1590,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                 buildIndex=0;
 
                                                 *out << ind << "auto& reas = positiveAggrReason["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
-                                                *out << ind++ << "if(!reas.level(var)==-1){\n";
+                                                *out << ind++ << "if(reas.level(var)==-1){\n";
                                                     *out << ind << "reas.addLevel();\n";
                                                     *out << ind << "reas.insert(var);\n";
                                                     *out << ind << "tuple.print();std::cout<<\"Added to positive reason\"<<std::endl;\n";
@@ -2063,7 +2063,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                             }
                                             *out << ind << "auto& reas = positiveAggrReason["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
                                             *out << ind << "int starter_level=reas.level(var);\n";
-                                            *out << ind << "reas.erase(var,starter_level);\n";
                                             int buildIndex=0;
                                             int buildAriety=0;
                                             for(const aspc::Literal& li : aggregate->getAggregate().getAggregateLiterals()){
@@ -2483,6 +2482,11 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         int aggrIndex = aggrIdentifier.second;
                         std::string key = std::to_string(ruleId)+":"+std::to_string(aggrIndex);
                         *out << ind++ << "for(auto& pair : negativeAggrReason["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"]){\n";
+                            // *out << ind << "if(pair.second.count(var)>0)\n";
+                            // *out << ind << "std::cout<<\"removing from negative reason\"<<std::endl;\n";
+                            *out << ind << "pair.second.erase(var,pair.second.level(var));\n";
+                        *out << --ind << "}\n";
+                        *out << ind++ << "for(auto& pair : positiveAggrReason["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"]){\n";
                             // *out << ind << "if(pair.second.count(var)>0)\n";
                             // *out << ind << "std::cout<<\"removing from negative reason\"<<std::endl;\n";
                             *out << ind << "pair.second.erase(var,pair.second.level(var));\n";
