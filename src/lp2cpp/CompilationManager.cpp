@@ -1454,6 +1454,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     *out << ind++ << "if(var < 0){\n";
 //                        *out << ind << "std::cout<<\"True lit\"<<std::endl;\n";//DEBUG_PRINTING
                         *out << ind << "bool negative_join=false;\n";
+                        *out << ind << "bool positive_join=false;\n";
                         int closingPars=0;
                         int buildIndex=0;
                         std::string jointuple;
@@ -1587,18 +1588,20 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                 }
                                                 //--------------------------UPDATE POSITIVE REASON STRUCTURE--------------------------
                                                 buildIndex=0;
+
                                                 *out << ind << "auto& reas = positiveAggrReason["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
-                                                *out << ind << "reas.addLevel();\n";
-                                                *out << ind << "reas.insert(var);\n";
-                                                
-                                                *out << ind << "tuple.print();std::cout<<\"Added to reason\"<<std::endl;\n";
+                                                *out << ind++ << "if(!reas.level(var)==-1){\n";
+                                                    *out << ind << "reas.addLevel();\n";
+                                                    *out << ind << "reas.insert(var);\n";
+                                                    *out << ind << "tuple.print();std::cout<<\"Added to positive reason\"<<std::endl;\n";
+                                                *out << --ind << "}\n";
                                                 for(const aspc::Literal& li : aggregate->getAggregate().getAggregateLiterals()){
                                                     if(buildIndex!=startingLiteral){
                                                         *out << ind++ << "{\n";
                                                             *out << ind << "const auto & it = tupleToVar.find(*tuple"<<buildIndex<<");\n";
                                                             *out << ind++ << "if(it != tupleToVar.end()) {\n";
                                                                 std::string sign = li.isNegated() ? "*-1":"";
-                                                                *out << ind << "tuple"<<buildIndex<<"->print();std::cout<<\"Added to reason\"<<std::endl;\n";
+                                                                *out << ind << "tuple"<<buildIndex<<"->print();std::cout<<\"Added to positive reason\"<<std::endl;\n";
                                                                 *out << ind << "reas.insert(it->second"<<sign<<");\n";
                                                             *out << --ind << "}\n";
                                                         *out << --ind << "}\n";
@@ -1634,11 +1637,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                     *out << --ind << "}\n";
                                                 *out << --ind << "}\n";
                                                 *out << ind << "auto& reas = negativeAggrReason["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
-                                                *out << ind++ << "if(!negative_join){\n";
+                                                *out << ind++ << "if(reas.level(var)==-1){\n";
                                                     *out << ind << "reas.addLevel();\n";
                                                     *out << ind << "reas.insert(var);\n";
-                                                    *out << ind << "negative_join=true;\n";
-                                                    *out << ind << "tuple.print();std::cout<<\"Added to reason\"<<std::endl;\n";
+                                                    *out << ind << "tuple.print();std::cout<<\"Added to negative reason\"<<std::endl;\n";
                                                 *out << --ind << "}\n";
                                                 buildIndex=0;
                                                 for(const aspc::Literal& li : aggregate->getAggregate().getAggregateLiterals()){
@@ -1648,7 +1650,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                             *out << ind++ << "if(it != tupleToVar.end()) {\n";
                                                                 std::string sign = li.isNegated() ? "*-1":"";
 
-                                                                *out << ind << "tuple"<<buildIndex<<"->print();std::cout<<\"Added to reason\"<<std::endl;\n";
+                                                                *out << ind << "tuple"<<buildIndex<<"->print();std::cout<<\"Added to negative reason\"<<std::endl;\n";
                                                                 *out << ind << "reas.insert(it->second"<<sign<<");\n";
                                                             *out << --ind << "}\n";
                                                         *out << --ind << "}\n";
@@ -1679,7 +1681,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                 boundVars.insert(starter.getTermAt(i)); 
                         }
                         *out << "});\n";
-                        
                         *out << ind++ << "while(!tuplesU.empty()){\n";
                             
                             *out << ind << "Tuple t(*tuplesU.back());\n";
@@ -1746,10 +1747,13 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                 //--------------------------END UPDATE AGGREGATE VARIABLE STRUCTURE--------------------------
                                 //--------------------------UPDATE NEGATIVE RESON STRUCTURE--------------------------
                                 *out << ind << "auto& reas = negativeAggrReason["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
-                                *out << ind << "reas.addLevel();\n";
-                                *out << ind << "reas.insert(var);\n";
 
-                                *out << ind << "tuple.print();std::cout<<\"Added to reason\"<<std::endl;\n";
+                                *out << ind++ << "if(reas.level(var)==-1){\n";
+                                    *out << ind << "reas.addLevel();\n";
+                                    *out << ind << "reas.insert(var);\n";
+                                    *out << ind << "tuple.print();std::cout<<\"Added to negative reason\"<<std::endl;\n";
+                                *out << --ind << "}\n";
+
                                 //--------------------------END UPDATE NEGATIVE RESON STRUCTURE--------------------------
 
                             *out << --ind << "}\n";
@@ -1827,10 +1831,13 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         *out << ind << "actualNegativeSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]+=aggrKey[0];\n";
                                     }
                                     *out << ind << "auto& reas = positiveAggrReason["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
-                                    *out << ind << "reas.addLevel();\n";
-                                    *out << ind << "reas.insert(var);\n";
 
-                                    *out << ind << "tuple.print();std::cout<<\"Added to reason\"<<std::endl;\n";
+                                    *out << ind++ << "if(reas.level(var)==-1){\n";
+                                
+                                        *out << ind << "reas.addLevel();\n";
+                                        *out << ind << "reas.insert(var);\n";
+                                        *out << ind << "tuple.print();std::cout<<\"Added to negative reason\"<<std::endl;\n";
+                                    *out << --ind << "}\n";
                                 *out << --ind << "}\n";    
                             *out << --ind << "}\n";
                             }
@@ -1861,23 +1868,23 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         }
         *out << ind << "std::cout<<\"Negative aggr reason: \"<<negativeAggrReason[0][{}].size()<<std::endl;\n";
         *out << ind << "std::cout<<\"Positive aggr reason: \"<<positiveAggrReason[0][{}].size()<<std::endl;\n";
-        *out << ind << "std::cout<<\"True join tuple\"<<std::endl;\n";
-        *out << ind << "for(const Tuple* t : wa_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
-        *out << ind << "std::cout<<\"Undef join tuple\"<<std::endl;\n";
-        *out << ind << "for(const Tuple* t : ua_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
-        *out << ind << "std::cout<<\"Negative True join tuple\"<<std::endl;\n";
-        *out << ind << "for(const Tuple* t : nwa_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
-        *out << ind << "std::cout<<\"Negative Undef join tuple\"<<std::endl;\n";
-        *out << ind << "for(const Tuple* t : nua_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
-        *out << ind << "std::cout<<\"ActualSum: \"<<actualSum[0][{}]<<std::endl;\n";
-        *out << ind << "for(const std::vector<int>& key : trueAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
-        *out << ind << "std::cout<<\"PossibleSum: \"<<possibleSum[0][{}]<<std::endl;\n";
-        *out << ind << "for(const std::vector<int>& key : undefAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
-        *out << ind << "std::cout<<\"NegativeActualSum: \"<<actualNegativeSum[0][{}]<<std::endl;\n";
-        *out << ind << "for(const std::vector<int>& key : trueNegativeAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
-        *out << ind << "std::cout<<\"NegativPossibleSum: \"<<possibleNegativeSum[0][{}]<<std::endl;\n";
-        *out << ind << "for(const std::vector<int>& key : undefNegativeAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
-        *out << ind << "std::cout<<\"MaxNegativPossibleSum: \"<<maxPossibleNegativeSum[0][{}]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"True join tuple\"<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t : wa_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
+        // *out << ind << "std::cout<<\"Undef join tuple\"<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t : ua_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
+        // *out << ind << "std::cout<<\"Negative True join tuple\"<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t : nwa_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
+        // *out << ind << "std::cout<<\"Negative Undef join tuple\"<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t : nua_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
+        // *out << ind << "std::cout<<\"ActualSum: \"<<actualSum[0][{}]<<std::endl;\n";
+        // *out << ind << "for(const std::vector<int>& key : trueAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"PossibleSum: \"<<possibleSum[0][{}]<<std::endl;\n";
+        // *out << ind << "for(const std::vector<int>& key : undefAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"NegativeActualSum: \"<<actualNegativeSum[0][{}]<<std::endl;\n";
+        // *out << ind << "for(const std::vector<int>& key : trueNegativeAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"NegativPossibleSum: \"<<possibleNegativeSum[0][{}]<<std::endl;\n";
+        // *out << ind << "for(const std::vector<int>& key : undefNegativeAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"MaxNegativPossibleSum: \"<<maxPossibleNegativeSum[0][{}]<<std::endl;\n";
 #ifdef EAGER_DEBUG
         *out << ind << "std::cout<<\"on literal true \";\n";
         *out << ind << "std::cout<<var<<\"\\n\";\n";
@@ -2375,6 +2382,25 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                             if(aggregate->getAggregate().isSum()){
                                                 *out << ind << "actualSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]-=aggrKey[0];\n";
                                             }
+                                            *out << ind << "auto& reas = positiveAggrReason["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
+                                            *out << ind << "int starter_level=reas.level(var);\n";
+                                            *out << ind << "reas.erase(var,reas.level(var));\n";
+                                            int reasonIndex=0;
+                                            for(const aspc::Literal& reasonLit:aggregate->getAggregate().getAggregateLiterals()){
+                                                if(startingLiteral!=reasonIndex){
+                                                    *out << ind++ << "{\n";
+                                                        *out << ind << "const auto & it = tupleToVar.find(*tuple"<<reasonIndex<<");\n";
+
+                                                        *out << ind++ << "if(it != tupleToVar.end()) {\n";
+                                                            *out << ind << "std::cout<<\"Erasing from reason\";tuple"<<reasonIndex<<"->print();std::cout<<std::endl;\n";
+
+                                                            std::string sign = reasonLit.isNegated() ? "-1*":"";
+                                                            *out << ind << "reas.erase("<<sign<<"it->second,starter_level);\n";
+                                                        *out << --ind << "}\n";
+                                                    *out << --ind << "}\n";
+                                                }
+                                                reasonIndex++;
+                                            }
                                         *out << --ind << "}\n";
                                     *out << --ind << "}\n";
                                     *out << ind++ << "if(undefSet.find(aggrKey)==undefSet.end()){\n";
@@ -2386,10 +2412,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         *out << --ind << "}\n";
                                     *out << --ind << "}\n";
                                     //--------------------------END UPDATE AGGREGATE VARIABLE STRUCTURE--------------------------
-                                    *out << ind++ << "if(var < 0){\n";
-                                        *out << ind << "auto& reas = negativeAggrReason["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
-                                        *out << ind << "reas.erase(var,reas.level(var));\n";
-                                    *out << --ind << "}\n";
 
                                 *out << --ind << "}else{\n";
                                     ind++;
@@ -2416,7 +2438,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                 *out << --ind << "}\n";
                                             *out << --ind << "}\n";
                                             *out << ind++ << "if(var > 0";
-                                            int reasonIndex=0;
+                                            reasonIndex=0;
                                             for(const aspc::Literal& reasonLit:aggregate->getAggregate().getAggregateLiterals()){
                                                 if(startingLiteral!=reasonIndex){
                                                     *out << " && !undef"<<reasonIndex;
@@ -2490,23 +2512,23 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         }
         *out << ind << "std::cout<<\"Negative Reason size: \"<<negativeAggrReason[0][{}].size()<<std::endl;\n";
         *out << ind << "std::cout<<\"Positive Reason size: \"<<positiveAggrReason[0][{}].size()<<std::endl;\n";
-        *out << ind << "std::cout<<\"True join tuple\"<<std::endl;\n";
-        *out << ind << "for(const Tuple* t : wa_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
-        *out << ind << "std::cout<<\"Undef join tuple\"<<std::endl;\n";
-        *out << ind << "for(const Tuple* t : ua_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
-        *out << ind << "std::cout<<\"Negative True join tuple\"<<std::endl;\n";
-        *out << ind << "for(const Tuple* t : nwa_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
-        *out << ind << "std::cout<<\"Negative Undef join tuple\"<<std::endl;\n";
-        *out << ind << "for(const Tuple* t : nua_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
-        *out << ind << "std::cout<<\"ActualSum: \"<<actualSum[0][{}]<<std::endl;\n";
-        *out << ind << "for(const std::vector<int>& key : trueAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
-        *out << ind << "std::cout<<\"PossibleSum: \"<<possibleSum[0][{}]<<std::endl;\n";
-        *out << ind << "for(const std::vector<int>& key : undefAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
-        *out << ind << "std::cout<<\"NegativeActualSum: \"<<actualNegativeSum[0][{}]<<std::endl;\n";
-        *out << ind << "for(const std::vector<int>& key : trueNegativeAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
-        *out << ind << "std::cout<<\"NegativPossibleSum: \"<<possibleNegativeSum[0][{}]<<std::endl;\n";
-        *out << ind << "for(const std::vector<int>& key : undefNegativeAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
-        *out << ind << "std::cout<<\"MaxNegativPossibleSum: \"<<maxPossibleNegativeSum[0][{}]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"True join tuple\"<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t : wa_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
+        // *out << ind << "std::cout<<\"Undef join tuple\"<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t : ua_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
+        // *out << ind << "std::cout<<\"Negative True join tuple\"<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t : nwa_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
+        // *out << ind << "std::cout<<\"Negative Undef join tuple\"<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t : nua_X_Y_b_Y_.getTuples()){t->print();std::cout<<std::endl;}\n";
+        // *out << ind << "std::cout<<\"ActualSum: \"<<actualSum[0][{}]<<std::endl;\n";
+        // *out << ind << "for(const std::vector<int>& key : trueAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"PossibleSum: \"<<possibleSum[0][{}]<<std::endl;\n";
+        // *out << ind << "for(const std::vector<int>& key : undefAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"NegativeActualSum: \"<<actualNegativeSum[0][{}]<<std::endl;\n";
+        // *out << ind << "for(const std::vector<int>& key : trueNegativeAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"NegativPossibleSum: \"<<possibleNegativeSum[0][{}]<<std::endl;\n";
+        // *out << ind << "for(const std::vector<int>& key : undefNegativeAggrVars[0][{}])std::cout<<key[0]<<std::endl;\n";
+        // *out << ind << "std::cout<<\"MaxNegativPossibleSum: \"<<maxPossibleNegativeSum[0][{}]<<std::endl;\n";
     }
     *out << --ind << "}\n";
     // ---------------------- end onLiteralTrue(int var) --------------------------------------//
