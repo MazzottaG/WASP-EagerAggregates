@@ -1,29 +1,53 @@
 #include <iostream>
 #include <vector>
+#include <unordered_map>
+#include<set>
+#include <string>
 #include "../src/lp2cpp/datastructures/ReasonTable.h"
+using namespace std;
+void backTrack(std::set<int> trueLit,std::set<int> falseLit,const std::unordered_map<int,std::string>&varToLit,std::vector<int> toVisit,int current){
+    if(current==toVisit.size()){
+        for(const auto & lit : varToLit){
+            if(trueLit.count(lit.first)>0){
+                std::cout<<lit.second<<" ";
+            }else{
+                std::cout<<"not "<<lit.second<<" ";
+            }
+        }
+        std::cout<<std::endl;
+        return;
+    }
+    trueLit.insert(toVisit[current]);
+    backTrack(trueLit,falseLit,varToLit,toVisit,current+1);
+    trueLit.erase(toVisit[current]);
+    falseLit.insert(toVisit[current]);
+    backTrack(trueLit,falseLit,varToLit,toVisit,current+1);
+    falseLit.erase(toVisit[current]);
+    
+}
 int main(){
     ReasonTable r;
     r.addLevel();
-    r.insert(12);
-    r.insert(21);
-    r.addLevel();
 
-    r.erase(12,r.level(12));
-    r.insert(-31);
-    r.insert(-13);
-    r.erase(-13,r.level(-13));
-    r.erase(-31,r.level(-13));
-    for(auto it = r.begin();it!=r.end();it++){
-        std::cout<<*it<<" ";
-    }
-    std::cout<<std::endl;
     r.addLevel();
-    r.insert(32);
-    r.insert(21);
+    r.insert(2);
+    r.insert(1);
 
-    r.erase(21,r.level(32));
-    for(auto it = r.begin();it!=r.end();it++){
-        std::cout<<*it<<" ";
-    }
-    std::cout<<std::endl;
+    r.addLevel();
+    r.addLevel();
+    r.addLevel();
+    r.insert(4);
+    r.insert(1);
+
+    r.eraseCurrentLevel();
+    r.print();
+    r.eraseCurrentLevel();
+    r.print();
+    r.eraseCurrentLevel();
+    r.print();
+    r.eraseCurrentLevel();
+    r.print();
+    r.eraseCurrentLevel();
+    r.print();
 }
+
