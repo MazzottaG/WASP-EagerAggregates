@@ -439,6 +439,7 @@ for line in f.read().splitlines():
     sum=0
     for k in key_set:
         sum+=k
-    print(line)
-    print(sum)
+    if sum < 1:
+        print(line)
+        print(sum)
 f.close()

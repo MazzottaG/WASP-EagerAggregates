@@ -1026,6 +1026,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "std::unordered_map<std::vector<int>, int,TuplesHash> actualNegativeSum["<<aggregateToStructure.size()<<"];\n";
     *out << ind << "std::unordered_map<std::vector<int>, unsigned int,TuplesHash> possibleNegativeSum["<<aggregateToStructure.size()<<"];\n";
     
+    *out << ind << "std::unordered_map<std::vector<int>, unsigned int,TuplesHash> maxPossibleNegativeSum["<<aggregateToStructure.size()<<"];\n";
+    
 
     *out << ind++ << "Executor::~Executor() {\n";
     // for(const aspc::Rule & r : program.getRules()){
@@ -1461,9 +1463,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     *out << ind++ << "if(var > 0){\n";
                 else
                     *out << ind++ << "if(var < 0){\n";
-//                      *out << ind << "std::cout<<\"True lit\"<<std::endl;\n";//DEBUG_PRINTING
-                        *out << ind << "bool negativeReasonLevel=false;\n";
-                        *out << ind << "bool positiveReasonLevel=false;\n";
                         int closingPars=0;
                         int buildIndex=0;
                         std::string jointuple;
@@ -1645,13 +1644,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         
                                             *out << ind++ << "if(undefSet.find(aggrKey)!=undefSet.end()){\n";
                                                 *out << ind << "undefSet.erase(aggrKey);\n";
-                                            *out << --ind << "}\n";
-
-                                            *out << ind++ << "if(trueSet.find(aggrKey)==trueSet.end()){\n";
-                                                *out << ind << "trueSet.insert(aggrKey);\n";
-                                                if(aggregate->getAggregate().isSum()){
-                                                    *out << ind << "actualNegativeSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]+=aggrKey[0];\n";
-                                                }
                                                 //--------------------------UPDATE NEGATIVE REASON STRUCTURE--------------------------
                                                 int buildIndex=0;
 
@@ -1674,7 +1666,12 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                     buildIndex++;
                                                 }
                                                 //--------------------------END UPDATE NEGATIVE REASON STRUCTURE--------------------------
+                                                if(aggregate->getAggregate().isSum()){
+                                                    //add negative key to possible sum
+                                                    *out << ind << "possibleNegativeSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]+=aggrKey[0];\n";
+                                                }
                                             *out << --ind << "}\n";
+                                            
                                         }
                                         *out << --ind << "}\n";
                                 *out << --ind << "}\n";
@@ -1831,6 +1828,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                 }
                                 *out << "});\n";
                                 *out << ind << "auto& undefSet = undefNegativeAggrVars["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
+                                *out << ind << "auto& trueSet = trueNegativeAggrVars["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
                                         
                                 std::string sharedVarProj;
                                 for(unsigned v: sharedVariablesIndexesMap[key]){
@@ -1841,11 +1839,30 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                 }else{
                                     *out << ind++ << "if(nu_"<<aggregate->getJoinTupleName()<<aggrVarProj<<".getValues({aggrKey}).size()<=0){\n";
                                 }
-                                    *out << ind++ << "if(undefSet.find(aggrKey)!=undefSet.end()){\n";
-                                        *out << ind << "undefSet.erase(aggrKey);\n";
+                                    if(sharedVariablesMap[key]!=""){
+                                        *out << ind++ << "if(np_"<<aggregate->getJoinTupleName()<<sharedVarProj<<aggrVarProj<<".getValues({"<<sharedVariablesMap[key]<<","<<aggrVarTuple<<"}).size()<=0){\n";
+                                    }else{
+                                        *out << ind++ << "if(np_"<<aggregate->getJoinTupleName()<<aggrVarProj<<".getValues({aggrKey}).size()<=0){\n";
+                                    }
+                                        *out << ind++ << "if(undefSet.find(aggrKey)!=undefSet.end()){\n";
+                                            *out << ind << "undefSet.erase(aggrKey);\n";
+                                            if(aggregate->getAggregate().isSum()){
+                                                //add negative key to possible sum
+                                                *out << ind << "possibleNegativeSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]+=aggrKey[0];\n";
+                                            }
+                                        *out << --ind << "}\n";
+                                        *out << ind++ << "if(trueSet.find(aggrKey)==trueSet.end()){\n";
+                                            *out << ind << "trueSet.insert(aggrKey);\n";
+                                            if(aggregate->getAggregate().isSum()){
+                                                //sub negative key to actual sum
+                                                *out << ind << "actualNegativeSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]-=aggrKey[0];\n";
+                                            }
+                                        *out << --ind << "}\n";
                                     *out << --ind << "}\n";
                                 *out << --ind << "}\n";
                                 //--------------------------END UPDATE AGGREGATE VARIABLE STRUCTURE--------------------------
+                                *out << ind << "auto& reas = positiveAggrReason["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
+                                *out << ind << "reas.insert(var);\n";
                             *out << --ind << "}\n";
                             }
                         *out << --ind << "}\n";
@@ -1881,6 +1898,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::cout<<\"Actual sum \"<<actualSum[0][{}]<<std::endl;\n";
         *out << ind << "std::cout<<\"Possible sum \"<<possibleSum[0][{}]<<std::endl;\n";
         *out << ind << "std::cout<<\"Actual Negative sum \"<<actualNegativeSum[0][{}]<<std::endl;\n";
+        *out << ind << "std::cout<<\"Poosible Negative sum \"<<possibleNegativeSum[0][{}]<<std::endl;\n";
 #ifdef EAGER_DEBUG
         *out << ind << "std::cout<<\"on literal true \";\n";
         *out << ind << "std::cout<<var<<\"\\n\";\n";
@@ -2003,16 +2021,17 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                             //--------------------------END EREASING TRUE--------------------------
                             // *out << ind << "std::cout<<\"Erasing from true \"<<w"<<aggr->getJoinTupleName()<<".getTuples().size()<<\" \"<<p_"<<aggr->getJoinTupleName()<<".getValues({}).size()<<std::endl;\n";
 
-                            //--------------------------INSERT UNDEF--------------------------
                             *out << ind++ << "if(u"<<aggr->getJoinTupleName()<<".find(Tuple(t)) == NULL){\n";
+                                //--------------------------INSERT UNDEF--------------------------
                                 *out << ind << "const auto& insertResult = u" << aggr->getJoinTupleName() <<".insert(Tuple(t));\n";
                                 *out << ind++ << "if (insertResult.second) {\n";
                                     *out << ind++ << "for(AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<aggr->getJoinTupleName()<<"]){\n";
                                         *out << ind << "auxMap -> insert2(*insertResult.first);\n";
                                     *out << --ind << "}\n";
                                     // *out << ind << "std::cout<<\"Insert in undef \"<<u"<<aggr->getJoinTupleName()<<".getTuples().size()<<std::endl;\n";
-
-                            //--------------------------END INSERT UNDEF--------------------------
+                                *out << --ind << "}\n";
+                                    
+                                //--------------------------END INSERT UNDEF--------------------------
                             
 
                                 for(const auto& aggrIdentifier: pair.second){
@@ -2021,73 +2040,69 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                     int aggrIndex = aggrIdentifier.second;
                                     std::string key = std::to_string(ruleId)+":"+std::to_string(aggrIndex);
                                     *out << ind++ << "{\n";
-                                    boundVars.clear();
-                                    for(int i=0;i<starter.getAriety();i++){
-                                        if(starter.isVariableTermAt(i))
-                                            boundVars.insert(starter.getTermAt(i)); 
-                                    }
-                                    for(unsigned v : sharedVariablesIndexesMap[key]){
-                                        if(boundVars.count(aggregate->getAggregate().getTermAt(v))<=0){
-                                            boundVars.insert(aggregate->getAggregate().getTermAt(v));
-                                            *out << ind << "int "<<aggregate->getAggregate().getTermAt(v)<<" = t["<<v<<"];\n";
+                                        boundVars.clear();
+                                        for(int i=0;i<starter.getAriety();i++){
+                                            if(starter.isVariableTermAt(i))
+                                                boundVars.insert(starter.getTermAt(i)); 
                                         }
-                                    }
-
-                                    //--------------------------UPDATE AGGREGATE VARIABLE STRUCTURE--------------------------
-
-                                    *out << ind << "std::vector<int> aggrKey({";
-                                    bool first=true;
-                                    std::string aggrVarProj;
-                                    std::string aggrVarTuple;
-                                    for(unsigned v: aggregateVariablesIndex[key]){
-                                        if(!first){
-                                            *out << ",";
-                                            aggrVarTuple+=",";
+                                        for(unsigned v : sharedVariablesIndexesMap[key]){
+                                            if(boundVars.count(aggregate->getAggregate().getTermAt(v))<=0){
+                                                boundVars.insert(aggregate->getAggregate().getTermAt(v));
+                                                *out << ind << "int "<<aggregate->getAggregate().getTermAt(v)<<" = t["<<v<<"];\n";
+                                            }
                                         }
-                                        *out << "t["<<v<<"]";
-                                        aggrVarTuple+="t["+std::to_string(v)+"]";
-                                        aggrVarProj+=std::to_string(v)+"_";
-                                        first=false;
-                                    }
-                                    *out << "});\n";
-                                    std::string sharedVarProj;
-                                    for(unsigned v: sharedVariablesIndexesMap[key]){
-                                        sharedVarProj+=std::to_string(v)+"_";
-                                    }
-                                    *out << ind << "auto& trueSet = trueAggrVars["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
-                                    *out << ind << "auto& undefSet = undefAggrVars["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
-                                    
-                                    if(sharedVariablesMap[key]!=""){
-                                        *out << ind++ << "if(p_"<<aggregate->getJoinTupleName()<<sharedVarProj<<aggrVarProj<<".getValues({"<<sharedVariablesMap[key]<<","<<aggrVarTuple<<"}).size()<=0){\n";
-                                    }else{
-                                        *out << ind++ << "if(p_"<<aggregate->getJoinTupleName()<<aggrVarProj<<".getValues({aggrKey}).size()<=0){\n";
-                                    }
-                                        *out << ind++ << "if(trueSet.find(aggrKey)!=trueSet.end()){\n";
-                                            *out << ind << "trueSet.erase(aggrKey);\n";
-                                            if(aggregate->getAggregate().isSum()){
-                                                *out << ind << "actualSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]-=aggrKey[0];\n";
+
+                                        //--------------------------UPDATE AGGREGATE VARIABLE STRUCTURE--------------------------
+
+                                        *out << ind << "std::vector<int> aggrKey({";
+                                        bool first=true;
+                                        std::string aggrVarProj;
+                                        std::string aggrVarTuple;
+                                        for(unsigned v: aggregateVariablesIndex[key]){
+                                            if(!first){
+                                                *out << ",";
+                                                aggrVarTuple+=",";
                                             }
+                                            *out << "t["<<v<<"]";
+                                            aggrVarTuple+="t["+std::to_string(v)+"]";
+                                            aggrVarProj+=std::to_string(v)+"_";
+                                            first=false;
+                                        }
+                                        *out << "});\n";
+                                        std::string sharedVarProj;
+                                        for(unsigned v: sharedVariablesIndexesMap[key]){
+                                            sharedVarProj+=std::to_string(v)+"_";
+                                        }
+                                        *out << ind << "auto& trueSet = trueAggrVars["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
+                                        *out << ind << "auto& undefSet = undefAggrVars["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
+                                        
+                                        if(sharedVariablesMap[key]!=""){
+                                            *out << ind++ << "if(p_"<<aggregate->getJoinTupleName()<<sharedVarProj<<aggrVarProj<<".getValues({"<<sharedVariablesMap[key]<<","<<aggrVarTuple<<"}).size()<=0){\n";
+                                        }else{
+                                            *out << ind++ << "if(p_"<<aggregate->getJoinTupleName()<<aggrVarProj<<".getValues({aggrKey}).size()<=0){\n";
+                                        }
+                                            *out << ind++ << "if(trueSet.find(aggrKey)!=trueSet.end()){\n";
+                                                *out << ind << "trueSet.erase(aggrKey);\n";
+                                                if(aggregate->getAggregate().isSum()){
+                                                    *out << ind << "actualSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]-=aggrKey[0];\n";
+                                                }
+                                            *out << --ind << "}\n";
                                         *out << --ind << "}\n";
-                                    *out << --ind << "}\n";
-                                    *out << ind++ << "if(undefSet.find(aggrKey)==undefSet.end()){\n";
-                                        *out << ind++ << "if(trueSet.find(aggrKey)==trueSet.end()){\n";
-                                            *out << ind << "undefSet.insert(aggrKey);\n";
-                                            if(aggregate->getAggregate().isSum()){
-                                                *out << ind << "possibleSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]+=aggrKey[0];\n";
-                                            }
+                                        *out << ind++ << "if(undefSet.find(aggrKey)==undefSet.end()){\n";
+                                            *out << ind++ << "if(trueSet.find(aggrKey)==trueSet.end()){\n";
+                                                *out << ind << "undefSet.insert(aggrKey);\n";
+                                                if(aggregate->getAggregate().isSum()){
+                                                    *out << ind << "possibleSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]+=aggrKey[0];\n";
+                                                }
+                                            *out << --ind << "}\n";
                                         *out << --ind << "}\n";
-                                    *out << --ind << "}\n";
-                                    //--------------------------END UPDATE AGGREGATE VARIABLE STRUCTURE--------------------------
+                                        //--------------------------END UPDATE AGGREGATE VARIABLE STRUCTURE--------------------------
                                     *out << --ind << "}\n";
                                 }
-                                *out << --ind << "}\n";
-
                             *out << --ind << "}\n";
 
                         *out << --ind << "}\n";
-                        
-
-
+                    
                         *out << ind << "const std::vector<const Tuple*>& tuplesN = np_"<<aggr->getJoinTupleName()<<aggr->getAggrLitProj(startingLiteral)<<".getValues({";
                         for(int i=0;i<starter.getAriety();i++){
                             if(i>0)
@@ -2103,89 +2118,78 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                             //--------------------------EREASING TRUE--------------------------
                             *out << ind << "nw"<<aggr->getJoinTupleName()<<".erase(*tuplesN.back());\n";
                             //--------------------------END EREASING TRUE--------------------------
-                            // *out << ind << "std::cout<<\"Erasing from true \"<<w"<<aggr->getJoinTupleName()<<".getTuples().size()<<\" \"<<p_"<<aggr->getJoinTupleName()<<".getValues({}).size()<<std::endl;\n";
-
-                            //--------------------------INSERT UNDEF--------------------------
                             *out << ind++ << "if(nu"<<aggr->getJoinTupleName()<<".find(Tuple(t)) == NULL){\n";
                                 *out << ind << "const auto& insertResult = nu" << aggr->getJoinTupleName() <<".insert(Tuple(t));\n";
                                 *out << ind++ << "if (insertResult.second) {\n";
                                     *out << ind++ << "for(AuxMap* auxMap : predicateToNegativeUndefAuxiliaryMaps[&_"<<aggr->getJoinTupleName()<<"]){\n";
                                         *out << ind << "auxMap -> insert2(*insertResult.first);\n";
                                     *out << --ind << "}\n";
-                                    // *out << ind << "std::cout<<\"Insert in undef \"<<u"<<aggr->getJoinTupleName()<<".getTuples().size()<<std::endl;\n";
-
-                            //--------------------------END INSERT UNDEF--------------------------
-                            
-
+                                *out << --ind << "}\n";
                                 for(const auto& aggrIdentifier: pair.second){
                                     const aspc::ArithmeticRelationWithAggregate* aggregate = (const aspc::ArithmeticRelationWithAggregate*) program.getRules()[aggrIdentifier.first].getFormulas()[aggrIdentifier.second];
                                     int ruleId = aggrIdentifier.first;
                                     int aggrIndex = aggrIdentifier.second;
                                     std::string key = std::to_string(ruleId)+":"+std::to_string(aggrIndex);
                                     *out << ind++ << "{\n";
-                                    boundVars.clear();
-                                    for(int i=0;i<starter.getAriety();i++){
-                                        if(starter.isVariableTermAt(i))
-                                            boundVars.insert(starter.getTermAt(i)); 
-                                    }
-                                    for(unsigned v : sharedVariablesIndexesMap[key]){
-                                        if(boundVars.count(aggregate->getAggregate().getTermAt(v))<=0){
-                                            boundVars.insert(aggregate->getAggregate().getTermAt(v));
-                                            *out << ind << "int "<<aggregate->getAggregate().getTermAt(v)<<" = t["<<v<<"];\n";
+                                        boundVars.clear();
+                                        for(int i=0;i<starter.getAriety();i++){
+                                            if(starter.isVariableTermAt(i))
+                                                boundVars.insert(starter.getTermAt(i)); 
                                         }
-                                    }
-
-                                    //--------------------------UPDATE AGGREGATE VARIABLE STRUCTURE--------------------------
-
-                                    *out << ind << "std::vector<int> aggrKey({";
-                                    bool first=true;
-                                    std::string aggrVarProj;
-                                    std::string aggrVarTuple;
-                                    for(unsigned v: aggregateVariablesIndex[key]){
-                                        if(!first){
-                                            *out << ",";
-                                            aggrVarTuple+=",";
-                                        }
-                                        *out << "t["<<v<<"]";
-                                        aggrVarTuple+="t["+std::to_string(v)+"]";
-                                        aggrVarProj+=std::to_string(v)+"_";
-                                        first=false;
-                                    }
-                                    *out << "});\n";
-                                    std::string sharedVarProj;
-                                    for(unsigned v: sharedVariablesIndexesMap[key]){
-                                        sharedVarProj+=std::to_string(v)+"_";
-                                    }
-                                    *out << ind << "auto& trueSet = trueNegativeAggrVars["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
-                                    *out << ind << "auto& undefSet = undefNegativeAggrVars["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
-                                    
-                                    if(sharedVariablesMap[key]!=""){
-                                        *out << ind++ << "if(np_"<<aggregate->getJoinTupleName()<<sharedVarProj<<aggrVarProj<<".getValues({"<<sharedVariablesMap[key]<<","<<aggrVarTuple<<"}).size()<=0){\n";
-                                    }else{
-                                        *out << ind++ << "if(np_"<<aggregate->getJoinTupleName()<<aggrVarProj<<".getValues({aggrKey}).size()<=0){\n";
-                                    }
-                                        *out << ind++ << "if(trueSet.find(aggrKey)!=trueSet.end()){\n";
-                                            *out << ind << "trueSet.erase(aggrKey);\n";
-                                            if(aggregate->getAggregate().isSum()){
-                                                *out << ind << "actualNegativeSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]-=aggrKey[0];\n";
+                                        for(unsigned v : sharedVariablesIndexesMap[key]){
+                                            if(boundVars.count(aggregate->getAggregate().getTermAt(v))<=0){
+                                                boundVars.insert(aggregate->getAggregate().getTermAt(v));
+                                                *out << ind << "int "<<aggregate->getAggregate().getTermAt(v)<<" = t["<<v<<"];\n";
                                             }
+                                        }
+
+                                        //--------------------------UPDATE AGGREGATE VARIABLE STRUCTURE--------------------------
+
+                                        *out << ind << "std::vector<int> aggrKey({";
+                                        bool first=true;
+                                        std::string aggrVarProj;
+                                        std::string aggrVarTuple;
+                                        for(unsigned v: aggregateVariablesIndex[key]){
+                                            if(!first){
+                                                *out << ",";
+                                                aggrVarTuple+=",";
+                                            }
+                                            *out << "t["<<v<<"]";
+                                            aggrVarTuple+="t["+std::to_string(v)+"]";
+                                            aggrVarProj+=std::to_string(v)+"_";
+                                            first=false;
+                                        }
+                                        *out << "});\n";
+                                        std::string sharedVarProj;
+                                        for(unsigned v: sharedVariablesIndexesMap[key]){
+                                            sharedVarProj+=std::to_string(v)+"_";
+                                        }
+                                        if(sharedVariablesMap[key]!=""){
+                                            *out << ind++ << "if(np_"<<aggregate->getJoinTupleName()<<sharedVarProj<<aggrVarProj<<".getValues({"<<sharedVariablesMap[key]<<","<<aggrVarTuple<<"}).size()<=0){\n";
+                                        }else{
+                                            *out << ind++ << "if(np_"<<aggregate->getJoinTupleName()<<aggrVarProj<<".getValues({aggrKey}).size()<=0){\n";
+                                        }
+                                        
+                                            *out << ind << "auto& undefSet = undefNegativeAggrVars["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
+                                            *out << ind << "auto& trueSet = trueNegativeAggrVars["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
+                                            *out << ind << "auto& reas = negativeAggrReason["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
+                                            
+                                            *out << ind++ << "if(undefSet.find(aggrKey)==undefSet.end()){\n";
+                                                *out << ind++ << "if(trueSet.find(aggrKey)==trueSet.end()){\n";
+                                                    *out << ind << "undefSet.insert(aggrKey);\n";
+                                                    if(aggregate->getAggregate().isSum()){
+                                                        //sub negative key to possible sum
+                                                        *out << ind << "possibleNegativeSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]-=aggrKey[0];\n";
+                                                    }
+                                                *out << --ind << "}\n";
+                                            *out << --ind << "}\n";
                                         *out << --ind << "}\n";
-                                    *out << --ind << "}\n";
-                                    *out << ind++ << "if(undefSet.find(aggrKey)==undefSet.end()){\n";
-                                        *out << ind++ << "if(trueSet.find(aggrKey)==trueSet.end()){\n";
-                                            *out << ind << "undefSet.insert(aggrKey);\n";
-                                        *out << --ind << "}\n";
-                                    *out << --ind << "}\n";
-                                    //--------------------------END UPDATE AGGREGATE VARIABLE STRUCTURE--------------------------
                                     *out << --ind << "}\n";
                                 }
-                                *out << --ind << "}\n";
-
                             *out << --ind << "}\n";
-
                         *out << --ind << "}\n";
-
                     *out << --ind << "}\n";
+                    
                         boundVars.clear();
                         for(int i=0;i<starter.getAriety();i++){
                             if(starter.isVariableTermAt(i)&&boundVars.count(starter.getTermAt(i))==0){
@@ -2380,11 +2384,21 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                             }
                                                 *out << ind++ << "if(trueSet.find(aggrKey)!=trueSet.end()){\n";
                                                     *out << ind << "trueSet.erase(aggrKey);\n";
+                                                    if(aggregate->getAggregate().isSum()){
+                                                        *out << ind << "actualNegativeSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]+=aggrKey[0];\n";
+                                                    }
                                                 *out << --ind << "}\n";
                                             *out << --ind << "}\n";
                                             *out << ind++ << "if(undefSet.find(aggrKey)==undefSet.end()){\n";
                                                 *out << ind++ << "if(trueSet.find(aggrKey)==trueSet.end()){\n";
                                                     *out << ind << "undefSet.insert(aggrKey);\n";
+                                                    if(aggregate->getAggregate().isSum()){
+                                                        *out << ind << "possibleNegativeSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]-=aggrKey[0];\n";
+                                                        *out << ind << "int possSum = possibleNegativeSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
+                                                        
+                                                        *out << ind++ << "if(maxPossibleNegativeSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]<possSum)\n";
+                                                            *out << ind-- << "maxPossibleNegativeSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]=possSum;\n";
+                                                    }
                                                 *out << --ind << "}\n";
                                             *out << --ind << "}\n";
                                             //--------------------------END UPDATE AGGREGATE VARIABLE STRUCTURE--------------------------
@@ -2425,7 +2439,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "for(int v:positiveAggrReason[0][{}]){unsigned uv = v > 0 ? v : -v; atomsTable[uv].print();}std::cout<<std::endl;\n";
         *out << ind << "std::cout<<\"Actual sum \"<<actualSum[0][{}]<<std::endl;\n";
         *out << ind << "std::cout<<\"Possible sum \"<<possibleSum[0][{}]<<std::endl;\n";
-        *out << ind << "std::cout<<\"Actual egative sum \"<<actualNegativeSum[0][{}]<<std::endl;\n";
+        *out << ind << "std::cout<<\"Actual Negative sum \"<<actualNegativeSum[0][{}]<<std::endl;\n";
+        *out << ind << "std::cout<<\"Possible Negative sum \"<<possibleNegativeSum[0][{}]<<std::endl;\n";
+        *out << ind << "std::cout<<\"Max Possible Negative sum \"<<maxPossibleNegativeSum[0][{}]<<std::endl;\n";
         
     }
     *out << --ind << "}\n";
@@ -3381,7 +3397,7 @@ void CompilationManager::propAggr(const aspc::ArithmeticRelationWithAggregate* a
     // *out << ind << "std::cout<<\" Start prop\"<<std::endl;\n";
     if(aggregateRelation->isNegated()){
         std::string reason = withReason ? "local_reason":"";
-
+        *out << ind << "std::cout<<undefPlusTrue<<std::endl;\n";
         std::string reverse_it = aggregateRelation->getAggregate().isSum() ? "r":"";
         *out << ind++ << "for(auto undefKey = undefAggrVars["<<aggregateToStructure[aggregateRelation->getJoinTupleName()+sharedVariablesMap[aggregateIdentifier]+aggregateRelation->getAggrVarAsString()]<<"][{"<<sharedVariableTuple<<"}]."<<reverse_it<<"begin();undefKey!=undefAggrVars["<<aggregateToStructure[aggregateRelation->getJoinTupleName()+sharedVariablesMap[aggregateIdentifier]+aggregateRelation->getAggrVarAsString()]<<"][{"<<sharedVariableTuple<<"}]."<<reverse_it<<"end();undefKey++){\n";
         pars++;
@@ -3390,7 +3406,7 @@ void CompilationManager::propAggr(const aspc::ArithmeticRelationWithAggregate* a
             // pars++;
         if(aggregateRelation->getAggregate().isSum()){
             std::string plusOne = aggregateRelation->isPlusOne() ? "+1":"";
-            *out << ind++ << "if(undefPlusTrue-undefKey->at(0)"<<aggregateRelation->getCompareTypeAsString()<<aggregateRelation->getGuard().getStringRep()<<plusOne<<")\n";
+            *out << ind++ << "if(undefPlusTrue-undefKey->at(0)"<<aggregateRelation->getCompareTypeAsString()<<aggregateRelation->getGuard().getStringRep()<<plusOne<<"+maxPossibleNegativeSum["<<aggregateToStructure[aggregateRelation->getJoinTupleName()+sharedVariablesMap[aggregateIdentifier]+aggregateRelation->getAggrVarAsString()]<<"][{"<<sharedVariableTuple<<"}])\n";
             *out << ind-- << "break;\n";
             *out << ind++ << "else{\n";
             pars++;
@@ -3458,7 +3474,7 @@ void CompilationManager::propAggr(const aspc::ArithmeticRelationWithAggregate* a
             // pars++;
         if(aggregateRelation->getAggregate().isSum()){
             std::string plusOne = aggregateRelation->isPlusOne() ? "+1":"";
-            *out << ind++ << "if(undefPlusTrue+undefKey->at(0)"<<aggregateRelation->getCompareTypeAsString()<<aggregateRelation->getGuard().getStringRep()<<plusOne<<")\n";
+            *out << ind++ << "if(undefPlusTrue+undefKey->at(0)"<<aggregateRelation->getCompareTypeAsString()<<aggregateRelation->getGuard().getStringRep()<<plusOne<<"+maxPossibleNegativeSum["<<aggregateToStructure[aggregateRelation->getJoinTupleName()+sharedVariablesMap[aggregateIdentifier]+aggregateRelation->getAggrVarAsString()]<<"][{"<<sharedVariableTuple<<"}])\n";
             *out << ind-- << "break;\n";
             *out << ind++ << "else{\n";
             pars++;
@@ -3488,6 +3504,7 @@ void CompilationManager::propAggr(const aspc::ArithmeticRelationWithAggregate* a
             *out << ind++ << "if(tupleU"<<startLit<<"!=NULL && !negativeJoinPropagated){\n";
             int buildAriety=0;
             int buildLit=0;
+            *out << ind <<"std::vector<int> reas;\n";
             for(const aspc::Literal& build : aggregateRelation->getAggregate().getAggregateLiterals()){
                 if(startLit!=buildLit){
                     *out << ind << "Tuple tuple"<<buildLit<<" ({";
@@ -3503,6 +3520,17 @@ void CompilationManager::propAggr(const aspc::ArithmeticRelationWithAggregate* a
                     }else{
                         *out << ind++ << "if(w"<<build.getPredicateName()<<".find(tuple"<<buildLit<<")!=NULL){\n";
                     }
+
+                    *out << ind << "const auto & it"<<buildLit<<" = tupleToVar.find(tuple"<<buildLit<<");\n";
+                    *out << ind++ << "if(it"<<buildLit<<" != tupleToVar.end()) {\n";
+                        if(build.isNegated()){
+                            *out << ind << "reas.push_back(it"<<buildLit<<"->second*-1);\n";
+                        }else{
+                            *out << ind << "reas.push_back(it"<<buildLit<<"->second);\n";
+                        }
+                    *out << --ind << "}\n";
+                
+
                 }
                 buildLit++;
                 buildAriety+=build.getAriety();
@@ -3515,6 +3543,7 @@ void CompilationManager::propAggr(const aspc::ArithmeticRelationWithAggregate* a
                 *out << ind++ << "if(it"<<startLit<<" != tupleToVar.end()) {\n";
                     *out << ind << "negativeJoinPropagated=true;\n";
                     if(withReason){
+                        *out << ind << "for(int v: reas){ "<<reason<<".push_back(v); }\n";
                         *out<<ind<<"std::cout<<\"propagation reason\";\n";
                          *out << ind << "for(int v : "<<reason<<") {if (v < 0){ std::cout<<\"-\"; v*=-1;}atomsTable[v].print();}\n";
                         // *out << ind << "for(int v : local_reason) std::cout<<v<<\" \"<<std::endl;\n";
@@ -3540,8 +3569,8 @@ void CompilationManager::propAggr(const aspc::ArithmeticRelationWithAggregate* a
         pars++;
         if(aggregateRelation->getAggregate().isSum()){
             std::string plusOne = aggregateRelation->isPlusOne() ? "+1":"";
-            *out << ind++ << "if(actualSum["<<aggregateToStructure[aggregateRelation->getJoinTupleName()+sharedVariablesMap[aggregateIdentifier]+aggregateRelation->getAggrVarAsString()]<<"][{"<<sharedVariableTuple<<"}]+actualNegativeSum["<<aggregateToStructure[aggregateRelation->getJoinTupleName()+sharedVariablesMap[aggregateIdentifier]+aggregateRelation->getAggrVarAsString()]<<"][{"<<sharedVariableTuple<<"}]+undefKey->at(0) < "<<aggregateRelation->getGuard().getStringRep()<<plusOne<<")\n";
-            *out << ind-- << "break;\n";
+            *out << ind++ << "if(actualSum["<<aggregateToStructure[aggregateRelation->getJoinTupleName()+sharedVariablesMap[aggregateIdentifier]+aggregateRelation->getAggrVarAsString()]<<"][{"<<sharedVariableTuple<<"}]+actualNegativeSum["<<aggregateToStructure[aggregateRelation->getJoinTupleName()+sharedVariablesMap[aggregateIdentifier]+aggregateRelation->getAggrVarAsString()]<<"][{"<<sharedVariableTuple<<"}]+undefKey->at(0) < "<<aggregateRelation->getGuard().getStringRep()<<plusOne<<"+maxPossibleNegativeSum["<<aggregateToStructure[aggregateRelation->getJoinTupleName()+sharedVariablesMap[aggregateIdentifier]+aggregateRelation->getAggrVarAsString()]<<"][{"<<sharedVariableTuple<<"}])\n";
+                *out << ind-- << "break;\n";
             *out << ind++ << "else{\n";
             pars++;
 
@@ -3679,24 +3708,16 @@ void CompilationManager::propAggr(const aspc::ArithmeticRelationWithAggregate* a
         pars++;
         aggrVarCount=0;
         aggrVarTuple="";
-        std::unordered_set<std::string> declared_aggr_var;
         for(int v : aggregateVariablesIndex[aggregateIdentifier]){
             if(aggrVarCount>0){
                 aggrVarTuple+=",";
             }
-            if(declared_aggr_var.count(aggregateRelation->getAggregate().getTermAt(v))<=0){
-                *out << ind << "int " << aggregateRelation->getAggregate().getTermAt(v) << " = " << "undefKey->at("+std::to_string(aggrVarCount)+");\n";
-                if(aggrVarCount<=0){
-                    *out << ind << aggregateRelation->getAggregate().getTermAt(v) << "*=-1;\n";
-                }
-                declared_aggr_var.insert(aggregateRelation->getAggregate().getTermAt(v));
-            }
-            aggrVarTuple+=aggregateRelation->getAggregate().getTermAt(v);
+            aggrVarTuple+="undefKey->at("+std::to_string(aggrVarCount)+")";
             aggrVarCount++;
         }
         if(aggregateRelation->getAggregate().isSum()){
             std::string plusOne = aggregateRelation->isPlusOne() ? "+1":"";
-            *out << ind++ << "if(actualSum["<<aggregateToStructure[aggregateRelation->getJoinTupleName()+sharedVariablesMap[aggregateIdentifier]+aggregateRelation->getAggrVarAsString()]<<"][{"<<sharedVariableTuple<<"}]+actualNegativeSum["<<aggregateToStructure[aggregateRelation->getJoinTupleName()+sharedVariablesMap[aggregateIdentifier]+aggregateRelation->getAggrVarAsString()]<<"][{"<<sharedVariableTuple<<"}]+undefKey->at(0) < "<<aggregateRelation->getGuard().getStringRep()<<plusOne<<")\n";
+            *out << ind++ << "if(actualSum["<<aggregateToStructure[aggregateRelation->getJoinTupleName()+sharedVariablesMap[aggregateIdentifier]+aggregateRelation->getAggrVarAsString()]<<"][{"<<sharedVariableTuple<<"}]+actualNegativeSum["<<aggregateToStructure[aggregateRelation->getJoinTupleName()+sharedVariablesMap[aggregateIdentifier]+aggregateRelation->getAggrVarAsString()]<<"][{"<<sharedVariableTuple<<"}]-undefKey->at(0) < "<<aggregateRelation->getGuard().getStringRep()<<plusOne<<"+maxPossibleNegativeSum["<<aggregateToStructure[aggregateRelation->getJoinTupleName()+sharedVariablesMap[aggregateIdentifier]+aggregateRelation->getAggrVarAsString()]<<"][{"<<sharedVariableTuple<<"}])\n";
             *out << ind-- << "break;\n";
             *out << ind++ << "else{\n";
 
@@ -3782,7 +3803,7 @@ void CompilationManager::printAggregateTrueIf(std::string aggrIdentifier,const a
             if(!aggr->getAggregate().isSum())
                 *out << ind++ << "if(trueAggrVars["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}].size()+trueNegativeAggrVars["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}].size()"<<aggr->getCompareTypeAsString()<<aggr->getGuard().getStringRep()<<plusOne<<"){\n";
             else
-                *out << ind++ << "if(actualSum["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}]+actualNegativeSum["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}]"<<aggr->getCompareTypeAsString()<<aggr->getGuard().getStringRep()<<plusOne<<"){\n";
+                *out << ind++ << "if(actualSum["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}]+actualNegativeSum["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}]"<<aggr->getCompareTypeAsString()<<aggr->getGuard().getStringRep()<<plusOne<<"+maxPossibleNegativeSum["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}]){\n";
         else {
             if(!aggr->getAggregate().isSum())
                 *out << ind << "int count"<<ruleId<<"_"<<aggr->getFormulaIndex()<<" = trueAggrVars["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}].size()+trueNegativeAggrVars["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}].size();\n";
@@ -3793,14 +3814,15 @@ void CompilationManager::printAggregateTrueIf(std::string aggrIdentifier,const a
 
     }else{
         if(aggr->getAggregate().isSum()){
-            *out << ind << "int undefPlusTrue = actualSum["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}]+possibleSum["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}]+actualNegativeSum["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}];\n";
+            *out << ind << "int undefPlusTrue = actualSum["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}]+possibleSum["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}]+actualNegativeSum["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}]+possibleNegativeSum["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}];\n";
         }else{
             *out << ind << "int undefPlusTrue = trueAggrVars["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}].size()+undefAggrVars["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}].size()+trueNegativeAggrVars["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}].size()+undefNegativeAggrVars["<<aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()]<<"][{"<<sharedVars<<"}].size();\n";
         }
         if(isBound){
             *out << ind << "//"<<aggr->getGuard().getStringRep()<<"\n";
             // *out << ind << "std::cout<<\"aggr size: \"<<undefPlusTrue<<std::endl;\n";
-            *out << ind++ << "if(!(undefPlusTrue"<<aggr->getCompareTypeAsString()<<aggr->getGuard().getStringRep()<<plusOne<<")){\n";
+            std::string plusSum = aggr->getAggregate().isSum() ? "+maxPossibleNegativeSum["+std::to_string(aggregateToStructure[aggr->getJoinTupleName()+sharedVariablesMap[aggrIdentifier]+aggr->getAggrVarAsString()])+"][{"+sharedVars+"}]":"";
+            *out << ind++ << "if(!(undefPlusTrue"<<aggr->getCompareTypeAsString()<<aggr->getGuard().getStringRep()<<plusOne<<plusSum<<")){\n";
         }else{
             *out << ind << "int count"<<ruleId<<"_"<<aggr->getFormulaIndex()<<" = undefPlusTrue;\n";
             *out << ind++ << "{\n";
