@@ -9,7 +9,7 @@ class ReasonTable{
     private:
         std::vector<int> reason;
         std::unordered_map<int,int> literalToLevel;
-        int currentLevel;
+        int currentLevel=-1;
         std::unordered_map<int,int> levelSize;
     public:
         ReasonTable(){
@@ -36,33 +36,34 @@ class ReasonTable{
                 levelSize.erase(currentLevel);
                 currentLevel--;
             }
+            std::cout<<"Current_Level: "<<currentLevel<<std::endl;
         }
-        void erase(int v,int level){
-            if(literalToLevel.count(v)>0 && literalToLevel[v]==level){
-                int starter=0;
-                for(int i=0;i<level;i++){
-                    starter+=levelSize[i];
-                }
-                for(int i=starter;i<starter+levelSize[level];i++){
-                    if(reason[i]==v){
-                        levelSize[level]--;
-                        reason.erase(reason.begin()+i);
-                        literalToLevel.erase(v);
-                        if(levelSize[level]==0){
-                            for(int v=level+1;v<=currentLevel;v++){
-                                for(int j=0;j<levelSize[v];j++,i++)
-                                    literalToLevel[reason[i]]--;
-                                levelSize[v-1]=levelSize[v];
-                            }
-                            levelSize.erase(currentLevel);
-                            currentLevel--;
+        // void erase(int v,int level){
+        //     if(literalToLevel.count(v)>0 && literalToLevel[v]==level){
+        //         int starter=0;
+        //         for(int i=0;i<level;i++){
+        //             starter+=levelSize[i];
+        //         }
+        //         for(int i=starter;i<starter+levelSize[level];i++){
+        //             if(reason[i]==v){
+        //                 levelSize[level]--;
+        //                 reason.erase(reason.begin()+i);
+        //                 literalToLevel.erase(v);
+        //                 if(levelSize[level]==0){
+        //                     for(int v=level+1;v<=currentLevel;v++){
+        //                         for(int j=0;j<levelSize[v];j++,i++)
+        //                             literalToLevel[reason[i]]--;
+        //                         levelSize[v-1]=levelSize[v];
+        //                     }
+        //                     levelSize.erase(currentLevel);
+        //                     currentLevel--;
 
-                        }
-                        return;
-                    }
-                }
-            }
-        }
+        //                 }
+        //                 return;
+        //             }
+        //         }
+        //     }
+        // }
         unsigned size()const{
             return reason.size();
         }
@@ -77,7 +78,7 @@ class ReasonTable{
             }
         }
         int getCurrentLevel()const{ return currentLevel;}
-        void addLevel(){currentLevel++;}
+        void addLevel(){currentLevel++;levelSize[currentLevel]=0;std::cout<<"Current_Level: "<<currentLevel<<std::endl;}
         int level(int v) {if(literalToLevel.count(v)>0) return literalToLevel[v]; return -1;}
         std::vector<int>::iterator begin(){return reason.begin();}
         std::vector<int>::iterator end(){return reason.end();}

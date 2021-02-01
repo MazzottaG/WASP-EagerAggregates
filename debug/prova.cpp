@@ -38,16 +38,14 @@ int main(){
     r.addLevel();
     r.insert(4);
     r.insert(1);
+    std::vector<int>rr;
+    rr.insert(rr.end(),r.begin(), r.end());
+    rr.push_back(3);
+    rr.push_back(5);
 
-    r.eraseCurrentLevel();
     r.print();
-    r.eraseCurrentLevel();
-    r.print();
-    r.eraseCurrentLevel();
-    r.print();
-    r.eraseCurrentLevel();
-    r.print();
-    r.eraseCurrentLevel();
-    r.print();
+    for(int v : rr){
+        std::cout << v << " ";
+    }                 
 }
 
