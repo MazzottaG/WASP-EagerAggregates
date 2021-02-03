@@ -36,7 +36,6 @@ class ReasonTable{
                 levelSize.erase(currentLevel);
                 currentLevel--;
             }
-            std::cout<<"Current_Level: "<<currentLevel<<std::endl;
         }
         // void erase(int v,int level){
         //     if(literalToLevel.count(v)>0 && literalToLevel[v]==level){
@@ -78,7 +77,7 @@ class ReasonTable{
             }
         }
         int getCurrentLevel()const{ return currentLevel;}
-        void addLevel(){currentLevel++;levelSize[currentLevel]=0;std::cout<<"Current_Level: "<<currentLevel<<std::endl;}
+        void addLevel(){currentLevel++;}
         int level(int v) {if(literalToLevel.count(v)>0) return literalToLevel[v]; return -1;}
         std::vector<int>::iterator begin(){return reason.begin();}
         std::vector<int>::iterator end(){return reason.end();}

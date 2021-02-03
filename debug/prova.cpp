@@ -28,24 +28,60 @@ void backTrack(std::set<int> trueLit,std::set<int> falseLit,const std::unordered
 int main(){
     ReasonTable r;
     r.addLevel();
-
+    //0 vuoto
     r.addLevel();
+    r.insert(1);
+    r.insert(2);
+    //1 pieno
+    r.addLevel();
+    //2 vuoto
+    r.addLevel();
+    //3 vuoto
+    r.addLevel();
+    //4 vuoto
+    r.addLevel();
+    r.insert(3);
+    r.insert(4);
+    //5 pieno
+
+    r.eraseCurrentLevel();
+
+    r.eraseCurrentLevel();
+    
+    r.eraseCurrentLevel();
+
+    r.eraseCurrentLevel();
+
+    r.eraseCurrentLevel();
+    r.eraseCurrentLevel();
+    r.eraseCurrentLevel();
+
+    r.addLevel(); // -> -1+1
+    r.insert(3);
+    r.insert(4);
+    //0 pieno
+    r.addLevel(); //->0+1
+    //1 vuoto
+    r.addLevel(); // ->1
     r.insert(2);
     r.insert(1);
+    //2 pieno
+    r.addLevel(); //1+1
+    //
+    r.addLevel(); //2
+    r.addLevel(); //2
+    
+    r.eraseCurrentLevel();
+    r.eraseCurrentLevel();
+    r.eraseCurrentLevel();
 
     r.addLevel();
-    r.addLevel();
-    r.addLevel();
-    r.insert(4);
-    r.insert(1);
-    std::vector<int>rr;
-    rr.insert(rr.end(),r.begin(), r.end());
-    rr.push_back(3);
-    rr.push_back(5);
+    r.insert(0);
+    r.eraseCurrentLevel();
+    r.eraseCurrentLevel();
+    r.eraseCurrentLevel();
+    r.eraseCurrentLevel();
+    
 
-    r.print();
-    for(int v : rr){
-        std::cout << v << " ";
-    }                 
 }
 

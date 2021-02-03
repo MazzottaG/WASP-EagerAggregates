@@ -64,6 +64,7 @@ ExternalPropagator::ExternalPropagator(
     Solver& solver,
     string scriptDirectory ) : Propagator()
 {
+    std::cout<<filename<<std::endl;
     fn = new char[ filename.length() + 1 ];
     strcpy( fn, filename.c_str() );
     interpreter = NULL;
