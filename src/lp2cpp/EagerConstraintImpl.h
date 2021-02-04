@@ -27,6 +27,7 @@ class EagerConstraintImpl : public EagerConstraint {
 public:
     EagerConstraintImpl();
     virtual ~EagerConstraintImpl();
+    virtual bool check_postponed()const{return executionManager.postponedReason();}
     virtual void setFilename(const std::string & executablePath, const std::string & filename);
     virtual void onLiteralTrue(int var, int decisionLevel, std::vector<int> & propagatedLiterals);
     virtual void onLiteralsUndefined(const std::vector<int> & lits);
@@ -36,6 +37,7 @@ public:
     virtual void simplifyAtLevelZero(std::vector<int> & output);
     virtual const std::vector<unsigned int> & getVariablesToFreeze();
     virtual const std::string & getFilepath() const;
+    virtual Reason* getPostponedeReason(){return executionManager.getPostponedeReason();}
 private:
     
     void performCompilation();

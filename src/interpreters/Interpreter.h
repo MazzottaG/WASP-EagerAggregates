@@ -3,7 +3,9 @@
 
 #include <string>
 #include <vector>
+#include<cassert>
 using namespace std;
+class Reason;
 
 class Interpreter
 {
@@ -34,6 +36,7 @@ class Interpreter
         //Method supported only by python
         virtual void addElementInMap( const string&, const string&, unsigned int ) {}
         virtual bool checkAttribute( const string& ) const { return false; }
+        virtual Reason* computePostponedReason(){assert(0); return nullptr;}
 };
 
 #endif

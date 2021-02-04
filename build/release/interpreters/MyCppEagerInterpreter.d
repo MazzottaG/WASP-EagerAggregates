@@ -22,6 +22,7 @@ build/release/interpreters/MyCppEagerInterpreter.o: \
  src/interpreters/../lp2cpp/datastructures/TupleWithoutReasons.h \
  src/interpreters/../lp2cpp/Executor.h \
  src/interpreters/../lp2cpp/language/Literal.h \
+ src/interpreters/../lp2cpp/../Reason.h \
  src/interpreters/../lp2cpp/CompilationManager.h \
  src/interpreters/../lp2cpp/parsing/AspCore2ProgramBuilder.h \
  src/interpreters/../lp2cpp/parsing/../DLV2libs/input/InputBuilder.h \

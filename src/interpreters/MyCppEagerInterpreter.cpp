@@ -67,7 +67,9 @@ void MyCppEagerInterpreter::callListMethod(const string& method_name, const vect
     }
 
 }
-
+Reason* MyCppEagerInterpreter::computePostponedReason(){
+    return eagerConstraint.getPostponedeReason();
+}
 void MyCppEagerInterpreter::callListMethod(const string&, const vector<int>&, vector< uint64_t >&) {
     assert(false);
 }
@@ -86,6 +88,9 @@ void MyCppEagerInterpreter::callVoidMethod(const string& method_name, int param1
 }
 
 bool MyCppEagerInterpreter::checkMethod(const string& method_name) const {
+    if(method_name == "##check_postponed"){
+        return eagerConstraint.check_postponed();
+    }
     return supportedMethods.count(method_name) ? true : false;
 
 }

@@ -4,6 +4,8 @@
 #include<set>
 #include <string>
 #include "../src/lp2cpp/datastructures/ReasonTable.h"
+#include "../src/lp2cpp/datastructures/TupleWithReasons.h"
+#include "../src/lp2cpp/datastructures/PredicateSet.h"
 using namespace std;
 void backTrack(std::set<int> trueLit,std::set<int> falseLit,const std::unordered_map<int,std::string>&varToLit,std::vector<int> toVisit,int current){
     if(current==toVisit.size()){
@@ -26,62 +28,21 @@ void backTrack(std::set<int> trueLit,std::set<int> falseLit,const std::unordered
     
 }
 int main(){
-    ReasonTable r;
-    r.addLevel();
-    //0 vuoto
-    r.addLevel();
-    r.insert(1);
-    r.insert(2);
-    //1 pieno
-    r.addLevel();
-    //2 vuoto
-    r.addLevel();
-    //3 vuoto
-    r.addLevel();
-    //4 vuoto
-    r.addLevel();
-    r.insert(3);
-    r.insert(4);
-    //5 pieno
 
-    r.eraseCurrentLevel();
-
-    r.eraseCurrentLevel();
-    
-    r.eraseCurrentLevel();
-
-    r.eraseCurrentLevel();
-
-    r.eraseCurrentLevel();
-    r.eraseCurrentLevel();
-    r.eraseCurrentLevel();
-
-    r.addLevel(); // -> -1+1
-    r.insert(3);
-    r.insert(4);
-    //0 pieno
-    r.addLevel(); //->0+1
-    //1 vuoto
-    r.addLevel(); // ->1
-    r.insert(2);
-    r.insert(1);
-    //2 pieno
-    r.addLevel(); //1+1
-    //
-    r.addLevel(); //2
-    r.addLevel(); //2
-    
-    r.eraseCurrentLevel();
-    r.eraseCurrentLevel();
-    r.eraseCurrentLevel();
-
-    r.addLevel();
-    r.insert(0);
-    r.eraseCurrentLevel();
-    r.eraseCurrentLevel();
-    r.eraseCurrentLevel();
-    r.eraseCurrentLevel();
-    
+   ReasonTable r;
+   r.addLevel();//not a(5)
+   r.insert(-5);
+   r.addLevel();//not a(4)
+   r.insert(-4);
+   r.addLevel();//not a(5)
+   r.insert(-3);
+   r.addLevel();//a(2)
+   r.addLevel();//not a(1)
+   r.insert(-1);
+   r.print();
+   
+   
+   
 
 }
 

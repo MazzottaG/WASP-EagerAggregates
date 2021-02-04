@@ -52,7 +52,7 @@ using namespace std;
 #define method_plugins_scriptdirectory "setScriptDirectory"
 
 #define attribute_plugins_atomNames "atomNames"
-
+class Reason;
 class ExternalPropagator : public Propagator
 {
     public:
@@ -81,6 +81,8 @@ class ExternalPropagator : public Propagator
         virtual uint64_t addWeakConstraints( const Solver& solver, vector< Clause* >& weakConstraints, vector< uint64_t >& weights_ );
         virtual bool isForLazyWeakConstraints() const { return check_addWeakConstraints; }
 
+        // Reason* getPostponedReason(){return interpreter->computePostponedReason();}
+        Reason* getPostponedReason(){return nullptr;}
     protected:
         ExternalPropagator();
         inline ExternalPropagator( const ExternalPropagator& orig );
@@ -108,6 +110,7 @@ class ExternalPropagator : public Propagator
         bool check_onAnswerSet;
         bool check_checkAnswerSet;
         bool check_checkPartialInterpretation;
+        bool check_postponed;
         bool check_getReasonForLiteral;
         bool check_getReason;
         bool check_getReasonForCheckFailure;

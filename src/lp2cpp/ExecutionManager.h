@@ -31,8 +31,9 @@
 #include "datastructures/AuxiliaryMap.h"
 #include <iostream>
 #include "Executor.h"
+#include "../Reason.h"
 
-class ExecutionManager {
+class ExecutionManager : public Reason {
 public:
     ExecutionManager();
     ~ExecutionManager();
@@ -53,10 +54,17 @@ public:
     void initCompiled();
     void simplifyAtLevelZero(std::vector<int>& output);
     void clearPropagations();
+    bool postponedReason()const{return false;}
+    Reason* getPostponedeReason(){return this;}
+    virtual void onLearning( const Solver& solver, Learning* strategy, Literal lit );
+    virtual bool onNavigatingLiteralForAllMarked( const Solver& solver, Learning* strategy, Literal lit );
+    virtual bool isLearned() const { return false; }
+    virtual ostream& print( ostream& o ) const;
+    virtual void onNavigatingForUnsatCore( const Solver& solver, vector< unsigned int >& visited, unsigned int numberOfCalls, Literal lit );
+    
 private:
     aspc::Executor* executor;
     void (*destroy)(aspc::Executor*);
-
 };
 
 #endif /* EXECUTIONMANAGER_H */

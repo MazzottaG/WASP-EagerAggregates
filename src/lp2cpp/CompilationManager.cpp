@@ -1027,7 +1027,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "std::unordered_map<std::vector<int>, int,TuplesHash> possibleNegativeSum["<<aggregateToStructure.size()<<"];\n";
     
     *out << ind << "std::unordered_map<std::vector<int>, int,TuplesHash> maxPossibleNegativeSum["<<aggregateToStructure.size()<<"];\n";
-    *out << ind << "int currentReasonLevel=-1;\n";
+    *out << ind << "int currentReasonLevel=0;\n";
 
     *out << ind++ << "Executor::~Executor() {\n";
     // for(const aspc::Rule & r : program.getRules()){
@@ -1376,7 +1376,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "const Tuple & tuple = atomsTable[uVar];\n";
         *out << ind << "std::unordered_map<const std::string*,int>::iterator sum_it;\n";
         *out << ind << "std::string minus = var < 0 ? \"-\" : \"\";\n";
-        *out << ind << "std::cout<<\"True \"<<minus;tuple.print();std::cout<<std::endl;\n";
+        // *out << ind << "std::cout<<\"True \"<<minus;tuple.print();std::cout<<std::endl;\n";
         // *out << ind << "std::cout<<\"True \"<<var<<std::endl;\n";
 
         
@@ -1442,6 +1442,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 *out << ind << "pair.second.addLevel();\n";
             *out << --ind << "}\n";
         *out << --ind << "}\n";
+
         *out << ind << "currentReasonLevel++;\n";
         for(const auto& pair: aggrIdentifierForAggregateBody){
             const aspc::ArithmeticRelationWithAggregate* aggr = (const aspc::ArithmeticRelationWithAggregate*) program.getRules()[pair.second[0].first].getFormulas()[pair.second[0].second];
@@ -1574,53 +1575,54 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                         *out << ind << "auxMap -> insert2(*insertResult.first);\n";
                                                     *out << --ind << "}\n";
                                                 *out << --ind << "}\n";
-                                            *out << --ind << "}\n"; 
-                                            //--------------------------END SAVING NEW TRUE JOIN TUPLE--------------------------
-                                            std::string sharedVarIndex;
-                                            for(unsigned v: sharedVariablesIndexesMap[key])
-                                                sharedVarIndex+=std::to_string(v)+"_";
-                                            std::string comma=sharedVarIndex==""? "":",";
-                                            *out << ind << "auto& trueSet = trueAggrVars["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
-                                            *out << ind << "auto& undefSet = undefAggrVars["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
-                                        
-                                            *out << ind++ << "if(undefSet.find(aggrKey)!=undefSet.end()){\n";
-                                                *out << ind << "undefSet.erase(aggrKey);\n";
-                                                if(aggregate->getAggregate().isSum()){
-                                                    *out << ind << "possibleSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]-=aggrKey[0];\n";
-                                                }
-                                            *out << --ind << "}\n";
-
-                                            *out << ind++ << "if(trueSet.find(aggrKey)==trueSet.end()){\n";
-                                                *out << ind << "trueSet.insert(aggrKey);\n";
-                                                if(aggregate->getAggregate().isSum()){
-                                                    *out << ind << "actualSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]+=aggrKey[0];\n";
-                                                }
-                                                //--------------------------UPDATE POSITIVE REASON STRUCTURE--------------------------
-                                                int buildIndex=0;
-
-                                                *out << ind << "auto& reas = positiveAggrReason["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
-                                                
-                                                *out << ind++ << "while(reas.getCurrentLevel()<currentReasonLevel)\n";
-                                                    *out << ind-- << "reas.addLevel();\n";
-                                                *out << ind << "reas.insert(var);\n";
-                                                // *out << ind << "tuple.print();std::cout<<\"Added to positive reason\"<<std::endl;\n";
-                                                for(const aspc::Literal& li : aggregate->getAggregate().getAggregateLiterals()){
-                                                    if(buildIndex!=startingLiteral){
-                                                        *out << ind++ << "{\n";
-                                                            *out << ind << "const auto & it = tupleToVar.find(*tuple"<<buildIndex<<");\n";
-                                                            *out << ind++ << "if(it != tupleToVar.end()) {\n";
-                                                                std::string sign = li.isNegated() ? "*-1":"";
-                                                                // *out << ind << "tuple"<<buildIndex<<"->print();std::cout<<\"Added to positive reason\"<<std::endl;\n";
-                                                                *out << ind << "reas.insert(it->second"<<sign<<");\n";
-                                                            *out << --ind << "}\n";
-                                                        *out << --ind << "}\n";
-                                                    }else{
+                                                //--------------------------END SAVING NEW TRUE JOIN TUPLE--------------------------
+                                                std::string sharedVarIndex;
+                                                for(unsigned v: sharedVariablesIndexesMap[key])
+                                                    sharedVarIndex+=std::to_string(v)+"_";
+                                                std::string comma=sharedVarIndex==""? "":",";
+                                                *out << ind << "auto& trueSet = trueAggrVars["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
+                                                *out << ind << "auto& undefSet = undefAggrVars["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
+                                            
+                                                *out << ind++ << "if(undefSet.find(aggrKey)!=undefSet.end()){\n";
+                                                    *out << ind << "undefSet.erase(aggrKey);\n";
+                                                    if(aggregate->getAggregate().isSum()){
+                                                        *out << ind << "possibleSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]-=aggrKey[0];\n";
                                                     }
-                                                    buildIndex++;
-                                                }
-                                                //--------------------------END UPDATE POSITIVE REASON STRUCTURE--------------------------
-                                            *out << --ind << "}\n";
-                                            //--------------------------END UPDATE AGGREGATE VARIABLE STRUCTURE--------------------------
+                                                *out << --ind << "}\n";
+
+                                                *out << ind++ << "if(trueSet.find(aggrKey)==trueSet.end()){\n";
+                                                    *out << ind << "trueSet.insert(aggrKey);\n";
+                                                    if(aggregate->getAggregate().isSum()){
+                                                        *out << ind << "actualSum["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}]+=aggrKey[0];\n";
+                                                    }
+                                                    //--------------------------UPDATE POSITIVE REASON STRUCTURE--------------------------
+                                                    int buildIndex=0;
+
+                                                    *out << ind << "auto& reas = positiveAggrReason["<<aggregateToStructure[aggregate->getJoinTupleName()+sharedVariablesMap[key]+aggregate->getAggrVarAsString()]<<"][{"<<sharedVariablesMap[key]<<"}];\n";
+                                                    
+                                                    *out << ind++ << "while(reas.getCurrentLevel()<currentReasonLevel)\n";
+                                                        *out << ind-- << "reas.addLevel();\n";
+                                                    *out << ind << "reas.insert(var);\n";
+                                                    // *out << ind << "tuple.print();std::cout<<\"Added to positive reason\"<<std::endl;\n";
+                                                    for(const aspc::Literal& li : aggregate->getAggregate().getAggregateLiterals()){
+                                                        if(buildIndex!=startingLiteral){
+                                                            *out << ind++ << "{\n";
+                                                                *out << ind << "const auto & it = tupleToVar.find(*tuple"<<buildIndex<<");\n";
+                                                                *out << ind++ << "if(it != tupleToVar.end()) {\n";
+                                                                    std::string sign = li.isNegated() ? "*-1":"";
+                                                                    // *out << ind << "tuple"<<buildIndex<<"->print();std::cout<<\"Added to positive reason\"<<std::endl;\n";
+                                                                    *out << ind << "reas.insert(it->second"<<sign<<");\n";
+                                                                *out << --ind << "}\n";
+                                                            *out << --ind << "}\n";
+                                                        }else{
+                                                        }
+                                                        buildIndex++;
+                                                    }
+                                                    //--------------------------END UPDATE POSITIVE REASON STRUCTURE--------------------------
+                                                *out << --ind << "}\n";
+                                                //--------------------------END UPDATE AGGREGATE VARIABLE STRUCTURE--------------------------
+                                            *out << --ind << "}\n"; 
+                                            
                                         }
                                         *out << --ind << "}else{\n";
                                         {
@@ -1808,7 +1810,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                             *out << --ind << "}\n";
                             }
                         *out << --ind << "}\n";
-
                         boundVars.clear();
                         *out << ind << "const std::vector<const Tuple*>& tuplesNU = nu_"<<aggr->getJoinTupleName()<<aggr->getAggrLitProj(startingLiteral)<<".getValues({";
                         for(int i=0;i<starter.getAriety();i++){
@@ -1933,6 +1934,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 litIndex++;
             }
         }
+
+        // *out << ind << "positiveAggrReason[0][{}].print();\n";
+        // *out << ind << "std::cout<<\"Current level \"<<positiveAggrReason[0][{}].getCurrentLevel()<<std::endl;\n";
+        // *out << ind << "std::cout<<\"End lit true\"<<std::endl;\n";
         // *out << ind << "std::cout<<\"Negative aggr reason: \"<<negativeAggrReason[0][{}].size()<<std::endl;\n";
         // *out << ind << "for(auto& pair :negativeAggrReason[0]){ std::cout<<pair.first.size()<<std::endl; for(int v: pair.second) {unsigned uv = v > 0 ? v : -v; atomsTable[uv].print();}std::cout<<std::endl;}\n";
         // *out << ind << "std::cout<<\"Positive aggr reason: \"<<positiveAggrReason[0][{}].size()<<std::endl;\n";
@@ -1967,7 +1972,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::unordered_map<const std::string*,int>::iterator sum_it;\n";
         *out << ind << "std::string minus = var < 0 ? \"-\" : \"\";\n";
 
-        *out << ind << "std::cout<<\"Undef \"<<minus;tuple.print();std::cout<<std::endl;\n";
+        // *out << ind << "std::cout<<\"Undef \"<<minus;tuple.print();std::cout<<std::endl;\n";
         // *out << ind << "std::cout<<\"Unde \"<<minus<<var<<std::endl;\n";
         // *out << ind << "std::cout<<\"Undef \"<<std::endl;\n";
 #ifdef EAGER_DEBUG
@@ -2029,7 +2034,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 *out << ind << "pair.second.eraseCurrentLevel();\n";
             *out << --ind << "}\n";
         *out << --ind << "}\n";
-        *out << ind++ << "if(currentReasonLevel>=0)\n";
+        *out << ind++ << "if(currentReasonLevel>0)\n";
             *out << ind-- << "currentReasonLevel--;\n";
 
         for(const auto& pair: aggrIdentifierForAggregateBody){
@@ -2494,6 +2499,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 }
             }
         }
+        // *out << ind << "positiveAggrReason[0][{}].print();\n";
+        // *out << ind << "std::cout<<\"Current level \"<<positiveAggrReason[0][{}].getCurrentLevel()<<std::endl;\n";
         // *out << ind << "std::cout<<\"Negative aggr reason: \"<<negativeAggrReason[0][{}].size()<<std::endl;\n";
         // *out << ind << "for(auto& pair :negativeAggrReason[0]){ for(int v: pair.second) {unsigned uv = v > 0 ? v : -v; atomsTable[uv].print();}std::cout<<std::endl;}\n";
         // *out << ind << "std::cout<<\"Positive aggr reason: \"<<positiveAggrReason[0][{}].size()<<std::endl;\n";
@@ -3580,13 +3587,18 @@ void CompilationManager::propAggr(const aspc::ArithmeticRelationWithAggregate* a
                             *out << "undefinedTuples->at(iUndef)->at("<<i+buildAriety<<")";
                         }
                         *out << "},&_"<<build.getPredicateName()<<");\n";
+                        std::string same_of_start="";
+                        if(starter.getPredicateName() == build.getPredicateName() && starter.isNegated()==build.isNegated())
+                            same_of_start= " || *tupleU"+std::to_string(startLit)+"==tuple"+std::to_string(buildLit);
 
                         if(build.isNegated()){
-                            *out << ind++ << "if(w"<<build.getPredicateName()<<".find(tuple"<<buildLit<<")==NULL && u"<<build.getPredicateName()<<".find(tuple"<<buildLit<<")==NULL){\n";
+                            *out << ind++ << "if((w"<<build.getPredicateName()<<".find(tuple"<<buildLit<<")==NULL && u"<<build.getPredicateName()<<".find(tuple"<<buildLit<<")==NULL) "<<same_of_start<<"){\n";
                         }else{
-                            *out << ind++ << "if(w"<<build.getPredicateName()<<".find(tuple"<<buildLit<<")!=NULL){\n";
+                            *out << ind++ << "if((w"<<build.getPredicateName()<<".find(tuple"<<buildLit<<")!=NULL) "<<same_of_start<<"){\n";
                         }
-
+                        if(starter.getPredicateName() == build.getPredicateName() && starter.isNegated()==build.isNegated()){
+                            *out << ind++ << "if(*tupleU"<<startLit<<"!=tuple"<<buildLit<<"){\n";
+                        }
                         *out << ind << "const auto & it"<<buildLit<<" = tupleToVar.find(tuple"<<buildLit<<");\n";
                         *out << ind++ << "if(it"<<buildLit<<" != tupleToVar.end()) {\n";
                             if(build.isNegated()){
@@ -3595,7 +3607,9 @@ void CompilationManager::propAggr(const aspc::ArithmeticRelationWithAggregate* a
                                 *out << ind << "reas.push_back(it"<<buildLit<<"->second);\n";
                             }
                         *out << --ind << "}\n";
-                    
+                        if(starter.getPredicateName() == build.getPredicateName() && starter.isNegated()==build.isNegated()){
+                            *out << --ind << "}\n";
+                        }
 
                     }
                     buildLit++;
@@ -3786,10 +3800,9 @@ void CompilationManager::propAggr(const aspc::ArithmeticRelationWithAggregate* a
                     *out << ind++ << "if(it != tupleToVar.end()) {\n";
                         *out << ind << "propagated=true;\n";
                         *out << ind << "int sign = "<<aggrTupleUNegated<<";\n";
-                        // if(withReason){
-                            // *out<<ind<<"if("<<reason<<".size() != wtd.getTuples().size()+wfactor.getTuples().size()+3) std::cout<<\"propagation reason mismatch: \"<<std::endl;\n";
-                            // *out << ind << "for(int v : "<<reason<<") {if (v < 0){ std::cout<<\"-\"; v*=-1;}atomsTable[v].print();}\n";
-                        // }
+                        if(withReason){
+                            *out << ind << "for(int v : "<<reason<<") {if (v < 0){ std::cout<<\"-\"; v*=-1;}atomsTable[v].print();}\n";
+                        }
                         *out << ind << "std::cout<<\"Propagation positive "<<ruleId<<" \";aggrTupleU"<<litIndex<<"->print();std::cout<<std::endl;\n";
                         *out << ind << "found=true;\n";
                         *out << ind << "propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>("<<reason<<")}).first->second;\n";
@@ -3852,10 +3865,10 @@ void CompilationManager::propAggr(const aspc::ArithmeticRelationWithAggregate* a
                         *out << ind++ << "if(it != tupleToVar.end()) {\n";
                             *out << ind << "propagated=true;\n";
                             *out << ind << "int sign = "<<aggrTupleUNegated<<";\n";
-                            // if(withReason){
-                            //     // *out<<ind<<"if("<<reason<<".size() != wtd.getTuples().size()+wfactor.getTuples().size()+3) std::cout<<\"propagation reason mismatch: \"<<std::endl;\n";
-                            //     *out << ind << "for(int v : "<<reason<<") {if (v < 0){ std::cout<<\"-\"; v*=-1;}atomsTable[v].print();}\n";
-                            // }
+                            if(withReason){
+                                // *out<<ind<<"if("<<reason<<".size() != wtd.getTuples().size()+wfactor.getTuples().size()+3) std::cout<<\"propagation reason mismatch: \"<<std::endl;\n";
+                                *out << ind << "for(int v : "<<reason<<") {if (v < 0){ std::cout<<\"-\"; v*=-1;}atomsTable[v].print();}\n";
+                            }
                             *out << ind << "std::cout<<\"Propagation positive negative join"<<ruleId<<" \";tuple"<<start_lit<<".print();std::cout<<std::endl;\n";
                             *out << ind << "propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>("<<reason<<")}).first->second;\n";
                         *out << --ind <<"}\n";
@@ -3895,12 +3908,20 @@ void CompilationManager::propAggr(const aspc::ArithmeticRelationWithAggregate* a
                         }
                         *out << "},&_"<<build.getPredicateName()<<");\n";
 
+                        std::string same_of_start="";
+                        if(starter.getPredicateName() == build.getPredicateName() && starter.isNegated()==build.isNegated())
+                            same_of_start= " || *tupleU"+std::to_string(startLit)+"==tuple"+std::to_string(buildLit);
+
                         if(build.isNegated()){
-                            *out << ind++ << "if(w"<<build.getPredicateName()<<".find(tuple"<<buildLit<<")==NULL && u"<<build.getPredicateName()<<".find(tuple"<<buildLit<<")==NULL){\n";
+                            *out << ind++ << "if((w"<<build.getPredicateName()<<".find(tuple"<<buildLit<<")==NULL && u"<<build.getPredicateName()<<".find(tuple"<<buildLit<<")==NULL) "<<same_of_start<<"){\n";
                         }else{
-                            *out << ind++ << "if(w"<<build.getPredicateName()<<".find(tuple"<<buildLit<<")!=NULL){\n";
+                            *out << ind++ << "if((w"<<build.getPredicateName()<<".find(tuple"<<buildLit<<")!=NULL) "<<same_of_start<<"){\n";
                         }
+
                         if(withReason){
+                            if(starter.getPredicateName() == build.getPredicateName() && starter.isNegated()==build.isNegated()){
+                                *out << ind++ << "if(*tupleU"<<startLit<<"!=tuple"<<buildLit<<"){\n";
+                            }
                             *out << ind << "const auto & it"<<buildLit<<" = tupleToVar.find(tuple"<<buildLit<<");\n";
                             *out << ind++ << "if(it"<<buildLit<<" != tupleToVar.end()) {\n";
                                 if(build.isNegated()){
@@ -3909,6 +3930,9 @@ void CompilationManager::propAggr(const aspc::ArithmeticRelationWithAggregate* a
                                     *out << ind << reason << ".push_back(it"<<buildLit<<"->second);\n";
                                 }
                             *out << --ind << "}\n";
+                            if(starter.getPredicateName() == build.getPredicateName() && starter.isNegated()==build.isNegated()){
+                                *out << --ind << "}\n";
+                            }
                         }
                         
                     
@@ -4486,6 +4510,35 @@ void CompilationManager::evaluationStartingFromAggregate(const aspc::Rule & r,st
             *out << ind++ << "for(const auto & sharedVarTuple"<<r.getRuleId()<<"_"<<joinOrder[0]<<" : sharedVariables_"<<r.getRuleId()<<"_ToAggregate_"<<joinOrder[0]<<"){\n";
             // *out << ind << "std::cout<<\"true sharedVars \"<<sharedVarTuple.second->first->size()<<std::endl;\n";
             // *out << ind << "std::cout<<\"undef sharedVars \"<<sharedVarTuple.second->second->size()<<std::endl;\n";
+            for(const aspc::Literal& l : starter->getAggregate().getAggregateLiterals()){
+                bool boundSharedVars=true;
+                for(int i:sharedVariablesIndexesMap[aggrIdentifier]){
+                    if(l.getVariables().count(starter->getTermAt(i))<=0){
+                        boundSharedVars=false;
+                        break;
+                    }
+                }
+                if(boundSharedVars){
+                    *out << ind++ << "if(starter.getPredicateName() == &_"<<l.getPredicateName()<<" && (";
+                    int vIndex=0;
+                    for(int i:sharedVariablesIndexesMap[aggrIdentifier]){
+
+                        if(vIndex>0)
+                            *out << " || ";
+                        for(int j=0;j<l.getAriety();j++){
+                            if(starter->getTermAt(i)==l.getTermAt(j)){
+                                *out << "sharedVarTuple"<<r.getRuleId()<<"_"<<joinOrder[0]<<"["<<vIndex<<"] != starter["<<j<<"]";
+                                break;
+                            }
+                        }
+                        vIndex++;
+                    }
+                    *out << "))\n";
+                        *out << ind-- << "continue;\n";
+                }
+            }
+                
+            
             closingParenthesis++;
                 int pos = sharedVars.find(',');
                 int var=0;
@@ -4533,7 +4586,7 @@ void CompilationManager::evaluationStartingFromAggregate(const aspc::Rule & r,st
         }
         if(boundStarter)
             printAggregateTrueIf(aggrIdentifier,starter,joinTupleName,op,boundStarter);
-
+            // *out << ind << "std::cout << \"Aggr true\"<<std::endl;\n";
         bool propFirst = false;
         bool notPropFirst = true;
         bool multiProp = false;
@@ -4800,8 +4853,8 @@ void CompilationManager::evaluationStartingFromAggregate(const aspc::Rule & r,st
                 printAggregateTrueIf(identifier,aggr,aggr->getJoinTupleName(),".",true);
             }
             if(!boundStarter){
-
                 printAggregateTrueIf(aggrIdentifier,starter,joinTupleName,op,true);
+                
                     // if(starter->isNegated())
                     //     *out << ind << "std::cout << undefPlusTrue << \" Starting True\" << std::endl;\n";
                     // else
@@ -4870,7 +4923,9 @@ void CompilationManager::evaluationStartingFromAggregate(const aspc::Rule & r,st
                     // else
                     //     *out << ind << "std::cout << actualSum["<<starter->getJoinTupleName()<<sharedVariablesMap[aggrIdentifier]<<"\"][{"<<sharedVariablesMap[aggrIdentifier]<<"}]<<\" Starting not true <<std::endl;\n";
                     *out << ind << "bool propagated=false;\n";
+
                     printCanPropagateIf(aggrIdentifier,starter,".",true);
+                        
                         // if(starter->isNegated())
                             // *out << ind << "std::cout<<\"UndefPlusTrue: \"<<undefPlusTrue<<std::endl;\n";
                         *out << ind++ << "if(tupleU == NULL){\n";
@@ -4889,7 +4944,7 @@ void CompilationManager::evaluationStartingFromAggregate(const aspc::Rule & r,st
                                 }
 
 
-//            *out << ind << "std::cout<<\"Local reason size with aggr: \"<<local_reason.size();\n";
+                                //*out << ind << "std::cout<<\"Local reason size with aggr: \"<<local_reason.size();\n";
                                 *out << ind << "const auto & it = tupleToVar.find(Tuple(starter));\n";
                                 *out << ind++ << "if(it!=tupleToVar.end()){\n";
                                     *out << ind << "local_reason.push_back(it->second * (starter.isNegated() ? -1:1));\n";
@@ -4909,6 +4964,7 @@ void CompilationManager::evaluationStartingFromAggregate(const aspc::Rule & r,st
                                         *out << --ind <<"}\n";
                                     }
                                 }
+                        
                             }
                             // *out << ind << "std::cout<<\"prop not tupleU\"<<std::endl;\n";
                             propAggr(starter,aggrIdentifier,reason,".");
@@ -5004,27 +5060,39 @@ void CompilationManager::evaluationStartingFromAggregate(const aspc::Rule & r,st
                 for(std::string v :sharedVarsSet){
                     boundVariables.insert(v);
                 }
+                if(!starter->getAggregate().isSum()){
+                    printCanPropagateIf(aggrIdentifier,starter,".",boundStarter);
+                    
+                }else{
+                    *out << ind++ << "else{\n";
+                    
+                }
                 *out << ind << "bool propagated=false;\n";
-                printCanPropagateIf(aggrIdentifier,starter,".",boundStarter);
+
                 notPropFirst=false;
 
             }else if(!propFirst){
                     // *out << ind << "std::cout<<\"Starting prop\"<<std::endl;\n";
                     // *out << ind << "tuple1->print();starter.print();std::cout<<std::endl;\n";
+
+                    // *out << ind << "std::cout << \"Aggr can prop\"<<std::endl;\n";
                     *out << ind++ << "if(tupleU == NULL){\n";
                         // *out << ind << "std::cout<<\"not tupleU\"<<std::endl;\n";
                         if(reason){
                         *out << ind << "std::vector<int> local_reason;\n";
                         for(const aspc::ArithmeticRelationWithAggregate& aggr : r.getArithmeticRelationsWithAggregate()){
                             std::string identifier = std::to_string(r.getRuleId())+":"+std::to_string(aggr.getFormulaIndex());
-                            if(aggr.isNegated())
+                            if(aggr.isNegated()){
                                 // *out << ind << "std::set<int> aggrReason"<<aggr.getFormulaIndex()<<"(negativeAggrReason["<<aggregateToStructure[aggr.getJoinTupleName()+sharedVariablesMap[identifier]]<<"][{"<<sharedVariablesMap[identifier]<<"}]);\n";
+                                *out << ind << "negativeAggrReason["<<aggregateToStructure[aggr.getJoinTupleName()+sharedVariablesMap[identifier]+aggr.getAggrVarAsString()]<<"][{"<<sharedVariablesMap[identifier]<<"}].print();\n";
                                 *out << ind << "local_reason.insert(local_reason.end(),negativeAggrReason["<<aggregateToStructure[aggr.getJoinTupleName()+sharedVariablesMap[identifier]+aggr.getAggrVarAsString()]<<"][{"<<sharedVariablesMap[identifier]<<"}].begin(), negativeAggrReason["<<aggregateToStructure[aggr.getJoinTupleName()+sharedVariablesMap[identifier]+aggr.getAggrVarAsString()]<<"][{"<<sharedVariablesMap[identifier]<<"}].end());\n";
-                            
+                            }
                             else
                                 // *out << ind << "std::set<int> aggrReason"<<aggr.getFormulaIndex()<<"(positiveAggrReason["<<aggregateToStructure[aggr.getJoinTupleName()+sharedVariablesMap[identifier]]<<"][{"<<sharedVariablesMap[identifier]<<"}]);\n";
                                 *out << ind << "local_reason.insert(local_reason.end(),positiveAggrReason["<<aggregateToStructure[aggr.getJoinTupleName()+sharedVariablesMap[identifier]+aggr.getAggrVarAsString()]<<"][{"<<sharedVariablesMap[identifier]<<"}].begin(), positiveAggrReason["<<aggregateToStructure[aggr.getJoinTupleName()+sharedVariablesMap[identifier]+aggr.getAggrVarAsString()]<<"][{"<<sharedVariablesMap[identifier]<<"}].end());\n";
                             // buildReason(identifier,&aggr,false);
+                        // *out << ind << "std::cout << \"Reason computed\"<<std::endl;\n";
+
                         }
 
 
@@ -5061,16 +5129,16 @@ void CompilationManager::evaluationStartingFromAggregate(const aspc::Rule & r,st
                     closingParenthesis--;
                 }
                 *out << --ind <<"}//close can prop if\n";
-                if(starter->getAggregate().getAggregateLiterals().size()>1){
-                    if(!starter->getAggregate().isSum())
-                    *out << ind++ << "else{\n";
-                    else
-                        *out << ind++ << "if(!propagated){\n";
+                // if(starter->getAggregate().getAggregateLiterals().size()>1){
+                //     if(!starter->getAggregate().isSum())
+                //     *out << ind++ << "else{\n";
+                //     else
+                //         *out << ind++ << "if(!propagated){\n";
 
-                }else{
-                    multiProp=true;
-                }
-
+                // }else{
+                //     multiProp=true;
+                // }
+                multiProp=true;
                 boundVariables.clear();
                 for(std::string v :sharedVarsSet){
                     boundVariables.insert(v);
@@ -5096,7 +5164,6 @@ void CompilationManager::evaluationStartingFromAggregate(const aspc::Rule & r,st
             *out << --ind <<"}\n";
             closingParenthesis--;
         }
-        // *out << ind << "std::cout<<\"Out Starting from aggr\"<<std::endl;\n";
 }
 void CompilationManager::compileConstraintWithAggregate(const aspc::Rule & r, unsigned start, const aspc::Program & p){
 

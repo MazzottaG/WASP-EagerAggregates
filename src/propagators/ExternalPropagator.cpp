@@ -47,6 +47,7 @@ ExternalPropagator::ExternalPropagator()
     check_onAnswerSet = false;
     check_checkAnswerSet = false;
     check_checkPartialInterpretation = false;
+    check_postponed = false;
     check_getReasonForLiteral = false;
     check_getReasonForCheckFailure = false;
     check_onNewLowerBound = false;
@@ -92,6 +93,7 @@ ExternalPropagator::ExternalPropagator(
     check_onNewUpperBound = interpreter->checkMethod( method_plugins_foundUB );
     check_onLitsTrue = interpreter->checkMethod( method_plugins_onLitsTrue );
     check_onLitTrue = interpreter->checkMethod( method_plugins_onLitTrue );
+    check_postponed = interpreter->checkMethod( "##check_postponed" );
     check_getReasonForLiteral = interpreter->checkMethod( method_plugins_getReasonForLiteral );
     check_getReason = interpreter->checkMethod( method_plugins_getReason );
     check_endPropagation = interpreter->checkMethod( method_plugins_endPropagation );
@@ -637,10 +639,10 @@ ExternalPropagator::computeReason(
         handleConflict( solver, conflictLiteral );
         return;
     }
-    
+
     Clause* reason = NULL;
     if( !check_getReasonForLiteral )
-    {
+    { 
         reason = getReason( solver, Literal::null );
         // clausesToDelete.push_back( reason );
         addReasonToDelete(reason, solver.getCurrentDecisionLevel());
@@ -654,11 +656,17 @@ ExternalPropagator::computeReason(
         
         if( check_getReasonForLiteral )
         {
-            Clause* r = getReason( solver, lit );
-            solver.assignLiteral( r );
-            // clausesToDelete.push_back( r );
-            addReasonToDelete(r, solver.getCurrentDecisionLevel());
-            // std::cout<<"Added to clauses to delete"<<std::endl;
+            if(check_postponed){
+                solver.assignLiteral(lit,getPostponedReason());
+            }else{
+               Clause* r = getReason( solver, lit );
+                solver.assignLiteral( r );
+                // clausesToDelete.push_back( r );
+                addReasonToDelete(r, solver.getCurrentDecisionLevel());
+                // std::cout<<"Added to clauses to delete"<<std::endl; 
+            }
+
+            
         }
         else
             solver.assignLiteral( lit, reason );

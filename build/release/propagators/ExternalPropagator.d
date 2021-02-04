@@ -89,6 +89,7 @@ build/release/propagators/ExternalPropagator.o: \
  src/propagators/../interpreters/../lp2cpp/datastructures/TupleWithoutReasons.h \
  src/propagators/../interpreters/../lp2cpp/Executor.h \
  src/propagators/../interpreters/../lp2cpp/language/Literal.h \
+ src/propagators/../interpreters/../lp2cpp/../Reason.h \
  src/propagators/../interpreters/../lp2cpp/CompilationManager.h \
  src/propagators/../interpreters/../lp2cpp/parsing/AspCore2ProgramBuilder.h \
  src/propagators/../interpreters/../lp2cpp/parsing/../DLV2libs/input/InputBuilder.h \

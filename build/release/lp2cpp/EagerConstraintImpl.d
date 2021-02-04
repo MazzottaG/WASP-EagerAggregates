@@ -13,7 +13,8 @@ build/release/lp2cpp/EagerConstraintImpl.o: \
  src/lp2cpp/language/ArithmeticRelationWithAggregate.h \
  src/lp2cpp/language/Aggregate.h src/lp2cpp/datastructures/AuxiliaryMap.h \
  src/lp2cpp/datastructures/TupleWithoutReasons.h src/lp2cpp/Executor.h \
- src/lp2cpp/language/Literal.h src/lp2cpp/CompilationManager.h \
+ src/lp2cpp/language/Literal.h src/lp2cpp/../Reason.h \
+ src/lp2cpp/CompilationManager.h \
  src/lp2cpp/parsing/AspCore2ProgramBuilder.h \
  src/lp2cpp/parsing/../DLV2libs/input/InputBuilder.h \
  src/lp2cpp/parsing/../language/Program.h \

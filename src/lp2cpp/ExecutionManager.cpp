@@ -32,6 +32,7 @@
 #include "language/Program.h"
 #include "utils/FilesManagement.h"
 #include <cassert>
+#include "../Literal.h"
 
 using namespace std;
 
@@ -62,7 +63,18 @@ void ExecutionManager::launchExecutorOnFile(const char *filename) {
         cout << "\n";
     }
 }
+void ExecutionManager::onLearning( const Solver& solver, Learning* strategy, Literal lit ){
+    
+}
+bool ExecutionManager::onNavigatingLiteralForAllMarked( const Solver& solver, Learning* strategy, Literal lit ) {
 
+}
+ostream& ExecutionManager::print( ostream& o ) const{
+
+}
+void ExecutionManager::onNavigatingForUnsatCore( const Solver& solver, vector< unsigned int >& visited, unsigned int numberOfCalls, Literal lit ){
+
+}
 void ExecutionManager::parseFactsAndExecute(const char *filename) {
     DLV2::InputDirector director;
     AspCore2InstanceBuilder* builder = new AspCore2InstanceBuilder();
