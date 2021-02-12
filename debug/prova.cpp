@@ -34,7 +34,7 @@ int main(){
    r.insert(-5);
    r.addLevel();//not a(4)
    r.insert(-4);
-   r.addLevel();//not a(5)
+   r.addLevel();//not a(3)
    r.insert(-3);
    r.addLevel();//a(2)
    r.addLevel();//not a(1)

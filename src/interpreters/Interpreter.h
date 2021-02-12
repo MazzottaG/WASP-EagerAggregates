@@ -4,9 +4,10 @@
 #include <string>
 #include <vector>
 #include<cassert>
+#include "../Literal.h"
 using namespace std;
 class Reason;
-
+class Literal;
 class Interpreter
 {
     public:
@@ -36,7 +37,8 @@ class Interpreter
         //Method supported only by python
         virtual void addElementInMap( const string&, const string&, unsigned int ) {}
         virtual bool checkAttribute( const string& ) const { return false; }
-        virtual Reason* computePostponedReason(){assert(0); return nullptr;}
+
+        virtual Reason* computePostponedReason(Literal){assert(0); return nullptr;}
 };
 
 #endif

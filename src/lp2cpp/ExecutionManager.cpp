@@ -33,6 +33,8 @@
 #include "utils/FilesManagement.h"
 #include <cassert>
 #include "../Literal.h"
+#include "../Clause.h"
+#include "../Solver.h"
 
 using namespace std;
 
@@ -64,16 +66,66 @@ void ExecutionManager::launchExecutorOnFile(const char *filename) {
     }
 }
 void ExecutionManager::onLearning( const Solver& solver, Learning* strategy, Literal lit ){
+    // std::cout << "onLearning" << lit.getId() <<std::endl;
     
+    std::vector<int> reason;
+    executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reason);
+    sort(reason.begin(),reason.end());
+    auto it = unique(reason.begin(),reason.end());
+    reason.resize(distance(reason.begin(),it));
+
+    for(int i : reason){
+        Literal l = Literal::createLiteralFromInt(-i);
+        if(solver.getDecisionLevel(l) > 0){
+            strategy->onNavigatingLiteral( l );
+        }
+    }
+}
+Reason* ExecutionManager::getPostponedeReason(Literal lit){
+    if(lit == Literal::null){
+        return this;
+    }
+    std::vector<int> reason;
+    executor->explainAggrLiteral(lit.getId(),reason);
+    // std::cout<<"reason size: "<<reason.size()<<std::endl;
+    sort(reason.begin(),reason.end());
+    auto it = unique(reason.begin(),reason.end());
+    reason.resize(distance(reason.begin(),it));
+
+    Clause* clause = new Clause();
+    clause->addLiteral(Literal::null);
+    for(int v : reason){
+        clause->addLiteral(Literal::createLiteralFromInt(-v));
+    }
+    return clause;
+
 }
 bool ExecutionManager::onNavigatingLiteralForAllMarked( const Solver& solver, Learning* strategy, Literal lit ) {
+    // std::cout << "onNavigatingLiteralForAllMarked" <<std::endl;
 
+    std::vector<int> reas ;
+    executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reas);
+    for(int i : reas){
+        Literal l = Literal::createLiteralFromInt(-i);
+        if( !strategy->onNavigatingLiteralForAllMarked( l ) )
+            return false;
+    }
+    return true;
 }
-ostream& ExecutionManager::print( ostream& o ) const{
-
+ostream& ExecutionManager::print( ostream& out ) const{
+    out << "Executor Manager" ;
+    return out ;
 }
 void ExecutionManager::onNavigatingForUnsatCore( const Solver& solver, vector< unsigned int >& visited, unsigned int numberOfCalls, Literal lit ){
-
+    // std::cout << "onNavigatingForUnsatCore" <<std::endl;
+    
+    std::vector<int> reas ;
+    executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reas);
+    for(int i : reas){
+        Var v = i>0 ? i : -i;
+        if( solver.getDecisionLevel( v ) > 0 )
+            visited[ v ] = numberOfCalls;
+    }
 }
 void ExecutionManager::parseFactsAndExecute(const char *filename) {
     DLV2::InputDirector director;
@@ -171,7 +223,13 @@ void ExecutionManager::onLiteralUndef(const aspc::Literal* l) {
 }
 
 const std::unordered_map<int, std::vector<int> > & ExecutionManager::getPropagatedLiteralsAndReasons() const {
+
     return executor->getPropagatedLiteralsAndReasons();
+}
+
+const std::vector<int> & ExecutionManager::getPropagatedLiterals() const {
+
+    return executor->getPropagatedLiterals();
 }
 
 void ExecutionManager::initCompiled() {

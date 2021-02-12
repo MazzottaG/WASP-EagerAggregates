@@ -1,0 +1,95 @@
+#ifndef POSTPONEDREASONDATA_H
+#define POSTPONEDREASONDATA_H
+#include <vector>
+
+class PostponedReasonData{
+    
+    public:
+        PostponedReasonData(std::vector<int> aggr,std::vector<bool> aggr_sign,int propLevel,std::vector<int> bodyReason,std::vector<int> sharedVars){
+            this->propagationLevel=propLevel;
+            setBodyReason(bodyReason);
+            setSharedVariables(sharedVars);
+            setAggregates(aggr,aggr_sign);
+        }
+        PostponedReasonData(){
+            propagationLevel=-1;
+        }
+        void clear(){
+            propagationLevel=-1;
+            bodyLit.clear();
+            sharedVariables.clear();
+            aggregates_id.clear();
+            aggregates_sign.clear();
+        }
+        void setAggregates(std::vector<int> aggr,std::vector<bool> aggr_sign){
+            aggregates_id.clear();
+            aggregates_sign.clear();
+            for(int i=0;i<aggr.size();i++){
+                aggregates_id.push_back(aggr[i]);
+                aggregates_sign.push_back(aggr_sign[i]);
+            }
+        }
+        std::vector<int> getAggregateId()const{return aggregates_id;}
+        std::vector<bool> getAggregateSign()const{return aggregates_sign;}
+        
+        int getPropagationLevel()const{return propagationLevel;}
+        void setPropagationLevel(int propLevel){this->propagationLevel=propLevel;}
+
+        const std::vector<int> & getBodyReason()const{return bodyLit;}
+        void setBodyReason(const std::vector<int> & bodyReason){ 
+            bodyLit.clear();
+            for(int v : bodyReason) 
+                this->bodyLit.push_back(v);
+        }
+
+        const std::vector<int> & getSharedVariables()const{return sharedVariables;}
+        void setSharedVariables(const std::vector<int> & sharedVars){ 
+            sharedVariables.clear();
+            for(int v : sharedVars) 
+                this->sharedVariables.push_back(v);
+        }
+
+        bool isPositive(int aggrId)const{return aggregates_sign[aggrId];}
+        void setPositive(int aggrId, bool pos){aggregates_sign[aggrId]=pos;}
+
+        PostponedReasonData(const PostponedReasonData& other){
+            setAggregates(other.getAggregateId(),other.getAggregateSign());
+            setPropagationLevel(other.getPropagationLevel());
+            setBodyReason(other.getBodyReason());
+            setSharedVariables(other.getSharedVariables());
+        }
+
+        PostponedReasonData operator=(const PostponedReasonData& other){
+            
+            setAggregates(other.getAggregateId(),other.getAggregateSign());
+            setPropagationLevel(other.getPropagationLevel());
+            setBodyReason(other.getBodyReason());
+            setSharedVariables(other.getSharedVariables());
+            return *this;
+        }
+        void print()const{
+            std::cout << "Propagation Data"<<std::endl;
+            std::cout << "Propagation Level: "<<propagationLevel<<std::endl;
+            for(int i=0;i<aggregates_id.size();i++){
+                std::string boolValue = aggregates_sign[i] ? "true":"false";
+                std::cout << "Aggr "<<aggregates_id[i]<<" "<<boolValue<<std::endl;
+            }
+            std::cout << "shared variables: " ;
+            for(int v : sharedVariables){
+                std::cout << v << " ";
+            }
+            std::cout << std::endl << "bodyReason: ";
+            for(int v : bodyLit){
+                std::cout << v << " ";
+            }
+            std::cout << std::endl;
+        }
+    private:
+        std::vector<int> aggregates_id;
+        std::vector<bool> aggregates_sign;
+
+        int propagationLevel;
+        std::vector<int> bodyLit;
+        std::vector<int> sharedVariables;
+};
+#endif

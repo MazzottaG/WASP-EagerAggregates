@@ -150,7 +150,6 @@ Solver::unroll(
         unrollLastVariable();
         toUnroll--;
     }
-    
     while( toPop > 0 )
     {
         unrollVector.pop_back();
@@ -571,6 +570,7 @@ Solver::shortPropagation(
     trace_msg( solving, 5, "Propagation of binary clauses for literal " << complement );
     for( unsigned i = 0; i < binary.size(); ++i )
     {
+        
         if( conflictDetected() )
             break;
         
@@ -643,6 +643,7 @@ Solver::propagation(
         Propagator* propagator = wl[ i ].first;
         assert( "Post propagator is null." && propagator != NULL );
         bool res = propagator->onLiteralFalse( *this, complement, wl[ i ].second );  
+        
         if( res ){
             addInPropagatorsForUnroll( propagator );
         }

@@ -7,6 +7,8 @@ build/release/lp2cpp/Executor.o: src/lp2cpp/Executor.cpp \
  src/lp2cpp/language/../utils/ConstantsManager.h \
  src/lp2cpp/language/Formula.h src/lp2cpp/datastructures/AuxiliaryMap.h \
  src/lp2cpp/datastructures/TupleWithoutReasons.h \
+ src/lp2cpp/datastructures/PostponedReasons.h \
+ src/lp2cpp/datastructures/PostponedReasonData.h \
  src/lp2cpp/utils/ConstantsManager.h \
  src/lp2cpp/DLV2libs/input/InputDirector.h \
  src/lp2cpp/DLV2libs/input/InputBuilder.h \

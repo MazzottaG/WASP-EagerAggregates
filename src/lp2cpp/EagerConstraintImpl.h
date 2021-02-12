@@ -21,7 +21,7 @@
 #include "CompilationManager.h"
 #include "datastructures/DenseMap.h"
 #include <unordered_map>
-
+#include "../Literal.h"
 
 class EagerConstraintImpl : public EagerConstraint {
 public:
@@ -37,7 +37,7 @@ public:
     virtual void simplifyAtLevelZero(std::vector<int> & output);
     virtual const std::vector<unsigned int> & getVariablesToFreeze();
     virtual const std::string & getFilepath() const;
-    virtual Reason* getPostponedeReason(){return executionManager.getPostponedeReason();}
+    virtual Reason* getPostponedeReason(Literal lit){return executionManager.getPostponedeReason(lit);}
 private:
     
     void performCompilation();

@@ -25,6 +25,7 @@
 #include <vector>
 #include "language/Literal.h"
 #include "datastructures/AuxiliaryMap.h"
+#include "datastructures/PostponedReasons.h"
 #include <iostream>
 #include <algorithm>
 namespace aspc {
@@ -56,7 +57,7 @@ namespace aspc {
         virtual void init();
         virtual void clear();
         virtual void clearPropagations();
-
+        virtual void explainAggrLiteral(int,std::vector<int>&);
         virtual const std::vector<std::vector<aspc::Literal> > & getFailedConstraints() {
             return failedConstraints;
         }
@@ -73,12 +74,19 @@ namespace aspc {
             return propagatedLiteralsAndReasons;
         }
 
+        virtual const std::vector<int> & getPropagatedLiterals() const {
+            return propagatedLiterals;
+        }
+       
 
     private:
         std::vector<std::vector<aspc::Literal> > failedConstraints;
         std::unordered_map<int, std::vector<int> > propagatedLiteralsAndReasons;
+        std::vector<int> propagatedLiterals;
+        PostponedReasons reasonMapping;
         //std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> propagatedLiteralsAndReasons;
         std::vector<std::string> bodyLiterals;
+        
 
 
     };

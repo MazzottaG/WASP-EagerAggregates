@@ -4,17 +4,20 @@ build/release/propagators/ExternalPropagator.o: \
  src/propagators/../util/WaspConstants.h src/propagators/../stl/Vector.h \
  src/propagators/../stl/../util/WaspConstants.h \
  src/propagators/../interpreters/Interpreter.h \
- src/propagators/../Literal.h src/propagators/../util/WaspConstants.h \
- src/propagators/../Solver.h src/propagators/../Clause.h \
- src/propagators/../Literal.h src/propagators/../Learning.h \
- src/propagators/../stl/Vector.h src/propagators/../Reason.h \
- src/propagators/../util/WaspAssert.h src/propagators/../Variables.h \
+ src/propagators/../interpreters/../Literal.h \
+ src/propagators/../interpreters/../util/WaspConstants.h \
+ src/propagators/../Literal.h src/propagators/../Solver.h \
+ src/propagators/../Clause.h src/propagators/../Literal.h \
+ src/propagators/../Learning.h src/propagators/../stl/Vector.h \
+ src/propagators/../Reason.h src/propagators/../util/WaspAssert.h \
+ src/propagators/../Variables.h \
  src/propagators/../outputBuilders/OutputBuilder.h \
  src/propagators/../outputBuilders/../util/WaspConstants.h \
  src/propagators/../outputBuilders/../stl/Vector.h \
  src/propagators/../util/VariableNames.h \
  src/propagators/../util/WaspConstants.h \
  src/propagators/../ReasonForBinaryClauses.h \
+ src/propagators/../util/WaspConstants.h \
  src/propagators/../util/WaspOptions.h \
  src/propagators/../util/WaspTrace.h src/propagators/../util/WaspTrace.h \
  src/propagators/../stl/UnorderedSet.h src/propagators/../Satelite.h \
@@ -89,6 +92,8 @@ build/release/propagators/ExternalPropagator.o: \
  src/propagators/../interpreters/../lp2cpp/datastructures/TupleWithoutReasons.h \
  src/propagators/../interpreters/../lp2cpp/Executor.h \
  src/propagators/../interpreters/../lp2cpp/language/Literal.h \
+ src/propagators/../interpreters/../lp2cpp/datastructures/PostponedReasons.h \
+ src/propagators/../interpreters/../lp2cpp/datastructures/PostponedReasonData.h \
  src/propagators/../interpreters/../lp2cpp/../Reason.h \
  src/propagators/../interpreters/../lp2cpp/CompilationManager.h \
  src/propagators/../interpreters/../lp2cpp/parsing/AspCore2ProgramBuilder.h \
@@ -106,4 +111,5 @@ build/release/propagators/ExternalPropagator.o: \
  src/propagators/../interpreters/MyCppEagerInterpreter.h \
  src/propagators/../interpreters/../lp2cpp/EagerConstraintImpl.h \
  src/propagators/../interpreters/../lp2cpp/EagerConstraint.h \
+ src/propagators/../interpreters/../lp2cpp/../Literal.h \
  src/propagators/../util/WaspOptions.h

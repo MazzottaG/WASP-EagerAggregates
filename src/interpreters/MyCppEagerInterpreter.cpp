@@ -24,7 +24,7 @@
 #include "../lp2cpp/utils/GraphWithTarjanAlgorithm.h"
 #include "cassert"
 #include "../propagators/ExternalPropagator.h"
-
+#include "../Literal.h";
 
 const set<string> supportedMethods = {method_plugins_onLitTrue, method_plugins_getReasonForLiteral, method_plugins_addedVarName, 
     method_plugins_onLiteralsUndefined, method_plugins_getVariablesToFreeze, method_plugins_onStartingSolver, method_plugins_onFact, method_plugins_getLiterals, method_plugins_simplifyAtLevelZero};
@@ -67,8 +67,8 @@ void MyCppEagerInterpreter::callListMethod(const string& method_name, const vect
     }
 
 }
-Reason* MyCppEagerInterpreter::computePostponedReason(){
-    return eagerConstraint.getPostponedeReason();
+Reason* MyCppEagerInterpreter::computePostponedReason(Literal lit){
+    return eagerConstraint.getPostponedeReason(lit);
 }
 void MyCppEagerInterpreter::callListMethod(const string&, const vector<int>&, vector< uint64_t >&) {
     assert(false);

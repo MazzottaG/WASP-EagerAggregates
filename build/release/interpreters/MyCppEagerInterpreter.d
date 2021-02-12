@@ -22,6 +22,8 @@ build/release/interpreters/MyCppEagerInterpreter.o: \
  src/interpreters/../lp2cpp/datastructures/TupleWithoutReasons.h \
  src/interpreters/../lp2cpp/Executor.h \
  src/interpreters/../lp2cpp/language/Literal.h \
+ src/interpreters/../lp2cpp/datastructures/PostponedReasons.h \
+ src/interpreters/../lp2cpp/datastructures/PostponedReasonData.h \
  src/interpreters/../lp2cpp/../Reason.h \
  src/interpreters/../lp2cpp/CompilationManager.h \
  src/interpreters/../lp2cpp/parsing/AspCore2ProgramBuilder.h \
@@ -43,4 +45,5 @@ build/release/interpreters/MyCppEagerInterpreter.o: \
  src/interpreters/../propagators/Propagator.h \
  src/interpreters/../propagators/../util/WaspConstants.h \
  src/interpreters/../propagators/../stl/Vector.h \
- src/interpreters/../propagators/../stl/../util/WaspConstants.h
+ src/interpreters/../propagators/../stl/../util/WaspConstants.h \
+ src/interpreters/../Literal.h src/interpreters/../util/WaspConstants.h

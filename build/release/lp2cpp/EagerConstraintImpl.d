@@ -13,7 +13,9 @@ build/release/lp2cpp/EagerConstraintImpl.o: \
  src/lp2cpp/language/ArithmeticRelationWithAggregate.h \
  src/lp2cpp/language/Aggregate.h src/lp2cpp/datastructures/AuxiliaryMap.h \
  src/lp2cpp/datastructures/TupleWithoutReasons.h src/lp2cpp/Executor.h \
- src/lp2cpp/language/Literal.h src/lp2cpp/../Reason.h \
+ src/lp2cpp/language/Literal.h \
+ src/lp2cpp/datastructures/PostponedReasons.h \
+ src/lp2cpp/datastructures/PostponedReasonData.h src/lp2cpp/../Reason.h \
  src/lp2cpp/CompilationManager.h \
  src/lp2cpp/parsing/AspCore2ProgramBuilder.h \
  src/lp2cpp/parsing/../DLV2libs/input/InputBuilder.h \
@@ -26,6 +28,7 @@ build/release/lp2cpp/EagerConstraintImpl.o: \
  src/lp2cpp/utils/Indentation.h \
  src/lp2cpp/datastructures/BoundAnnotatedLiteral.h \
  src/lp2cpp/language/ArithmeticRelationWithAggregate.h \
- src/lp2cpp/datastructures/DenseMap.h src/lp2cpp/../util/WaspOptions.h \
+ src/lp2cpp/datastructures/DenseMap.h src/lp2cpp/../Literal.h \
+ src/lp2cpp/../util/WaspConstants.h src/lp2cpp/../util/WaspOptions.h \
  src/lp2cpp/../util/WaspConstants.h src/lp2cpp/../util/WaspTrace.h \
  src/lp2cpp/utils/FilesManagement.h

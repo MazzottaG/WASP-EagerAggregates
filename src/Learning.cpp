@@ -66,10 +66,9 @@ Learning::onConflict(
 
     //Compute implicants of the conflicting literal   
     conflictClause->onLearning( solver, this, conflictLiteral.getOppositeLiteral() );
-
     if( solver.getImplicant( conflictLiteral.getVariable() ) != NULL  )
         solver.getImplicant( conflictLiteral.getVariable() )->onLearning( solver, this, conflictLiteral );
-    
+
     addLiteralToNavigate( conflictLiteral );
     assert( isVisited( conflictLiteral.getVariable(), numberOfCalls ) );
     solver.startIterationOnAssignedVariable();
@@ -212,8 +211,11 @@ void
 Learning::onNavigatingLiteral( 
     Literal literal )
 {
+
+    
     assert( literal != Literal::null );    
     assert( solver.getDecisionLevel( literal ) > 0 );    
+    
     solver.onLitInvolvedInConflict( literal );
  
     if( solver.getDecisionLevel( literal ) == decisionLevel )    

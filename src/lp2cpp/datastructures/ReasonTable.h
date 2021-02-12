@@ -71,6 +71,20 @@ class ReasonTable{
                 return literalToLevel[a]; 
             return 0;
         }
+        std::vector<int> getLiteralUntil(int level){
+            if(level==0)
+                return {};
+            std::vector<int> reas;
+            for(int i=0;i<reason.size();i++){
+                int lit=reason[i];
+                int pos= lit > 0 ? lit : -1*lit;
+                if(literalToLevel[pos]>level){
+                    break;
+                }
+                reas.push_back(lit);
+            }
+            return reas;
+        }
         std::vector<int>::iterator begin(){return reason.begin();}
         std::vector<int>::iterator end(){return reason.end();}
         private:

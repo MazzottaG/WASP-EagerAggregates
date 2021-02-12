@@ -128,11 +128,19 @@ void EagerConstraintImpl::onLiteralTrue(int var, int decisionLevel, std::vector<
     cout << "tot_propr " << prop_time_e / 1000 << endl;
     cout << "tot_solv " << solv_time_e / 1000 << endl;
 #endif
-    const std::unordered_map<int, std::vector<int> > & propagatedLiteralsAndReasons = executionManager.getPropagatedLiteralsAndReasons();
+    // const std::unordered_map<int, std::vector<int> > & propagatedLiteralsAndReasons = executionManager.getPropagatedLiteralsAndReasons();
+    // for (auto& it : propagatedLiteralsAndReasons) {
+    //     propagatedLiterals.push_back(-it.first);
+    //     //std::cout << "prop " << it.first << std::endl;
+    // }
+
+
+    const std::vector<int> & propagatedLiteralsAndReasons = executionManager.getPropagatedLiterals();
+
     for (auto& it : propagatedLiteralsAndReasons) {
-        propagatedLiterals.push_back(-it.first);
-        //std::cout << "prop " << it.first << std::endl;
+        propagatedLiterals.push_back(-it);
     }
+    
     //const std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> & propagatedLiteralsAndReasons = executionManager.getPropagatedLiteralsAndReasons();
 
     //    for (auto& it : propagatedLiteralsAndReasons) {

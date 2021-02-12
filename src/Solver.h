@@ -1056,6 +1056,7 @@ Solver::addClauseRuntime(
     Literal literal )
 {
 
+
     if( isTrue( literal ) )
         return true;
     if( isFalse( literal ) )
@@ -1243,6 +1244,7 @@ Solver::incrementCurrentDecisionLevel()
 void
 Solver::unrollLastVariable()
 {    
+    
     choiceHeuristic->onUnrollingVariable( variables.unrollLastVariable() );
 }
 
@@ -1449,7 +1451,6 @@ Solver::analyzeConflict()
     
     if( conflictClause == NULL )
         return false;
-    
     Clause* learnedClause = learning.onConflict( conflictLiteral, conflictClause );
     assert( "Learned clause has not been calculated." && learnedClause != NULL );
     statistics( this, onLearning( learnedClause->size() ) );
@@ -1503,10 +1504,13 @@ Solver::analyzeConflict()
         assert_msg( unrollLevel != 0, "Trying to backjumping to level 0" );
         assert_msg( unrollLevel < currentDecisionLevel, "Trying to backjump from level " << unrollLevel << " to level " << currentDecisionLevel );
         trace_msg( solving, 2, "Learned clause and backjumping to level " << unrollLevel );
+
         addLearnedClause( learnedClause, true );        
         choiceHeuristic->onLearningClause( learnedClause->lbd(), learnedClause );
+
         unroll( unrollLevel );
-        clearConflictStatus();                        
+        clearConflictStatus();         
+
         if( size != 2 )
         {
             assignLiteral( learnedClause );
@@ -1526,7 +1530,6 @@ Solver::analyzeConflict()
         deletionCounters.learnedSizeAdjustCnt = ( unsigned int ) deletionCounters.learnedSizeAdjustConfl;
         deletionCounters.maxLearned *= deletionCounters.learnedSizeIncrement;
     }
-
     return true;
 }
 
@@ -1962,9 +1965,12 @@ Solver::propagateWithPropagators(
     Var variable )
 {
     trace_msg( solving, 1, "Propagate with propagators" );
+
     propagate( variable );
+
     if( conflictDetected() )
         return;
+
     propagation( variable );
     
     if( conflictDetected() )
@@ -2821,7 +2827,6 @@ Solver::addInPropagatorsForUnroll(
 bool
 Solver::propagateFixpoint()
 {    
-    std::cout<<"Solver::propagateFixpoint"<<std::endl;
 
     assert( !conflictDetected() );
     

@@ -51,11 +51,12 @@ public:
     void onLiteralUndef(int var);
     void addedVarName(int var, const std::string & literalString);
     const std::unordered_map<int, std::vector<int> > & getPropagatedLiteralsAndReasons() const;
+    const std::vector<int> & getPropagatedLiterals() const;
     void initCompiled();
     void simplifyAtLevelZero(std::vector<int>& output);
     void clearPropagations();
-    bool postponedReason()const{return false;}
-    Reason* getPostponedeReason(){return this;}
+    bool postponedReason()const{return true;}
+    Reason* getPostponedeReason(Literal lit);
     virtual void onLearning( const Solver& solver, Learning* strategy, Literal lit );
     virtual bool onNavigatingLiteralForAllMarked( const Solver& solver, Learning* strategy, Literal lit );
     virtual bool isLearned() const { return false; }

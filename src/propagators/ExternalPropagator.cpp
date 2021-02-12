@@ -558,6 +558,7 @@ ExternalPropagator::endUnitPropagation(
     }    
     interpreter->callListMethod( method_plugins_onLitsTrue, input, output );
     trueLiterals.clear();
+    std::cout<<"endUnitPropagation"<<std::endl;
     computeReason( solver, output );  
 }
 
@@ -568,6 +569,7 @@ ExternalPropagator::endPropagation(
     assert( check_endPropagation && check_onLitTrue && !check_onLitsTrue );
     vector< int > output;
     interpreter->callListMethod( method_plugins_endPropagation, solver.getCurrentDecisionLevel(), output );
+    std::cout << "endPropagation"<<std::endl;
     computeReason( solver, output );
 }
 
@@ -577,8 +579,43 @@ ExternalPropagator::handleConflict(
     Literal conflictLiteral )
 {
     assert( solver.isFalse( conflictLiteral ) );
-    // std::cout<<"Handle conflict"<<std::endl;
-    Clause* clause = getReason( solver, check_getReasonForLiteral ? conflictLiteral : Literal::null );
+    Clause* clause;
+
+    if(check_postponed){
+        // std::cout<<"HandleConflict"<<std::endl;
+
+        Reason* r = interpreter->computePostponedReason(conflictLiteral); 
+
+        clause = dynamic_cast<Clause*>(r);
+        assert(clause != nullptr);
+        unsigned int max = 0;    
+        Clause* c2 = new Clause();
+        if(conflictLiteral.getVariable() != 1)
+            c2->addLiteral(conflictLiteral);
+        for( unsigned int i = 1; i < clause->size(); i++ )
+        {
+
+            Literal l = clause->getAt(i);
+            if( solver.isUndefined( l ) )
+                WaspErrorMessage::errorGeneric( "Reason is not well-formed: Literal with id " + to_string( l.getId() ) + " is undefined." );
+            if( solver.isTrue( l ) )
+                WaspErrorMessage::errorGeneric( "Reason is not well-formed: Literal with id " + to_string( l.getId() ) + " is true." );
+            if( solver.getDecisionLevel( l ) == 0 )
+                continue;
+            c2->addLiteral(l);
+            unsigned int dl = solver.getDecisionLevel( l );
+            if( dl > max )
+                max = dl;
+        }
+        
+        if( max < solver.getCurrentDecisionLevel() )
+            WaspErrorMessage::errorGeneric( "Reason is not well-formed: At least one of the literals in the reason must be inferred at the current decision level." );    
+        delete clause;
+        clause=c2;
+    }else
+        clause = getReason( solver, check_getReasonForLiteral ? conflictLiteral : Literal::null );
+
+        
     if( clause == NULL )
     {
         clause = new Clause();
@@ -586,7 +623,9 @@ ExternalPropagator::handleConflict(
     }
     
     clause->setLearned();
-    clause->setAt( 0, conflictLiteral );
+    if(!check_postponed)
+        clause->setAt( 0, conflictLiteral );
+    
     unsigned int size = clause->size();
     if( size > 1 )
     {
@@ -603,6 +642,16 @@ ExternalPropagator::handleConflict(
     }
     else
     {
+        solver.unrollToZero();
+        reset(solver);
+
+        if(check_postponed && size == 1){
+            Literal l = clause->getAt(0);
+            solver.assignLiteral(l);
+            delete clause;
+            return;
+        } 
+
         assert( solver.getCurrentDecisionLevel() == 0 );
         delete clause;
         solver.assignLiteral( Literal::createLiteralFromInt( 1 ) );
@@ -617,6 +666,7 @@ ExternalPropagator::computeReason(
     Solver& solver,
     const vector< int >& output )
 {
+    // std::cout << "Compute Reason" << std::endl;
     if( output.empty() || ( output.size() == 1 && output[ 0 ] == 0 ) )
         return;
     
@@ -635,7 +685,6 @@ ExternalPropagator::computeReason(
     
     if( conflictDetected )
     {
-        // std::cout<<"conflictDetected"<<std::endl;
         handleConflict( solver, conflictLiteral );
         return;
     }
@@ -650,6 +699,7 @@ ExternalPropagator::computeReason(
     for( unsigned int i = 0; i < output.size(); i++ )
     {
         checkIdOfLiteral( solver, output[ i ] );
+
         Literal lit = Literal::createLiteralFromInt( output[ i ] );
         if( solver.isTrue( lit ) )
             continue;
@@ -657,7 +707,8 @@ ExternalPropagator::computeReason(
         if( check_getReasonForLiteral )
         {
             if(check_postponed){
-                solver.assignLiteral(lit,getPostponedReason());
+                solver.assignLiteral(lit,interpreter->computePostponedReason(Literal::null));
+                // solver.assignLiteral(lit,getPostponedReason());
             }else{
                Clause* r = getReason( solver, lit );
                 solver.assignLiteral( r );

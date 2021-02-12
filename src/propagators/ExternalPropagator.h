@@ -82,7 +82,7 @@ class ExternalPropagator : public Propagator
         virtual bool isForLazyWeakConstraints() const { return check_addWeakConstraints; }
 
         // Reason* getPostponedReason(){return interpreter->computePostponedReason();}
-        Reason* getPostponedReason(){return nullptr;}
+        // Reason* getPostponedReason(){return nullptr;}
     protected:
         ExternalPropagator();
         inline ExternalPropagator( const ExternalPropagator& orig );
