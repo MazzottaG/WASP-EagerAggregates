@@ -63,8 +63,8 @@ void EagerConstraintImpl::performCompilation() {
 void EagerConstraintImpl::setFilename(const std::string & fileDirectory, const std::string & filename) {
     this-> fileDirectory = fileDirectory;
     this -> filename = filename;
-    // this -> filepath = filename;
-    this -> filepath = fileDirectory + "/" + filename;
+    this -> filepath = filename;
+    // this -> filepath = fileDirectory + "/" + filename;
     FilesManagement fileManagement;
     if (!fileManagement.exists(filepath)) {
         throw std::runtime_error("Failed to compile eager program: file " + filepath + " does not exist.");

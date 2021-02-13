@@ -593,236 +593,330 @@ void CompilationManager::updateUndefinedSharedVariablesMap(const aspc::Rule& r,i
 }
 void CompilationManager::declareDataStructureForAggregate(const aspc::Rule& r,const std::set< pair<std::string, unsigned> >& aggregatePredicates){
 
-    //dichiaro le auxMap che vengono utilizzate per costruire le jointuple
+    //BUILD AGGREGATE JOIN
     for(const aspc::ArithmeticRelationWithAggregate& aggr : r.getArithmeticRelationsWithAggregate()){
-
-        std::string joinTupleName=aggr.getJoinTupleName();
-        // std::cout<<joinTupleName<<std::endl;
-        std::set<string> varAlreadyAdded;
-        std::vector<std::vector<unsigned>> aggregateLiteralIndexes;
-        int varIndex=0;
-        int index=0;
-        std::string aggrIdentifier = std::to_string(r.getRuleId())+":"+std::to_string(aggr.getFormulaIndex());
-
-        for(const aspc::Literal& li: aggr.getAggregate().getAggregateLiterals()){
-
-            aggregateLiteralIndexes.push_back(std::vector<unsigned>());
-
-            //creo una mappa per ogni letterale indicizzata su tutte le variabili
-            std::string mapIndexedAllVars=li.getPredicateName()+"_";
-
-            std::vector<unsigned> localIndex;
-            for (unsigned tiIndex = 0; tiIndex < li.getAriety(); tiIndex++) {
-
-                mapIndexedAllVars+=std::to_string(tiIndex)+"_";
-                aggregateLiteralIndexes[index].push_back(varIndex);
-                localIndex.push_back(tiIndex);
-                varIndex++;
-
-            }
-
-            declareAuxMap(mapIndexedAllVars,localIndex,li.getPredicateName(),true,false);
-
-            //creo una mappa non indicizzata per iniziare il join
-            declareAuxMap(li.getPredicateName() + "_",std::vector<unsigned>(),li.getPredicateName(),true,false);
-
-            //creo una mappa per gli altri letterali indicizzata rispetto al letterale corrente
-            std::unordered_set<std::string> boundVariables;
-            li.addVariablesToSet(boundVariables);
-            int buildIndex=0;
-            for(const aspc::Literal& li_: aggr.getAggregate().getAggregateLiterals()){
-                std::string mapVariableName = li_.getPredicateName() + "_";
-                std::vector< unsigned > keyIndexes;
-                if(buildIndex != index){
-                    for (unsigned tiIndex = 0; tiIndex < li_.getAriety(); tiIndex++) {
-                        if ((li_.isVariableTermAt(tiIndex) && boundVariables.count(li_.getTermAt(tiIndex))) || !li_.isVariableTermAt(tiIndex)) {
-                            mapVariableName += std::to_string(tiIndex) + "_";
-                            keyIndexes.push_back(tiIndex);
-
-                        }
-                    }
-                    li_.addVariablesToSet(boundVariables);
-                    declareAuxMap(mapVariableName,keyIndexes,li_.getPredicateName(),true,false);
-                }
-                buildIndex++;
-            }
-            index++;
-        }
-        sharedVariablesMapForAggregateBody[joinTupleName].push_back("sharedVariables_"+std::to_string(r.getRuleId())+"_ToAggregate_"+std::to_string(aggr.getFormulaIndex()));
+        sharedVariablesMapForAggregateBody[aggr.getJoinTupleName()].push_back("sharedVariables_"+std::to_string(r.getRuleId())+"_ToAggregate_"+std::to_string(aggr.getFormulaIndex()));
         aggrIdentifierForAggregateBody[aggr.getJoinTupleName()].push_back({r.getRuleId(),aggr.getFormulaIndex()});
-        /*for(const std::string& v : aggr.getAggregate().getAggregateVariables()){
-            int joinTupleIndex=0;
-            for(const aspc::Literal& li: aggr.getAggregate().getAggregateLiterals()){
-                for (unsigned tiIndex = 0; tiIndex < li.getAriety(); tiIndex++) {
-
-                    if( v == li.getTermAt(tiIndex)){
-                        if(!varAlreadyAdded.count(li.getTermAt(tiIndex))){
-                            aggregateVariablesIndex[aggrIdentifier].push_back(joinTupleIndex);
-                            varAlreadyAdded.insert(li.getTermAt(tiIndex));
-                        }
-                    }
-                    joinTupleIndex++;
+    
+        int startingId = 0;
+        for(const aspc::Literal& starter :aggr.getAggregate().getAggregateLiterals()){
+            std::unordered_set<std::string> boundVars;
+            for(int i=0;i<starter.getAriety();i++){
+                if(starter.isVariableTermAt(i)){
+                    boundVars.insert(starter.getTermAt(i));
                 }
             }
-        }*/
-        //dichiaro una mappa per le joinTuple indicizzata sulle variabili di aggregazione
-        std::string aggregateVarsIndex="";
-        for(unsigned index_ : aggregateVariablesIndex[aggrIdentifier]){
-            aggregateVarsIndex+=std::to_string(index_)+"_";
-
-        }
-        declareAuxMap("_"+joinTupleName+aggregateVarsIndex,aggregateVariablesIndex[aggrIdentifier],joinTupleName,false,true);
-
-
-        //dichiaro una mappa per le joinTuple non indicizzata
-        declareAuxMap("_"+joinTupleName,std::vector<unsigned>(),joinTupleName,false,true);
-
-
-        //dichiaro una mappa per le joinTuple indicizzata sulle variabili condivise con il corpo
-        std::string sharedVarsIndexToString="";
-        for(unsigned index_ : sharedVariablesIndexesMap[aggrIdentifier])
-            sharedVarsIndexToString+=std::to_string(index_)+"_";
-        std::vector<unsigned> sharedVarsIndex = sharedVariablesIndexesMap[aggrIdentifier];
-        declareAuxMap("_"+joinTupleName+sharedVarsIndexToString,sharedVarsIndex,joinTupleName,false,true);
-        std::vector<unsigned> sharedAndAggrVarIndex(sharedVarsIndex);
-
-        for(unsigned index_ : aggregateVariablesIndex[aggrIdentifier])
-            sharedAndAggrVarIndex.push_back(index_);
-        declareAuxMap("_"+joinTupleName+sharedVarsIndexToString+aggregateVarsIndex,sharedAndAggrVarIndex,joinTupleName,false,true);
-        
-        int totalAriety=0;
-        for(const aspc::Literal& l : aggr.getAggregate().getAggregateLiterals()){
-            std::string lit_indeces="";
-            std::vector<unsigned> total_indeces(sharedVarsIndex);
-            for(int i=0;i<l.getAriety();i++){
-                lit_indeces+=std::to_string(i+totalAriety)+"_";
-                total_indeces.push_back(i+totalAriety);
-            }
-            declareAuxMap("_"+joinTupleName+sharedVarsIndexToString+lit_indeces,total_indeces,joinTupleName,false,true);
-            totalAriety+=l.getAriety();
-        }
-        std::string sharedVariables = sharedVariablesMap[aggrIdentifier];
-
-        //dichiaro una mappa per le join tuples indicizzata sull variabili di ogni letterale nell'aggregato
-        index=0;
-        for(std::vector<unsigned>& indexes : aggregateLiteralIndexes){
-            std::string literalTermIndex="";
-            for(unsigned var : indexes)
-                literalTermIndex = literalTermIndex + std::to_string(var) + "_";
-            //salvo per ogni letterale il nome dell'AuxMap delle join tuple indicizzata secondo il letterale
-            // aggregateLiteralToAuxiliaryMap[aggr.getAggregate().getAggregateLiterals()[index].getPredicateName()+"_"+std::to_string(index)+"_"+aggrIdentifier]=std::string("_"+joinTupleName+literalTermIndex);
-            // aggregateLiteralToPredicateWSet[aggr.getAggregate().getAggregateLiterals()[index].getPredicateName()+"_"+aggrIdentifier]=std::string(joinTupleName);
-
-            declareAuxMap("_"+joinTupleName+literalTermIndex,indexes,joinTupleName,false,true);
-            for(unsigned var :sharedVariablesIndexesMap[aggrIdentifier])
-                indexes.push_back(var);
-            if(sharedVariables!="")
-                declareAuxMap("_"+joinTupleName+literalTermIndex+sharedVarsIndexToString,indexes,joinTupleName,false,true);
-            for(unsigned v : aggregateVariablesIndex[aggrIdentifier]){
-                indexes.push_back(v);
-            }
-            declareAuxMap("_"+joinTupleName+literalTermIndex+sharedVarsIndexToString+aggregateVarsIndex,indexes,joinTupleName,false,true);
-            
-            index++;
-        }
-
-        if(sharedVariables!=""){
-
-            //dichiaro una mappa per ogni letterale del corpo indicizzata sulle shared variable e costanti
-            int literalIndex=0;
-            //std::cout<<"Declaring map for external predicates"<<std::endl;
-            for(const aspc::Literal& bodyLiteral : r.getBodyLiterals()){
-                //std::cout<<"Start from ";
-                //bodyLiteral.print();
-                //std::cout<<std::endl;
-
-                std::string auxMapName = bodyLiteral.getPredicateName()+"_";
-                std::unordered_set<std::string> boundVars;
-                std::vector<unsigned> indexes;
-                for(int i=0;i<bodyLiteral.getAriety();i++){
-                    if(sharedVariables.find(bodyLiteral.getTermAt(i))!=std::string::npos || !bodyLiteral.isVariableTermAt(i)){
-                        auxMapName+=std::to_string(i)+"_";
-                        indexes.push_back(i);
-                    }
-                    if(bodyLiteral.isVariableTermAt(i)){
-                        boundVars.insert(bodyLiteral.getTermAt(i));
-                    }
-                }
-
-                bool declareFalseAuxMap = aggregatePredicates.count(std::pair<std::string,unsigned>(bodyLiteral.getPredicateName(),bodyLiteral.getAriety()))!=0;
-                declareAuxMap(auxMapName,indexes,bodyLiteral.getPredicateName(),declareFalseAuxMap,false);
-
-                //join dei letterali del corpo considerando le sharedVariables bound
-                int bodyLiteralIndex=0;
-                for(const aspc::Literal& buildBodyLiteral : r.getBodyLiterals()){
-                    if(bodyLiteralIndex!=literalIndex){
-                        std::string buildAuxMapName = buildBodyLiteral.getPredicateName()+"_";
-                        std::vector<unsigned> buildindexes;
-
-                        for(int i=0;i<buildBodyLiteral.getAriety();i++){
-                            if(sharedVariables.find(buildBodyLiteral.getTermAt(i))!=std::string::npos || !buildBodyLiteral.isVariableTermAt(i) || boundVars.count(buildBodyLiteral.getTermAt(i))){
-                                buildAuxMapName+=std::to_string(i)+"_";
-                                buildindexes.push_back(i);
-                            }
-                            if(buildBodyLiteral.isVariableTermAt(i)){
-                                boundVars.insert(buildBodyLiteral.getTermAt(i));
-                            }
-                        }
-                        bool declareFalseAuxMap = aggregatePredicates.count(std::pair<std::string,unsigned>(buildBodyLiteral.getPredicateName(),buildBodyLiteral.getAriety()))!=0;
-                        //std::cout<<"Declare "<<buildAuxMapName<<std::endl;
-                        declareAuxMap(buildAuxMapName,buildindexes,buildBodyLiteral.getPredicateName(),declareFalseAuxMap,false);
-
-                    }
-                    bodyLiteralIndex++;
-                }
-                literalIndex++;
-            }
-            for(const aspc::ArithmeticRelationWithAggregate& aggr : r.getArithmeticRelationsWithAggregate()){
-                int literalIndex=0;
-                for(const aspc::Literal& aggrLit : aggr.getAggregate().getAggregateLiterals()){
-                    std::string auxMapName = aggrLit.getPredicateName()+"_";
-                    std::unordered_set<std::string> boundVars;
-                    std::vector<unsigned> indexes;
-                    for(int i=0;i<aggrLit.getAriety();i++){
-                        if(sharedVariables.find(aggrLit.getTermAt(i))!=std::string::npos || !aggrLit.isVariableTermAt(i)){
+            int liIndex=0;
+            for(const aspc::Literal& li :aggr.getAggregate().getAggregateLiterals()){
+                std::vector<unsigned> boundIndices;
+                std::string auxMapName = li.getPredicateName()+"_";
+                if(liIndex!=startingId){
+                    for(unsigned i=0;i<li.getAriety();i++){
+                        if(!li.isVariableTermAt(i) || boundVars.count(li.getTermAt(i))){
+                            boundIndices.push_back(i);
                             auxMapName+=std::to_string(i)+"_";
-                            indexes.push_back(i);
-                        }
-                        if(aggrLit.isVariableTermAt(i)){
-                            boundVars.insert(aggrLit.getTermAt(i));
                         }
                     }
-
-                    bool declareFalseAuxMap = aggregatePredicates.count(std::pair<std::string,unsigned>(aggrLit.getPredicateName(),aggrLit.getAriety()))!=0;
-                    declareAuxMap(auxMapName,indexes,aggrLit.getPredicateName(),declareFalseAuxMap,false);
-
-                    //join dei letterali del corpo considerando le sharedVariables bound
-                    int bodyLiteralIndex=0;
-                    for(const aspc::Literal& buildAggrLiteral : aggr.getAggregate().getAggregateLiterals()){
-                        if(bodyLiteralIndex!=literalIndex){
-                            std::string buildAuxMapName = buildAggrLiteral.getPredicateName()+"_";
-                            std::vector<unsigned> buildindexes;
-
-                            for(int i=0;i<buildAggrLiteral.getAriety();i++){
-                                if(sharedVariables.find(buildAggrLiteral.getTermAt(i))!=std::string::npos || !buildAggrLiteral.isVariableTermAt(i) || boundVars.count(buildAggrLiteral.getTermAt(i))){
-                                    buildAuxMapName+=std::to_string(i)+"_";
-                                    buildindexes.push_back(i);
-                                }
-                                if(buildAggrLiteral.isVariableTermAt(i)){
-                                    boundVars.insert(buildAggrLiteral.getTermAt(i));
-                                }
-                            }
-                            bool declareFalseAuxMap = aggregatePredicates.count(std::pair<std::string,unsigned>(buildAggrLiteral.getPredicateName(),buildAggrLiteral.getAriety()))!=0;
-                            //std::cout<<"Declare "<<buildAuxMapName<<std::endl;
-                            declareAuxMap(buildAuxMapName,buildindexes,buildAggrLiteral.getPredicateName(),declareFalseAuxMap,false);
-                        }
-                        bodyLiteralIndex++;
+                    for(unsigned i=0;i<li.getAriety();i++){
+                        if(li.isVariableTermAt(i))
+                            boundVars.insert(li.getTermAt(i));
                     }
-                    literalIndex++;
+                    declareAuxMap(auxMapName,boundIndices,li.getPredicateName(),false,false);
                 }
+                liIndex++;
             }
+            startingId++;
         }
     }
+    
+    //Jointuple auxMap
+    for(const aspc::ArithmeticRelationWithAggregate& aggr : r.getArithmeticRelationsWithAggregate()){
+        std::string aggrIdentifier = std::to_string(r.getRuleId())+":"+std::to_string(aggr.getFormulaIndex());
+        std::vector<unsigned int> sharedVariablesIndex(sharedVariablesIndexesMap[aggrIdentifier]);
+        std::string sharedVarProj;
+        for(unsigned int i : sharedVariablesIndex){
+            sharedVarProj+=std::to_string(i)+"_";
+        }
+        declareAuxMap("_"+aggr.getJoinTupleName()+sharedVarProj,sharedVariablesIndex,aggr.getJoinTupleName(),false,true);
+        std::vector<unsigned int> aggrVarIndex(aggregateVariablesIndex[aggrIdentifier]);
+        std::string aggrVarProj;
+        for(unsigned int i : aggrVarIndex){
+            aggrVarProj+=std::to_string(i)+"_";
+            sharedVariablesIndex.push_back(i);
+        }
+        declareAuxMap("_"+aggr.getJoinTupleName()+aggrVarProj,aggrVarIndex,aggr.getJoinTupleName(),false,true);
+
+
+        declareAuxMap("_"+aggr.getJoinTupleName()+sharedVarProj+aggrVarProj,sharedVariablesIndex,aggr.getJoinTupleName(),false,true);
+        int ariety=0;
+        for(const aspc::Literal& li : aggr.getAggregate().getAggregateLiterals()){
+            std::vector<unsigned int> index;
+            std::string proj;
+            for(unsigned int i=0;i<li.getAriety();i++){
+                proj+=std::to_string(ariety+i)+"_";
+                index.push_back(ariety+i);
+            }
+            declareAuxMap("_"+aggr.getJoinTupleName()+proj,index,aggr.getJoinTupleName(),false,true);
+            ariety+=li.getAriety();
+        }
+        
+    }
+
+    int startLit=0;
+    for(const aspc::Literal& starter: r.getBodyLiterals()){
+        for(const aspc::ArithmeticRelationWithAggregate& aggr : r.getArithmeticRelationsWithAggregate()){
+            std::string aggrIdentifier = std::to_string(r.getRuleId())+":"+std::to_string(aggr.getFormulaIndex());
+            std::string auxMapName=starter.getPredicateName()+"_";
+            std::vector<unsigned int> boundIndices;
+            for(int i=0;i<starter.getAriety();i++){
+                if(!starter.isVariableTermAt(i)){
+                    auxMapName+=std::to_string(i)+"_";
+                    boundIndices.push_back(i);
+                }else{
+                    for(int v:sharedVariablesIndexesMap[aggrIdentifier]){
+                        if(starter.getTermAt(i) == aggr.getTermAt(v)){
+                            auxMapName+=std::to_string(i)+"_";
+                            boundIndices.push_back(i);
+                            break;
+                        }
+                    }
+                }
+            }
+            declareAuxMap(auxMapName,boundIndices,starter.getPredicateName(),false,false);
+        }
+    }
+
+    //dichiaro le auxMap che vengono utilizzate per costruire le jointuple
+    // for(const aspc::ArithmeticRelationWithAggregate& aggr : r.getArithmeticRelationsWithAggregate()){
+
+    //     std::string joinTupleName=aggr.getJoinTupleName();
+    //     // std::cout<<joinTupleName<<std::endl;
+    //     std::set<string> varAlreadyAdded;
+    //     std::vector<std::vector<unsigned>> aggregateLiteralIndexes;
+    //     int varIndex=0;
+    //     int index=0;
+    //     std::string aggrIdentifier = std::to_string(r.getRuleId())+":"+std::to_string(aggr.getFormulaIndex());
+
+    //     for(const aspc::Literal& li: aggr.getAggregate().getAggregateLiterals()){
+
+    //         aggregateLiteralIndexes.push_back(std::vector<unsigned>());
+
+    //         //creo una mappa per ogni letterale indicizzata su tutte le variabili
+    //         std::string mapIndexedAllVars=li.getPredicateName()+"_";
+
+    //         std::vector<unsigned> localIndex;
+    //         for (unsigned tiIndex = 0; tiIndex < li.getAriety(); tiIndex++) {
+
+    //             mapIndexedAllVars+=std::to_string(tiIndex)+"_";
+    //             aggregateLiteralIndexes[index].push_back(varIndex);
+    //             localIndex.push_back(tiIndex);
+    //             varIndex++;
+
+    //         }
+
+    //         declareAuxMap(mapIndexedAllVars,localIndex,li.getPredicateName(),true,false);
+
+    //         //creo una mappa non indicizzata per iniziare il join
+    //         declareAuxMap(li.getPredicateName() + "_",std::vector<unsigned>(),li.getPredicateName(),true,false);
+
+    //         //creo una mappa per gli altri letterali indicizzata rispetto al letterale corrente
+    //         std::unordered_set<std::string> boundVariables;
+    //         li.addVariablesToSet(boundVariables);
+    //         int buildIndex=0;
+    //         for(const aspc::Literal& li_: aggr.getAggregate().getAggregateLiterals()){
+    //             std::string mapVariableName = li_.getPredicateName() + "_";
+    //             std::vector< unsigned > keyIndexes;
+    //             if(buildIndex != index){
+    //                 for (unsigned tiIndex = 0; tiIndex < li_.getAriety(); tiIndex++) {
+    //                     if ((li_.isVariableTermAt(tiIndex) && boundVariables.count(li_.getTermAt(tiIndex))) || !li_.isVariableTermAt(tiIndex)) {
+    //                         mapVariableName += std::to_string(tiIndex) + "_";
+    //                         keyIndexes.push_back(tiIndex);
+
+    //                     }
+    //                 }
+    //                 li_.addVariablesToSet(boundVariables);
+    //                 declareAuxMap(mapVariableName,keyIndexes,li_.getPredicateName(),true,false);
+    //             }
+    //             buildIndex++;
+    //         }
+    //         index++;
+    //     }
+    //     sharedVariablesMapForAggregateBody[joinTupleName].push_back("sharedVariables_"+std::to_string(r.getRuleId())+"_ToAggregate_"+std::to_string(aggr.getFormulaIndex()));
+    //     aggrIdentifierForAggregateBody[aggr.getJoinTupleName()].push_back({r.getRuleId(),aggr.getFormulaIndex()});
+    //     /*for(const std::string& v : aggr.getAggregate().getAggregateVariables()){
+    //         int joinTupleIndex=0;
+    //         for(const aspc::Literal& li: aggr.getAggregate().getAggregateLiterals()){
+    //             for (unsigned tiIndex = 0; tiIndex < li.getAriety(); tiIndex++) {
+
+    //                 if( v == li.getTermAt(tiIndex)){make
+    //                     if(!varAlreadyAdded.count(li.getTermAt(tiIndex))){
+    //                         aggregateVariablesIndex[aggrIdentifier].push_back(joinTupleIndex);
+    //                         varAlreadyAdded.insert(li.getTermAt(tiIndex));
+    //                     }
+    //                 }
+    //                 joinTupleIndex++;
+    //             }
+    //         }
+    //     }*/
+    //     //dichiaro una mappa per le joinTuple indicizzata sulle variabili di aggregazione
+    //     std::string aggregateVarsIndex="";
+    //     for(unsigned index_ : aggregateVariablesIndex[aggrIdentifier]){
+    //         aggregateVarsIndex+=std::to_string(index_)+"_";
+
+    //     }
+    //     declareAuxMap("_"+joinTupleName+aggregateVarsIndex,aggregateVariablesIndex[aggrIdentifier],joinTupleName,false,true);
+
+
+    //     //dichiaro una mappa per le joinTuple non indicizzata
+    //     // declareAuxMap("_"+joinTupleName,std::vector<unsigned>(),joinTupleName,false,true);
+
+
+    //     //dichiaro una mappa per le joinTuple indicizzata sulle variabili condivise con il corpo
+    //     std::string sharedVarsIndexToString="";
+    //     for(unsigned index_ : sharedVariablesIndexesMap[aggrIdentifier])
+    //         sharedVarsIndexToString+=std::to_string(index_)+"_";
+    //     std::vector<unsigned> sharedVarsIndex = sharedVariablesIndexesMap[aggrIdentifier];
+    //     declareAuxMap("_"+joinTupleName+sharedVarsIndexToString,sharedVarsIndex,joinTupleName,false,true);
+        
+    //     //mappa indicizzata su aggrVars and sharedVars
+    //     std::vector<unsigned> sharedAndAggrVarIndex(sharedVarsIndex);
+    //     for(unsigned index_ : aggregateVariablesIndex[aggrIdentifier])
+    //         sharedAndAggrVarIndex.push_back(index_);
+    //     declareAuxMap("_"+joinTupleName+sharedVarsIndexToString+aggregateVarsIndex,sharedAndAggrVarIndex,joinTupleName,false,true);
+        
+    //     // int totalAriety=0;
+    //     // for(const aspc::Literal& l : aggr.getAggregate().getAggregateLiterals()){
+    //     //     std::string lit_indeces="";
+    //     //     std::vector<unsigned> total_indeces(sharedVarsIndex);
+    //     //     for(int i=0;i<l.getAriety();i++){
+    //     //         lit_indeces+=std::to_string(i+totalAriety)+"_";
+    //     //         total_indeces.push_back(i+totalAriety);
+    //     //     }
+    //     //     declareAuxMap("_"+joinTupleName+sharedVarsIndexToString+lit_indeces,total_indeces,joinTupleName,false,true);
+    //     //     totalAriety+=l.getAriety();
+    //     // }
+    //     std::string sharedVariables = sharedVariablesMap[aggrIdentifier];
+
+    //     //dichiaro una mappa per le join tuples indicizzata sull variabili di ogni letterale nell'aggregato
+    //     index=0;
+    //     for(std::vector<unsigned>& indexes : aggregateLiteralIndexes){
+    //         std::string literalTermIndex="";
+    //         for(unsigned var : indexes)
+    //             literalTermIndex = literalTermIndex + std::to_string(var) + "_";
+    //         //salvo per ogni letterale il nome dell'AuxMap delle join tuple indicizzata secondo il letterale
+    //         // aggregateLiteralToAuxiliaryMap[aggr.getAggregate().getAggregateLiterals()[index].getPredicateName()+"_"+std::to_string(index)+"_"+aggrIdentifier]=std::string("_"+joinTupleName+literalTermIndex);
+    //         // aggregateLiteralToPredicateWSet[aggr.getAggregate().getAggregateLiterals()[index].getPredicateName()+"_"+aggrIdentifier]=std::string(joinTupleName);
+
+    //         declareAuxMap("_"+joinTupleName+literalTermIndex,indexes,joinTupleName,false,true);
+    //         // for(unsigned var :sharedVariablesIndexesMap[aggrIdentifier])
+    //         //     indexes.push_back(var);
+    //         // if(sharedVariables!="")
+    //         //     declareAuxMap("_"+joinTupleName+literalTermIndex+sharedVarsIndexToString,indexes,joinTupleName,false,true);
+    //         // for(unsigned v : aggregateVariablesIndex[aggrIdentifier]){
+    //         //     indexes.push_back(v);
+    //         // }
+    //         // declareAuxMap("_"+joinTupleName+literalTermIndex+sharedVarsIndexToString+aggregateVarsIndex,indexes,joinTupleName,false,true);
+            
+    //         index++;
+    //     }
+
+    //     if(sharedVariables!=""){
+
+    //         //dichiaro una mappa per ogni letterale del corpo indicizzata sulle shared variable e costanti
+    //         int literalIndex=0;
+    //         //std::cout<<"Declaring map for external predicates"<<std::endl;
+    //         for(const aspc::Literal& bodyLiteral : r.getBodyLiterals()){
+    //             //std::cout<<"Start from ";
+    //             //bodyLiteral.print();
+    //             //std::cout<<std::endl;
+
+    //             std::string auxMapName = bodyLiteral.getPredicateName()+"_";
+    //             std::unordered_set<std::string> boundVars;
+    //             std::vector<unsigned> indexes;
+    //             for(int i=0;i<bodyLiteral.getAriety();i++){
+    //                 if(sharedVariables.find(bodyLiteral.getTermAt(i))!=std::string::npos || !bodyLiteral.isVariableTermAt(i)){
+    //                     auxMapName+=std::to_string(i)+"_";
+    //                     indexes.push_back(i);
+    //                 }
+    //                 if(bodyLiteral.isVariableTermAt(i)){
+    //                     boundVars.insert(bodyLiteral.getTermAt(i));
+    //                 }
+    //             }
+
+    //             bool declareFalseAuxMap = aggregatePredicates.count(std::pair<std::string,unsigned>(bodyLiteral.getPredicateName(),bodyLiteral.getAriety()))!=0;
+    //             declareAuxMap(auxMapName,indexes,bodyLiteral.getPredicateName(),declareFalseAuxMap,false);
+
+    //             //join dei letterali del corpo considerando le sharedVariables bound
+    //             int bodyLiteralIndex=0;
+    //             for(const aspc::Literal& buildBodyLiteral : r.getBodyLiterals()){
+    //                 if(bodyLiteralIndex!=literalIndex){
+    //                     std::string buildAuxMapName = buildBodyLiteral.getPredicateName()+"_";
+    //                     std::vector<unsigned> buildindexes;
+
+    //                     for(int i=0;i<buildBodyLiteral.getAriety();i++){
+    //                         if(sharedVariables.find(buildBodyLiteral.getTermAt(i))!=std::string::npos || !buildBodyLiteral.isVariableTermAt(i) || boundVars.count(buildBodyLiteral.getTermAt(i))){
+    //                             buildAuxMapName+=std::to_string(i)+"_";
+    //                             buildindexes.push_back(i);
+    //                         }
+    //                         if(buildBodyLiteral.isVariableTermAt(i)){
+    //                             boundVars.insert(buildBodyLiteral.getTermAt(i));
+    //                         }
+    //                     }
+    //                     bool declareFalseAuxMap = aggregatePredicates.count(std::pair<std::string,unsigned>(buildBodyLiteral.getPredicateName(),buildBodyLiteral.getAriety()))!=0;
+    //                     //std::cout<<"Declare "<<buildAuxMapName<<std::endl;
+    //                     declareAuxMap(buildAuxMapName,buildindexes,buildBodyLiteral.getPredicateName(),declareFalseAuxMap,false);
+
+    //                 }
+    //                 bodyLiteralIndex++;
+    //             }
+    //             literalIndex++;
+    //         }
+    //         for(const aspc::ArithmeticRelationWithAggregate& aggr : r.getArithmeticRelationsWithAggregate()){
+    //             int literalIndex=0;
+    //             for(const aspc::Literal& aggrLit : aggr.getAggregate().getAggregateLiterals()){
+    //                 std::string auxMapName = aggrLit.getPredicateName()+"_";
+    //                 std::unordered_set<std::string> boundVars;
+    //                 std::vector<unsigned> indexes;
+    //                 for(int i=0;i<aggrLit.getAriety();i++){
+    //                     if(sharedVariables.find(aggrLit.getTermAt(i))!=std::string::npos || !aggrLit.isVariableTermAt(i)){
+    //                         auxMapName+=std::to_string(i)+"_";
+    //                         indexes.push_back(i);
+    //                     }
+    //                     if(aggrLit.isVariableTermAt(i)){
+    //                         boundVars.insert(aggrLit.getTermAt(i));
+    //                     }
+    //                 }
+
+    //                 bool declareFalseAuxMap = aggregatePredicates.count(std::pair<std::string,unsigned>(aggrLit.getPredicateName(),aggrLit.getAriety()))!=0;
+    //                 declareAuxMap(auxMapName,indexes,aggrLit.getPredicateName(),declareFalseAuxMap,false);
+
+    //                 //join dei letterali del corpo considerando le sharedVariables bound
+    //                 int bodyLiteralIndex=0;
+    //                 for(const aspc::Literal& buildAggrLiteral : aggr.getAggregate().getAggregateLiterals()){
+    //                     if(bodyLiteralIndex!=literalIndex){
+    //                         std::string buildAuxMapName = buildAggrLiteral.getPredicateName()+"_";
+    //                         std::vector<unsigned> buildindexes;
+
+    //                         for(int i=0;i<buildAggrLiteral.getAriety();i++){
+    //                             if(sharedVariables.find(buildAggrLiteral.getTermAt(i))!=std::string::npos || !buildAggrLiteral.isVariableTermAt(i) || boundVars.count(buildAggrLiteral.getTermAt(i))){
+    //                                 buildAuxMapName+=std::to_string(i)+"_";
+    //                                 buildindexes.push_back(i);
+    //                             }
+    //                             if(buildAggrLiteral.isVariableTermAt(i)){
+    //                                 boundVars.insert(buildAggrLiteral.getTermAt(i));
+    //                             }
+    //                         }
+    //                         bool declareFalseAuxMap = aggregatePredicates.count(std::pair<std::string,unsigned>(buildAggrLiteral.getPredicateName(),buildAggrLiteral.getAriety()))!=0;
+    //                         //std::cout<<"Declare "<<buildAuxMapName<<std::endl;
+    //                         declareAuxMap(buildAuxMapName,buildindexes,buildAggrLiteral.getPredicateName(),declareFalseAuxMap,false);
+    //                     }
+    //                     bodyLiteralIndex++;
+    //                 }
+    //                 literalIndex++;
+    //             }
+    //         }
+    //     }
+    // }
 }
 void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & program, AspCore2ProgramBuilder* builder) {
 
