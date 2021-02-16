@@ -29,20 +29,8 @@ void backTrack(std::set<int> trueLit,std::set<int> falseLit,const std::unordered
 }
 int main(){
 
-   ReasonTable r;
-   r.addLevel();//not a(5)
-   r.insert(-5);
-   r.addLevel();//not a(4)
-   r.insert(-4);
-   r.addLevel();//not a(3)
-   r.insert(-3);
-   r.addLevel();//a(2)
-   r.addLevel();//not a(1)
-   r.insert(-1);
-   r.print();
-   
-   
-   
+    std::vector<int> v;
+    std::cout<<v[2]<<std::endl;
 
 }
 

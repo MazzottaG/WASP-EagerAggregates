@@ -43,21 +43,25 @@ void EagerConstraintImpl::performCompilation() {
             break;
         }
     }
-
-    FilesManagement fileManagement;
-    string executorPath = executablePath + "/src/lp2cpp/Executor.cpp";
-    int fd = fileManagement.tryGetLock(executorPath);
-    string hash = fileManagement.computeMD5(executorPath);
-#ifndef LP2CPP_DEBUG
-    std::ofstream outfile(executorPath);
-    compilationManager.setOutStream(&outfile);
-    compilationManager.lp2cpp();
-    outfile.close();
-#endif
-    string newHash = fileManagement.computeMD5(executorPath);
-    executionManager.compileDynamicLibrary(executablePath, newHash != hash);
-    fileManagement.releaseLock(fd, executorPath);
+    if(!wasp::Options::compilerDisabled){
+        FilesManagement fileManagement;
+        string executorPath = executablePath + "/src/lp2cpp/Executor.cpp";
+        int fd = fileManagement.tryGetLock(executorPath);
+        string hash = fileManagement.computeMD5(executorPath);
+    #ifndef LP2CPP_DEBUG
+        std::ofstream outfile(executorPath);
+        compilationManager.setOutStream(&outfile);
+        compilationManager.lp2cpp();
+        outfile.close();
+    #endif
+        string newHash = fileManagement.computeMD5(executorPath) ;
+        executionManager.compileDynamicLibrary(executablePath, newHash != hash);
+        fileManagement.releaseLock(fd, executorPath);
+    }else{
+        executionManager.compileDynamicLibrary(executablePath, false);
+    }
     compilationDone = true;
+
 }
 
 void EagerConstraintImpl::setFilename(const std::string & fileDirectory, const std::string & filename) {
@@ -135,7 +139,7 @@ void EagerConstraintImpl::onLiteralTrue(int var, int decisionLevel, std::vector<
     // }
 
 
-    const std::vector<int> & propagatedLiteralsAndReasons = executionManager.getPropagatedLiterals();
+    const std::unordered_set<int> & propagatedLiteralsAndReasons = executionManager.getPropagatedLiterals();
 
     for (auto& it : propagatedLiteralsAndReasons) {
         propagatedLiterals.push_back(-it);

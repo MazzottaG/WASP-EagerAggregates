@@ -51,7 +51,7 @@ public:
     void onLiteralUndef(int var);
     void addedVarName(int var, const std::string & literalString);
     const std::unordered_map<int, std::vector<int> > & getPropagatedLiteralsAndReasons() const;
-    const std::vector<int> & getPropagatedLiterals() const;
+    const std::unordered_set<int> & getPropagatedLiterals() const;
     void initCompiled();
     void simplifyAtLevelZero(std::vector<int>& output);
     void clearPropagations();

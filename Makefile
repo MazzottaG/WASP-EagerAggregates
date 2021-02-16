@@ -17,8 +17,8 @@ cxxflags.estats = -Wall -Wextra -std=c++11 -DNDEBUG -DSTATS_ON -DESTATS_ON -O3
 linkflags.estats = -lm -ldl
 
 #for profiling eager
-cxxflags.prof = -Wall -Wextra -std=c++14 -DNDEBUG -DLP2CPP_DEBUG -O3 -g
-linkflags.prof = -DLP2CPP_DEBUG -g -ldl
+cxxflags.prof = -Wall -Wextra -std=c++14 -DNDEBUG -DLP2CPP_DEBUG -O3 -g -pg
+linkflags.prof = -DLP2CPP_DEBUG -g -pg -ldl 
 
 # for g++ <= 4.6
 cxxflags.debug0x = -Wall -Wextra -std=c++0x

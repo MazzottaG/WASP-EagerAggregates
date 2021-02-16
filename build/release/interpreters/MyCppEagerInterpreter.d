@@ -1,6 +1,7 @@
 build/release/interpreters/MyCppEagerInterpreter.o: \
  src/interpreters/MyCppEagerInterpreter.cpp \
  src/interpreters/MyCppEagerInterpreter.h src/interpreters/Interpreter.h \
+ src/interpreters/../Literal.h src/interpreters/../util/WaspConstants.h \
  src/interpreters/../lp2cpp/EagerConstraintImpl.h \
  src/interpreters/../lp2cpp/EagerConstraint.h \
  src/interpreters/../lp2cpp/language/Atom.h \
@@ -38,6 +39,7 @@ build/release/interpreters/MyCppEagerInterpreter.o: \
  src/interpreters/../lp2cpp/datastructures/BoundAnnotatedLiteral.h \
  src/interpreters/../lp2cpp/language/ArithmeticRelationWithAggregate.h \
  src/interpreters/../lp2cpp/datastructures/DenseMap.h \
+ src/interpreters/../lp2cpp/../Literal.h \
  src/interpreters/../lp2cpp/CompilationManager.h \
  src/interpreters/../lp2cpp/ExecutionManager.h \
  src/interpreters/../lp2cpp/utils/GraphWithTarjanAlgorithm.h \
@@ -45,5 +47,4 @@ build/release/interpreters/MyCppEagerInterpreter.o: \
  src/interpreters/../propagators/Propagator.h \
  src/interpreters/../propagators/../util/WaspConstants.h \
  src/interpreters/../propagators/../stl/Vector.h \
- src/interpreters/../propagators/../stl/../util/WaspConstants.h \
- src/interpreters/../Literal.h src/interpreters/../util/WaspConstants.h
+ src/interpreters/../propagators/../stl/../util/WaspConstants.h

@@ -46,6 +46,7 @@ build/release/main.o: src/main.cc src/WaspFacade.h \
  src/weakconstraints/Opt.h src/weakconstraints/K.h \
  src/heuristic/ExternalHeuristic.h \
  src/heuristic/../interpreters/Interpreter.h \
+ src/heuristic/../interpreters/../Literal.h \
  src/heuristic/MinisatHeuristic.h src/weakconstraints/LazyInstantiation.h \
  src/outputBuilders/NoopOutputBuilder.h \
  src/outputBuilders/OutputBuilder.h \
@@ -75,10 +76,13 @@ build/release/main.o: src/main.cc src/WaspFacade.h \
  src/lp2cpp/language/ArithmeticRelationWithAggregate.h \
  src/lp2cpp/ExecutionManager.h src/lp2cpp/datastructures/AuxiliaryMap.h \
  src/lp2cpp/datastructures/TupleWithoutReasons.h src/lp2cpp/Executor.h \
- src/lp2cpp/language/Literal.h src/lp2cpp/LazyConstraint.h \
- src/lp2cpp/LazyConstraintImpl.h src/lp2cpp/LazyConstraint.h \
- src/lp2cpp/language/Atom.h src/lp2cpp/ExecutionManager.h \
- src/lp2cpp/CompilationManager.h src/lp2cpp/datastructures/DenseMap.h \
+ src/lp2cpp/language/Literal.h \
+ src/lp2cpp/datastructures/PostponedReasons.h \
+ src/lp2cpp/datastructures/PostponedReasonData.h src/lp2cpp/../Reason.h \
+ src/lp2cpp/LazyConstraint.h src/lp2cpp/LazyConstraintImpl.h \
+ src/lp2cpp/LazyConstraint.h src/lp2cpp/language/Atom.h \
+ src/lp2cpp/ExecutionManager.h src/lp2cpp/CompilationManager.h \
+ src/lp2cpp/datastructures/DenseMap.h \
  src/lp2cpp/utils/GraphWithTarjanAlgorithm.h \
  src/lp2cpp/datastructures/TupleWithoutReasons.h \
  src/lp2cpp/language/Literal.h src/lp2cpp/utils/FilesManagement.h \

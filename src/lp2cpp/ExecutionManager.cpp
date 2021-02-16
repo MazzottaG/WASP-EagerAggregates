@@ -87,7 +87,6 @@ Reason* ExecutionManager::getPostponedeReason(Literal lit){
     }
     std::vector<int> reason;
     executor->explainAggrLiteral(lit.getId(),reason);
-    // std::cout<<"reason size: "<<reason.size()<<std::endl;
     sort(reason.begin(),reason.end());
     auto it = unique(reason.begin(),reason.end());
     reason.resize(distance(reason.begin(),it));
@@ -227,7 +226,7 @@ const std::unordered_map<int, std::vector<int> > & ExecutionManager::getPropagat
     return executor->getPropagatedLiteralsAndReasons();
 }
 
-const std::vector<int> & ExecutionManager::getPropagatedLiterals() const {
+const std::unordered_set<int> & ExecutionManager::getPropagatedLiterals() const {
 
     return executor->getPropagatedLiterals();
 }
@@ -255,6 +254,12 @@ void ExecutionManager::simplifyAtLevelZero(std::vector<int>& output) {
         std::cout<<"derived at level 0 "<<-e.first<<endl;
 #endif
         output.push_back(-e.first);
+    }
+    for(auto & e: executor->getPropagatedLiterals()) {
+#ifdef EAGER_DEBUG
+        std::cout<<"derived at level 0 "<<-e.first<<endl;
+#endif
+        output.push_back(-e);
     }
     
 }

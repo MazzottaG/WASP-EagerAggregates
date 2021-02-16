@@ -140,6 +140,7 @@ namespace wasp
 
 #define OPTIONID_lp2cpp_datalog ( 'z' + 400 )
 #define OPTIONID_compile_eager ( 'z' + 401 )
+#define OPTIONID_compilerDisabled ( 'z' + 402 )
 
 #ifdef TRACE_ON
 TraceLevels Options::traceLevels;
@@ -269,7 +270,9 @@ unsigned int Options::initSign = INIT_SIGN_MINISAT_ALLFALSE;
 unsigned int Options::multiThreshold = 0;
 
 bool Options::lp2cppDatalog = false;
+bool Options::compilerDisabled = false;
 string Options::compile_eager = "";
+
 
 string Options::arg0 = "";
 
@@ -337,6 +340,7 @@ Options::parse(
                 
                 //options for running lp2cpp
                 { "lp2cpp-datalog", no_argument, NULL, OPTIONID_lp2cpp_datalog },
+                { "compilerDisabled", no_argument, NULL, OPTIONID_compilerDisabled },
                 
                 //options for compiling only
                 { "compile-eager", required_argument, NULL, OPTIONID_compile_eager },
@@ -914,6 +918,10 @@ Options::parse(
                 
             case OPTIONID_lp2cpp_datalog:
                 lp2cppDatalog = true;
+                break;
+
+            case OPTIONID_compilerDisabled:
+                compilerDisabled = true;
                 break;
                 
             case OPTIONID_compile_eager:

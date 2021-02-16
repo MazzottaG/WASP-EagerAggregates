@@ -66,6 +66,7 @@ build/release/util/WaspOptions.o: src/util/WaspOptions.cpp \
  src/util/../weakconstraints/K.h \
  src/util/../heuristic/ExternalHeuristic.h \
  src/util/../heuristic/../interpreters/Interpreter.h \
+ src/util/../heuristic/../interpreters/../Literal.h \
  src/util/../heuristic/MinisatHeuristic.h \
  src/util/../weakconstraints/LazyInstantiation.h \
  src/util/../outputBuilders/NoopOutputBuilder.h \

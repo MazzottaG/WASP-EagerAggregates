@@ -1,11 +1,12 @@
 #ifndef POSTPONEDREASONDATA_H
 #define POSTPONEDREASONDATA_H
 #include <vector>
+#include <unordered_set>
 
 class PostponedReasonData{
     
     public:
-        PostponedReasonData(std::vector<int> aggr,std::vector<bool> aggr_sign,int propLevel,std::vector<int> bodyReason,std::vector<int> sharedVars){
+        PostponedReasonData(const std::vector<int>& aggr,const std::vector<bool>& aggr_sign,int propLevel,const std::unordered_set<int>& bodyReason,const std::vector<int>& sharedVars){
             this->propagationLevel=propLevel;
             setBodyReason(bodyReason);
             setSharedVariables(sharedVars);
@@ -21,7 +22,17 @@ class PostponedReasonData{
             aggregates_id.clear();
             aggregates_sign.clear();
         }
-        void setAggregates(std::vector<int> aggr,std::vector<bool> aggr_sign){
+        void addAggregate(int aggr_id, bool sign){
+            aggregates_id.push_back(aggr_id);
+            aggregates_sign.push_back(sign);
+        }
+        void addBodyLiteral(int lit){
+            bodyLit.insert(lit);
+        }
+        void addSharedVariable(int v){
+            sharedVariables.push_back(v);
+        }
+        void setAggregates(const std::vector<int>& aggr,const std::vector<bool>& aggr_sign){
             aggregates_id.clear();
             aggregates_sign.clear();
             for(int i=0;i<aggr.size();i++){
@@ -29,17 +40,17 @@ class PostponedReasonData{
                 aggregates_sign.push_back(aggr_sign[i]);
             }
         }
-        std::vector<int> getAggregateId()const{return aggregates_id;}
-        std::vector<bool> getAggregateSign()const{return aggregates_sign;}
+        const std::vector<int>& getAggregateId()const{return aggregates_id;}
+        const std::vector<bool>& getAggregateSign()const{return aggregates_sign;}
         
         int getPropagationLevel()const{return propagationLevel;}
         void setPropagationLevel(int propLevel){this->propagationLevel=propLevel;}
 
-        const std::vector<int> & getBodyReason()const{return bodyLit;}
-        void setBodyReason(const std::vector<int> & bodyReason){ 
+        const std::unordered_set<int> & getBodyReason()const{return bodyLit;}
+        void setBodyReason(const std::unordered_set<int> & bodyReason){ 
             bodyLit.clear();
             for(int v : bodyReason) 
-                this->bodyLit.push_back(v);
+                this->bodyLit.insert(v);
         }
 
         const std::vector<int> & getSharedVariables()const{return sharedVariables;}
@@ -89,7 +100,7 @@ class PostponedReasonData{
         std::vector<bool> aggregates_sign;
 
         int propagationLevel;
-        std::vector<int> bodyLit;
+        std::unordered_set<int> bodyLit;
         std::vector<int> sharedVariables;
 };
 #endif

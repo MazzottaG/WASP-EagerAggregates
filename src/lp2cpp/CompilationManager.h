@@ -55,7 +55,7 @@ private:
     void eraseUndefJoinTuple()const;
     void printAggrEvaluation(const std::vector<const aspc::ArithmeticRelationWithAggregate*> aggregates,int rule_id,bool reason,std::vector<unsigned> joinOrder,const std::vector<const aspc::Formula*> body,const std::unordered_set<std::string> boundVariables,bool allTrue,const aspc::Rule& r);
     void evaluationEndingWithAggregate(const aspc::Rule & r,std::vector<unsigned> joinOrder,unsigned start);
-    void propAggr(const aspc::ArithmeticRelationWithAggregate* aggregateRelation,std::string& aggregateIdentifier,bool withReason,std::string op);
+    void propAggr(const aspc::ArithmeticRelationWithAggregate* aggregateRelation,std::string& aggregateIdentifier,bool withReason,std::string op,const std::vector<unsigned int>& joinOrder,const std::vector<const aspc::Formula*>& body,const aspc::Rule& r);
     void propIfMultipleJoin(const aspc::ArithmeticRelationWithAggregate* aggregateRelation,std::string& aggregateIdentifier,bool withReason,const std::vector<const aspc::Formula *>& body,const std::vector<unsigned int>& joinOrder,const aspc::Rule& r);
     void printAggregateTrueIf(std::string aggrIdentifier,const aspc::ArithmeticRelationWithAggregate* aggr,std::string joinTupleName,std::string op,bool isBound);
     void printCanPropagateIf(std::string aggrIdentifier,const aspc::ArithmeticRelationWithAggregate* aggr,std::string op,bool bound);

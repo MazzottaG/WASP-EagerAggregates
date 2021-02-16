@@ -128,6 +128,7 @@ namespace wasp
 
             static bool lp2cppDatalog;
             static string compile_eager;
+            static bool compilerDisabled;
             
             static unsigned int statsVerbosity;
             

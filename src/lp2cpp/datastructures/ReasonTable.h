@@ -6,14 +6,6 @@
 #include <unordered_map>
 class ReasonTable{
 
-    private:
-        std::vector<int> reason;
-        std::vector<int> literalToLevel;
-
-        int currentLevel;
-        int removingLevels;
-        int resizeFactor;
-
     public:
         ReasonTable(){
             currentLevel=0;
@@ -24,14 +16,18 @@ class ReasonTable{
             int pos=v;
             if(pos < 0)
                 pos=v*-1;
-            if(pos >= literalToLevel.size()){
-                literalToLevel.resize(pos+1);
-                
+            // if(pos >= literalToLevel.size()){
+            //     literalToLevel.resize(pos+1);
+            // }
+            if(literalToLevel.find(pos)== literalToLevel.end()){
+                literalToLevel[pos]=currentLevel;
+                reason.push_back(v);
             }
-            if(literalToLevel[pos] > 0 && literalToLevel[pos]<=currentLevel)
-                return;
-            literalToLevel[pos]=currentLevel;
-            reason.push_back(v);
+
+            // if(literalToLevel[pos] > 0 && literalToLevel[pos]<=currentLevel)
+            //     return;
+            // literalToLevel[pos]=currentLevel;
+            // reason.push_back(v);
         }
         void eraseCurrentLevel(){
             if(currentLevel>0){
@@ -87,16 +83,29 @@ class ReasonTable{
         }
         std::vector<int>::iterator begin(){return reason.begin();}
         std::vector<int>::iterator end(){return reason.end();}
+        
         private:
-        void deleteErasedLevel(){
-            for(int i=0;i<literalToLevel.size();i++){
-                if(literalToLevel[i]>currentLevel){
-                    literalToLevel[i]=0;
-                    reason.pop_back();
+            std::vector<int> reason;
+            std::unordered_map<int,int> literalToLevel;
+
+            int currentLevel;
+            int removingLevels;
+            int resizeFactor;
+            void deleteErasedLevel(){
+                int j=0;
+                for(int i=0;i<reason.size();i++){
+                    reason[j]=reason[i];
+                    int pos = reason[i]>0 ? reason[i]:-reason[i];
+                    if(literalToLevel[pos]>currentLevel){
+                        literalToLevel.erase(pos);
+                    } else{
+                        j++;
+                    }
+
                 }
+                reason.resize(j);
+                removingLevels=0;
             }
-            removingLevels=0;
-        }
 
 };
 #endif
