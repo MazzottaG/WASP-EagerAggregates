@@ -162,26 +162,23 @@ AuxMap unode_({});
 AuxMap pmax_({});
 AuxMap umax_({});
 //printing aux maps needed for reasons of negative literals;
-void Executor::explainAggrLiteral(int var,std::vector<int>& reas){
+void Executor::explainAggrLiteral(int var,std::unordered_set<int>& reas){
     int v = var==-1?var:-var;
-    PostponedReasonData* data = reasonMapping[v];
+    PostponedReasonData* data = reasonMapping.getAt(v);
     if(data == nullptr || data->getPropagationLevel() == -1) return;
-    std::vector<int> aggregates_id = data->getAggregateId();
-    for(int i=0; i < aggregates_id.size();i++){
-        int aggr_index=aggregates_id[i];
+    const std::vector<int>* aggregates_id = &data->getAggregateId();
+    for(int i=0; i < aggregates_id->size();i++){
+        int aggr_index=aggregates_id->at(i);
         int varsIndex=sharedVariable[aggr_index].getId(data->getSharedVariables());
         if(data->isPositive(i)){
-            for(int lit :positiveAggrReason[aggr_index][varsIndex].getLiteralUntil(data->getPropagationLevel())){
-                reas.push_back(lit);
-            }
+            positiveAggrReason[aggr_index][varsIndex].getLiteralUntil(data->getPropagationLevel(),reas);
         }else{
-            for(int lit :negativeAggrReason[aggr_index][varsIndex].getLiteralUntil(data->getPropagationLevel())){
-                reas.push_back(lit);
-            }
+            negativeAggrReason[aggr_index][varsIndex].getLiteralUntil(data->getPropagationLevel(),reas);
         }
     }
-    for(int l : data->getBodyReason()){
-        reas.push_back(l);
+    const std::unordered_set<int>* body = &data->getBodyReason();
+    for(auto it=body->begin();it != body->end();it++){
+        reas.insert(*it);
     }
     return;
 }

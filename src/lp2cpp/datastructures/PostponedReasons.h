@@ -18,6 +18,9 @@ class PostponedReasons{
             // std::cout << "getting "<<std::endl;
             return mapping[i];
         }
+        PostponedReasonData* getAt(int i){
+            return mapping[i];
+        }
         void erase(int lit){
             if(mapping.find(lit) != mapping.end())
                 delete mapping[lit];

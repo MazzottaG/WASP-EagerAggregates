@@ -57,7 +57,7 @@ namespace aspc {
         virtual void init();
         virtual void clear();
         virtual void clearPropagations();
-        virtual void explainAggrLiteral(int,std::vector<int>&);
+        virtual void explainAggrLiteral(int,std::unordered_set<int>&);
         virtual const std::vector<std::vector<aspc::Literal> > & getFailedConstraints() {
             return failedConstraints;
         }

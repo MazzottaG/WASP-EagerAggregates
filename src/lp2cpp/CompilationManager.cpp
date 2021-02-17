@@ -1349,49 +1349,44 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     }
 
     // *out << ind++ << "void explainAggrLiteral(int var){\n";
-    *out << ind++ << "void Executor::explainAggrLiteral(int var,std::vector<int>& reas){\n";
+    *out << ind++ << "void Executor::explainAggrLiteral(int var,std::unordered_set<int>& reas){\n";
         *out << ind << "int v = var==-1?var:-var;\n";
         // *out << ind << "std::cout << \"Explain \" << v << std::endl;\n";
 
-        *out << ind << "PostponedReasonData* data = reasonMapping[v];\n";
+        *out << ind << "PostponedReasonData* data = reasonMapping.getAt(v);\n";
         *out << ind << "if(data == nullptr || data->getPropagationLevel() == -1) return;\n";
-        *out << ind << "std::vector<int> aggregates_id = data->getAggregateId();\n";
-        *out << ind++ << "for(int i=0; i < aggregates_id.size();i++){\n";
-            *out << ind << "int aggr_index=aggregates_id[i];\n";
+        *out << ind << "const std::vector<int>* aggregates_id = &data->getAggregateId();\n";
+        *out << ind++ << "for(int i=0; i < aggregates_id->size();i++){\n";
+            *out << ind << "int aggr_index=aggregates_id->at(i);\n";
             *out << ind << "int varsIndex=sharedVariable[aggr_index].getId(data->getSharedVariables());\n";
 
             // *out << ind << "std::cout << \"Collecting reason from aggr \" <<aggr_index<<std::endl;\n";
             *out << ind++ << "if(data->isPositive(i)){\n";
                 // *out << ind << "std::cout<<\"Positive\"<<std::endl;\n";
-                *out << ind++ << "for(int lit :positiveAggrReason[aggr_index][varsIndex].getLiteralUntil(data->getPropagationLevel())){\n";
-
-                    *out << ind << "reas.push_back(lit);\n";
+                *out << ind << "positiveAggrReason[aggr_index][varsIndex].getLiteralUntil(data->getPropagationLevel(),reas);\n";
                     // *out << ind << "int uLit= lit>=0 ? lit : -1*lit;\n";
                     // *out << ind << "std::string m= lit>=0 ? \"\" : \"-\";\n";
                     // *out << ind << "std::cout << m; atomsTable[uLit].print(); std::cout<<std::endl;\n";
                     // *out << ind << "std::cout << lit << std::endl;\n";
-                *out << --ind << "}\n";
             *out << --ind << "}else{\n";
                 ind++;
                 // *out << ind << "std::cout << \"Negative\" <<std::endl;\n";
-                *out << ind++ << "for(int lit :negativeAggrReason[aggr_index][varsIndex].getLiteralUntil(data->getPropagationLevel())){\n";
-                    *out << ind << "reas.push_back(lit);\n";
+                *out << ind << "negativeAggrReason[aggr_index][varsIndex].getLiteralUntil(data->getPropagationLevel(),reas);\n";
                     // *out << ind << "int uLit= lit>=0 ? lit : -1*lit;\n";
                     // *out << ind << "std::string m= lit>=0 ? \"\" : \"-\";\n";
                     // *out << ind << "std::cout << m; atomsTable[uLit].print(); std::cout<<std::endl;\n";
                     // *out << ind << "std::cout << lit << std::endl;\n";
-                *out << --ind << "}\n";
             *out << --ind << "}\n";
         *out << --ind << "}\n";
         // *out << ind << "std::cout << \"Collecting reason from constraint body \" <<std::endl;\n";
-
-        *out << ind++ << "for(int l : data->getBodyReason()){\n";
+        *out << ind << "const std::unordered_set<int>* body = &data->getBodyReason();\n";
+        *out << ind++ << "for(auto it=body->begin();it != body->end();it++){\n";
             // *out << ind << "int uLit= l>=0 ? l : -1*l;\n";
             // *out << ind << "std::string m= l>=0 ? \"\" : \"-\";\n";
             // *out << ind << "std::cout << m; atomsTable[uLit].print(); std::cout<<std::endl;\n";
             // *out << ind << "std::cout << l << std::endl;\n";
 
-            *out << ind << "reas.push_back(l);\n";
+            *out << ind << "reas.insert(*it);\n";
         *out << --ind << "}\n";
         // *out << ind << "std::cout << \"reason computed\" <<std::endl;\n";
 
