@@ -57,19 +57,18 @@ PredicateWSet warc_Y_X_not_removed_Y_X_(4);
 PredicateWSet uarc_Y_X_not_removed_Y_X_(4);
 PredicateWSet nwarc_Y_X_not_removed_Y_X_(4);
 PredicateWSet nuarc_Y_X_not_removed_Y_X_(4);
-std::unordered_map<int, std::unordered_set<int>> trueAggrVars[1];
-std::unordered_map<int, std::unordered_set<int>> undefAggrVars[1];
-std::unordered_map<int, std::unordered_set<int>> trueNegativeAggrVars[1];
-std::unordered_map<int, std::unordered_set<int>> undefNegativeAggrVars[1];
+std::unordered_map < int, std::set < std::vector < int > > > trueAggrVars[1];
+std::unordered_map < int, std::set < std::vector < int > > > undefAggrVars[1];
+std::unordered_map < int, std::set < std::vector < int > > > trueNegativeAggrVars[1];
+std::unordered_map < int, std::set < std::vector < int > > > undefNegativeAggrVars[1];
 VariablesMapping sharedVariable[1];
-VariablesMapping aggrVariable[1];
-std::unordered_map<int, ReasonTable> positiveAggrReason[1];
-std::unordered_map<int, ReasonTable> negativeAggrReason[1];
-std::unordered_map<int, int> actualSum[1];
-std::unordered_map<int, int> possibleSum[1];
-std::unordered_map<int, int> actualNegativeSum[1];
-std::unordered_map<int, int> possibleNegativeSum[1];
-std::unordered_map<int, int> maxPossibleNegativeSum[1];
+std::unordered_map < int, ReasonTable > positiveAggrReason[1];
+std::unordered_map < int, ReasonTable > negativeAggrReason[1];
+std::unordered_map < int, int > actualSum[1];
+std::unordered_map < int, int > possibleSum[1];
+std::unordered_map < int, int > actualNegativeSum[1];
+std::unordered_map < int, int > possibleNegativeSum[1];
+std::unordered_map < int, int > maxPossibleNegativeSum[1];
 int currentReasonLevel=0;
 PostponedReasons reasonMapping;
 bool first=true;
@@ -164,6 +163,7 @@ AuxMap umax_({});
 //printing aux maps needed for reasons of negative literals;
 void Executor::explainAggrLiteral(int var,std::unordered_set<int>& reas){
     int v = var==-1?var:-var;
+    std::cout << "Explain " << v << std::endl;
     PostponedReasonData* data = reasonMapping.getAt(v);
     if(data == nullptr || data->getPropagationLevel() == -1) return;
     const std::vector<int>* aggregates_id = &data->getAggregateId();
@@ -183,7 +183,6 @@ void Executor::explainAggrLiteral(int var,std::unordered_set<int>& reas){
     return;
 }
 //printing functions prototypes for reasons of negative literals;
-void explainPositiveLiteral(const Tuple *, std::unordered_set<std::string> &, std::vector<const Tuple*> &);
 //printing functions for reasons of negative literals;
 void createFunctionsMap() {
 }
@@ -282,7 +281,6 @@ inline void Executor::onLiteralTrue(int var) {
                 Tuple t({Y,X,Y,X},&_arc_Y_X_not_removed_Y_X_);
                 {
                     std::vector<int> aggrKey({t[0]});
-                    int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                     if(aggrKey[0]>=0){
                         if(warc_Y_X_not_removed_Y_X_.find(t)==NULL){
                             if(uarc_Y_X_not_removed_Y_X_.find(t))
@@ -296,11 +294,11 @@ inline void Executor::onLiteralTrue(int var) {
                             int varsIndex=sharedVariable[0].getId({X,X});
                             auto& trueSet = trueAggrVars[0][varsIndex];
                             auto& undefSet = undefAggrVars[0][varsIndex];
-                            if(undefSet.find(aggrKeyIndex)!=undefSet.end()){
-                                undefSet.erase(aggrKeyIndex);
+                            if(undefSet.find(aggrKey)!=undefSet.end()){
+                                undefSet.erase(aggrKey);
                             }
-                            if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                                trueSet.insert(aggrKeyIndex);
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                trueSet.insert(aggrKey);
                                 auto& reas = positiveAggrReason[0][varsIndex];
                                 while(reas.getCurrentLevel()<currentReasonLevel)
                                     reas.addLevel();
@@ -327,11 +325,11 @@ inline void Executor::onLiteralTrue(int var) {
                         int varsIndex=sharedVariable[0].getId({X,X});
                         auto& trueSet = trueNegativeAggrVars[0][varsIndex];
                         auto& undefSet = undefNegativeAggrVars[0][varsIndex];
-                        if(undefSet.find(aggrKeyIndex)!=undefSet.end()){
-                            undefSet.erase(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)!=undefSet.end()){
+                            undefSet.erase(aggrKey);
                         }
-                        if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                            trueSet.insert(aggrKeyIndex);
+                        if(trueSet.find(aggrKey)==trueSet.end()){
+                            trueSet.insert(aggrKey);
                             auto& reas = positiveAggrReason[0][varsIndex];
                             while(reas.getCurrentLevel()<currentReasonLevel)
                                 reas.addLevel();
@@ -347,7 +345,6 @@ inline void Executor::onLiteralTrue(int var) {
                 }
                 {
                     std::vector<int> aggrKey({t[0]});
-                    int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                     if(aggrKey[0]>=0){
                         if(warc_Y_X_not_removed_Y_X_.find(t)==NULL){
                             if(uarc_Y_X_not_removed_Y_X_.find(t))
@@ -361,11 +358,11 @@ inline void Executor::onLiteralTrue(int var) {
                             int varsIndex=sharedVariable[0].getId({X,X});
                             auto& trueSet = trueAggrVars[0][varsIndex];
                             auto& undefSet = undefAggrVars[0][varsIndex];
-                            if(undefSet.find(aggrKeyIndex)!=undefSet.end()){
-                                undefSet.erase(aggrKeyIndex);
+                            if(undefSet.find(aggrKey)!=undefSet.end()){
+                                undefSet.erase(aggrKey);
                             }
-                            if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                                trueSet.insert(aggrKeyIndex);
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                trueSet.insert(aggrKey);
                                 auto& reas = positiveAggrReason[0][varsIndex];
                                 while(reas.getCurrentLevel()<currentReasonLevel)
                                     reas.addLevel();
@@ -392,11 +389,11 @@ inline void Executor::onLiteralTrue(int var) {
                         int varsIndex=sharedVariable[0].getId({X,X});
                         auto& trueSet = trueNegativeAggrVars[0][varsIndex];
                         auto& undefSet = undefNegativeAggrVars[0][varsIndex];
-                        if(undefSet.find(aggrKeyIndex)!=undefSet.end()){
-                            undefSet.erase(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)!=undefSet.end()){
+                            undefSet.erase(aggrKey);
                         }
-                        if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                            trueSet.insert(aggrKeyIndex);
+                        if(trueSet.find(aggrKey)==trueSet.end()){
+                            trueSet.insert(aggrKey);
                             auto& reas = positiveAggrReason[0][varsIndex];
                             while(reas.getCurrentLevel()<currentReasonLevel)
                                 reas.addLevel();
@@ -420,12 +417,11 @@ inline void Executor::onLiteralTrue(int var) {
                     //bound var1
                     //bound var3
                     std::vector<int> aggrKey({t[0]});
-                    int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                     int varsIndex = sharedVariable[0].getId({X,X});
                     auto& undefSet = undefAggrVars[0][varsIndex];
                     if(u_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                        if(undefSet.find(aggrKeyIndex)!=undefSet.end()){
-                            undefSet.erase(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)!=undefSet.end()){
+                            undefSet.erase(aggrKey);
                         }
                     }
                     auto& reas = negativeAggrReason[0][varsIndex];
@@ -437,12 +433,11 @@ inline void Executor::onLiteralTrue(int var) {
                     //bound var1
                     //bound var3
                     std::vector<int> aggrKey({t[0]});
-                    int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                     int varsIndex = sharedVariable[0].getId({X,X});
                     auto& undefSet = undefAggrVars[0][varsIndex];
                     if(u_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                        if(undefSet.find(aggrKeyIndex)!=undefSet.end()){
-                            undefSet.erase(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)!=undefSet.end()){
+                            undefSet.erase(aggrKey);
                         }
                     }
                     auto& reas = negativeAggrReason[0][varsIndex];
@@ -459,14 +454,13 @@ inline void Executor::onLiteralTrue(int var) {
                     //bound var1
                     //bound var3
                     std::vector<int> aggrKey({t[0]});
-                    int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                     int varsIndex = sharedVariable[0].getId({X,X});
                     auto& undefSet = undefNegativeAggrVars[0][varsIndex];
                     auto& trueSet = trueNegativeAggrVars[0][varsIndex];
                     if(nu_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
                         if(np_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                            if(undefSet.find(aggrKeyIndex)!=undefSet.end()){
-                                undefSet.erase(aggrKeyIndex);
+                            if(undefSet.find(aggrKey)!=undefSet.end()){
+                                undefSet.erase(aggrKey);
                                 possibleNegativeSum[0][varsIndex]+=aggrKey[0];
                             }
                         }
@@ -480,14 +474,13 @@ inline void Executor::onLiteralTrue(int var) {
                     //bound var1
                     //bound var3
                     std::vector<int> aggrKey({t[0]});
-                    int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                     int varsIndex = sharedVariable[0].getId({X,X});
                     auto& undefSet = undefNegativeAggrVars[0][varsIndex];
                     auto& trueSet = trueNegativeAggrVars[0][varsIndex];
                     if(nu_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
                         if(np_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                            if(undefSet.find(aggrKeyIndex)!=undefSet.end()){
-                                undefSet.erase(aggrKeyIndex);
+                            if(undefSet.find(aggrKey)!=undefSet.end()){
+                                undefSet.erase(aggrKey);
                                 possibleNegativeSum[0][varsIndex]+=aggrKey[0];
                             }
                         }
@@ -509,7 +502,6 @@ inline void Executor::onLiteralTrue(int var) {
                 Tuple t({Y,X,Y,X},&_arc_Y_X_not_removed_Y_X_);
                 {
                     std::vector<int> aggrKey({t[0]});
-                    int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                     if(aggrKey[0]>=0){
                         if(warc_Y_X_not_removed_Y_X_.find(t)==NULL){
                             if(uarc_Y_X_not_removed_Y_X_.find(t))
@@ -523,11 +515,11 @@ inline void Executor::onLiteralTrue(int var) {
                             int varsIndex=sharedVariable[0].getId({X,X});
                             auto& trueSet = trueAggrVars[0][varsIndex];
                             auto& undefSet = undefAggrVars[0][varsIndex];
-                            if(undefSet.find(aggrKeyIndex)!=undefSet.end()){
-                                undefSet.erase(aggrKeyIndex);
+                            if(undefSet.find(aggrKey)!=undefSet.end()){
+                                undefSet.erase(aggrKey);
                             }
-                            if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                                trueSet.insert(aggrKeyIndex);
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                trueSet.insert(aggrKey);
                                 auto& reas = positiveAggrReason[0][varsIndex];
                                 while(reas.getCurrentLevel()<currentReasonLevel)
                                     reas.addLevel();
@@ -554,11 +546,11 @@ inline void Executor::onLiteralTrue(int var) {
                         int varsIndex=sharedVariable[0].getId({X,X});
                         auto& trueSet = trueNegativeAggrVars[0][varsIndex];
                         auto& undefSet = undefNegativeAggrVars[0][varsIndex];
-                        if(undefSet.find(aggrKeyIndex)!=undefSet.end()){
-                            undefSet.erase(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)!=undefSet.end()){
+                            undefSet.erase(aggrKey);
                         }
-                        if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                            trueSet.insert(aggrKeyIndex);
+                        if(trueSet.find(aggrKey)==trueSet.end()){
+                            trueSet.insert(aggrKey);
                             auto& reas = positiveAggrReason[0][varsIndex];
                             while(reas.getCurrentLevel()<currentReasonLevel)
                                 reas.addLevel();
@@ -574,7 +566,6 @@ inline void Executor::onLiteralTrue(int var) {
                 }
                 {
                     std::vector<int> aggrKey({t[0]});
-                    int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                     if(aggrKey[0]>=0){
                         if(warc_Y_X_not_removed_Y_X_.find(t)==NULL){
                             if(uarc_Y_X_not_removed_Y_X_.find(t))
@@ -588,11 +579,11 @@ inline void Executor::onLiteralTrue(int var) {
                             int varsIndex=sharedVariable[0].getId({X,X});
                             auto& trueSet = trueAggrVars[0][varsIndex];
                             auto& undefSet = undefAggrVars[0][varsIndex];
-                            if(undefSet.find(aggrKeyIndex)!=undefSet.end()){
-                                undefSet.erase(aggrKeyIndex);
+                            if(undefSet.find(aggrKey)!=undefSet.end()){
+                                undefSet.erase(aggrKey);
                             }
-                            if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                                trueSet.insert(aggrKeyIndex);
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                trueSet.insert(aggrKey);
                                 auto& reas = positiveAggrReason[0][varsIndex];
                                 while(reas.getCurrentLevel()<currentReasonLevel)
                                     reas.addLevel();
@@ -619,11 +610,11 @@ inline void Executor::onLiteralTrue(int var) {
                         int varsIndex=sharedVariable[0].getId({X,X});
                         auto& trueSet = trueNegativeAggrVars[0][varsIndex];
                         auto& undefSet = undefNegativeAggrVars[0][varsIndex];
-                        if(undefSet.find(aggrKeyIndex)!=undefSet.end()){
-                            undefSet.erase(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)!=undefSet.end()){
+                            undefSet.erase(aggrKey);
                         }
-                        if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                            trueSet.insert(aggrKeyIndex);
+                        if(trueSet.find(aggrKey)==trueSet.end()){
+                            trueSet.insert(aggrKey);
                             auto& reas = positiveAggrReason[0][varsIndex];
                             while(reas.getCurrentLevel()<currentReasonLevel)
                                 reas.addLevel();
@@ -647,12 +638,11 @@ inline void Executor::onLiteralTrue(int var) {
                     //bound var1
                     //bound var3
                     std::vector<int> aggrKey({t[0]});
-                    int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                     int varsIndex = sharedVariable[0].getId({X,X});
                     auto& undefSet = undefAggrVars[0][varsIndex];
                     if(u_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                        if(undefSet.find(aggrKeyIndex)!=undefSet.end()){
-                            undefSet.erase(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)!=undefSet.end()){
+                            undefSet.erase(aggrKey);
                         }
                     }
                     auto& reas = negativeAggrReason[0][varsIndex];
@@ -664,12 +654,11 @@ inline void Executor::onLiteralTrue(int var) {
                     //bound var1
                     //bound var3
                     std::vector<int> aggrKey({t[0]});
-                    int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                     int varsIndex = sharedVariable[0].getId({X,X});
                     auto& undefSet = undefAggrVars[0][varsIndex];
                     if(u_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                        if(undefSet.find(aggrKeyIndex)!=undefSet.end()){
-                            undefSet.erase(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)!=undefSet.end()){
+                            undefSet.erase(aggrKey);
                         }
                     }
                     auto& reas = negativeAggrReason[0][varsIndex];
@@ -686,14 +675,13 @@ inline void Executor::onLiteralTrue(int var) {
                     //bound var1
                     //bound var3
                     std::vector<int> aggrKey({t[0]});
-                    int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                     int varsIndex = sharedVariable[0].getId({X,X});
                     auto& undefSet = undefNegativeAggrVars[0][varsIndex];
                     auto& trueSet = trueNegativeAggrVars[0][varsIndex];
                     if(nu_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
                         if(np_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                            if(undefSet.find(aggrKeyIndex)!=undefSet.end()){
-                                undefSet.erase(aggrKeyIndex);
+                            if(undefSet.find(aggrKey)!=undefSet.end()){
+                                undefSet.erase(aggrKey);
                                 possibleNegativeSum[0][varsIndex]+=aggrKey[0];
                             }
                         }
@@ -707,14 +695,13 @@ inline void Executor::onLiteralTrue(int var) {
                     //bound var1
                     //bound var3
                     std::vector<int> aggrKey({t[0]});
-                    int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                     int varsIndex = sharedVariable[0].getId({X,X});
                     auto& undefSet = undefNegativeAggrVars[0][varsIndex];
                     auto& trueSet = trueNegativeAggrVars[0][varsIndex];
                     if(nu_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
                         if(np_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                            if(undefSet.find(aggrKeyIndex)!=undefSet.end()){
-                                undefSet.erase(aggrKeyIndex);
+                            if(undefSet.find(aggrKey)!=undefSet.end()){
+                                undefSet.erase(aggrKey);
                                 possibleNegativeSum[0][varsIndex]+=aggrKey[0];
                             }
                         }
@@ -787,35 +774,33 @@ inline void Executor::onLiteralUndef(int var) {
                     }
                     {
                         std::vector<int> aggrKey({t[0]});
-                        int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                         int varsIndex = sharedVariable[0].getId({X,X});
                         auto& trueSet = trueAggrVars[0][varsIndex];
                         auto& undefSet = undefAggrVars[0][varsIndex];
                         if(p_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                            if(trueSet.find(aggrKeyIndex)!=trueSet.end()){
-                                trueSet.erase(aggrKeyIndex);
+                            if(trueSet.find(aggrKey)!=trueSet.end()){
+                                trueSet.erase(aggrKey);
                             }
                         }
-                        if(undefSet.find(aggrKeyIndex)==undefSet.end()){
-                            if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                                undefSet.insert(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)==undefSet.end()){
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                undefSet.insert(aggrKey);
                             }
                         }
                     }
                     {
                         std::vector<int> aggrKey({t[0]});
-                        int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                         int varsIndex = sharedVariable[0].getId({X,X});
                         auto& trueSet = trueAggrVars[0][varsIndex];
                         auto& undefSet = undefAggrVars[0][varsIndex];
                         if(p_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                            if(trueSet.find(aggrKeyIndex)!=trueSet.end()){
-                                trueSet.erase(aggrKeyIndex);
+                            if(trueSet.find(aggrKey)!=trueSet.end()){
+                                trueSet.erase(aggrKey);
                             }
                         }
-                        if(undefSet.find(aggrKeyIndex)==undefSet.end()){
-                            if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                                undefSet.insert(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)==undefSet.end()){
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                undefSet.insert(aggrKey);
                             }
                         }
                     }
@@ -834,34 +819,32 @@ inline void Executor::onLiteralUndef(int var) {
                     }
                     {
                         std::vector<int> aggrKey({t[0]});
-                        int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                         if(np_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
                             int varsIndex = sharedVariable[0].getId({X,X});
                             auto& undefSet = undefNegativeAggrVars[0][varsIndex];
                             auto& trueSet = trueNegativeAggrVars[0][varsIndex];
-                            if(trueSet.find(aggrKeyIndex) != trueSet.end()){
-                                trueSet.erase(aggrKeyIndex);
+                            if(trueSet.find(aggrKey) != trueSet.end()){
+                                trueSet.erase(aggrKey);
                             }
-                            if(undefSet.find(aggrKeyIndex) == undefSet.end()){
-                                if(trueSet.find(aggrKeyIndex) == trueSet.end()){
-                                    undefSet.insert(aggrKeyIndex);
+                            if(undefSet.find(aggrKey) == undefSet.end()){
+                                if(trueSet.find(aggrKey) == trueSet.end()){
+                                    undefSet.insert(aggrKey);
                                 }
                             }
                         }
                     }
                     {
                         std::vector<int> aggrKey({t[0]});
-                        int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                         if(np_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
                             int varsIndex = sharedVariable[0].getId({X,X});
                             auto& undefSet = undefNegativeAggrVars[0][varsIndex];
                             auto& trueSet = trueNegativeAggrVars[0][varsIndex];
-                            if(trueSet.find(aggrKeyIndex) != trueSet.end()){
-                                trueSet.erase(aggrKeyIndex);
+                            if(trueSet.find(aggrKey) != trueSet.end()){
+                                trueSet.erase(aggrKey);
                             }
-                            if(undefSet.find(aggrKeyIndex) == undefSet.end()){
-                                if(trueSet.find(aggrKeyIndex) == trueSet.end()){
-                                    undefSet.insert(aggrKeyIndex);
+                            if(undefSet.find(aggrKey) == undefSet.end()){
+                                if(trueSet.find(aggrKey) == trueSet.end()){
+                                    undefSet.insert(aggrKey);
                                 }
                             }
                         }
@@ -881,7 +864,6 @@ inline void Executor::onLiteralUndef(int var) {
             Tuple t({Y,X,Y,X},&_arc_Y_X_not_removed_Y_X_);
             {
                 std::vector<int> aggrKey({t[0]});
-                int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                 if(aggrKey[0]>=0){
                     if(uarc_Y_X_not_removed_Y_X_.find(Tuple(t))==NULL){
                         if(warc_Y_X_not_removed_Y_X_.find(t))
@@ -897,12 +879,12 @@ inline void Executor::onLiteralUndef(int var) {
                     auto& trueSet = trueAggrVars[0][varsIndex];
                     auto& undefSet = undefAggrVars[0][varsIndex];
                     if(p_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                        if(trueSet.find(aggrKeyIndex)!=trueSet.end()){
-                            trueSet.erase(aggrKeyIndex);
+                        if(trueSet.find(aggrKey)!=trueSet.end()){
+                            trueSet.erase(aggrKey);
                         }
-                        if(undefSet.find(aggrKeyIndex)==undefSet.end()){
-                            if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                                undefSet.insert(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)==undefSet.end()){
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                undefSet.insert(aggrKey);
                             }
                         }
                     }
@@ -921,12 +903,12 @@ inline void Executor::onLiteralUndef(int var) {
                     auto& trueSet = trueNegativeAggrVars[0][varsIndex];
                     auto& undefSet = undefNegativeAggrVars[0][varsIndex];
                     if(np_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                        if(trueSet.find(aggrKeyIndex)!=trueSet.end()){
-                            trueSet.erase(aggrKeyIndex);
+                        if(trueSet.find(aggrKey)!=trueSet.end()){
+                            trueSet.erase(aggrKey);
                         }
-                        if(undefSet.find(aggrKeyIndex)==undefSet.end()){
-                            if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                                undefSet.insert(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)==undefSet.end()){
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                undefSet.insert(aggrKey);
                             }
                         }
                     }
@@ -934,7 +916,6 @@ inline void Executor::onLiteralUndef(int var) {
             }
             {
                 std::vector<int> aggrKey({t[0]});
-                int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                 if(aggrKey[0]>=0){
                     if(uarc_Y_X_not_removed_Y_X_.find(Tuple(t))==NULL){
                         if(warc_Y_X_not_removed_Y_X_.find(t))
@@ -950,12 +931,12 @@ inline void Executor::onLiteralUndef(int var) {
                     auto& trueSet = trueAggrVars[0][varsIndex];
                     auto& undefSet = undefAggrVars[0][varsIndex];
                     if(p_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                        if(trueSet.find(aggrKeyIndex)!=trueSet.end()){
-                            trueSet.erase(aggrKeyIndex);
+                        if(trueSet.find(aggrKey)!=trueSet.end()){
+                            trueSet.erase(aggrKey);
                         }
-                        if(undefSet.find(aggrKeyIndex)==undefSet.end()){
-                            if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                                undefSet.insert(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)==undefSet.end()){
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                undefSet.insert(aggrKey);
                             }
                         }
                     }
@@ -974,12 +955,12 @@ inline void Executor::onLiteralUndef(int var) {
                     auto& trueSet = trueNegativeAggrVars[0][varsIndex];
                     auto& undefSet = undefNegativeAggrVars[0][varsIndex];
                     if(np_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                        if(trueSet.find(aggrKeyIndex)!=trueSet.end()){
-                            trueSet.erase(aggrKeyIndex);
+                        if(trueSet.find(aggrKey)!=trueSet.end()){
+                            trueSet.erase(aggrKey);
                         }
-                        if(undefSet.find(aggrKeyIndex)==undefSet.end()){
-                            if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                                undefSet.insert(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)==undefSet.end()){
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                undefSet.insert(aggrKey);
                             }
                         }
                     }
@@ -1004,35 +985,33 @@ inline void Executor::onLiteralUndef(int var) {
                     }
                     {
                         std::vector<int> aggrKey({t[0]});
-                        int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                         int varsIndex = sharedVariable[0].getId({X,X});
                         auto& trueSet = trueAggrVars[0][varsIndex];
                         auto& undefSet = undefAggrVars[0][varsIndex];
                         if(p_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                            if(trueSet.find(aggrKeyIndex)!=trueSet.end()){
-                                trueSet.erase(aggrKeyIndex);
+                            if(trueSet.find(aggrKey)!=trueSet.end()){
+                                trueSet.erase(aggrKey);
                             }
                         }
-                        if(undefSet.find(aggrKeyIndex)==undefSet.end()){
-                            if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                                undefSet.insert(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)==undefSet.end()){
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                undefSet.insert(aggrKey);
                             }
                         }
                     }
                     {
                         std::vector<int> aggrKey({t[0]});
-                        int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                         int varsIndex = sharedVariable[0].getId({X,X});
                         auto& trueSet = trueAggrVars[0][varsIndex];
                         auto& undefSet = undefAggrVars[0][varsIndex];
                         if(p_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                            if(trueSet.find(aggrKeyIndex)!=trueSet.end()){
-                                trueSet.erase(aggrKeyIndex);
+                            if(trueSet.find(aggrKey)!=trueSet.end()){
+                                trueSet.erase(aggrKey);
                             }
                         }
-                        if(undefSet.find(aggrKeyIndex)==undefSet.end()){
-                            if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                                undefSet.insert(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)==undefSet.end()){
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                undefSet.insert(aggrKey);
                             }
                         }
                     }
@@ -1051,34 +1030,32 @@ inline void Executor::onLiteralUndef(int var) {
                     }
                     {
                         std::vector<int> aggrKey({t[0]});
-                        int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                         if(np_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
                             int varsIndex = sharedVariable[0].getId({X,X});
                             auto& undefSet = undefNegativeAggrVars[0][varsIndex];
                             auto& trueSet = trueNegativeAggrVars[0][varsIndex];
-                            if(trueSet.find(aggrKeyIndex) != trueSet.end()){
-                                trueSet.erase(aggrKeyIndex);
+                            if(trueSet.find(aggrKey) != trueSet.end()){
+                                trueSet.erase(aggrKey);
                             }
-                            if(undefSet.find(aggrKeyIndex) == undefSet.end()){
-                                if(trueSet.find(aggrKeyIndex) == trueSet.end()){
-                                    undefSet.insert(aggrKeyIndex);
+                            if(undefSet.find(aggrKey) == undefSet.end()){
+                                if(trueSet.find(aggrKey) == trueSet.end()){
+                                    undefSet.insert(aggrKey);
                                 }
                             }
                         }
                     }
                     {
                         std::vector<int> aggrKey({t[0]});
-                        int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                         if(np_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
                             int varsIndex = sharedVariable[0].getId({X,X});
                             auto& undefSet = undefNegativeAggrVars[0][varsIndex];
                             auto& trueSet = trueNegativeAggrVars[0][varsIndex];
-                            if(trueSet.find(aggrKeyIndex) != trueSet.end()){
-                                trueSet.erase(aggrKeyIndex);
+                            if(trueSet.find(aggrKey) != trueSet.end()){
+                                trueSet.erase(aggrKey);
                             }
-                            if(undefSet.find(aggrKeyIndex) == undefSet.end()){
-                                if(trueSet.find(aggrKeyIndex) == trueSet.end()){
-                                    undefSet.insert(aggrKeyIndex);
+                            if(undefSet.find(aggrKey) == undefSet.end()){
+                                if(trueSet.find(aggrKey) == trueSet.end()){
+                                    undefSet.insert(aggrKey);
                                 }
                             }
                         }
@@ -1096,7 +1073,6 @@ inline void Executor::onLiteralUndef(int var) {
             Tuple t({Y,X,Y,X},&_arc_Y_X_not_removed_Y_X_);
             {
                 std::vector<int> aggrKey({t[0]});
-                int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                 if(aggrKey[0]>=0){
                     if(uarc_Y_X_not_removed_Y_X_.find(Tuple(t))==NULL){
                         if(warc_Y_X_not_removed_Y_X_.find(t))
@@ -1112,12 +1088,12 @@ inline void Executor::onLiteralUndef(int var) {
                     auto& trueSet = trueAggrVars[0][varsIndex];
                     auto& undefSet = undefAggrVars[0][varsIndex];
                     if(p_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                        if(trueSet.find(aggrKeyIndex)!=trueSet.end()){
-                            trueSet.erase(aggrKeyIndex);
+                        if(trueSet.find(aggrKey)!=trueSet.end()){
+                            trueSet.erase(aggrKey);
                         }
-                        if(undefSet.find(aggrKeyIndex)==undefSet.end()){
-                            if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                                undefSet.insert(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)==undefSet.end()){
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                undefSet.insert(aggrKey);
                             }
                         }
                     }
@@ -1136,12 +1112,12 @@ inline void Executor::onLiteralUndef(int var) {
                     auto& trueSet = trueNegativeAggrVars[0][varsIndex];
                     auto& undefSet = undefNegativeAggrVars[0][varsIndex];
                     if(np_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                        if(trueSet.find(aggrKeyIndex)!=trueSet.end()){
-                            trueSet.erase(aggrKeyIndex);
+                        if(trueSet.find(aggrKey)!=trueSet.end()){
+                            trueSet.erase(aggrKey);
                         }
-                        if(undefSet.find(aggrKeyIndex)==undefSet.end()){
-                            if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                                undefSet.insert(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)==undefSet.end()){
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                undefSet.insert(aggrKey);
                             }
                         }
                     }
@@ -1149,7 +1125,6 @@ inline void Executor::onLiteralUndef(int var) {
             }
             {
                 std::vector<int> aggrKey({t[0]});
-                int aggrKeyIndex = aggrVariable[0].getId(aggrKey);
                 if(aggrKey[0]>=0){
                     if(uarc_Y_X_not_removed_Y_X_.find(Tuple(t))==NULL){
                         if(warc_Y_X_not_removed_Y_X_.find(t))
@@ -1165,12 +1140,12 @@ inline void Executor::onLiteralUndef(int var) {
                     auto& trueSet = trueAggrVars[0][varsIndex];
                     auto& undefSet = undefAggrVars[0][varsIndex];
                     if(p_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                        if(trueSet.find(aggrKeyIndex)!=trueSet.end()){
-                            trueSet.erase(aggrKeyIndex);
+                        if(trueSet.find(aggrKey)!=trueSet.end()){
+                            trueSet.erase(aggrKey);
                         }
-                        if(undefSet.find(aggrKeyIndex)==undefSet.end()){
-                            if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                                undefSet.insert(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)==undefSet.end()){
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                undefSet.insert(aggrKey);
                             }
                         }
                     }
@@ -1189,12 +1164,12 @@ inline void Executor::onLiteralUndef(int var) {
                     auto& trueSet = trueNegativeAggrVars[0][varsIndex];
                     auto& undefSet = undefNegativeAggrVars[0][varsIndex];
                     if(np_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,t[0]}).size()<=0){
-                        if(trueSet.find(aggrKeyIndex)!=trueSet.end()){
-                            trueSet.erase(aggrKeyIndex);
+                        if(trueSet.find(aggrKey)!=trueSet.end()){
+                            trueSet.erase(aggrKey);
                         }
-                        if(undefSet.find(aggrKeyIndex)==undefSet.end()){
-                            if(trueSet.find(aggrKeyIndex)==trueSet.end()){
-                                undefSet.insert(aggrKeyIndex);
+                        if(undefSet.find(aggrKey)==undefSet.end()){
+                            if(trueSet.find(aggrKey)==trueSet.end()){
+                                undefSet.insert(aggrKey);
                             }
                         }
                     }
@@ -1347,10 +1322,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                             bool propagated=false;
                             if(undefPlusTrue == M){
                                 int vIndex = sharedVariable[0].getId({X,X});
-                                for(auto undefKeyIt = aggrVariable[0].begin();undefKeyIt!=aggrVariable[0].end();undefKeyIt++){
-                                    if(!undefAggrVars[0][vIndex].count(undefKeyIt->second))
-                                        continue;
-                                    const std::vector<int>* undefKey = &undefKeyIt->first;
+                                for(auto undefKey = undefAggrVars[0][vIndex].begin();undefKey!=undefAggrVars[0][vIndex].end();undefKey++){
                                     const std::vector<const Tuple*>* undefinedTuples = &u_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,undefKey->at(0)});
                                     if(undefinedTuples->size()==1){
 
@@ -1374,10 +1346,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                         }
                                     }
                                 }
-                                for(auto undefKeyIt = aggrVariable[0].begin();undefKeyIt!=aggrVariable[0].end();undefKeyIt++){
-                                    if(!undefNegativeAggrVars[0][vIndex].count(undefKeyIt->second))
-                                        continue;
-                                    const std::vector<int>* undefKey = &undefKeyIt->first;
+                                for(auto undefKey = undefNegativeAggrVars[0][vIndex].begin();undefKey!=undefNegativeAggrVars[0][vIndex].end();undefKey++){
                                     const std::vector<const Tuple*>* undefinedTuples = &nu_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,undefKey->at(0)});
                                     if(undefinedTuples->size()==1){
 
@@ -1475,10 +1444,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                             int sharedIndex = sharedVariable[0].getId({X,X});
                             if((int)(trueAggrVars[0][sharedIndex].size()+trueNegativeAggrVars[0][sharedIndex].size()) == M){
                                 int vIndex = sharedVariable[0].getId({X,X});
-                                for(auto undefKeyIt = aggrVariable[0].begin();undefKeyIt!=aggrVariable[0].end();undefKeyIt++){
-                                    if(!undefAggrVars[0][vIndex].count(undefKeyIt->second))
-                                        continue;
-                                    const std::vector<int>* undefKey = &undefKeyIt->first;
+                                for(auto undefKey = undefAggrVars[0][vIndex].begin();undefKey!=undefAggrVars[0][vIndex].end();undefKey++){
                                     const std::vector<const Tuple*>* undefinedTuples = &u_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,undefKey->at(0)});
                                     for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
                                         bool found=false;
@@ -1513,10 +1479,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                         }
                                     }
                                 }
-                                for(auto undefKeyIt = aggrVariable[0].begin();undefKeyIt!=aggrVariable[0].end();undefKeyIt++){
-                                    if(!undefNegativeAggrVars[0][vIndex].count(undefKeyIt->second))
-                                        continue;
-                                    const std::vector<int>* undefKey = &undefKeyIt->first;
+                                for(auto undefKey = undefNegativeAggrVars[0][vIndex].begin();undefKey!=undefNegativeAggrVars[0][vIndex].end();undefKey++){
                                     const std::vector<const Tuple*>* undefinedTuples = &nu_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,undefKey->at(0)});
                                     for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
 
@@ -1646,10 +1609,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                 int sharedIndex = sharedVariable[0].getId({X,X});
                                 if((int)(trueAggrVars[0][sharedIndex].size()+trueNegativeAggrVars[0][sharedIndex].size()) == M){
                                     int vIndex = sharedVariable[0].getId({X,X});
-                                    for(auto undefKeyIt = aggrVariable[0].begin();undefKeyIt!=aggrVariable[0].end();undefKeyIt++){
-                                        if(!undefAggrVars[0][vIndex].count(undefKeyIt->second))
-                                            continue;
-                                        const std::vector<int>* undefKey = &undefKeyIt->first;
+                                    for(auto undefKey = undefAggrVars[0][vIndex].begin();undefKey!=undefAggrVars[0][vIndex].end();undefKey++){
                                         const std::vector<const Tuple*>* undefinedTuples = &u_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,undefKey->at(0)});
                                         for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
                                             bool found=false;
@@ -1742,10 +1702,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                             }
                                         }
                                     }
-                                    for(auto undefKeyIt = aggrVariable[0].begin();undefKeyIt!=aggrVariable[0].end();undefKeyIt++){
-                                        if(!undefNegativeAggrVars[0][vIndex].count(undefKeyIt->second))
-                                            continue;
-                                        const std::vector<int>* undefKey = &undefKeyIt->first;
+                                    for(auto undefKey = undefNegativeAggrVars[0][vIndex].begin();undefKey!=undefNegativeAggrVars[0][vIndex].end();undefKey++){
                                         const std::vector<const Tuple*>* undefinedTuples = &nu_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,undefKey->at(0)});
                                         for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
 
@@ -1940,10 +1897,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                 if((int)(trueAggrVars[0][sharedIndex].size()+trueNegativeAggrVars[0][sharedIndex].size()) == M){
                                     if(tupleU == NULL){
                                         int vIndex = sharedVariable[0].getId({X,X});
-                                        for(auto undefKeyIt = aggrVariable[0].begin();undefKeyIt!=aggrVariable[0].end();undefKeyIt++){
-                                            if(!undefAggrVars[0][vIndex].count(undefKeyIt->second))
-                                                continue;
-                                            const std::vector<int>* undefKey = &undefKeyIt->first;
+                                        for(auto undefKey = undefAggrVars[0][vIndex].begin();undefKey!=undefAggrVars[0][vIndex].end();undefKey++){
                                             const std::vector<const Tuple*>* undefinedTuples = &u_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,undefKey->at(0)});
                                             for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
                                                 bool found=false;
@@ -2048,10 +2002,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                                 }
                                             }
                                         }
-                                        for(auto undefKeyIt = aggrVariable[0].begin();undefKeyIt!=aggrVariable[0].end();undefKeyIt++){
-                                            if(!undefNegativeAggrVars[0][vIndex].count(undefKeyIt->second))
-                                                continue;
-                                            const std::vector<int>* undefKey = &undefKeyIt->first;
+                                        for(auto undefKey = undefNegativeAggrVars[0][vIndex].begin();undefKey!=undefNegativeAggrVars[0][vIndex].end();undefKey++){
                                             const std::vector<const Tuple*>* undefinedTuples = &nu_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,undefKey->at(0)});
                                             for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
 
@@ -2248,10 +2199,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                 bool propagated=false;
                                 if(undefPlusTrue == M){
                                     int vIndex = sharedVariable[0].getId({X,X});
-                                    for(auto undefKeyIt = aggrVariable[0].begin();undefKeyIt!=aggrVariable[0].end();undefKeyIt++){
-                                        if(!undefAggrVars[0][vIndex].count(undefKeyIt->second))
-                                            continue;
-                                        const std::vector<int>* undefKey = &undefKeyIt->first;
+                                    for(auto undefKey = undefAggrVars[0][vIndex].begin();undefKey!=undefAggrVars[0][vIndex].end();undefKey++){
                                         const std::vector<const Tuple*>* undefinedTuples = &u_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,undefKey->at(0)});
                                         if(undefinedTuples->size()==1){
 
@@ -2313,10 +2261,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                             }
                                         }
                                     }
-                                    for(auto undefKeyIt = aggrVariable[0].begin();undefKeyIt!=aggrVariable[0].end();undefKeyIt++){
-                                        if(!undefNegativeAggrVars[0][vIndex].count(undefKeyIt->second))
-                                            continue;
-                                        const std::vector<int>* undefKey = &undefKeyIt->first;
+                                    for(auto undefKey = undefNegativeAggrVars[0][vIndex].begin();undefKey!=undefNegativeAggrVars[0][vIndex].end();undefKey++){
                                         const std::vector<const Tuple*>* undefinedTuples = &nu_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,undefKey->at(0)});
                                         if(undefinedTuples->size()==1){
 
@@ -2472,10 +2417,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                 int sharedIndex = sharedVariable[0].getId({X,X});
                                 if((int)(trueAggrVars[0][sharedIndex].size()+trueNegativeAggrVars[0][sharedIndex].size()) == M){
                                     int vIndex = sharedVariable[0].getId({X,X});
-                                    for(auto undefKeyIt = aggrVariable[0].begin();undefKeyIt!=aggrVariable[0].end();undefKeyIt++){
-                                        if(!undefAggrVars[0][vIndex].count(undefKeyIt->second))
-                                            continue;
-                                        const std::vector<int>* undefKey = &undefKeyIt->first;
+                                    for(auto undefKey = undefAggrVars[0][vIndex].begin();undefKey!=undefAggrVars[0][vIndex].end();undefKey++){
                                         const std::vector<const Tuple*>* undefinedTuples = &u_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,undefKey->at(0)});
                                         for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
                                             bool found=false;
@@ -2568,10 +2510,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                             }
                                         }
                                     }
-                                    for(auto undefKeyIt = aggrVariable[0].begin();undefKeyIt!=aggrVariable[0].end();undefKeyIt++){
-                                        if(!undefNegativeAggrVars[0][vIndex].count(undefKeyIt->second))
-                                            continue;
-                                        const std::vector<int>* undefKey = &undefKeyIt->first;
+                                    for(auto undefKey = undefNegativeAggrVars[0][vIndex].begin();undefKey!=undefNegativeAggrVars[0][vIndex].end();undefKey++){
                                         const std::vector<const Tuple*>* undefinedTuples = &nu_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,undefKey->at(0)});
                                         for(int iUndef=0;iUndef<undefinedTuples->size();iUndef++){
 
@@ -2754,10 +2693,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                 bool propagated=false;
                                 if(undefPlusTrue == M){
                                     int vIndex = sharedVariable[0].getId({X,X});
-                                    for(auto undefKeyIt = aggrVariable[0].begin();undefKeyIt!=aggrVariable[0].end();undefKeyIt++){
-                                        if(!undefAggrVars[0][vIndex].count(undefKeyIt->second))
-                                            continue;
-                                        const std::vector<int>* undefKey = &undefKeyIt->first;
+                                    for(auto undefKey = undefAggrVars[0][vIndex].begin();undefKey!=undefAggrVars[0][vIndex].end();undefKey++){
                                         const std::vector<const Tuple*>* undefinedTuples = &u_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,undefKey->at(0)});
                                         if(undefinedTuples->size()==1){
 
@@ -2819,10 +2755,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                             }
                                         }
                                     }
-                                    for(auto undefKeyIt = aggrVariable[0].begin();undefKeyIt!=aggrVariable[0].end();undefKeyIt++){
-                                        if(!undefNegativeAggrVars[0][vIndex].count(undefKeyIt->second))
-                                            continue;
-                                        const std::vector<int>* undefKey = &undefKeyIt->first;
+                                    for(auto undefKey = undefNegativeAggrVars[0][vIndex].begin();undefKey!=undefNegativeAggrVars[0][vIndex].end();undefKey++){
                                         const std::vector<const Tuple*>* undefinedTuples = &nu_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,undefKey->at(0)});
                                         if(undefinedTuples->size()==1){
 
@@ -2997,10 +2930,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                 if(undefPlusTrue == M){
                                     if(tupleU == NULL){
                                         int vIndex = sharedVariable[0].getId({X,X});
-                                        for(auto undefKeyIt = aggrVariable[0].begin();undefKeyIt!=aggrVariable[0].end();undefKeyIt++){
-                                            if(!undefAggrVars[0][vIndex].count(undefKeyIt->second))
-                                                continue;
-                                            const std::vector<int>* undefKey = &undefKeyIt->first;
+                                        for(auto undefKey = undefAggrVars[0][vIndex].begin();undefKey!=undefAggrVars[0][vIndex].end();undefKey++){
                                             const std::vector<const Tuple*>* undefinedTuples = &u_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,undefKey->at(0)});
                                             if(undefinedTuples->size()==1){
 
@@ -3074,10 +3004,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                                 }
                                             }
                                         }
-                                        for(auto undefKeyIt = aggrVariable[0].begin();undefKeyIt!=aggrVariable[0].end();undefKeyIt++){
-                                            if(!undefNegativeAggrVars[0][vIndex].count(undefKeyIt->second))
-                                                continue;
-                                            const std::vector<int>* undefKey = &undefKeyIt->first;
+                                        for(auto undefKey = undefNegativeAggrVars[0][vIndex].begin();undefKey!=undefNegativeAggrVars[0][vIndex].end();undefKey++){
                                             const std::vector<const Tuple*>* undefinedTuples = &nu_arc_Y_X_not_removed_Y_X_1_3_0_.getValues({X,X,undefKey->at(0)});
                                             if(undefinedTuples->size()==1){
 

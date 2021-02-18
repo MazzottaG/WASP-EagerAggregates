@@ -582,7 +582,7 @@ ExternalPropagator::handleConflict(
     Clause* clause;
 
     if(check_postponed){
-        // std::cout<<"HandleConflict"<<std::endl;
+        std::cout<<"HandleConflict"<<std::endl;
 
         Reason* r = interpreter->computePostponedReason(conflictLiteral); 
 

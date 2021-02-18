@@ -43,9 +43,9 @@ ExecutionManager::ExecutionManager() {
 
 ExecutionManager::~ExecutionManager() {
 #ifndef LP2CPP_DEBUG
-    if (executor)
-        destroy(executor);
-    // delete executor;
+    // if (executor)
+    //     destroy(executor);
+    delete executor;
 #else 
     delete executor;
 #endif
@@ -143,32 +143,32 @@ void ExecutionManager::compileDynamicLibrary(const string & executablePath, bool
 
 
     string executorFile = executablePath + "/Executor.so";
-    FilesManagement fileManagement;
-    //if(false){
-    if (fileHasChanged || !fileManagement.exists(executorFile)) {
-        string command = "cd " + executablePath + " && make -f DynamicLibraryMake -s";
-        //cout<<command<<endl;
-        int commandReturn = system(command.c_str());
-        if (commandReturn) {
-            throw std::runtime_error("Failed to execute command " + command);
-        }
-    }
+    // FilesManagement fileManagement;
+    // //if(false){
+    // if (fileHasChanged || !fileManagement.exists(executorFile)) {
+    //     string command = "cd " + executablePath + " && make -f DynamicLibraryMake -s";
+    //     //cout<<command<<endl;
+    //     int commandReturn = system(command.c_str());
+    //     if (commandReturn) {
+    //         throw std::runtime_error("Failed to execute command " + command);
+    //     }
+    // }
 
-    void* handle = dlopen(executorFile.c_str(), RTLD_LAZY);
-    if (!handle) {
-        fprintf(stderr, "%s\n", dlerror());
-        exit(EXIT_FAILURE);
-    }
+    // void* handle = dlopen(executorFile.c_str(), RTLD_LAZY);
+    // if (!handle) {
+    //     fprintf(stderr, "%s\n", dlerror());
+    //     exit(EXIT_FAILURE);
+    // }
 
-    aspc::Executor * (*create)();
+    // aspc::Executor * (*create)();
 
 
-    create = (aspc::Executor * (*)())dlsym(handle, "create_object");
+    // create = (aspc::Executor * (*)())dlsym(handle, "create_object");
 
-    destroy = (void (*)(aspc::Executor*))dlsym(handle, "destroy_object");
+    // destroy = (void (*)(aspc::Executor*))dlsym(handle, "destroy_object");
 
-    executor = (aspc::Executor*) create();
-    // executor = new aspc::Executor();
+    // executor = (aspc::Executor*) create();
+    executor = new aspc::Executor();
     
 }
 #else 
