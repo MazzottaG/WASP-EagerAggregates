@@ -2188,7 +2188,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "reasonMapping.erase(-var);\n";
         *out << ind << "reasonMapping.erase(-1);\n";
         *out << ind++ << "while(!propagatedLiterals.empty()){\n";
-            *out << ind << "std::cout<<\"Pending prop \"<<*propagatedLiterals.begin()<<std::endl;\n";
             *out << ind << "reasonMapping.erase(*propagatedLiterals.begin());\n";
             *out << ind << "propagatedLiterals.erase(*propagatedLiterals.begin());\n";
         *out << --ind << "}\n";
