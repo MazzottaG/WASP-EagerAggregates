@@ -31,26 +31,61 @@ void backTrack(std::set<int> trueLit,std::set<int> falseLit,const std::unordered
     falseLit.erase(toVisit[current]);
 
 }
+
+
 int main(){
-    std::unordered_map<DynamicCompilationVector*,std::set<VarsIndex>> m;
+    std::unordered_map<DynamicCompilationVector*,std::set<VarsIndex>> m[1];
     DynamicTrie sharedv;
-    DynamicTrie vVars;
-    std::vector<int> v = {1,1};
-    std::vector<int> vc = {1,1};
-    std::vector<int> v1 = {2,2};
-    std::vector<int> v1c = {2,2};
-    std::vector<int> vars = {1,1};
-    std::vector<int> vars1 = {1,2};
-    std::vector<int> vars2 = {2,1};
-    std::vector<int> vars3 = {2,2};
-    m[sharedv.addElements(v)].insert(VarsIndex(1,vVars.addElements(vars)));
-    m[sharedv.addElements(vc)].insert(VarsIndex(1,vVars.addElements(vars1)));
-    m[sharedv.addElements(v1)].insert(VarsIndex(2,vVars.addElements(vars2)));
-    m[sharedv.addElements(v1c)].insert(VarsIndex(2,vVars.addElements(vars3)));
+    DynamicTrie aggrVars;
+    std::vector<int> empty;
+    DynamicCompilationVector* body=sharedv.addElements(empty);
+    // std::cout<<m[0][body].key_comp<<std::endl;
+    // set<VarsIndex>::key_compare mycomp = m[0][body].key_comp();  
 
-    for(auto it = m.begin();it!=m.end();it++){
-        std::cout<<it->first->operator[](0)<<" "<<it->first->operator[](1)<<std::endl;
+    std::vector<int> v1={2,1};
+    std::vector<int> v2={1,2};
+    std::vector<int> v3={2,2};
+    std::vector<int> v4={1,3};
+    std::vector<int> v5={2,3};
+    std::vector<int> v6={1,1};
+    std::vector<int> v7={2,3};
+    
+    DynamicCompilationVector* aggrKeyIndex1 = aggrVars.addElements(v1);
+    DynamicCompilationVector* aggrKeyIndex2 = aggrVars.addElements(v2);
+    DynamicCompilationVector* aggrKeyIndex3 = aggrVars.addElements(v3);
+    DynamicCompilationVector* aggrKeyIndex4 = aggrVars.addElements(v4);
+    DynamicCompilationVector* aggrKeyIndex5 = aggrVars.addElements(v5);
+    if(aggrKeyIndex5!=nullptr){
+        for(int i=0;i<aggrKeyIndex5->size();i++){
+            std::cout<<aggrKeyIndex5->operator[](i)<<" ";
+        }
+        std::cout<<std::endl;
     }
+    DynamicCompilationVector* aggrKeyIndex6 = aggrVars.addElements(v6);
+    DynamicCompilationVector* aggrKeyIndex7 = aggrVars.addElements(v7);
+    m[0][body].insert(VarsIndex(2,aggrKeyIndex1));
+    m[0][body].insert(VarsIndex(1,aggrKeyIndex2));
+    m[0][body].insert(VarsIndex(2,aggrKeyIndex3));
+    bool ins = m[0][body].insert(VarsIndex(1,aggrKeyIndex4)).second;
+    if(ins){
+        std::cout<<"Inserted"<<std::endl;
+        if(m[0][body].find(VarsIndex(1,aggrKeyIndex4))==m[0][body].end()){
+            std::cout<<"UnableToFind"<<std::endl;
+        }else{
+            std::cout<<"Found"<<std::endl;
+        }
+    }else{
+        std::cout<<"Not inserted"<<std::endl;
+    }
+    m[0][body].insert(VarsIndex(2,aggrKeyIndex5));
+    m[0][body].insert(VarsIndex(1,aggrKeyIndex6));
+    VarsIndex comp(1,aggrKeyIndex4);
 
+    if(m[0][body].find(VarsIndex(1,aggrKeyIndex4)) == m[0][body].end()){
+        std::cout<<"not in"<<std::endl;
+    }else{
+        std::cout<<"in"<<std::endl;
+    }
+    
 }
 

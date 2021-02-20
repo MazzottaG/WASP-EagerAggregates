@@ -7,7 +7,7 @@ using namespace std;
 class DynamicCompilationVector {
 
     public:
-        DynamicCompilationVector(vector<int>& tmp) { v.swap(tmp); }
+        DynamicCompilationVector(vector<int>& tmp,unsigned int i) { id=i;v.swap(tmp); }
         
         int& operator[](unsigned int id) { return v[id]; }
         int operator[](unsigned int id) const { return v[id]; }        
@@ -25,9 +25,10 @@ class DynamicCompilationVector {
         void push_back(int n) { v.push_back(n); } 
 
         int at(unsigned int id) const { return operator[](id); }        
-        
+        unsigned getId()const{return id;}
 
     private:
+        unsigned id;
         vector<int> v;
 };
 

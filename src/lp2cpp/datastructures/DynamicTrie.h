@@ -10,6 +10,7 @@ using namespace std;
 
 class DynamicTrie {
     public:
+
         DynamicTrie() { root = new Node(INT_MAX); }
         ~DynamicTrie() { if(root) clear(); }
         void clear() { delete root; root = nullptr; }
@@ -18,16 +19,20 @@ class DynamicTrie {
             for(unsigned int i = 0; i < v.size(); i++) {
                 current = current->add(v[i]);
             }
-            return current->setLeaf(v);
+            return current->setLeaf(v,data);
         }
         
-        inline void removeElements(const vector<int>& v) {
-            Node* current = root;
-            for(unsigned int i = 0; i < v.size(); i++) {
-                current = current->add(v[i]);
-            }
-            return current->removeLeaf();
+        DynamicCompilationVector* get(unsigned int id)const{
+            assert(id<data.size());
+            return data[id];
         }
+        // inline void removeElements(const vector<int>& v) {
+        //     Node* current = root;
+        //     for(unsigned int i = 0; i < v.size(); i++) {
+        //         current = current->add(v[i]);
+        //     }
+        //     return current->removeLeaf();
+        // }
             
     private:        
         class Node {
@@ -39,11 +44,13 @@ class DynamicTrie {
                     for(auto it = childrenMap.begin(); it != childrenMap.end(); ++it) delete it->second;                    
                 }
                 inline int getContent() const { return content; }
-                inline DynamicCompilationVector* setLeaf(vector<int>& v) {
-                    if(dynamic == nullptr) dynamic = new DynamicCompilationVector(v);
+                inline DynamicCompilationVector* setLeaf(vector<int>& v,vector<DynamicCompilationVector*>& data) {
+                    if(dynamic == nullptr) {
+                        dynamic = new DynamicCompilationVector(v,data.size());
+                        data.push_back(dynamic);}
                     return dynamic;
                 }
-                inline void removeLeaf() { delete dynamic; dynamic = nullptr; }    
+                // inline void removeLeaf() { delete dynamic; dynamic = nullptr; }    
                 inline Node* add(int c) {
                     if (childrenMap.find(c) == childrenMap.end()) childrenMap[c] = new Node(c);            
                     return childrenMap[c];
@@ -55,6 +62,7 @@ class DynamicTrie {
                 unordered_map<int, Node*> childrenMap;        
         };        
         Node* root;        
+        std::vector<DynamicCompilationVector*> data;
 };
 
 #endif
