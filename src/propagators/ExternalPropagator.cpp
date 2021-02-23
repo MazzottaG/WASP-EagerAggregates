@@ -712,6 +712,7 @@ ExternalPropagator::computeReason(
         if( check_getReasonForLiteral )
         {
             if(check_postponed){
+                std::cout<< "Prop with executor.cpp " <<lit<<std::endl;
                 solver.assignLiteral(lit,interpreter->computePostponedReason(Literal::null));
                 // solver.assignLiteral(lit,getPostponedReason());
             }else{
