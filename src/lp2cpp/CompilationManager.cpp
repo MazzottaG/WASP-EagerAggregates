@@ -1225,7 +1225,14 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     GraphWithTarjanAlgorithm& graphWithTarjanAlgorithm = builder->getGraphWithTarjanAlgorithm();
     std::vector< std::vector <int> > sccs = graphWithTarjanAlgorithm.SCC();
-
+    // std::cout<<"sccs size: "<<sccs.size()<<std::endl;
+    // for(unsigned int i=0; i<sccs.size(); i++){
+    //     std::cout<<"Printing sccs["<<i<<"]"<<std::endl;
+    //     for(unsigned int j=0;j<sccs[i].size();j++){
+    //         std::cout<<sccs[i][j]<<" ";
+    //     }
+    //     std::cout<<std::endl;
+    // }
     //print working set
     //     for (const pair<std::string, unsigned>& predicate : predicates) {
     //        *out << ind << "w" << predicate.first <<".printTuples(\""<<predicate.first<<"\");\n";
@@ -1347,7 +1354,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         }
 
     }
-
+    // std::vector< std::unordered_map<std::string, std::vector<unsigned>>> starterToExitRulesByComponent(sccsSize);
+    
     declareDataStructuresForReasonsOfNegative(program);
 
     for (const std::string & predicate : modelGeneratorPredicatesInNegativeReasons) {
@@ -3091,8 +3099,11 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::cout<<\"Undef size: \"<<up_1_.getValues({}).size()<<std::endl;\n";*/
         for (unsigned i = 0; i < sccsSize; i++) {
             const std::unordered_map<std::string, std::vector<unsigned>>&startersExitRules = starterToExitRulesByComponent[i];
-            for (const auto& rulesByPredicate : startersExitRules) {
-                
+            std::vector<std::string> preds={"#3:1","yvalue","#2:1","#1:1","xvalue","#0:1"};
+            for(unsigned int j=0;j<preds.size();j++){
+
+            //  for (const auto& rulesByPredicate : startersExitRules) {
+                const std::pair<std::string,std::vector<unsigned>>& rulesByPredicate = *startersExitRules.find(preds[j]);
                 //*out << ind++ << "if(facts[i]->getPredicateName() == \"" << rulesByPredicate.first << "\") { \n";
                 if(rulesByPredicate.first[0]=='#'){
 
