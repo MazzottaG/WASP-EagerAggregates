@@ -3099,11 +3099,11 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::cout<<\"Undef size: \"<<up_1_.getValues({}).size()<<std::endl;\n";*/
         for (unsigned i = 0; i < sccsSize; i++) {
             const std::unordered_map<std::string, std::vector<unsigned>>&startersExitRules = starterToExitRulesByComponent[i];
-            std::vector<std::string> preds={"#3:1","yvalue","#2:1","#1:1","xvalue","#0:1"};
-            for(unsigned int j=0;j<preds.size();j++){
+            // std::vector<std::string> preds={"#3:1","yvalue","#2:1","#1:1","xvalue","#0:1"};
+            // for(unsigned int j=0;j<preds.size();j++){
 
-            //  for (const auto& rulesByPredicate : startersExitRules) {
-                const std::pair<std::string,std::vector<unsigned>>& rulesByPredicate = *startersExitRules.find(preds[j]);
+             for (const auto& rulesByPredicate : startersExitRules) {
+                // const std::pair<std::string,std::vector<unsigned>>& rulesByPredicate = *startersExitRules.find(preds[j]);
                 //*out << ind++ << "if(facts[i]->getPredicateName() == \"" << rulesByPredicate.first << "\") { \n";
                 if(rulesByPredicate.first[0]=='#'){
 
