@@ -684,8 +684,8 @@ inline void Executor::onLiteralUndef(int var) {
     reasonMapping.erase(-var);
     reasonMapping.erase(-1);
     while(!propagatedLiterals.empty()){
-        reasonMapping.erase(*propagatedLiterals.begin());
-        propagatedLiterals.erase(*propagatedLiterals.begin());
+        reasonMapping.erase(propagatedLiterals[0]);
+        propagatedLiterals.erase(propagatedLiterals[0]);
     }
     if(first){
     }

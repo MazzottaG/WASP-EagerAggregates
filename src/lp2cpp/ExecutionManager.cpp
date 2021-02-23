@@ -230,7 +230,7 @@ const std::unordered_map<int, std::vector<int> > & ExecutionManager::getPropagat
     return executor->getPropagatedLiteralsAndReasons();
 }
 
-const std::unordered_set<int> & ExecutionManager::getPropagatedLiterals() const {
+const UnorderedSet<int> & ExecutionManager::getPropagatedLiterals() const {
 
     return executor->getPropagatedLiterals();
 }
@@ -259,11 +259,11 @@ void ExecutionManager::simplifyAtLevelZero(std::vector<int>& output) {
 #endif
         output.push_back(-e.first);
     }
-    for(auto & e: executor->getPropagatedLiterals()) {
+    for(unsigned int i=0;i<executor->getPropagatedLiterals().size();i++) {
 #ifdef EAGER_DEBUG
         std::cout<<"derived at level 0 "<<-e.first<<endl;
 #endif
-        output.push_back(-e);
+        output.push_back(-executor->getPropagatedLiterals()[i]);
     }
     
 }

@@ -75,7 +75,7 @@ namespace aspc {
             return propagatedLiteralsAndReasons;
         }
 
-        virtual const std::unordered_set<int> & getPropagatedLiterals() const {
+        virtual const UnorderedSet<int> & getPropagatedLiterals() const {
             return propagatedLiterals;
         }
        
@@ -83,7 +83,7 @@ namespace aspc {
     private:
         std::vector<std::vector<aspc::Literal> > failedConstraints;
         std::unordered_map<int, std::vector<int> > propagatedLiteralsAndReasons;
-        std::unordered_set<int> propagatedLiterals;
+        UnorderedSet<int> propagatedLiterals;
         PostponedReasons reasonMapping;
         //std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> propagatedLiteralsAndReasons;
         std::vector<std::string> bodyLiterals;

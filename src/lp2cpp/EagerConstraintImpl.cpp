@@ -139,10 +139,10 @@ void EagerConstraintImpl::onLiteralTrue(int var, int decisionLevel, std::vector<
     // }
 
 
-    const std::unordered_set<int> & propagatedLiteralsAndReasons = executionManager.getPropagatedLiterals();
+    const UnorderedSet<int> & propagatedLiteralsAndReasons = executionManager.getPropagatedLiterals();
 
-    for (auto& it : propagatedLiteralsAndReasons) {
-        propagatedLiterals.push_back(-it);
+    for (int i=0;i<propagatedLiteralsAndReasons.size();i++) {
+        propagatedLiterals.push_back(-propagatedLiteralsAndReasons[i]);
     }
     
     //const std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> & propagatedLiteralsAndReasons = executionManager.getPropagatedLiteralsAndReasons();

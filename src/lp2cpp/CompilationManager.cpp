@@ -2196,8 +2196,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "reasonMapping.erase(-var);\n";
         *out << ind << "reasonMapping.erase(-1);\n";
         *out << ind++ << "while(!propagatedLiterals.empty()){\n";
-            *out << ind << "reasonMapping.erase(*propagatedLiterals.begin());\n";
-            *out << ind << "propagatedLiterals.erase(*propagatedLiterals.begin());\n";
+            *out << ind << "reasonMapping.erase(propagatedLiterals[0]);\n";
+            *out << ind << "propagatedLiterals.erase(propagatedLiterals[0]);\n";
         *out << --ind << "}\n";
         // *out << ind << "std::cout<<\"Erased reason mapping\"<<std::endl;\n";
         *out << ind++ << "if(first){\n";
@@ -3719,7 +3719,7 @@ void CompilationManager::propIfMultipleJoin(const aspc::ArithmeticRelationWithAg
                     }
                     // *out << ind << "std::cout<<\"LitIndex: "<<literalIndex<<" prop multi join\"<<std::endl;\n";
                     // *out << ind << "propagatedLiteralsAndReasons.insert({it_prop->second*sign, std::vector<int>("<<reason<<")}).first->second;\n";
-                    *out << ind << "propagatedLiterals\.insert(it_prop->second*sign);\n";
+                    *out << ind << "propagatedLiterals.insert(it_prop->second*sign);\n";
                     //TODO adding reason mapping save
 
                 *out << --ind <<"}\n";
@@ -5020,7 +5020,7 @@ void CompilationManager::evaluationEndingWithAggregate(const aspc::Rule & r,std:
             // *out << ind << "std::cout << W <<\" \"<< U <<\" \"<< U <<std::endl;\n";
             // *out << ind << "for(const auto & k : trueAggrVars[0][{U,U,U}]) std::cout<<k[0]<<\" \"<<k[1]<<std::endl;\n";
 
-            *out << ind << "propagatedLiterals\.insert(-1);\n";
+            *out << ind << "propagatedLiterals.insert(-1);\n";
             if(reason){
                 *out << ind << "bool added = reasonMapping.addPropagation(-1);\n";
                 *out << ind++ << "if(added){\n";
@@ -5078,7 +5078,7 @@ void CompilationManager::evaluationEndingWithAggregate(const aspc::Rule & r,std:
                 *out << ind << "std::cout<<\"External propagation \"<<sign;tupleU->print();std::cout<<std::endl;\n";
 
                 // *out << ind << "propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>("<<printReason<<")}).first->second;\n";
-                *out << ind << "propagatedLiterals\.insert(it->second*sign);\n";
+                *out << ind << "propagatedLiterals.insert(it->second*sign);\n";
                 if(reason){
                     *out << ind << "bool added = reasonMapping.addPropagation(it->second*sign);\n";
                     *out << ind++ << "if(added){\n";
@@ -5729,7 +5729,7 @@ void CompilationManager::evaluationStartingFromAggregate(const aspc::Rule & r,st
                         //     *out << ind << "for(int v : reason) {if (v < 0){ std::cout<<\"-\"; v*=-1;}atomsTable[v].print();}\n";
                         //     *out << ind << "std::cout<<std::endl;\n";
                         // }
-                        *out << ind << "propagatedLiterals\.insert(-1);\n";
+                        *out << ind << "propagatedLiterals.insert(-1);\n";
                         if(reason){
                             *out << ind << "bool added = reasonMapping.addPropagation(-1);\n";
                             *out << ind++ << "if(added){\n";
@@ -5778,7 +5778,7 @@ void CompilationManager::evaluationStartingFromAggregate(const aspc::Rule & r,st
                             //     *out << ind << "for(int v : reason) {if (v < 0){ std::cout<<\"-\"; v*=-1;}atomsTable[v].print();}\n";
                             *out << ind << "std::cout<<\"External propagation \"<<sign;tupleU->print();std::cout<<std::endl;\n";
                             // *out << ind << "propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>("<<printReason<<")}).first->second;\n";
-                            *out << ind << "propagatedLiterals\.insert(it->second*sign);\n";
+                            *out << ind << "propagatedLiterals.insert(it->second*sign);\n";
                             if(reason){
                                 *out << ind << "bool added = reasonMapping.addPropagation(it->second*sign);\n";
                                 *out << ind++ << "if(added){\n";
@@ -5975,7 +5975,7 @@ void CompilationManager::evaluationStartingFromAggregate(const aspc::Rule & r,st
                         // *out << ind << "std::cout << \" Negative \" <<std::endl;\n";
                         // *out << ind << "for(const auto & k : trueNegativeAggrVars[0][{U,U,U}]) std::cout<<k[0]<<\" \"<<k[1]<<std::endl;\n";
                         // *out << ind << "std::cout<<\"BodyReason: \"<<bodyReason.size()<<std::endl;\n";
-                        *out << ind << "propagatedLiterals\.insert(-1);\n";
+                        *out << ind << "propagatedLiterals.insert(-1);\n";
                         if(reason){
                             *out << ind << "bool added = reasonMapping.addPropagation(-1);\n";
                             *out << ind++ << "if(added){\n";
@@ -6032,7 +6032,7 @@ void CompilationManager::evaluationStartingFromAggregate(const aspc::Rule & r,st
 
                             *out << ind << "std::cout<<\"External propagation \"<<sign;tupleU->print();std::cout<<std::endl;\n";
                             // *out << ind << "propagatedLiteralsAndReasons.insert({it->second*sign, std::vector<int>("<<printReason<<")}).first->second;\n";
-                            *out << ind << "propagatedLiterals\.insert(it->second*sign);\n";
+                            *out << ind << "propagatedLiterals.insert(it->second*sign);\n";
                             if(reason){
                                 *out << ind << "bool added = reasonMapping.addPropagation(it->second*sign);\n";
                                 *out << ind++ << "if(added){\n";
