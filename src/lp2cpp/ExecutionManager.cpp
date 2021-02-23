@@ -96,6 +96,7 @@ Reason* ExecutionManager::getPostponedeReason(Literal lit){
     for(int v : reason){
         clause->addLiteral(Literal::createLiteralFromInt(-v));
     }
+
     return clause;
 
 }
