@@ -2,11 +2,12 @@
 #define POSTPONEDREASONDATA_H
 #include <vector>
 #include <unordered_set>
+#include "../../stl/UnorderedSet.h"
 
 class PostponedReasonData{
     
     public:
-        PostponedReasonData(const std::vector<int>& aggr,const std::vector<bool>& aggr_sign,int propLevel,const std::unordered_set<int>& bodyReason,const std::vector<int>& sharedVars){
+        PostponedReasonData(const std::vector<int>& aggr,const std::vector<bool>& aggr_sign,int propLevel,const UnorderedSet<int>& bodyReason,const std::vector<int>& sharedVars){
             this->propagationLevel=propLevel;
             setBodyReason(bodyReason);
             setSharedVariables(sharedVars);
@@ -46,11 +47,11 @@ class PostponedReasonData{
         int getPropagationLevel()const{return propagationLevel;}
         void setPropagationLevel(int propLevel){this->propagationLevel=propLevel;}
 
-        const std::unordered_set<int> & getBodyReason()const{return bodyLit;}
-        void setBodyReason(const std::unordered_set<int> & bodyReason){ 
+        const UnorderedSet<int> & getBodyReason()const{return bodyLit;}
+        void setBodyReason(const UnorderedSet<int> & bodyReason){ 
             bodyLit.clear();
-            for(int v : bodyReason) 
-                this->bodyLit.insert(v);
+            for(unsigned i=0;i<bodyReason.size();i++)
+                this->bodyLit.insert(bodyReason[i]);
         }
 
         const std::vector<int> & getSharedVariables()const{return sharedVariables;}
@@ -90,8 +91,8 @@ class PostponedReasonData{
                 std::cout << v << " ";
             }
             std::cout << std::endl << "bodyReason: ";
-            for(int v : bodyLit){
-                std::cout << v << " ";
+            for(int i=0;i<bodyLit.size();i++){
+                std::cout << bodyLit[i] << " ";
             }
             std::cout << std::endl;
         }
@@ -100,7 +101,7 @@ class PostponedReasonData{
         std::vector<bool> aggregates_sign;
 
         int propagationLevel;
-        std::unordered_set<int> bodyLit;
+        UnorderedSet<int> bodyLit;
         std::vector<int> sharedVariables;
 };
 #endif

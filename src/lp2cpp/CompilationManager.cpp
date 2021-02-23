@@ -1364,7 +1364,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     }
 
     // *out << ind++ << "void explainAggrLiteral(int var){\n";
-    *out << ind++ << "void Executor::explainAggrLiteral(int var,std::unordered_set<int>& reas){\n";
+    *out << ind++ << "void Executor::explainAggrLiteral(int var,UnorderedSet<int>& reas){\n";
         *out << ind << "int v = var==-1?var:-var;\n";
         // *out << ind << "std::cout << \"Explain \" << v << std::endl;\n";
 
@@ -1394,14 +1394,14 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << --ind << "}\n";
         *out << --ind << "}\n";
         // *out << ind << "std::cout << \"Collecting reason from constraint body \" <<std::endl;\n";
-        *out << ind << "const std::unordered_set<int>* body = &data->getBodyReason();\n";
-        *out << ind++ << "for(auto it=body->begin();it != body->end();it++){\n";
+        *out << ind << "const UnorderedSet<int>* body = &data->getBodyReason();\n";
+        *out << ind++ << "for(unsigned i=0;i<body->size();i++){\n";
             // *out << ind << "int uLit= l>=0 ? l : -1*l;\n";
             // *out << ind << "std::string m= l>=0 ? \"\" : \"-\";\n";
             // *out << ind << "std::cout << m; atomsTable[uLit].print(); std::cout<<std::endl;\n";
             // *out << ind << "std::cout << l << std::endl;\n";
 
-            *out << ind << "reas.insert(*it);\n";
+            *out << ind << "reas.insert(body->at(i));\n";
         *out << --ind << "}\n";
         // *out << ind << "std::cout << \"reason computed\" <<std::endl;\n";
 

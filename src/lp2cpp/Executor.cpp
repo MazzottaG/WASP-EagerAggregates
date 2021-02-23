@@ -152,7 +152,7 @@ AuxMap uyvalue_0_({0});
 AuxMap pyvalue_({});
 AuxMap uyvalue_({});
 //printing aux maps needed for reasons of negative literals;
-void Executor::explainAggrLiteral(int var,std::unordered_set<int>& reas){
+void Executor::explainAggrLiteral(int var,UnorderedSet<int>& reas){
     int v = var==-1?var:-var;
     PostponedReasonData* data = reasonMapping.getAt(v);
     if(data == nullptr || data->getPropagationLevel() == -1) return;
@@ -167,9 +167,9 @@ void Executor::explainAggrLiteral(int var,std::unordered_set<int>& reas){
             negativeAggrReason[aggr_index][varsIndex].getLiteralUntil(data->getPropagationLevel(),reas);
         }
     }
-    const std::unordered_set<int>* body = &data->getBodyReason();
-    for(auto it=body->begin();it != body->end();it++){
-        reas.insert(*it);
+    const UnorderedSet<int>* body = &data->getBodyReason();
+    for(unsigned i=0;i<body->size();i++){
+        reas.insert(body->at(i));
     }
     return;
 }

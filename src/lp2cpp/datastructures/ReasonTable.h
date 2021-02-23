@@ -5,7 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
-
+#include "../../stl/UnorderedSet.h"
 class ReasonTable{
 
     public:
@@ -69,7 +69,7 @@ class ReasonTable{
                 return literalToLevel[a]; 
             return 0;
         }
-        void getLiteralUntil(int level,std::unordered_set<int>& reas){
+        void getLiteralUntil(int level,UnorderedSet<int>& reas){
             if(level<=0)
                 return;
             for(int i=0;i<reason.size();i++){

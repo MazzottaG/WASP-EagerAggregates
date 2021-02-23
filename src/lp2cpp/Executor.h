@@ -26,6 +26,7 @@
 #include "language/Literal.h"
 #include "datastructures/AuxiliaryMap.h"
 #include "datastructures/PostponedReasons.h"
+#include "../stl/UnorderedSet.h"
 #include <iostream>
 #include <algorithm>
 namespace aspc {
@@ -57,7 +58,7 @@ namespace aspc {
         virtual void init();
         virtual void clear();
         virtual void clearPropagations();
-        virtual void explainAggrLiteral(int,std::unordered_set<int>&);
+        virtual void explainAggrLiteral(int,UnorderedSet<int>&);
         virtual const std::vector<std::vector<aspc::Literal> > & getFailedConstraints() {
             return failedConstraints;
         }

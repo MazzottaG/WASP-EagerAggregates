@@ -35,6 +35,7 @@
 #include "../Literal.h"
 #include "../Clause.h"
 #include "../Solver.h"
+#include "../stl/UnorderedSet.h"
 
 using namespace std;
 
@@ -68,14 +69,14 @@ void ExecutionManager::launchExecutorOnFile(const char *filename) {
 void ExecutionManager::onLearning( const Solver& solver, Learning* strategy, Literal lit ){
     // std::cout << "onLearning" << lit.getId() <<std::endl;
     
-    std::unordered_set<int> reason;
+    UnorderedSet<int> reason;
     executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reason);
     // sort(reason.begin(),reason.end());
     // auto it = unique(reason.begin(),reason.end());
     // reason.resize(distance(reason.begin(),it));
 
-    for(int i : reason){
-        Literal l = Literal::createLiteralFromInt(-i);
+    for(int i=0;i<reason.size();i++){
+        Literal l = Literal::createLiteralFromInt(-reason[i]);
         if(solver.getDecisionLevel(l) > 0){
             strategy->onNavigatingLiteral( l );
         }
@@ -85,7 +86,7 @@ Reason* ExecutionManager::getPostponedeReason(Literal lit){
     if(lit == Literal::null){
         return this;
     }
-    std::unordered_set<int> reason;
+    UnorderedSet<int> reason;
     executor->explainAggrLiteral(lit.getId(),reason);
     // sort(reason.begin(),reason.end());
     // auto it = unique(reason.begin(),reason.end());
@@ -93,8 +94,8 @@ Reason* ExecutionManager::getPostponedeReason(Literal lit){
 
     Clause* clause = new Clause();
     clause->addLiteral(Literal::null);
-    for(int v : reason){
-        clause->addLiteral(Literal::createLiteralFromInt(-v));
+    for(int i=0;i<reason.size();i++){
+        clause->addLiteral(Literal::createLiteralFromInt(-reason[i]));
     }
 
     return clause;
@@ -103,10 +104,11 @@ Reason* ExecutionManager::getPostponedeReason(Literal lit){
 bool ExecutionManager::onNavigatingLiteralForAllMarked( const Solver& solver, Learning* strategy, Literal lit ) {
     // std::cout << "onNavigatingLiteralForAllMarked" <<std::endl;
 
-    std::unordered_set<int> reas ;
+    UnorderedSet<int> reas ;
     executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reas);
-    for(int i : reas){
-        Literal l = Literal::createLiteralFromInt(-i);
+    for(int i=0;i<reas.size();i++){
+    
+        Literal l = Literal::createLiteralFromInt(-reas[i]);
         if( !strategy->onNavigatingLiteralForAllMarked( l ) )
             return false;
     }
@@ -119,10 +121,11 @@ ostream& ExecutionManager::print( ostream& out ) const{
 void ExecutionManager::onNavigatingForUnsatCore( const Solver& solver, vector< unsigned int >& visited, unsigned int numberOfCalls, Literal lit ){
     // std::cout << "onNavigatingForUnsatCore" <<std::endl;
     
-    std::unordered_set<int> reas ;
+    UnorderedSet<int> reas ;
     executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reas);
-    for(int i : reas){
-        Var v = i>0 ? i : -i;
+    for(int i=0;i<reas.size();i++){
+    
+        Var v = reas[i]>0 ? reas[i] : -reas[i];
         if( solver.getDecisionLevel( v ) > 0 )
             visited[ v ] = numberOfCalls;
     }
