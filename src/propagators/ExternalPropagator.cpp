@@ -612,11 +612,11 @@ ExternalPropagator::handleConflict(
             WaspErrorMessage::errorGeneric( "Reason is not well-formed: At least one of the literals in the reason must be inferred at the current decision level." );    
         delete clause;
         clause=c2;
-        std::cout<<"Current decision level: "<<solver.getCurrentDecisionLevel()<<std::endl;
-        for(int i=0;i<clause->size();i++){
-            std::cout<<clause->getAt(i)<<std::endl;
-        }
-        exit(1);
+        // std::cout<<"Current decision level: "<<solver.getCurrentDecisionLevel()<<std::endl;
+        // for(int i=0;i<clause->size();i++){
+        //     std::cout<<clause->getAt(i)<<std::endl;
+        // }
+        // exit(1);
     }else
         clause = getReason( solver, check_getReasonForLiteral ? conflictLiteral : Literal::null );
 

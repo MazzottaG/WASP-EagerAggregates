@@ -232,7 +232,6 @@ inline void Executor::onLiteralTrue(int var) {
     const Tuple & tuple = atomsTable[uVar];
     std::unordered_map<const std::string*,int>::iterator sum_it;
     std::string minus = var < 0 ? "-" : "";
-    std::cout<<"True "<<minus;tuple.print();std::cout<<std::endl;
     first=true;
     std::unordered_map<const std::string*,PredicateWSet*>::iterator uSetIt = predicateUSetMap.find(tuple.getPredicateName());
     if(uSetIt!=predicateUSetMap.end()) {
