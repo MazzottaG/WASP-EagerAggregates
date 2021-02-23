@@ -1262,7 +1262,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     std::vector < std::unordered_map < std::string, std::vector<pair<unsigned, unsigned> > >> starterToRecursiveRulesByComponent(sccsSize);
     std::vector<bool> exitRules(program.getRulesSize(), false);
     const std::unordered_map<std::string, int>& predicateIDs = builder->getPredicateIDsMap();
-
+    std::cout << "Rules size: "<<program.getRules().size()<<std::endl;
 
     for (aspc::Rule& r : program.getRules()) {
         //r is a constraint
@@ -3092,6 +3092,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         for (unsigned i = 0; i < sccsSize; i++) {
             const std::unordered_map<std::string, std::vector<unsigned>>&startersExitRules = starterToExitRulesByComponent[i];
             for (const auto& rulesByPredicate : startersExitRules) {
+                
                 //*out << ind++ << "if(facts[i]->getPredicateName() == \"" << rulesByPredicate.first << "\") { \n";
                 if(rulesByPredicate.first[0]=='#'){
 
@@ -3104,9 +3105,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     *out << ind << "const Tuple * tuple0 = &starter;\n";
 
                 }
-                //std::cout<< "Predicate "<<rulesByPredicate.first<<std::endl;
+                std::cout << "Print prop cod starting from "<<rulesByPredicate.first<<std::endl;
                 for (unsigned ruleId : rulesByPredicate.second) {
-
+                    std::cout<<"Evaluatin rule "<<ruleId<<std::endl;
                     const aspc::Rule& r = program.getRule(ruleId);
                     for (unsigned starter : r.getStarters()) {
                         if (starter != r.getBodySize()) {
@@ -3172,7 +3173,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << --ind << "}\n";
     *out << ind << "}\n";
 
-
+    exit(1);
     //*out << ind << "w" << predicateIdPair.first << ".printTuples(\"" << predicateIdPair.first << "\");\n";
 }
 
