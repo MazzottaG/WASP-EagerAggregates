@@ -26,6 +26,7 @@ class DynamicTrie {
             assert(id<data.size());
             return data[id];
         }
+        unsigned int size()const {return data.size();}
         // inline void removeElements(const vector<int>& v) {
         //     Node* current = root;
         //     for(unsigned int i = 0; i < v.size(); i++) {

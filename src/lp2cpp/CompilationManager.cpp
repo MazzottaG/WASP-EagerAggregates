@@ -5286,8 +5286,9 @@ void CompilationManager::evaluationStartingFromAggregate(const aspc::Rule & r,st
         //more than 0 shared variable
         if(sharedVars!=""){
             // *out << ind << "std::cout<<\"Shared variables size: \"<<sharedVariables_"<<r.getRuleId()<<"_ToAggregate_"<<joinOrder[0]<<".size()<<std::endl;\n";
-            *out << ind++ << "for(auto sharedVarsIt = undefAggrVars["<<aggregateToStructure[starter->getJoinTupleName()+sharedVars+starter->getAggrVarAsString()]<<"].begin();sharedVarsIt != undefAggrVars["<<aggregateToStructure[starter->getJoinTupleName()+sharedVars+starter->getAggrVarAsString()]<<"].end();sharedVarsIt++){\n";
-                *out << ind << "const DynamicCompilationVector* sharedVars=sharedVariable["<<aggregateToStructure[starter->getJoinTupleName()+sharedVars+starter->getAggrVarAsString()]<<"].get(sharedVarsIt->first);\n";
+            // *out << ind++ << "for(auto sharedVarsIt = undefAggrVars["<<aggregateToStructure[starter->getJoinTupleName()+sharedVars+starter->getAggrVarAsString()]<<"].begin();sharedVarsIt != undefAggrVars["<<aggregateToStructure[starter->getJoinTupleName()+sharedVars+starter->getAggrVarAsString()]<<"].end();sharedVarsIt++){\n";
+            *out << ind++ << "for(unsigned int sharedVarsIt=0;sharedVarsIt<sharedVariable["<<aggregateToStructure[starter->getJoinTupleName()+sharedVars+starter->getAggrVarAsString()]<<"].size();sharedVarsIt++){\n";
+                *out << ind << "const DynamicCompilationVector* sharedVars=sharedVariable["<<aggregateToStructure[starter->getJoinTupleName()+sharedVars+starter->getAggrVarAsString()]<<"].get(sharedVarsIt);\n";
             // *out << ind++ << "for(const auto & sharedVars : sharedVariable["<<aggregateToStructure[starter->getJoinTupleName()+sharedVars+starter->getAggrVarAsString()]<<"]){\n";
             // // *out << ind << "std::cout << \"shared variables bound\" <<std::endl;\n";
             // *out << ind++ << "for(const auto & sharedVarTuple"<<r.getRuleId()<<"_"<<joinOrder[0]<<" : sharedVariables_"<<r.getRuleId()<<"_ToAggregate_"<<joinOrder[0]<<"){\n";
