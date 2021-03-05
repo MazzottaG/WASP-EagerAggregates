@@ -37,6 +37,7 @@ public:
     virtual void simplifyAtLevelZero(std::vector<int> & output);
     virtual const std::vector<unsigned int> & getVariablesToFreeze();
     virtual const std::string & getFilepath() const;
+    void notifyStartingSolver()const{ executionManager.notifyStartingSolver();}
     virtual Reason* getPostponedeReason(Literal lit){return executionManager.getPostponedeReason(lit);}
 private:
     

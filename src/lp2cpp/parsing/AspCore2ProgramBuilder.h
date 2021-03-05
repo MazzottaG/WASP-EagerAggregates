@@ -65,6 +65,7 @@ private:
     std::vector<aspc::ArithmeticRelationWithAggregate> inequalitiesWithAggregate;
     std::string predicateName;
     GraphWithTarjanAlgorithm graphWithTarjanAlgorithm;
+    std::set<int> internalPredicatesId;
     std::unordered_map<std::string, int> predicateIDs;
     std::unordered_map<int, Vertex> vertexByID;
     void buildExpression();
@@ -165,7 +166,14 @@ public:
     aspc::Program & getProgram();
     
     const  std::map<std::string, unsigned> & getArietyMap();
-    
+    bool isInternalPredicateName(std::string predName) {
+        unsigned predId = predicateIDs[predName];
+        return internalPredicatesId.find(predId)!=internalPredicatesId.end();
+    }
+    bool isInternalPredicate(int predId)const {
+        return internalPredicatesId.find(predId)!=internalPredicatesId.end();
+    }
+
 //    const void printSCC(){
 //        std::vector<std::vector<int> > SCC = graphWithTarjanAlgorithm.SCC();
 //        for(int i = 0;i< SCC.size();i++)

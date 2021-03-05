@@ -49,6 +49,7 @@ public:
     void onLiteralUndef(const aspc::Literal* l);
     void onLiteralTrue(int var);
     void onLiteralUndef(int var);
+    void notifyStartingSolver()const{executor->undefLiteralsReceived();}
     void addedVarName(int var, const std::string & literalString);
     const std::unordered_map<int, std::vector<int> > & getPropagatedLiteralsAndReasons() const;
     const UnorderedSet<int> & getPropagatedLiterals() const;

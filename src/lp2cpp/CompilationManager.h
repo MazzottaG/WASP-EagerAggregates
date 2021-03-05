@@ -53,6 +53,7 @@ public:
     
 private:
     void eraseUndefJoinTuple()const;
+    void compileEagerRule(const aspc::Rule&,unsigned);
     void printAggrEvaluation(const std::vector<const aspc::ArithmeticRelationWithAggregate*> aggregates,int rule_id,bool reason,std::vector<unsigned> joinOrder,const std::vector<const aspc::Formula*> body,const std::unordered_set<std::string> boundVariables,bool allTrue,const aspc::Rule& r);
     void evaluationEndingWithAggregate(const aspc::Rule & r,std::vector<unsigned> joinOrder,unsigned start);
     void propAggr(const aspc::ArithmeticRelationWithAggregate* aggregateRelation,std::string& aggregateIdentifier,bool withReason,std::string op,const std::vector<unsigned int>& joinOrder,const std::vector<const aspc::Formula*>& body,const aspc::Rule& r);
@@ -70,6 +71,7 @@ private:
     void buildReason(std::string aggrIdentifier,const aspc::ArithmeticRelationWithAggregate* aggregateRelation,bool declareReason);
     void compileRule(const aspc::Rule& r,unsigned start, const aspc::Program& p) ;
     void declareDataStructures(const aspc::Rule& r, unsigned start,const std::set< std::pair<std::string, unsigned> >& aggregatePredicates);
+    void declareRuleEagerStructures(const aspc::Rule& r);
     bool matchConstants(const aspc::Rule & rule, const aspc::Atom & atom, Indentation & ind);
     void generateHeadTupleAndMatchConstants(const aspc::Rule & rule, Indentation & ind, const std::set<std::string> & bodyPredicates);
     void setHeadVariables(Indentation & ind, const aspc::Rule & rule);
@@ -138,6 +140,9 @@ private:
     
     std::unordered_map<std::string,unsigned> aggregateToStructure;
     int mode;
+
+    std::map<int,std::vector<int>> internalPredicatesToRules;
+    std::map<int,std::vector<int>> externalPredicatesToRules;
     
 };
 

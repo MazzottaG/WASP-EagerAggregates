@@ -257,14 +257,26 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
     if (starters.empty()) {
         bodyReordering();
     }
-
+    std::cout<<"BodyReordering"<<std::endl;
+    print();
     for (unsigned starter : starters) {
         unordered_set<string> boundVariables;
-
+        if(starter < formulas.size()){
+            std::cout<<"Ordering starting from: ";
+            formulas[starter]->print();
+            std::cout<<std::endl;
+        }
+        
         if (starter < formulas.size()) {
             formulas[starter]->addVariablesToSet(boundVariables);
             orderedBodyByStarters[starter].push_back(formulas[starter]);
             orderedBodyIndexesByStarters[starter].push_back(starter);
+        }else if(starter>formulas.size() && !isConstraint()){
+            for(unsigned k = 0; k < head[0].getAriety(); k++){
+                if(head[0].isVariableTermAt(k)){
+                    boundVariables.insert(head[0].getTermAt(k));
+                }
+            }
         }
 
 
@@ -330,7 +342,11 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
             orderedBodyIndexesByStarters[starter].push_back(selectedIndex);
             allFormulas.remove(selectedFormula);
         }
-        
+        for(const aspc::Formula* f: orderedBodyByStarters[starter]){
+            f->print();
+            std::cout<<" ";
+        }
+        std::cout<<std::endl;
 
     }
 

@@ -1,0 +1,16 @@
+NEGATIVE
+Undef
+
+True
+
+False
+-2,1,1
+-1,1,1
+
+POSITIVE
+Undef
+
+True
+ 2,1,1
+
+False

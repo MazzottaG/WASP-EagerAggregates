@@ -389,7 +389,9 @@ void AspCore2ProgramBuilder::onRule() {
         
     } else {
         aspc::Rule rule = aspc::Rule(buildingHead, buildingBody, inequalities,inequalitiesWithAggregate, true);
+        rule.print();
         program.addRule(rule);
+        
         //adding edges to dependency graph
         for (const aspc::Atom& a : buildingHead) {
             int currentHeadId = predicateIDs.size();
@@ -401,7 +403,6 @@ void AspCore2ProgramBuilder::onRule() {
                 vertexByID[currentHeadId] = Vertex(currentHeadId, a.getPredicateName());
             }
             vertexByID[currentHeadId].rules.push_back(rule.getRuleId());
-
             for (const aspc::Literal& l : buildingBody) {
                 int currentBodyId = predicateIDs.size();
                 unordered_map<string, int>::iterator i = predicateIDs.find(l.getPredicateName());
@@ -415,12 +416,11 @@ void AspCore2ProgramBuilder::onRule() {
                 graphWithTarjanAlgorithm.addEdge(currentBodyId, currentHeadId);
             }
         }
-
-
     }
     //add predicates to program
     for (const aspc::Atom& a : buildingHead) {
         program.addPredicate(a.getPredicateName(), a.getAriety());
+        internalPredicatesId.insert(predicateIDs[a.getPredicateName()]);
     }
     for (const aspc::Literal& l : buildingBody) {
         program.addPredicate(l.getPredicateName(), l.getAriety());
@@ -430,6 +430,7 @@ void AspCore2ProgramBuilder::onRule() {
     buildingHead.clear();
     inequalities.clear();
     inequalitiesWithAggregate.clear();
+    
 }
 
 void AspCore2ProgramBuilder::onTerm(int) {

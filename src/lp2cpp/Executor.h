@@ -42,11 +42,11 @@ namespace aspc {
             return (std::hash<std::string>()(v.getPredicateName())) ^ seed;
         }
     };
-
     class Executor {
     public:
         Executor();
         virtual ~Executor();
+        virtual void undefLiteralsReceived()const;
         virtual void executeProgramOnFacts(const std::vector<aspc::Literal*> & facts);
         virtual void executeProgramOnFacts(const std::vector<int> & facts);
         virtual void onLiteralTrue(const aspc::Literal* l);
