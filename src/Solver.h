@@ -1767,6 +1767,7 @@ Solver::preprocessing()
     for( unsigned int i = 0; i < externalPropagators.size(); i++ )
     {
         externalPropagators[ i ]->simplifyAtLevelZero( *this );
+        std::cout<<"Out simplify"<<std::endl;
         if( conflictDetected() )
         {
             trace( solving, 1, "Conflict at level 0 detected by external propagators.\n" );

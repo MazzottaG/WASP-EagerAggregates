@@ -52,8 +52,11 @@ public:
 
     
 private:
+    unsigned exploreLiteral(const aspc::Literal*,std::unordered_set<std::string>&,unsigned);
     void eraseUndefJoinTuple()const;
-    void compileEagerRule(const aspc::Rule&,unsigned);
+    unsigned compileRuleBody(const std::vector<unsigned>,unsigned ,const aspc::Rule& ,std::unordered_set<std::string>,bool);
+    void compileEagerRule(const aspc::Rule&,bool);
+    void compileEagerRuleWithAggregate(const aspc::Rule&,bool);
     void printAggrEvaluation(const std::vector<const aspc::ArithmeticRelationWithAggregate*> aggregates,int rule_id,bool reason,std::vector<unsigned> joinOrder,const std::vector<const aspc::Formula*> body,const std::unordered_set<std::string> boundVariables,bool allTrue,const aspc::Rule& r);
     void evaluationEndingWithAggregate(const aspc::Rule & r,std::vector<unsigned> joinOrder,unsigned start);
     void propAggr(const aspc::ArithmeticRelationWithAggregate* aggregateRelation,std::string& aggregateIdentifier,bool withReason,std::string op,const std::vector<unsigned int>& joinOrder,const std::vector<const aspc::Formula*>& body,const aspc::Rule& r);
@@ -100,6 +103,7 @@ private:
     
     std::set<std::string> headPredicates;
     
+    std::map<std::string,const aspc::Rule*> headPreds;
     Indentation ind;
     
     std::set<std::string> declaredMaps;
@@ -121,6 +125,13 @@ private:
     std::unordered_map<std::string, std::vector<unsigned> > constantAggregateVariablesIndex;
     
     std::unordered_map<std::string, std::vector<unsigned> > inequalityAggregateVariablesIndex;
+    
+    std::unordered_map<std::string, std::string > sharedVarToAggr;
+    std::unordered_map<std::string, std::vector<unsigned> > sharedVarToBodyIndices;
+    std::unordered_map<std::string, std::vector<unsigned> > sharedVarToAggrSetIndices;
+    std::unordered_map<std::string, std::vector<unsigned> > aggrVarToAggrSetIndices;
+    std::unordered_map<std::string, unsigned > aggrIdToRule;
+    std::unordered_map<std::string, unsigned > aggrSetToSharedVar;
     
     std::unordered_map<std::string, std::set<std::string> > predicateToAuxiliaryMaps;
     std::unordered_map<std::string, std::set<std::string> > predicateToNegativeAuxiliaryMaps;

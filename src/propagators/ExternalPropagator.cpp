@@ -582,10 +582,9 @@ ExternalPropagator::handleConflict(
     Clause* clause;
 
     if(check_postponed){
-        // std::cout<<"HandleConflict"<<std::endl;
-
+        // std::cout<<"HandleConflict"<<conflictLiteral<<std::endl;
+        
         Reason* r = interpreter->computePostponedReason(conflictLiteral); 
-
         clause = dynamic_cast<Clause*>(r);
         assert(clause != nullptr);
         unsigned int max = 0;    
@@ -608,8 +607,9 @@ ExternalPropagator::handleConflict(
                 max = dl;
         }
         
-        if( max < solver.getCurrentDecisionLevel() )
-            WaspErrorMessage::errorGeneric( "Reason is not well-formed: At least one of the literals in the reason must be inferred at the current decision level." );    
+        // if( max < solver.getCurrentDecisionLevel() )
+        //     WaspErrorMessage::errorGeneric( "Reason is not well-formed: At least one of the literals in the reason must be inferred at the current decision level." );    
+        
         delete clause;
         clause=c2;
         // std::cout<<"Current decision level: "<<solver.getCurrentDecisionLevel()<<std::endl;
@@ -690,7 +690,10 @@ ExternalPropagator::computeReason(
     
     if( conflictDetected )
     {
-        handleConflict( solver, conflictLiteral );
+        if(solver.getCurrentDecisionLevel() > 0){
+            handleConflict( solver, conflictLiteral );
+        }else
+            solver.assignLiteral( Literal::createLiteralFromInt( 1 ) );
         return;
     }
 

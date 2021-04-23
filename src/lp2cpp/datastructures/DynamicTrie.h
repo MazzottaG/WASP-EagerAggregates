@@ -27,13 +27,13 @@ class DynamicTrie {
             return data[id];
         }
         unsigned int size()const {return data.size();}
-        // inline void removeElements(const vector<int>& v) {
-        //     Node* current = root;
-        //     for(unsigned int i = 0; i < v.size(); i++) {
-        //         current = current->add(v[i]);
-        //     }
-        //     return current->removeLeaf();
-        // }
+        inline void removeElements(const vector<int>& v) {
+            Node* current = root;
+            for(unsigned int i = 0; i < v.size(); i++) {
+                current = current->add(v[i]);
+            }
+            return current->removeLeaf();
+        }
             
     private:        
         class Node {
@@ -51,7 +51,7 @@ class DynamicTrie {
                         data.push_back(dynamic);}
                     return dynamic;
                 }
-                // inline void removeLeaf() { delete dynamic; dynamic = nullptr; }    
+                inline void removeLeaf() { delete dynamic; dynamic = nullptr; }    
                 inline Node* add(int c) {
                     if (childrenMap.find(c) == childrenMap.end()) childrenMap[c] = new Node(c);            
                     return childrenMap[c];

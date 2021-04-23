@@ -39,7 +39,6 @@ MyCppEagerInterpreter::MyCppEagerInterpreter(char* filenameToCompile, const stri
 
 void MyCppEagerInterpreter::callListMethod(const string& method_name, const vector<int>& parameters, vector<int>& output) {
     
-    
     if (method_name == method_plugins_onLitTrue) {
         eagerConstraint.onLiteralTrue(parameters[0], parameters[1], output); 
     

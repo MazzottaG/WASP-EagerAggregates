@@ -35,6 +35,7 @@
 #include <vector>
 #include <unordered_map>
 #include "../language/Aggregate.h"
+#include "../../stl/UnorderedSet.h"
 
 class AspCore2ProgramBuilder : public DLV2::InputBuilder {
 private:
@@ -68,6 +69,20 @@ private:
     std::set<int> internalPredicatesId;
     std::unordered_map<std::string, int> predicateIDs;
     std::unordered_map<int, Vertex> vertexByID;
+    std::unordered_map<std::string,unsigned> auxiliaryPredicate;
+    std::unordered_set<std::string> aggrIdPredicate;
+    std::unordered_map<std::string,std::vector<unsigned>> domBodyPredicate;
+    std::unordered_map<int,std::vector<int>> auxiliaryPredicateToRules;
+    std::unordered_map<int,std::vector<unsigned>> predicateToRules;
+    std::unordered_map<unsigned, aspc::Literal*> domainToLiteral;
+    std::unordered_map<unsigned, std::vector<std::string>> auxToTerms;
+    std::unordered_map<unsigned, std::vector<std::string>> domToTerms;
+    
+    std::unordered_map<std::string,std::vector<aspc::Literal>> auxPredicateToBody;
+    std::unordered_map<std::string,std::vector<aspc::ArithmeticRelation>> auxPredicateToInequality;
+    std::unordered_map<std::string,std::vector<aspc::Literal>> aggrSetPredicateToBody;
+    std::unordered_map<std::string,std::vector<aspc::ArithmeticRelation>> aggrSetPredicateToInequality;
+
     void buildExpression();
     bool negatedTerm=false;
 public:
@@ -164,7 +179,7 @@ public:
     virtual void onWeightAtLevels(int nWeight, int nLevel, int nTerm);
     
     aspc::Program & getProgram();
-    
+    void onRuleRewrited();
     const  std::map<std::string, unsigned> & getArietyMap();
     bool isInternalPredicateName(std::string predName) {
         unsigned predId = predicateIDs[predName];
@@ -173,7 +188,45 @@ public:
     bool isInternalPredicate(int predId)const {
         return internalPredicatesId.find(predId)!=internalPredicatesId.end();
     }
+    const std::vector<unsigned>& getRulesForPredicate(std::string pred){
+        if(predicateIDs.find(pred)==predicateIDs.end())
+            return std::vector<unsigned>();
+           
+        return predicateToRules[predicateIDs[pred]];
+    }
+    void addRulesToPredicate(unsigned ruleId,std::string pred){
+        if(predicateIDs.find(pred)!=predicateIDs.end()){
+            predicateToRules[predicateIDs[pred]].push_back(ruleId);
+        }
+    } 
+    const std::unordered_map<std::string,std::vector<aspc::Literal>>& getAuxPredicateBody()const{
+        return auxPredicateToBody;
+    }
+    const std::unordered_map<std::string,std::vector<aspc::ArithmeticRelation>>& getAuxPredicateInequalities() const{
+        return auxPredicateToInequality;
+    }
+    bool isAuxPredicate(std::string pred){
+        return auxiliaryPredicate.find(pred)!=auxiliaryPredicate.end();
+    }
+    std::vector<unsigned> isDomBodyPredicate(const std::string& pred ){
+        if(domBodyPredicate.count(pred)!=0)
+            return domBodyPredicate[pred];
+        return std::vector<unsigned>();
+    }
+    aspc::Literal* getAuxLiteral(std::string pred){
+        return new aspc::Literal(false,aspc::Atom(pred,auxToTerms[auxiliaryPredicate[pred]]));
+    }
 
+    const std::vector<aspc::Literal>& getBodyForAuxiliary(std::string aux){
+        std::vector<aspc::Literal> ordered_body;
+        if(auxPredicateToBody.find(aux)==auxPredicateToBody.end())
+            return ordered_body;
+        return auxPredicateToBody[aux];
+    }
+    const std::unordered_map<std::string,unsigned>& getAuxPredicate()const{return auxiliaryPredicate;}
+    const std::unordered_map<int,std::vector<int>>& getAuxPredicateToRules() const {return auxiliaryPredicateToRules;}
+    
+    void rewriteRule();
 //    const void printSCC(){
 //        std::vector<std::vector<int> > SCC = graphWithTarjanAlgorithm.SCC();
 //        for(int i = 0;i< SCC.size();i++)

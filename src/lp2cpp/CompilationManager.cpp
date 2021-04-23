@@ -374,11 +374,12 @@ void CompilationManager::writeNegativeReasonsFunctions(aspc::Program & program) 
         writeNegativeReasonsFunctions(program, next, toProcessLiterals, processedLiterals, functionsMap);
     }
 
-    *out << ind++ << "void createFunctionsMap() {\n";
-    for (const auto & entry : functionsMap) {
-        *out << ind << "explainNegativeFunctionsMap[&_" << entry.first << "] = " << entry.second << ";\n";
-    }
-    *out << --ind << "}\n";
+    // COMMENTED FOR INCOMPATIBILITIES
+    // *out << ind++ << "void createFunctionsMap() {\n";
+    // for (const auto & entry : functionsMap) {
+    //     *out << ind << "explainNegativeFunctionsMap[&_" << entry.first << "] = " << entry.second << ";\n";
+    // }
+    // *out << --ind << "}\n";
 }
 void CompilationManager::checkExistsShareVariableMap(int ruleId, int aggrIndex,std::string& sharedVariables,bool create){
 
@@ -411,36 +412,58 @@ void CompilationManager::printVars(const aspc::Literal& li,std::string tupleName
             }
     }
 }
-bool CompilationManager::checkTupleFormat(const aspc::Literal& li,std::string buildIndex,bool tuplePointer){
-
+bool CompilationManager::checkTupleFormat(const aspc::Literal& li,std::string tupleName,bool tuplePointer){
     std::string point = tuplePointer ? "->":".";
-    bool checkVariablesEquals=false;
-    for(unsigned i=0;i<li.getAriety();i++){
-        for(unsigned j=i+1;j<li.getAriety();j++){
-            if(li.isVariableTermAt(i) && li.isVariableTermAt(j) && li.getTermAt(i)==li.getTermAt(j)){
-                if(!checkVariablesEquals){
-                    *out << ind++ << "if(tuple"<<buildIndex<<point<<"at("<<i<<") == tuple"<<buildIndex<<point<<"at("<<j<<")";
-                    checkVariablesEquals=true;
-                }else
-                    *out << "&& tuple"<<buildIndex<<point<<"at("<<i<<") == tuple"<<buildIndex<<point<<"at("<<j<<")";
-            }
-        }
+    std::string conditions;
+    for(unsigned i = 0; i < li.getAriety(); i++){
         if(!li.isVariableTermAt(i)){
-            std::string mapStringConstant = !isInteger(li.getTermAt(i)) ? "ConstantsManager::getInstance().mapConstant(\"" + escapeDoubleQuotes(li.getTermAt(i)) + "\")" : li.getTermAt(i);
-
-            if(!checkVariablesEquals){
-                *out << ind++ << "if(tuple"<<buildIndex<<point<<"at("<<i<<") == "<<mapStringConstant;
-                checkVariablesEquals=true;
-            }else{
-                *out << "&& tuple"<<buildIndex<<point<<"at("<<i<<") == "<<mapStringConstant;
+            if(conditions!="")
+                conditions+=" && ";
+            conditions+=tupleName+point+"at("+std::to_string(i)+")=="+li.getTermAt(i);
+        }else{
+            for(unsigned j = i+1; j < li.getAriety(); j++){
+                if(li.isVariableTermAt(j) && li.getTermAt(i) == li.getTermAt(j)){
+                    if(conditions!="")
+                        conditions+=" && ";
+                    conditions+=tupleName+point+"at("+std::to_string(i)+")=="+tupleName+point+"at("+std::to_string(j)+")";
+                }
             }
         }
     }
-    if(checkVariablesEquals){
-        *out << "){\n";
+    if(conditions!=""){
+        *out << ind++ << "if("<<conditions<<"){\n";
+        return true;
     }
+    return false;
+    
+    // std::string point = tuplePointer ? "->":".";
+    // bool checkVariablesEquals=false;
+    // for(unsigned i=0;i<li.getAriety();i++){
+    //     for(unsigned j=i+1;j<li.getAriety();j++){
+    //         if(li.isVariableTermAt(i) && li.isVariableTermAt(j) && li.getTermAt(i)==li.getTermAt(j)){
+    //             if(!checkVariablesEquals){
+    //                 *out << ind++ << "if(tuple"<<buildIndex<<point<<"at("<<i<<") == tuple"<<buildIndex<<point<<"at("<<j<<")";
+    //                 checkVariablesEquals=true;
+    //             }else
+    //                 *out << "&& tuple"<<buildIndex<<point<<"at("<<i<<") == tuple"<<buildIndex<<point<<"at("<<j<<")";
+    //         }
+    //     }
+    //     if(!li.isVariableTermAt(i)){
+    //         std::string mapStringConstant = !isInteger(li.getTermAt(i)) ? "ConstantsManager::getInstance().mapConstant(\"" + escapeDoubleQuotes(li.getTermAt(i)) + "\")" : li.getTermAt(i);
 
-    return checkVariablesEquals;
+    //         if(!checkVariablesEquals){
+    //             *out << ind++ << "if(tuple"<<buildIndex<<point<<"at("<<i<<") == "<<mapStringConstant;
+    //             checkVariablesEquals=true;
+    //         }else{
+    //             *out << "&& tuple"<<buildIndex<<point<<"at("<<i<<") == "<<mapStringConstant;
+    //         }
+    //     }
+    // }
+    // if(checkVariablesEquals){
+    //     *out << "){\n";
+    // }
+
+    // return checkVariablesEquals;
 }
 void CompilationManager::declareAuxMap(std::string mapVariableName,std::vector<unsigned> keyIndexes,std::string predicateName,bool createFalseAuxMap,bool aggrStruct){
     if(!declaredMaps.count(mapVariableName)){
@@ -481,7 +504,7 @@ void CompilationManager::declareAuxMap(std::string mapVariableName,std::vector<u
             }
             *out << "});\n";
         }
-        if(createFalseAuxMap){
+        // if(createFalseAuxMap){
             *out << ind << "AuxMap f" << mapVariableName << "({";
             for (unsigned k = 0; k < keyIndexes.size(); k++) {
                 if (k > 0) {
@@ -490,7 +513,7 @@ void CompilationManager::declareAuxMap(std::string mapVariableName,std::vector<u
                 *out << keyIndexes[k];
             }
             *out << "});\n";
-        }
+        // }
         predicateToAuxiliaryMaps[predicateName].insert(mapVariableName);
         if(aggrStruct){
             predicateToNegativeAuxiliaryMaps[predicateName].insert(mapVariableName);
@@ -971,6 +994,13 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::unordered_map<const std::string*, PredicateWSet*> predicateWSetMap;\n";
         *out << ind << "std::unordered_map<const std::string*, PredicateWSet*> predicateFSetMap;\n";
         *out << ind << "std::unordered_map<const std::string*, PredicateWSet*> predicateUSetMap;\n";
+
+
+        *out << ind << "std::unordered_map<const std::string*, DynamicTrie*> sharedVariables;\n";
+        *out << ind << "std::unordered_map<const std::string*, std::unordered_map<DynamicCompilationVector*,DynamicTrie>*> sharedVarWAggr;\n";
+        *out << ind << "std::unordered_map<const std::string*, std::unordered_map<DynamicCompilationVector*,DynamicTrie>*> sharedVarUAggr;\n";
+        *out << ind << "std::unordered_map<const std::string*, std::unordered_map<DynamicCompilationVector*,DynamicTrie>*> sharedVarFAggr;\n";
+
     }
 
     //contiene predicati con la rispettiva arità
@@ -996,9 +1026,13 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         }
     }
     if(mode == EAGER_MODE){
-        *out << ind << "std::unordered_map<int,std::vector<int>> levelToExtLiterals;\n";
-        *out << ind << "std::unordered_map<int,std::vector<int>> levelToIntLiterals;\n";
+        *out << ind << "std::map<int,int> externalLiteralsLevel;\n";
+        *out << ind << "std::map<int,std::vector<int>> levelToIntLiterals;\n";
+        *out << ind << "std::map<int,std::vector<int>> levelToExtLiterals;\n";
+        *out << ind << "std::map<int,UnorderedSet<int>> reasonForLiteral;\n";
         *out << ind << "int currentDecisionLevel=-1;\n";
+        *out << ind << "std::unordered_map<int,int> supportedLiterals;\n";
+        *out << ind << "bool undefinedLoaded=false;\n";
         // for(auto internalPred : program.getHeadPredicates()){
         //     *out << ind << "bool loadUndef"<<internalPred<<"=false;\n";
         // }
@@ -1120,27 +1154,27 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             }
         }
     }
-    *out << ind << "std::unordered_map < unsigned int, std::set < VarsIndex > > trueAggrVars["<<aggregateToStructure.size()<<"];\n";
-    *out << ind << "std::unordered_map < unsigned int, std::set < VarsIndex > > undefAggrVars["<<aggregateToStructure.size()<<"];\n";
-    *out << ind << "std::unordered_map < unsigned int, std::set < VarsIndex > > trueNegativeAggrVars["<<aggregateToStructure.size()<<"];\n";
-    *out << ind << "std::unordered_map < unsigned int, std::set < VarsIndex > > undefNegativeAggrVars["<<aggregateToStructure.size()<<"];\n";
+    // *out << ind << "std::unordered_map < unsigned int, std::set < VarsIndex > > trueAggrVars["<<aggregateToStructure.size()<<"];\n";
+    // *out << ind << "std::unordered_map < unsigned int, std::set < VarsIndex > > undefAggrVars["<<aggregateToStructure.size()<<"];\n";
+    // *out << ind << "std::unordered_map < unsigned int, std::set < VarsIndex > > trueNegativeAggrVars["<<aggregateToStructure.size()<<"];\n";
+    // *out << ind << "std::unordered_map < unsigned int, std::set < VarsIndex > > undefNegativeAggrVars["<<aggregateToStructure.size()<<"];\n";
 
 
-    *out << ind << "DynamicTrie aggrVariable["<<aggregateToStructure.size()<<"];\n";
-    *out << ind << "DynamicTrie sharedVariable["<<aggregateToStructure.size()<<"];\n";
+    // *out << ind << "DynamicTrie aggrVariable["<<aggregateToStructure.size()<<"];\n";
+    // *out << ind << "DynamicTrie sharedVariable["<<aggregateToStructure.size()<<"];\n";
 
     // *out << ind << "VariablesMapping sharedVariable["<<aggregateToStructure.size()<<"];\n";
     // *out << ind << "VariablesMapping aggrVariable["<<aggregateToStructure.size()<<"];\n";
 
-    *out << ind << "std::unordered_map < unsigned int, ReasonTable > positiveAggrReason["<<aggregateToStructure.size()<<"];\n";
-    *out << ind << "std::unordered_map < unsigned int, ReasonTable > negativeAggrReason["<<aggregateToStructure.size()<<"];\n";
+    // *out << ind << "std::unordered_map < unsigned int, ReasonTable > positiveAggrReason["<<aggregateToStructure.size()<<"];\n";
+    // *out << ind << "std::unordered_map < unsigned int, ReasonTable > negativeAggrReason["<<aggregateToStructure.size()<<"];\n";
 
-    *out << ind << "std::unordered_map < unsigned int, int > actualSum["<<aggregateToStructure.size()<<"];\n";
-    *out << ind << "std::unordered_map < unsigned int, int > possibleSum["<<aggregateToStructure.size()<<"];\n";
-    *out << ind << "std::unordered_map < unsigned int, int > actualNegativeSum["<<aggregateToStructure.size()<<"];\n";
-    *out << ind << "std::unordered_map < unsigned int, int > possibleNegativeSum["<<aggregateToStructure.size()<<"];\n";
+    // *out << ind << "std::unordered_map < unsigned int, int > actualSum["<<aggregateToStructure.size()<<"];\n";
+    // *out << ind << "std::unordered_map < unsigned int, int > possibleSum["<<aggregateToStructure.size()<<"];\n";
+    // *out << ind << "std::unordered_map < unsigned int, int > actualNegativeSum["<<aggregateToStructure.size()<<"];\n";
+    // *out << ind << "std::unordered_map < unsigned int, int > possibleNegativeSum["<<aggregateToStructure.size()<<"];\n";
 
-    *out << ind << "std::unordered_map < unsigned int, int > maxPossibleNegativeSum["<<aggregateToStructure.size()<<"];\n";
+    // *out << ind << "std::unordered_map < unsigned int, int > maxPossibleNegativeSum["<<aggregateToStructure.size()<<"];\n";
 
     // *out << ind << "std::unordered_map<std::vector<int>,std::set<std::vector<int>>,TuplesHash> trueAggrVars["<<aggregateToStructure.size()<<"];\n";
     // *out << ind << "std::unordered_map<std::vector<int>,std::set<std::vector<int>>,TuplesHash> undefAggrVars["<<aggregateToStructure.size()<<"];\n";
@@ -1156,9 +1190,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     // *out << ind << "std::unordered_map<std::vector<int>, int,TuplesHash> possibleNegativeSum["<<aggregateToStructure.size()<<"];\n";
 
     // *out << ind << "std::unordered_map<std::vector<int>, int,TuplesHash> maxPossibleNegativeSum["<<aggregateToStructure.size()<<"];\n";
-    *out << ind << "int currentReasonLevel=0;\n";
-    *out << ind << "PostponedReasons reasonMapping;\n";
-    *out << ind << "bool first=true;\n";
+    // *out << ind << "int currentReasonLevel=0;\n";
+    // *out << ind << "PostponedReasons reasonMapping;\n";
+    *out << ind << "bool unRoll=false;\n";
 
     *out << ind++ << "Executor::~Executor() {\n";
     // for(const aspc::Rule & r : program.getRules()){
@@ -1279,41 +1313,113 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     std::vector<bool> exitRules(program.getRulesSize(), false);
     const std::unordered_map<std::string, int>& predicateIDs = builder->getPredicateIDsMap();
     std::cout << "Rules size: "<<program.getRules().size()<<std::endl;
+    for(const auto& auxPred : builder->getAuxPredicateBody()){
+        std::unordered_set<unsigned> visitedLiterals;
+        std::unordered_set<std::string> boundVariables;
+        while(visitedLiterals.size() < auxPred.second.size()){
+            const aspc::Literal* lit = NULL;
+            unsigned litIndex=0;
+            for(unsigned k=0;k<auxPred.second.size();k++){
+                if(visitedLiterals.count(k)==0){
+                    if(auxPred.second[k].isBoundedLiteral(boundVariables)){
+                        lit=&auxPred.second[k];
+                        litIndex=k;
+                    }else if(lit == NULL && auxPred.second[k].isPositiveLiteral()){
+                        lit=&auxPred.second[k];
+                        litIndex=k;
+                    }
+                }
+            }
+            if(lit != NULL)
+                visitedLiterals.insert(litIndex);
 
+            if(lit != NULL && !lit->isBoundedLiteral(boundVariables)){
+                std::string auxMapName = lit->getPredicateName()+"_";
+                std::vector<unsigned> boundIndices;
+                for(unsigned k=0; k<lit->getAriety(); k++){
+                    if(!lit->isVariableTermAt(k) || boundVariables.count(lit->getTermAt(k))!=0){
+                        auxMapName+=std::to_string(k)+"_";
+                        boundIndices.push_back(k);
+                    }
+                }
+                std::cout<<"Declearing map "<<lit->getPredicateName()<<std::endl;
+
+                if (!declaredMaps.count(auxMapName)) {
+                    *out << ind << "AuxMap p" << auxMapName << "({";
+                    for (unsigned k = 0; k < boundIndices.size(); k++) {
+                        if (k > 0) {
+                            *out << ",";
+                        }
+                        *out << boundIndices[k];
+                    }
+                    *out << "});\n";
+
+                    //TODO remove duplication
+                    *out << ind << "AuxMap u" << auxMapName << "({";
+                    for (unsigned k = 0; k < boundIndices.size(); k++) {
+                        if (k > 0) {
+                            *out << ",";
+                        }
+                        *out << boundIndices[k];
+                    }
+                    *out << "});\n";
+
+                    //TODO remove duplication
+                    *out << ind << "AuxMap f" << auxMapName << "({";
+                    for (unsigned k = 0; k < boundIndices.size(); k++) {
+                        if (k > 0) {
+                            *out << ",";
+                        }
+                        *out << boundIndices[k];
+                    }
+                    *out << "});\n";
+                    std::string predName = auxMapName.substr(0,auxMapName.find("_"));
+                    std::cout<<predName<<std::endl;
+                    predicateToAuxiliaryMaps[predName].insert(auxMapName);
+                    predicateToUndefAuxiliaryMaps[predName].insert(auxMapName);
+                    predicateToFalseAuxiliaryMaps[predName].insert(auxMapName);
+                    declaredMaps.insert(auxMapName);
+                }
+                lit->addVariablesToSet(boundVariables);
+            }
+        }
+    }
     for (aspc::Rule& r : program.getRules()) {
+        // std::cout<<std::endl;
+        // r.print();
+        // std::cout<<std::endl;
+        
         //r is a constraint
         bool exitRule = true;
         unsigned lIndex = 0;
         unsigned headLevel = sccs.size();
         if(mode == EAGER_MODE){
+            std::unordered_set<std::string> internal;
+            std::unordered_set<std::string> ext;
+            
             std::cout<<"ordering rule "<<r.getRuleId()<<std::endl;
             std::vector<unsigned> starters;
             starters.push_back(r.getBodySize());
             for (const aspc::Formula* f : r.getFormulas()) {
                 if(f->isLiteral()){
                     const aspc::Literal* l = (aspc::Literal*)f;
-                    int bodyPredId = predicateIDs.at(l->getPredicateName());
-                    if(builder->isInternalPredicate(bodyPredId)){
-                        internalPredicatesToRules[bodyPredId].push_back(r.getRuleId());
-                    }else{
-                        externalPredicatesToRules[bodyPredId].push_back(r.getRuleId());
-                    }
                     starters.push_back(lIndex);
                 }
                 lIndex++;
             }
             if(!r.isConstraint()){
                 starters.push_back(lIndex+1);
+                headPreds.insert({r.getHead()[0].getPredicateName(),&r});
             }
 
             declareRuleEagerStructures(r);
             r.bodyReordering(starters);
             for(unsigned starter : starters){
-                if(starter < r.getBodySize()){
+                if(starter <= r.getBodySize()){
                     declareDataStructures(r,starter,aggregatePredicates);
                 }
             }
-
+            std::cout<<"End body reordering"<<std::endl;
         }
         else if (!r.isConstraint()) {
             if(mode == EAGER_MODE){
@@ -1399,8 +1505,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         // }
 
     }
+
     // std::vector< std::unordered_map<std::string, std::vector<unsigned>>> starterToExitRulesByComponent(sccsSize);
-    
     declareDataStructuresForReasonsOfNegative(program);
 
     for (const std::string & predicate : modelGeneratorPredicatesInNegativeReasons) {
@@ -1409,55 +1515,169 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     }
 
     // *out << ind++ << "void explainAggrLiteral(int var){\n";
-    *out << ind++ << "void Executor::explainAggrLiteral(int var,UnorderedSet<int>& reas){\n";
-        *out << ind << "int v = var==-1?var:-var;\n";
-        // *out << ind << "std::cout << \"Explain \" << v << std::endl;\n";
+    *out << ind++ << "void Executor::handleConflict(int literal){\n";
+        // *out << ind << "std::cout<<\"handle conflict \"<<literal<<std::endl;\n";
+        *out << ind++ << "if(currentDecisionLevel == -1){\n";
+            *out << ind << "propagatedLiterals.insert(-1);\n";
+            *out << ind << "return;\n";
+        *out << --ind << "}\n\n";
 
-        *out << ind << "PostponedReasonData* data = reasonMapping.getAt(v);\n";
-        *out << ind << "if(data == nullptr || data->getPropagationLevel() == -1) return;\n";
-        *out << ind << "const std::vector<int>* aggregates_id = &data->getAggregateId();\n";
-        *out << ind++ << "for(int i=0; i < aggregates_id->size();i++){\n";
-            *out << ind << "int aggr_index=aggregates_id->at(i);\n";
-            *out << ind << "std::vector<int> sharedVars(data->getSharedVariables());\n";
-            *out << ind << "unsigned int  varsIndex=sharedVariable[aggr_index].addElements(sharedVars)->getId();\n";
-            // *out << ind << "std::cout << \"Collecting reason from aggr \" <<aggr_index<<std::endl;\n";
-            *out << ind++ << "if(data->isPositive(i)){\n";
-                // *out << ind << "std::cout<<\"Positive\"<<std::endl;\n";
-                *out << ind << "positiveAggrReason[aggr_index][varsIndex].getLiteralUntil(data->getPropagationLevel(),reas);\n";
-                    // *out << ind << "int uLit= lit>=0 ? lit : -1*lit;\n";
-                    // *out << ind << "std::string m= lit>=0 ? \"\" : \"-\";\n";
-                    // *out << ind << "std::cout << m; atomsTable[uLit].print(); std::cout<<std::endl;\n";
-                    // *out << ind << "std::cout << lit << std::endl;\n";
-            *out << --ind << "}else{\n";
-                ind++;
-                // *out << ind << "std::cout << \"Negative\" <<std::endl;\n";
-                *out << ind << "negativeAggrReason[aggr_index][varsIndex].getLiteralUntil(data->getPropagationLevel(),reas);\n";
-                    // *out << ind << "int uLit= lit>=0 ? lit : -1*lit;\n";
-                    // *out << ind << "std::string m= lit>=0 ? \"\" : \"-\";\n";
-                    // *out << ind << "std::cout << m; atomsTable[uLit].print(); std::cout<<std::endl;\n";
-                    // *out << ind << "std::cout << lit << std::endl;\n";
+        *out << ind << "explainExternalLiteral(literal,conflictReason);\n";
+        *out << ind << "explainExternalLiteral(-literal,conflictReason);\n";
+        *out << ind << "propagatedLiterals.insert(-1);\n";
+        *out << ind << "reasonForLiteral.erase(literal);\n";
+
+        // *out << ind << "conflictReason.erase(conflictLiteral);\n";
+
+        // *out << ind << "int conflictLiteral=0;\n";
+        // *out << ind << "int decisionLevel = currentDecisionLevel;\n";
+        // *out << ind++ << "while(decisionLevel > 0 || decisionLevel == -1){\n";
+        //     *out << ind++ << "if(levelToExtLiterals.count(decisionLevel)!=0 && !levelToExtLiterals[decisionLevel].empty()){\n";
+        //         *out << ind++ << "for(auto it=levelToExtLiterals[decisionLevel].rbegin(); it!=levelToExtLiterals[decisionLevel].rend();it++){\n";
+        //             *out << ind << "std::cout<<\"Decision level \"<<decisionLevel<<\" \"<<*it<<std::endl;\n";
+        //             *out << ind++ << "if(conflictLiteral==0){\n";
+        //                 *out << ind << "conflictLiteral=*it;\n";
+        //             *out << --ind << "}else{\n";
+        //             ind++;
+        //                 *out << ind << "conflictLiteral=*it;\n";
+        //                 *out << ind << "conflictReason.erase(conflictLiteral);\n";
+        //                 *out << ind++ << "for(unsigned i=0; i<conflictReason.size(); i++)\n";
+        //                     *out << ind-- << "reasonForLiteral[-conflictLiteral].insert(conflictReason[i]);\n";
+        //                 *out << ind << "propagatedLiterals.insert(conflictLiteral);\n";
+        //                 *out << ind << "levelToExtLiterals[currentDecisionLevel].push_back(-conflictLiteral);\n";
+        //                 *out << ind << "reasonForLiteral.erase(literal);\n";
+        //                 *out << ind << "return;\n";
+        //             *out << --ind << "}\n";
+        //         *out << --ind << "}\n";
+        //     *out << --ind << "}\n";
+        //     *out << ind << "decisionLevel--;\n";
+        //     *out << ind << "if(decisionLevel == 0) decisionLevel=-1;\n";
+        // *out << --ind << "}\n";
+    *out << --ind << "}\n";
+
+    *out << ind++ << "int Executor::explainExternalLiteral(int var,UnorderedSet<int>& reas,bool getExternalLit){\n";
+        *out << ind << "std::unordered_set<int> visitedLiteral;\n";
+        *out << ind << "std::vector<int> stack;\n";
+        *out << ind << "stack.push_back(var);\n";
+        *out << ind << "int currentLit=0;\n";
+        *out << ind++ << "while(!stack.empty()){\n";
+            *out << ind << "int lit = stack.back();\n";
+            *out << ind << "stack.pop_back();\n";
+            // *out << ind << "std::cout<<\"Explaining \"<<lit<<std::endl;\n";
+
+            // *out << ind << "Tuple starter = lit>0 ? atomsTable[lit]:atomsTable[-lit];\n";
+            // *out << ind << "starter.print();std::cout<<std::endl;\n";
+
+            *out << ind++ << "for(unsigned i = 0; i<reasonForLiteral[lit].size(); i++){\n";
+                *out << ind << "int reasonLiteral=reasonForLiteral[lit][i];\n";
+                *out << ind++ << "if(getExternalLit){\n";
+                    *out << ind++ << "if(externalLiteralsLevel.count(reasonLiteral)!=0){\n";
+                        *out << ind++ << "if(externalLiteralsLevel[reasonLiteral] == currentDecisionLevel)\n";
+                            *out << ind-- << "currentLit = reasonLiteral;\n";
+                    *out << --ind << "}\n";
+                *out << --ind << "}\n";
+
+                *out << ind << "Tuple literal = reasonLiteral>0 ? atomsTable[reasonLiteral]:atomsTable[-reasonLiteral];\n";
+                // *out << ind << "std::cout<<\"Reason Literal \";literal.print();std::cout<<std::endl;\n";
+                *out << ind++ << "if(visitedLiteral.count(reasonLiteral) == 0){\n";
+                    *out << ind << "visitedLiteral.insert(reasonLiteral);\n";
+                    *out << ind++ << "if(externalLiteralsLevel.count(reasonLiteral)==0){\n";
+                        *out << ind << "stack.push_back(reasonLiteral);\n";
+                    *out << --ind << "}else{\n";
+                    ind++;
+                        *out << ind << "reas.insert(reasonLiteral);\n";
+                    *out << --ind << "}\n";
+
+                *out << --ind << "}\n";
             *out << --ind << "}\n";
         *out << --ind << "}\n";
-        // *out << ind << "std::cout << \"Collecting reason from constraint body \" <<std::endl;\n";
-        *out << ind << "const UnorderedSet<int>* body = &data->getBodyReason();\n";
-        *out << ind++ << "for(unsigned i=0;i<body->size();i++){\n";
-            // *out << ind << "int uLit= l>=0 ? l : -1*l;\n";
-            // *out << ind << "std::string m= l>=0 ? \"\" : \"-\";\n";
-            // *out << ind << "std::cout << m; atomsTable[uLit].print(); std::cout<<std::endl;\n";
-            // *out << ind << "std::cout << l << std::endl;\n";
-
-            *out << ind << "reas.insert(body->at(i));\n";
+        *out << ind++ << "for(unsigned i=0; i<reas.size(); i++){\n";
+            *out << ind << "Tuple t = reas[i]>0 ? atomsTable[reas[i]] : atomsTable[-reas[i]];\n";
+            // *out << ind << "std::cout<<reas[i]<<\" \";t.print();std::cout<<std::endl;\n";
         *out << --ind << "}\n";
-        // *out << ind << "std::cout << \"reason computed\" <<std::endl;\n";
+        *out << ind << "return currentLit;\n";
+    *out << --ind << "}\n";
+    *out << ind++ << "void Executor::explainAggrLiteral(int var,UnorderedSet<int>& reas){\n";
+        // *out << ind << "int v = var==-1?var:-var;\n";
+        // // *out << ind << "std::cout << \"Explain \" << v << std::endl;\n";
+
+        // *out << ind << "PostponedReasonData* data = reasonMapping.getAt(v);\n";
+        // *out << ind << "if(data == nullptr || data->getPropagationLevel() == -1) return;\n";
+        // *out << ind << "const std::vector<int>* aggregates_id = &data->getAggregateId();\n";
+        // *out << ind++ << "for(int i=0; i < aggregates_id->size();i++){\n";
+        //     *out << ind << "int aggr_index=aggregates_id->at(i);\n";
+        //     *out << ind << "std::vector<int> sharedVars(data->getSharedVariables());\n";
+        //     *out << ind << "unsigned int  varsIndex=sharedVariable[aggr_index].addElements(sharedVars)->getId();\n";
+        //     // *out << ind << "std::cout << \"Collecting reason from aggr \" <<aggr_index<<std::endl;\n";
+        //     *out << ind++ << "if(data->isPositive(i)){\n";
+        //         // *out << ind << "std::cout<<\"Positive\"<<std::endl;\n";
+        //         *out << ind << "positiveAggrReason[aggr_index][varsIndex].getLiteralUntil(data->getPropagationLevel(),reas);\n";
+        //             // *out << ind << "int uLit= lit>=0 ? lit : -1*lit;\n";
+        //             // *out << ind << "std::string m= lit>=0 ? \"\" : \"-\";\n";
+        //             // *out << ind << "std::cout << m; atomsTable[uLit].print(); std::cout<<std::endl;\n";
+        //             // *out << ind << "std::cout << lit << std::endl;\n";
+        //     *out << --ind << "}else{\n";
+        //         ind++;
+        //         // *out << ind << "std::cout << \"Negative\" <<std::endl;\n";
+        //         *out << ind << "negativeAggrReason[aggr_index][varsIndex].getLiteralUntil(data->getPropagationLevel(),reas);\n";
+        //             // *out << ind << "int uLit= lit>=0 ? lit : -1*lit;\n";
+        //             // *out << ind << "std::string m= lit>=0 ? \"\" : \"-\";\n";
+        //             // *out << ind << "std::cout << m; atomsTable[uLit].print(); std::cout<<std::endl;\n";
+        //             // *out << ind << "std::cout << lit << std::endl;\n";
+        //     *out << --ind << "}\n";
+        // *out << --ind << "}\n";
+        // // *out << ind << "std::cout << \"Collecting reason from constraint body \" <<std::endl;\n";
+        // *out << ind << "const UnorderedSet<int>* body = &data->getBodyReason();\n";
+        // *out << ind++ << "for(unsigned i=0;i<body->size();i++){\n";
+        //     // *out << ind << "int uLit= l>=0 ? l : -1*l;\n";
+        //     // *out << ind << "std::string m= l>=0 ? \"\" : \"-\";\n";
+        //     // *out << ind << "std::cout << m; atomsTable[uLit].print(); std::cout<<std::endl;\n";
+        //     // *out << ind << "std::cout << l << std::endl;\n";
+
+        //     *out << ind << "reas.insert(body->at(i));\n";
+        // *out << --ind << "}\n";
+        // // *out << ind << "std::cout << \"reason computed\" <<std::endl;\n";
 
         *out << ind << "return;\n";
     *out << --ind << "}\n";
 
-    if (program.hasConstraint()) {
-        writeNegativeReasonsFunctionsPrototypes(program);
-        // *out << ind << "void explainPositiveLiteral(const Tuple *, std::unordered_set<std::string> &, std::vector<const Tuple*> &);\n";
-        writeNegativeReasonsFunctions(program);
+    if (programHasConstraint) {
+        *out << ind++ << "void explainPositiveLiteral(const Tuple * tuple, std::unordered_set<std::string> & open_set, std::vector<const Tuple*> & outputReasons) {\n";
+        //*out << ind << "const std::vector<const Tuple*> & tupleReasons = predicateReasonsMap.at(*tuple->getPredicateName())->at(tuple->getId());\n";
+        // *out << ind << "std::cout << \"explainPositiveLiteral\" <<std::endl;\n";
+        *out << ind << "const std::vector<const Tuple*> & tupleReasons = tuple->getPositiveReasons();\n";
+        *out << ind++ << " if (tupleReasons.empty()) {\n";
+        *out << ind << "outputReasons.push_back(tuple);\n";
+        *out << --ind << "}\n";
+        *out << ind++ << "else {\n";
+        *out << ind++ << "for (const Tuple * reason : tupleReasons) {\n";
+        *out << ind << "explainPositiveLiteral(reason, open_set, outputReasons);\n";
+        *out << --ind << "}\n";
+
+
+        *out << --ind << "}\n";
+        *out << ind++ << "for (const Tuple & reason : tuple->getNegativeReasons()) {\n";
+        *out << ind << "explainNegativeLiteral(&reason, open_set, outputReasons);\n";
+        //*out << ind << "outputReasons.push_back(&reason);\n";
+        *out << --ind << "}\n";
+        *out << --ind << "}\n\n";
+
+        *out << ind++ << "aspc::Literal tupleToLiteral(const Tuple & tuple) {\n";
+        *out << ind << "aspc::Literal literal(*tuple.getPredicateName(), tuple.isNegated());\n";
+        *out << ind++ << "for (int v : tuple) {\n";
+        *out << ind << "literal.addTerm(ConstantsManager::getInstance().unmapConstant(v));\n";
+        *out << --ind << "}\n";
+        *out << ind << "return literal;\n";
+        *out << --ind << "}\n";
+
     }
+
+    // COMMENTED FOR INCOMPATIBILITIES
+    // if (program.hasConstraint()) {
+    //     writeNegativeReasonsFunctionsPrototypes(program);
+    //     // *out << ind << "void explainPositiveLiteral(const Tuple *, std::unordered_set<std::string> &, std::vector<const Tuple*> &);\n";
+    //     writeNegativeReasonsFunctions(program);
+    // }
 
     //generateFindSharedValueInJoinTuple(program);
 
@@ -1487,36 +1707,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << --ind << "}\n\n";
 
 
-    if (programHasConstraint) {
-        *out << ind++ << "void explainPositiveLiteral(const Tuple * tuple, std::unordered_set<std::string> & open_set, std::vector<const Tuple*> & outputReasons) {\n";
-        //*out << ind << "const std::vector<const Tuple*> & tupleReasons = predicateReasonsMap.at(*tuple->getPredicateName())->at(tuple->getId());\n";
-        *out << ind << "std::cout << \"explainPositiveLiteral\" <<std::endl;\n";
-        *out << ind << "const std::vector<const Tuple*> & tupleReasons = tuple->getPositiveReasons();\n";
-        *out << ind++ << " if (tupleReasons.empty()) {\n";
-        *out << ind << "outputReasons.push_back(tuple);\n";
-        *out << --ind << "}\n";
-        *out << ind++ << "else {\n";
-        *out << ind++ << "for (const Tuple * reason : tupleReasons) {\n";
-        *out << ind << "explainPositiveLiteral(reason, open_set, outputReasons);\n";
-        *out << --ind << "}\n";
-
-
-        *out << --ind << "}\n";
-        *out << ind++ << "for (const Tuple & reason : tuple->getNegativeReasons()) {\n";
-        *out << ind << "explainNegativeLiteral(&reason, open_set, outputReasons);\n";
-        //*out << ind << "outputReasons.push_back(&reason);\n";
-        *out << --ind << "}\n";
-        *out << --ind << "}\n\n";
-
-        *out << ind++ << "aspc::Literal tupleToLiteral(const Tuple & tuple) {\n";
-        *out << ind << "aspc::Literal literal(*tuple.getPredicateName(), tuple.isNegated());\n";
-        *out << ind++ << "for (int v : tuple) {\n";
-        *out << ind << "literal.addTerm(ConstantsManager::getInstance().unmapConstant(v));\n";
-        *out << --ind << "}\n";
-        *out << ind << "return literal;\n";
-        *out << --ind << "}\n";
-
-    }
+    
 
 
     string tupleType = "WithoutReasons";
@@ -1596,9 +1787,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "const Tuple & tuple = atomsTable[uVar];\n";
         *out << ind << "std::unordered_map<const std::string*,int>::iterator sum_it;\n";
         *out << ind << "std::string minus = var < 0 ? \"-\" : \"\";\n";
-        *out << ind << "std::cout<<\"True \"<<minus;tuple.print();std::cout<<std::endl;\n";
+        // *out << ind << "std::cout<<\"True \"<<minus;tuple.print();std::cout<<std::endl;\n";
         // *out << ind << "std::cout<<\"True \"<<var<<std::endl;\n";
-        *out << ind << "first=true;\n";
+        *out << ind << "unRoll=false;\n";
 
         *out << ind << "std::unordered_map<const std::string*,PredicateWSet*>::iterator uSetIt = predicateUSetMap.find(tuple.getPredicateName());\n";
         *out << ind++ << "if(uSetIt!=predicateUSetMap.end()) {\n";
@@ -1614,6 +1805,21 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 *out << ind++ << "if (insertResult.second) {\n";
 
                     *out << ind++ << "for (AuxMap* auxMap : predicateToAuxiliaryMaps[it->first]) {\n";
+                        *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                    *out << --ind << "}\n";
+                *out << --ind << "}\n";
+            *out << --ind << "}\n";
+        *out << --ind << "}\n";
+
+        *out << ind << "std::unordered_map<const std::string*, PredicateWSet*>::iterator fSetIt = predicateFSetMap.find(tuple.getPredicateName());\n";
+        *out << ind++ << "if (fSetIt == predicateFSetMap.end()) {\n";
+        *out << ind << "} else {\n";
+            *out << ind++ << "if (var < 0) {\n";
+
+                *out << ind << "const auto& insertResult = fSetIt->second->insert(Tuple(tuple));\n";
+                *out << ind++ << "if (insertResult.second) {\n";
+
+                    *out << ind++ << "for (AuxMap* auxMap : predicateToFalseAuxiliaryMaps[fSetIt->first]) {\n";
                         *out << ind << "auxMap -> insert2(*insertResult.first);\n";
                     *out << --ind << "}\n";
                 *out << --ind << "}\n";
@@ -2215,12 +2421,12 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         // *out << ind << "for(const auto& p : undefAggrVars[0]) std::cout<<\"undef count \"<<p.second.size()<<std::endl;\n";
         // *out << ind << "for(const auto& p : trueNegativeAggrVars[0]) std::cout<<\"true negative count \"<<p.second.size()<<std::endl;\n";
         // *out << ind << "for(const auto& p : undefNegativeAggrVars[0]) std::cout<<\"undef negative count \"<<p.second.size()<<std::endl;\n";
-        *out << ind << "for(const Tuple* t: wb.getTuples()) t->print();\n";
-        *out << ind << "std::cout<<std::endl;\n";
-        *out << ind << "for(const Tuple* t: ub.getTuples()) t->print();\n";
-        *out << ind << "std::cout<<std::endl;\n";
-        *out << ind << "for(const Tuple* t: fb.getTuples()) t->print();\n";
-        *out << ind << "std::cout<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t: wb.getTuples()) t->print();\n";
+        // *out << ind << "std::cout<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t: ub.getTuples()) t->print();\n";
+        // *out << ind << "std::cout<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t: fb.getTuples()) t->print();\n";
+        // *out << ind << "std::cout<<std::endl;\n";
 #ifdef EAGER_DEBUG
         *out << ind << "std::cout<<\"on literal true \";\n";
         *out << ind << "std::cout<<var<<\"\\n\";\n";
@@ -2237,28 +2443,37 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind++ << "inline void Executor::onLiteralUndef(int var) {\n";
     if (mode == EAGER_MODE) {
         //*out << ind << "std::cout<<\"undef \"<<var<<std::endl;\n";
+        *out << ind << "reasonForLiteral.erase(var);\n";
+        *out << ind << "externalLiteralsLevel.erase(var);\n";
+
+        *out << ind << "\n//Only for debug\n";
+        *out << ind << "reasonForLiteral.erase(-var);\n\n";
+        *out << ind << "unRoll=true;\n";
+
         *out << ind << "unsigned uVar = var > 0 ? var : -var;\n";
         *out << ind << "const Tuple & tuple = atomsTable[uVar];\n";
 
         *out << ind << "std::unordered_map<const std::string*,int>::iterator sum_it;\n";
         *out << ind << "std::string minus = var < 0 ? \"-\" : \"\";\n";
-        *out << ind << "std::cout<<\"Undef \"<<minus;tuple.print();std::cout<<std::endl;\n";
+        // *out << ind << "std::cout<<\"Undef \"<<minus;tuple.print();std::cout<<std::endl;\n";
 
-        *out << ind << "reasonMapping.erase(-var);\n";
-        *out << ind << "reasonMapping.erase(-1);\n";
-        *out << ind++ << "while(!propagatedLiterals.empty()){\n";
-            *out << ind << "reasonMapping.erase(propagatedLiterals[0]);\n";
-            *out << ind << "propagatedLiterals.erase(propagatedLiterals[0]);\n";
+        // *out << ind << "reasonMapping.erase(-var);\n";
+        // *out << ind << "reasonMapping.erase(-1);\n";
+        *out << ind++ << "if(!propagatedLiterals.empty()){\n";
+            // *out << ind << "reasonMapping.erase(propagatedLiterals[0]);\n";
+            *out << ind << "propagatedLiterals.clear();\n";
         *out << --ind << "}\n";
+        
+
         // *out << ind << "std::cout<<\"Erased reason mapping\"<<std::endl;\n";
-        *out << ind++ << "if(first){\n";
+        // *out << ind++ << "if(first){\n";
             // *out << ind << "std::cout<<\"Explain propagation \"<<reasonMapping.size()<<std::endl;\n";
             // *out << ind++ << "for(int i=2;i<reasonMapping.size();i++){\n";
             //     *out << ind << "std::cout<<\"Explain \"<<i<<std::endl;\n";
             //     *out << ind << "explainAggrLiteral(i);\n";
             // *out << --ind << "}\n";
             // *out << ind << "reasonMapping.clear();\n";
-        *out << --ind << "}\n";
+        // *out << --ind << "}\n";
         // *out << ind << "std::cout<<\"Unde \"<<minus<<var<<std::endl;\n";
         // *out << ind << "std::cout<<\"Undef \"<<std::endl;\n";
 #ifdef EAGER_DEBUG
@@ -2847,155 +3062,534 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         // *out << ind << "std::cout<<\"Actual Sum \"<<actualSum[0][v]<<std::endl;\n";
         // *out << ind << "std::cout<<\"Possible Sum \"<<possibleSum[0][v]<<std::endl;\n";
         // *out << ind << "for(auto& it : undefAggrVars[0][v]){ for(int i=0;i<it.getIndex()->size();i++){std::cout<<it.getIndex()->operator[](i)<<\" \";}std::cout<<endl;\n}";
-        *out << ind << "for(const Tuple* t: wb.getTuples()) t->print();\n";
-        *out << ind << "std::cout<<std::endl;\n";
-        *out << ind << "for(const Tuple* t: ub.getTuples()) t->print();\n";
-        *out << ind << "std::cout<<std::endl;\n";
-        *out << ind << "for(const Tuple* t: fb.getTuples()) t->print();\n";
-        *out << ind << "std::cout<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t: wb.getTuples()) t->print();\n";
+        // *out << ind << "std::cout<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t: ub.getTuples()) t->print();\n";
+        // *out << ind << "std::cout<<std::endl;\n";
+        // *out << ind << "for(const Tuple* t: fb.getTuples()) t->print();\n";
+        // *out << ind << "std::cout<<std::endl;\n";
 
 
     }
     *out << --ind << "}\n";
 
+
     // ---------------------- end onLiteralTrue(int var) --------------------------------------//
     // ---------------------- addedVarName(int var, const std::string & atom) --------------------------------------//
 
     *out << ind++ << "void Executor::undefLiteralsReceived()const{\n";
-        *out << ind << "std::cout<<\"Undef received\"<<std::endl;\n";
-        for(const aspc::Rule& r : program.getRules()){
-            //NOTICE Assumes that every predicate is at most in one rule head
-            if(r.isConstraint()){
-                continue;
+        // *out << ind << "std::cout<<\"Undef received\"<<std::endl;\n";
+
+        *out << ind++ << "if(undefinedLoaded)\n";
+            *out << ind-- << "return;\n";
+        *out << ind << "undefinedLoaded=true;\n";
+        // *out << ind << "std::cout<<\"Undef generation\"<<std::endl;\n";
+
+        std::vector<std::string> orderedAuxPredicate;
+        std::unordered_map<std::string,std::string> headToAux;
+        std::unordered_map<std::string,std::vector<aspc::Literal>> auxToBody(builder->getAuxPredicateBody());
+        std::unordered_map<std::string,std::vector<aspc::ArithmeticRelation>> auxToInequality(builder->getAuxPredicateInequalities());
+
+        while(!auxToBody.empty()){
+            std::string auxPred="";
+            for(const auto& auxBody : auxToBody){
+                bool canBeEvaluated=true;
+                for(unsigned i=0; i< auxBody.second.size(); i++){
+                    if(!auxBody.second[i].isNegated()){
+                        std::string predName=auxBody.second[i].getPredicateName();
+                        if(headPreds.count(predName)!=0 && headToAux.count(predName)==0){
+                            canBeEvaluated=false;
+                            break;
+                        }    
+                    }
+                }
+                if(canBeEvaluated){
+                    auxPred=auxBody.first;
+                    break;
+                }
             }
-            *out << ind++ << "{\n";
-                std::unordered_set<std::string> boundVariables;
-                unsigned litIndex=0;
-                unsigned closingPars=0;
-                for(const aspc::Formula* f : r.getOrderedBodyByStarter(r.getBodySize())){
-                    if(f->isLiteral()){
-                        const aspc::Literal* l = (aspc::Literal*)f;
-                        if(l->isBoundedLiteral(boundVariables)){
-                            std::string boundTerms;
-                            for(int k=0;k<l->getAriety();k++){
-                                if((l->isVariableTermAt(k) && boundVariables.count(l->getTermAt(k))!=0)||!l->isVariableTermAt(k)){
-                                    if(boundTerms!="")
-                                        boundTerms+=",";
-                                    boundTerms+=l->getTermAt(k);
-                                }
+            if(auxPred==""){
+                std::cout<<"Error during aux ordering"<<std::endl;
+                exit(180);
+            }
+            for(const aspc::Rule& r :program.getRules()){
+                if(!r.isConstraint() && !r.getBodyLiterals().empty() && r.getBodyLiterals()[0].getPredicateName() == auxPred)
+                    headToAux[r.getHead()[0].getPredicateName()]=auxPred;
+                
+            }
+            auxToBody.erase(auxPred);
+            *out << ind++ << "{//Generating "<<auxPred<<"\n";
+            std::unordered_set<unsigned> visitedLiterals;
+            std::unordered_set<std::string> boundVariables;
+            std::unordered_map<std::string,std::vector<std::pair<bool,unsigned>>> predicateSigns;
+            unsigned closingPars=0;
+            const auto& auxBody = builder->getAuxPredicateBody().find(auxPred);
+            unordered_set<unsigned> visitedRelations;
+            unsigned ineqIndex=0;
+            for(const aspc::ArithmeticRelation& ineq : auxToInequality[auxPred]){
+                if(ineq.isBoundedValueAssignment(boundVariables)){
+                    *out << ind << "int "<<ineq.getAssignmentStringRep(boundVariables)<<";\n";
+                    boundVariables.insert(ineq.getAssignedVariable(boundVariables));
+                    visitedRelations.insert(ineqIndex);
+                }
+                ineqIndex++;
+            }
+            while(visitedLiterals.size()<auxBody->second.size()){
+                const aspc::Literal* l=NULL;
+                unsigned litIndex = 0;
+                ineqIndex=0;
+                for(const aspc::ArithmeticRelation& ineq : auxToInequality[auxPred]){
+                    if(ineq.isBoundedValueAssignment(boundVariables) && visitedRelations.count(ineqIndex)==0){
+                        *out << ind << "int "<<ineq.getAssignedVariable(boundVariables)<<" = "<<ineq.getAssignmentStringRep(boundVariables)<<";\n";
+                        boundVariables.insert(ineq.getAssignedVariable(boundVariables));
+                        visitedRelations.insert(ineqIndex);
+
+                    }else if(ineq.isBoundedRelation(boundVariables) && visitedRelations.count(ineqIndex)==0){
+                        *out << ind++ << "if("<<ineq.getStringRep()<<"){\n";
+                        closingPars++;
+                        visitedRelations.insert(ineqIndex);
+                    }
+                    ineqIndex++;
+                }
+                for(unsigned i=0; i<auxBody->second.size();i++){
+                    if(visitedLiterals.count(i)==0){
+                        if(auxBody->second[i].isBoundedLiteral(boundVariables)){
+                            l=&auxBody->second[i];
+                            litIndex=i;
+                        }else if(auxBody->second[i].isPositiveLiteral() && l==NULL){
+                            l=&auxBody->second[i];
+                            litIndex=i;
+                        }
+                    }
+                }
+                if(l!=NULL){
+                    visitedLiterals.insert(litIndex);
+                    
+                    if(l->isBoundedLiteral(boundVariables)){
+                        std::string boundTerms;
+                        for(int k=0;k<l->getAriety();k++){
+                            if((l->isVariableTermAt(k) && boundVariables.count(l->getTermAt(k))!=0)||!l->isVariableTermAt(k)){
+                                if(boundTerms!="")
+                                    boundTerms+=",";
+                                boundTerms+=l->getTermAt(k);
                             }
+                        }
 
-                            if(l->isPositiveLiteral()){
-                                
-                                *out << ind << "bool undef"<<litIndex<<"=false;\n";
-                                *out << ind << "const Tuple* tuple"<<litIndex<<"=w"<<l->getPredicateName()<<".find(Tuple({"<<boundTerms<<"},&_"<<l->getPredicateName()<<"));\n";
-                                *out << ind++ << "if(tuple"<<litIndex<<" == NULL){\n";
-                                    *out << ind << "tuple"<<litIndex<<"=u"<<l->getPredicateName()<<".find(Tuple({"<<boundTerms<<"},&_"<<l->getPredicateName()<<"));\n";
-                                    *out << ind++ << "if(tuple"<<litIndex<<" == NULL){\n";
-                                        *out << ind << "undef"<<litIndex<<"=true;\n";
-                                    *out << --ind << "}\n";
-                                *out << --ind << "}\n";
-                                *out << ind++ << "if(tuple"<<litIndex<<" == NULL){\n";
-                            }else{
-
-                                *out << ind << "bool undef"<<litIndex<<"=false;\n";
-                                *out << ind << "const Tuple negativeTuple({"<<boundTerms<<"},&_"<<l->getPredicateName()<<");\n";
-                                *out << ind++ << "if(u"<<l->getPredicateName()<<".find(negativeTuple)!=NULL);\n";
-                                    *out << ind << "undef"<<litIndex<<"=true;\n";
-                                *out << --ind << "}\n";
-                                *out << ind++ << "if(undef"<<litIndex<<" || w"<<l->getPredicateName()<<".find(negativeTuple)== NULL){\n";
-
-                            }
-                            closingPars++;
-
-                        }else{
-                            std::string boundTerms;
-                            std::vector<unsigned> boundIndexes;
-                            for(int k=0;k<l->getAriety();k++){
-                                if((l->isVariableTermAt(k) && boundVariables.count(l->getTermAt(k))!=0)||!l->isVariableTermAt(k)){
-                                    if(boundTerms!="")
-                                        boundTerms+=",";
-                                    boundTerms+=l->getTermAt(k);
-                                    boundIndexes.push_back(k);
-                                }
-                            }
-
-                            *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
-                            for(unsigned k : boundIndexes){
-                                *out << k << "_";
-                            }
-                            *out << ".getValues({"<<boundTerms<<"});\n";
-
-                            *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<l->getPredicateName()<<"_";
-                            for(unsigned k : boundIndexes){
-                                *out << k << "_";
-                            }
-                            *out << ".getValues({"<<boundTerms<<"});\n";
+                        if(l->isPositiveLiteral()){
+                            
                             *out << ind << "bool undef"<<litIndex<<"=false;\n";
-                            *out << ind++ << "for(int i=0;i<tuples->size()+tuplesU->size();i++){\n";
-                                *out << ind << "const Tuple* tuple"<<litIndex<<"=NULL;\n";
-                                *out << ind++ << "if(i<tuples->size()){\n";
-                                    *out << ind << "tuple"<<litIndex<<"=tuples->at(i);\n";
-                                *out << --ind << "}else{\n";
-                                    *out << ++ind << "tuple"<<litIndex<<"=tuplesU->at(i-tuples->size());\n";
+                            *out << ind << "const Tuple* tuple"<<litIndex<<"=w"<<l->getPredicateName()<<".find(Tuple({"<<boundTerms<<"},&_"<<l->getPredicateName()<<"));\n";
+                            *out << ind++ << "if(tuple"<<litIndex<<" == NULL){\n";
+                                *out << ind << "tuple"<<litIndex<<"=u"<<l->getPredicateName()<<".find(Tuple({"<<boundTerms<<"},&_"<<l->getPredicateName()<<"));\n";
+                                *out << ind++ << "if(tuple"<<litIndex<<" != NULL){\n";
                                     *out << ind << "undef"<<litIndex<<"=true;\n";
                                 *out << --ind << "}\n";
-                                for(unsigned k=0;k<l->getAriety();k++){
-                                    if(l->isVariableTermAt(k) && boundVariables.count(l->getTermAt(k))==0){
-                                        *out << ind << "int "<<l->getTermAt(k)<<" = tuple"<<litIndex<<"->at("<<k<<");\n";
-                                        boundVariables.insert(l->getTermAt(k));
+                            *out << --ind << "}\n";
+                            *out << ind++ << "if(tuple"<<litIndex<<" != NULL){\n";
+                            // if(checkTupleFormat(*l,"tuple"+std::to_string(litIndex),true))
+                            //     closingPars++;
+                            if(predicateSigns.count(l->getPredicateName())!=0){
+                                for(auto negatedLit : predicateSigns[l->getPredicateName()]){
+                                    if(negatedLit.first != l->isNegated()){
+                                        const aspc::Literal* ll = &auxBody->second[negatedLit.second];
+                                        *out << ind++ << "if(";
+                                        if(ll->getAriety() > 0 && ll->getAriety() == l->getAriety()){
+                                            for(unsigned k=0;k<l->getAriety();k++){
+                                                if(k>0)
+                                                    *out << " || ";
+                                                if(!ll->isNegated())
+                                                    *out << "tuple"<<litIndex<<"->at("<<k<<") != tuple"<<negatedLit.second<<"->at("<<k<<")";
+                                                else
+                                                    *out << "tuple"<<litIndex<<"->at("<<k<<") != negativeTuple"<<negatedLit.second<<".at("<<k<<")";
+                                            }
+                                        }else if(ll->getAriety() == l->getAriety()){
+                                            *out << "false";
+                                        }
+                                        *out << "){\n";
+                                            closingPars++;
                                     }
                                 }
-                                closingPars++;
-                                
+                            }
+                        }else{
+
+                            *out << ind << "bool undef"<<litIndex<<"=false;\n";
+                            *out << ind << "const Tuple negativeTuple"<<litIndex<<"({"<<boundTerms<<"},&_"<<l->getPredicateName()<<");\n";
+                            *out << ind++ << "if(u"<<l->getPredicateName()<<".find(negativeTuple"<<litIndex<<")!=NULL){\n";
+                                *out << ind << "undef"<<litIndex<<"=true;\n";
+                            *out << --ind << "}\n";
+                            *out << ind++ << "if(undef"<<litIndex<<" || w"<<l->getPredicateName()<<".find(negativeTuple"<<litIndex<<")== NULL){\n";
+                            // if(checkTupleFormat(*l,"negativeTuple",false))
+                            //     closingPars++;
+                            if(predicateSigns.count(l->getPredicateName())!=0){
+                                for(auto negatedLit : predicateSigns[l->getPredicateName()]){
+                                    if(negatedLit.first != l->isNegated()){
+                                        const aspc::Literal* ll = &auxBody->second[negatedLit.second];
+                                        *out << ind++ << "if(";
+                                        if(ll->getAriety() > 0 && ll->getAriety() == l->getAriety()){
+                                            for(unsigned k=0;k<l->getAriety();k++){
+                                                if(k>0)
+                                                    *out << " || ";
+                                                *out << "negativeTuple"<<litIndex<<".at("<<k<<") != tuple"<<negatedLit.second<<"->at("<<k<<")";
+                                            }
+                                        }else if(ll->getAriety() == l->getAriety()){
+                                            *out << "false";
+                                        }
+                                        *out << "){\n";
+                                            closingPars++;
+                                    }
+                                }
+                            }
+                        }
+                        closingPars++;
+
+                    }else{
+                        std::string boundTerms;
+                        std::vector<unsigned> boundIndexes;
+                        for(int k=0;k<l->getAriety();k++){
+                            if((l->isVariableTermAt(k) && boundVariables.count(l->getTermAt(k))!=0)||!l->isVariableTermAt(k)){
+                                if(boundTerms!="")
+                                    boundTerms+=",";
+                                boundTerms+=l->getTermAt(k);
+                                boundIndexes.push_back(k);
+                            }
                         }
 
-                    }
-                    litIndex++;
-                }
-                litIndex=0;
-                bool atLeastOne=false;
-                *out << ind++ << "if(";
-                for(const aspc::Formula* f : r.getOrderedBodyByStarter(r.getBodySize())){
-                    if(f->isLiteral()){
-                        if(atLeastOne)
-                            *out << " || ";
-                        *out << "undef"<<litIndex; 
-                        atLeastOne=true;
-                    }
-                    litIndex++;
-                }
-                if(!atLeastOne){
-                    *out << "true";
-                }
-                *out << "){\n";
-                    std::string headTerms;
-                    for(unsigned k = 0; k<r.getHead()[0].getAriety();k++){
-                        if(headTerms!=""){
-                            headTerms+=",";
+                        *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
+                        for(unsigned k : boundIndexes){
+                            *out << k << "_";
                         }
-                        headTerms+=r.getHead()[0].getTermAt(k);
+                        *out << ".getValues({"<<boundTerms<<"});\n";
+
+                        *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<l->getPredicateName()<<"_";
+                        for(unsigned k : boundIndexes){
+                            *out << k << "_";
+                        }
+                        *out << ".getValues({"<<boundTerms<<"});\n";
+                        *out << ind << "bool undef"<<litIndex<<"=false;\n";
+                        *out << ind++ << "for(int i=0;i<tuples->size()+tuplesU->size();i++){\n";
+                            *out << ind << "const Tuple* tuple"<<litIndex<<"=NULL;\n";
+                            *out << ind++ << "if(i<tuples->size()){\n";
+                                *out << ind << "tuple"<<litIndex<<"=tuples->at(i);\n";
+                            *out << --ind << "}else{\n";
+                                *out << ++ind << "tuple"<<litIndex<<"=tuplesU->at(i-tuples->size());\n";
+                                *out << ind << "undef"<<litIndex<<"=true;\n";
+                            *out << --ind << "}\n";
+                            for(unsigned k=0;k<l->getAriety();k++){
+                                if(l->isVariableTermAt(k) && boundVariables.count(l->getTermAt(k))==0){
+                                    *out << ind << "int "<<l->getTermAt(k)<<" = tuple"<<litIndex<<"->at("<<k<<");\n";
+                                    boundVariables.insert(l->getTermAt(k));
+                                }
+                            }
+                            if(checkTupleFormat(*l,"tuple"+std::to_string(litIndex),true))
+                                closingPars++;
+                            if(predicateSigns.count(l->getPredicateName())!=0){
+                                for(auto negatedLit : predicateSigns[l->getPredicateName()]){
+                                    if(negatedLit.first != l->isNegated()){
+                                        const aspc::Literal* ll = &auxBody->second[negatedLit.second];
+                                        *out << ind++ << "if(";
+                                        if(ll->getAriety() > 0 && ll->getAriety() == l->getAriety()){
+                                            for(unsigned k=0;k<l->getAriety();k++){
+                                                if(k>0)
+                                                    *out << " || ";
+                                                if(!ll->isNegated())
+                                                    *out << "tuple"<<litIndex<<"->at("<<k<<") != tuple"<<negatedLit.second<<"->at("<<k<<")";
+                                                else
+                                                    *out << "tuple"<<litIndex<<"->at("<<k<<") != negativeTuple"<<negatedLit.second<<".at("<<k<<")";
+                                            }
+                                        }else if(ll->getAriety() == l->getAriety()){
+                                            *out << "false";
+                                        }
+                                        *out << "){\n";
+                                            closingPars++;
+                                    }
+                                }
+                            }
+                            closingPars++;
+                            
                     }
-                    *out << ind << "Tuple head({"<<headTerms<<"},&_"<<r.getHead()[0].getPredicateName()<<");\n";
-                    *out << ind << "head.print();\n";
-                    *out << ind << "std::cout<<\"Saving\"<<std::endl;\n";
-                    *out << ind << "const auto& insertResult = u"<<r.getHead()[0].getPredicateName()<<".insert(Tuple({"<<headTerms<<"},&_"<<r.getHead()[0].getPredicateName()<<"));\n";
+                    predicateSigns[l->getPredicateName()].push_back({l->isNegated(),litIndex});
+                }
+            }
+            if(visitedLiterals.size()>0){
+                if(visitedRelations.size()<auxToInequality[auxPred].size()){
+                    ineqIndex=0;
+                    for(const aspc::ArithmeticRelation& ineq : auxToInequality[auxPred]){
+                        if(ineq.isBoundedRelation(boundVariables) && visitedRelations.count(ineqIndex)==0){
+                            *out << ind++ << "if("<<ineq.getStringRep()<<"){\n";
+                            visitedRelations.insert(ineqIndex);
+                            closingPars++;
+                        
+                        }else if(ineq.isBoundedValueAssignment(boundVariables) && visitedRelations.count(ineqIndex)==0){
+                            *out << ind << "int "<<ineq.getAssignedVariable(boundVariables)<<" = "<<ineq.getAssignmentStringRep(boundVariables)<<";\n";
+                            boundVariables.insert(ineq.getAssignedVariable(boundVariables));
+                            visitedRelations.insert(ineqIndex);
+                        }
+                        ineqIndex++;
+                    }
+                }
+                const aspc::Literal* aux = builder->getAuxLiteral(auxBody->first);
+                if(aux!=NULL){
+                    std::string auxTerms;
+                    std::cout << "bound literal "<<aux->getAriety()<<std::endl;
+                    for(unsigned k=0;k<aux->getAriety();k++){
+                        if(k>0)
+                            auxTerms += ",";
+                        auxTerms += aux->getTermAt(k);
+                    }
+                    *out << ind << "Tuple aux({"<<auxTerms<< "}, &_"<<aux->getPredicateName()<<");\n";
+                    
+                    // *out << ind++ << "if(";
+                    // for(unsigned litIndex=0;litIndex<visitedLiterals.size();litIndex++){
+                    //     if(litIndex>0)
+                    //         *out << " || ";
+                    //     *out << "undef"<<litIndex;
+                    // }
+                    // *out << "){\n";
+                    
+                        *out << ind++ << "if(u"<<aux->getPredicateName()<<".find(aux) == NULL){\n";
+                            *out << ind << "const auto& insertResult = u"<<aux->getPredicateName()<<".insert(Tuple({"<<auxTerms<<"},&_"<<aux->getPredicateName()<<"));\n";
+                            *out << ind++ << "if (insertResult.second) {\n";
+                                *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<aux->getPredicateName()<<"]) {\n";
+                                    *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                                *out << --ind << "}\n";
+                                *out << ind << "atomsTable.push_back(aux);\n";
+                                *out << ind << "tupleToVar[aux]=atomsTable.size()-1;\n";
+                                // *out << ind << "aux.print();std::cout<<\" \"<<tupleToVar[aux]<<std::endl;\n";
+                            *out << --ind << "}\n";
+                        *out << --ind << "}\n";
+                    // *out << --ind << "}else{\n";
+                    // ind++;
+                    //     *out << ind++ << "if(w"<<aux->getPredicateName()<<".find(aux) == NULL){\n";
+                    //         *out << ind << "const auto& insertResult = w"<<aux->getPredicateName()<<".insert(Tuple({"<<auxTerms<<"},&_"<<aux->getPredicateName()<<"));\n";
+                    //         *out << ind++ << "if (insertResult.second) {\n";
+                    //             *out << ind++ << "for (AuxMap* auxMap : predicateToAuxiliaryMaps[&_"<<aux->getPredicateName()<<"]) {\n";
+                    //                 *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                    //             *out << --ind << "}\n";
+                    //             *out << ind << "atomsTable.push_back(aux);\n";
+                    //             *out << ind << "tupleToVar[aux]=atomsTable.size()-1;\n";
+                    //             *out << ind << "aux.print();std::cout<<\" \"<<tupleToVar[aux]<<std::endl;\n";
+                    //         *out << --ind << "}\n";
+                    //     *out << --ind << "}\n";
+                    // *out << --ind << "}\n";
+                    delete aux;
+                }
+                
+            }
+            while(closingPars>0){
+                closingPars--;
+                *out << --ind << "}\n";
+            }
+            *out << --ind << "}//closing aux generation\n";
+
+            for(const aspc::Rule& r : program.getRules()){
+                if(!r.isConstraint() && !r.getBodyLiterals().empty() && r.getBodyLiterals()[0].getPredicateName()==auxPred){
+                    *out << ind++ << "{\n";
+                        std::unordered_set<std::string> boundVariables;
+                        unsigned litIndex=0;
+                        unsigned closingPars=0;
+                        for(const aspc::Formula* f : r.getOrderedBodyByStarter(r.getBodySize())){
+                            if(f->isLiteral()){
+                                const aspc::Literal* l = (aspc::Literal*)f;
+                                if(l->isBoundedLiteral(boundVariables)){
+                                    std::string boundTerms;
+                                    for(int k=0;k<l->getAriety();k++){
+                                        if((l->isVariableTermAt(k) && boundVariables.count(l->getTermAt(k))!=0)||!l->isVariableTermAt(k)){
+                                            if(boundTerms!="")
+                                                boundTerms+=",";
+                                            boundTerms+=l->getTermAt(k);
+                                        }
+                                    }
+
+                                    if(l->isPositiveLiteral()){
+                                        
+                                        *out << ind << "bool undef"<<litIndex<<"=false;\n";
+                                        *out << ind << "const Tuple* tuple"<<litIndex<<"=w"<<l->getPredicateName()<<".find(Tuple({"<<boundTerms<<"},&_"<<l->getPredicateName()<<"));\n";
+                                        *out << ind++ << "if(tuple"<<litIndex<<" == NULL){\n";
+                                            *out << ind << "tuple"<<litIndex<<"=u"<<l->getPredicateName()<<".find(Tuple({"<<boundTerms<<"},&_"<<l->getPredicateName()<<"));\n";
+                                            *out << ind++ << "if(tuple"<<litIndex<<" == NULL){\n";
+                                                *out << ind << "undef"<<litIndex<<"=true;\n";
+                                            *out << --ind << "}\n";
+                                        *out << --ind << "}\n";
+                                        *out << ind++ << "if(tuple"<<litIndex<<" == NULL){\n";
+                                    }else{
+
+                                        *out << ind << "bool undef"<<litIndex<<"=false;\n";
+                                        *out << ind << "const Tuple negativeTuple({"<<boundTerms<<"},&_"<<l->getPredicateName()<<");\n";
+                                        *out << ind++ << "if(u"<<l->getPredicateName()<<".find(negativeTuple)!=NULL){\n";
+                                            *out << ind << "undef"<<litIndex<<"=true;\n";
+                                        *out << --ind << "}\n";
+                                        *out << ind++ << "if(undef"<<litIndex<<" || w"<<l->getPredicateName()<<".find(negativeTuple)== NULL){\n";
+
+                                    }
+                                    closingPars++;
+
+                                }else{
+                                    std::string boundTerms;
+                                    std::vector<unsigned> boundIndexes;
+                                    for(int k=0;k<l->getAriety();k++){
+                                        if((l->isVariableTermAt(k) && boundVariables.count(l->getTermAt(k))!=0)||!l->isVariableTermAt(k)){
+                                            if(boundTerms!="")
+                                                boundTerms+=",";
+                                            boundTerms+=l->getTermAt(k);
+                                            boundIndexes.push_back(k);
+                                        }
+                                    }
+
+                                    *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
+                                    for(unsigned k : boundIndexes){
+                                        *out << k << "_";
+                                    }
+                                    *out << ".getValues({"<<boundTerms<<"});\n";
+
+                                    *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<l->getPredicateName()<<"_";
+                                    for(unsigned k : boundIndexes){
+                                        *out << k << "_";
+                                    }
+                                    *out << ".getValues({"<<boundTerms<<"});\n";
+                                    *out << ind << "bool undef"<<litIndex<<"=false;\n";
+                                    *out << ind++ << "for(int i=0;i<tuples->size()+tuplesU->size();i++){\n";
+                                        *out << ind << "const Tuple* tuple"<<litIndex<<"=NULL;\n";
+                                        *out << ind++ << "if(i<tuples->size()){\n";
+                                            *out << ind << "tuple"<<litIndex<<"=tuples->at(i);\n";
+                                        *out << --ind << "}else{\n";
+                                            *out << ++ind << "tuple"<<litIndex<<"=tuplesU->at(i-tuples->size());\n";
+                                            *out << ind << "undef"<<litIndex<<"=true;\n";
+                                        *out << --ind << "}\n";
+                                        for(unsigned k=0;k<l->getAriety();k++){
+                                            if(l->isVariableTermAt(k) && boundVariables.count(l->getTermAt(k))==0){
+                                                *out << ind << "int "<<l->getTermAt(k)<<" = tuple"<<litIndex<<"->at("<<k<<");\n";
+                                                boundVariables.insert(l->getTermAt(k));
+                                            }
+                                        }
+                                        closingPars++;
+                                        
+                                }
+
+                            }
+                            litIndex++;
+                        }
+                        litIndex=0;
+                        bool atLeastOne=false;
+                        *out << ind++ << "if(";
+                        for(const aspc::Formula* f : r.getOrderedBodyByStarter(r.getBodySize())){
+                            if(f->isLiteral()){
+                                if(atLeastOne)
+                                    *out << " || ";
+                                *out << "undef"<<litIndex; 
+                                atLeastOne=true;
+                            }
+                            litIndex++;
+                        }
+                        if(!atLeastOne){
+                            *out << "true";
+                        }
+                        *out << "){\n";
+                            std::string headTerms;
+                            for(unsigned k = 0; k<r.getHead()[0].getAriety();k++){
+                                if(headTerms!=""){
+                                    headTerms+=",";
+                                }
+                                headTerms+=r.getHead()[0].getTermAt(k);
+                            }
+                            *out << ind << "Tuple head({"<<headTerms<<"},&_"<<r.getHead()[0].getPredicateName()<<");\n";
+                            // *out << ind << "head.print();\n";
+                            // *out << ind << "std::cout<<\"Saving\"<<std::endl;\n";
+                            *out << ind << "const auto& insertResult = u"<<r.getHead()[0].getPredicateName()<<".insert(Tuple({"<<headTerms<<"},&_"<<r.getHead()[0].getPredicateName()<<"));\n";
+                            *out << ind++ << "if (insertResult.second) {\n";
+                                *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<r.getHead()[0].getPredicateName()<<"]) {\n";
+                                    *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                                *out << --ind << "}\n";
+                                *out << ind << "atomsTable.push_back(head);\n";
+                                *out << ind << "tupleToVar[head]=atomsTable.size()-1;\n";
+                                // *out << ind << "head.print();std::cout<<\" \"<<tupleToVar[head]<<std::endl;\n";
+                                
+                                std::cout<<"search aggr id rule"<<std::endl;
+                                std::vector<unsigned> aggrIdRules = builder->isDomBodyPredicate(r.getHead()[0].getPredicateName());
+                                if(!aggrIdRules.empty()){
+                                    std::cout<<"Aggr id rule found"<<std::endl;
+                                    for(unsigned ruleId : aggrIdRules){
+                                        *out << ind++ << "{\n";
+                                            const aspc::Atom* aggrIdAtom = &program.getRule(ruleId).getHead()[0];
+                                            *out << ind << "Tuple aggrId({"<<headTerms<<"},&_"<<aggrIdAtom->getPredicateName()<<");\n";
+                                            *out << ind << "const auto& insertResult = u"<<aggrIdAtom->getPredicateName()<<".insert(Tuple({"<<headTerms<<"},&_"<<aggrIdAtom->getPredicateName()<<"));\n";
+                                            *out << ind++ << "if (insertResult.second) {\n";
+                                                *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<aggrIdAtom->getPredicateName()<<"]) {\n";
+                                                    *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                                                *out << --ind << "}\n";
+                                                *out << ind << "atomsTable.push_back(aggrId);\n";
+                                                *out << ind << "tupleToVar[aggrId]=atomsTable.size()-1;\n";
+                                                // *out << ind << "aggrId.print();std::cout<<\" \"<<tupleToVar[aggrId]<<std::endl;\n";
+                                            *out << --ind << "}\n";
+                                        *out << --ind << "}\n";
+                                    }
+                                    
+                                }else{
+                                    std::cout<<"No aggr id rule"<<std::endl;
+                                }
+                                // if(aggrSetToSharedVar.count(r.getHead()[0].getPredicateName())!=0){
+                                //     std::string predName =r.getHead()[0].getPredicateName();
+                                //     unsigned sharedVarsIndex = aggrSetToSharedVar[predName];
+
+                                //     *out << ind << "std::vector<int> sharedVars({";
+                                //     bool first=true;
+                                //     for(unsigned index : sharedVarToAggrSetIndices[predName]){
+                                //         if(!first)
+                                //             *out<<",";
+                                //         else 
+                                //             first=false;
+                                //         *out << "head["<<index<<"]";
+                                //     }
+                                //     *out << "});\n";
+                                //     *out << ind << "std::vector<int> aggrVars({";
+                                //     first=true;
+                                //     for(unsigned index : aggrVarToAggrSetIndices[predName]){
+                                //         if(!first)
+                                //             *out<<",";
+                                //         else 
+                                //             first=false;
+                                //         *out << "head["<<index<<"]";
+                                //     }
+                                //     *out << "});\n";
+                                //     *out << ind << "DynamicCompilationVector* sharedVarVector = sharedVarMap"<<sharedVarsIndex<<".addElements(sharedVars);\n";
+                                //     *out << ind << "usharedVarMap"<<sharedVarsIndex<<"[sharedVarVector].addElements(aggrVars);\n";
+                                // }
+                            *out << --ind << "}\n";
+                        *out << --ind << "}\n";
+                        while (closingPars>0){
+                            *out << --ind << "}\n";
+                            closingPars--;
+                        }
+                    *out << --ind << "}\n";
+                }
+            }
+        }
+
+        for(const auto & aggrId : aggrIdToRule){
+            if(program.getRule(aggrId.second).getBodyLiterals().empty()){
+                *out << ind++ << "{\n";
+                    *out << ind << "Tuple aggrId({},&_"<<aggrId.first<<");\n";
+                    *out << ind << "const auto& insertResult = u"<<aggrId.first<<".insert(Tuple({},&_"<<aggrId.first<<"));\n";
                     *out << ind++ << "if (insertResult.second) {\n";
-                        *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<r.getHead()[0].getPredicateName()<<"]) {\n";
+                        *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<aggrId.first<<"]) {\n";
                             *out << ind << "auxMap -> insert2(*insertResult.first);\n";
                         *out << --ind << "}\n";
-                        *out << ind << "atomsTable.push_back(head);\n";
-                        *out << ind << "tupleToVar[head]=atomsTable.size()-1;\n";
-                        
+                        *out << ind << "atomsTable.push_back(aggrId);\n";
+                        *out << ind << "tupleToVar[aggrId]=atomsTable.size()-1;\n";
+                        // *out << ind << "aggrId.print();std::cout<<\" \"<<tupleToVar[aggrId]<<std::endl;\n";
                     *out << --ind << "}\n";
                 *out << --ind << "}\n";
-                while (closingPars>0){
-                    *out << --ind << "}\n";
-                    closingPars--;
-                }
-            *out << --ind << "}\n";
+            }
         }
+
+        // *out << ind << "for(const Tuple* t : uaux0.getTuples()){t->print();std::cout<<std::endl;}\n";
+        // *out << ind << "std::cout<<\"Shared variable count \"<<sharedVarMap7.size()<<std::endl;\n";
+        // *out << ind << "for(auto aggrVar : usharedVarMap7){std::cout<<\"Aggr vars count \"<<aggrVar.second.size()<<std::endl;}\n";
+        // *out << ind << "std::cout<<\"End Undef Received\"<<std::endl;\n";
+        // *out << ind << "exit(180);\n";
+        // *out << ind << "for(const Tuple* t : uaux1.getTuples()){t->print();std::cout<<std::endl;}\n";
+        
     *out << --ind << "}\n";
+    
     *out << ind++ << "inline void Executor::addedVarName(int var, const std::string & atom) {\n";
     // *out << ind << "std::cout<<var<<\" \" << atom<<std::endl;\n";
     *out << ind << "atomsTable.resize(var+1);\n";
@@ -3060,9 +3654,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     // ---------------------- init() --------------------------------------//
     *out << ind++ << "void Executor::init() {\n";
     *out << ind << "std::cout<<\"Init\"<<std::endl;\n";
-    if (program.hasConstraint()) {
-        *out << ind << "createFunctionsMap();\n";
-    }
+    // COMMENTED FOR INCOMPATIBILITIES
+    // if (program.hasConstraint()) {
+    //     *out << ind << "createFunctionsMap();\n";
+    // }
     string reference = (mode == EAGER_MODE) ? "&" : "";
 
     for (const pair<std::string, unsigned>& predicate : predicates) {
@@ -3070,39 +3665,19 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "predicateWSetMap[" << reference << "_" << predicate.first << "]=&w" << predicate.first << ";\n";
         if (mode == EAGER_MODE) {
             *out << ind << "predicateUSetMap[&_" << predicate.first << "]=&u" << predicate.first << ";\n";
+            *out << ind << "predicateFSetMap[&_" << predicate.first << "]=&f" << predicate.first << ";\n";
         }
         *out << ind << "stringToUniqueStringPointer[\"" << predicate.first << "\"] = &_" << predicate.first << ";\n";
     }
-    for(aspc::Rule& r :program.getRules()){
-        if(r.isConstraint()){
-            for(const aspc::ArithmeticRelationWithAggregate& aggr : r.getArithmeticRelationsWithAggregate()){
-                if(aggr.getAggregate().isSum()){
-                    // *out << ind << "possibleSum[" << aggregateToStructure[aggr.getJoinTupleName()] << "][{}]=0;\n";
-                    // *out << ind << "actualSum[" << aggregateToStructure[aggr.getJoinTupleName()] << "][{}]=0;\n";
-                }
-                for(const aspc::Literal& l: aggr.getAggregate().getAggregateLiterals()){
-                    // *out << ind << "aggregatePredicatesAndVars [" << reference << "_" << l.getPredicateName() << "]= std::vector<int>({";
-                    // int countVars=0;
-                    // for(int i=0;i<l.getAriety();i++){
-                    //     if(aggr.getAggregate().containsVar(l.getTermAt(i))>=0){
-                    //         *out << i;
-                    //         countVars++;
-                    //         if(countVars<aggr.getAggregate().getAggregateVariables().size()-1 && i<l.getAriety()-1)
-                    //         *out <<",";
-                    //     }
-
-                    // }
-                    // *out << "});\n";
-                    *out << ind << "predicateWSetMap[" << reference << "_" << l.getPredicateName() << "]=&w" << l.getPredicateName() << ";\n";
-                    // *out << ind << "predicateFSetMap[" << reference << "_" << l.getPredicateName() << "]=&f" << l.getPredicateName() << ";\n";
-                    if (mode == EAGER_MODE) {
-                        *out << ind << "predicateUSetMap[&_" << l.getPredicateName() << "]=&u" << l.getPredicateName() << ";\n";
-                    }
-                    *out << ind << "stringToUniqueStringPointer[\"" << l.getPredicateName() << "\"] = &_" << l.getPredicateName() << ";\n";
-                }
-            }
-        }
-    }
+    // for(aspc::Rule& r :program.getRules()){
+    //     if(!r.isConstraint() && r.containsAggregate()){
+    //         std::string predName = r.getBodyLiterals()[0].getPredicateName();
+    //         *out << ind << "sharedVariables[&_"<<predName<<"]=&"<<sharedVarToAggr[predName]<<";\n";
+    //         *out << ind << "sharedVarWAggr[&_"<<predName<<"]=&w"<<sharedVarToAggr[predName]<<";\n";
+    //         *out << ind << "sharedVarUAggr[&_"<<predName<<"]=&u"<<sharedVarToAggr[predName]<<";\n";
+    //         *out << ind << "sharedVarFAggr[&_"<<predName<<"]=&f"<<sharedVarToAggr[predName]<<";\n";
+    //     }
+    // }
 
 
 
@@ -3140,90 +3715,146 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     *out << --ind << "}\n";
     // ---------------------- end init() --------------------------------------//
-    *out << ind++ << "void propUndefined(const Tuple* tupleU,bool isNegated,std::vector<int>& stack,bool asNegative){\n";
-        for(auto& predId : predicateIDs){
-            *out << ind++ << "if(tupleU->getPredicateName() == &_"<<predId.first<<"){\n";
-            if(builder->isInternalPredicate(predId.second)){
-                *out << ind << "bool propagated = false;\n";
-                *out << ind++ << "if(isNegated != asNegative){\n";
-                    *out << ind << "const auto& insertResult = f"<<predId.first<<".insert(Tuple(*tupleU));\n";
-                    *out << ind++ << "if (insertResult.second) {\n";
-                        *out << ind++ << "for (AuxMap* auxMap : predicateToFalseAuxiliaryMaps[&_"<<predId.first<<"]) {\n";
-                            *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-                        *out << --ind << "}\n";
-                        *out << ind << "std::cout<<\"Prop internal predicate as false\";";
-                        *out << ind << "tupleU->print();\n";
-                        *out << ind << "std::cout<<std::endl;\n";
-                        *out << ind << "propagated = true;\n";
-                        
-                    *out << --ind << "}\n";
-                    // *out << ind << "//false not saved up to now\n";
-                *out << --ind << "}else{\n";
-                    *out << ++ind << "std::cout<<\"Prop undefined\"<<std::endl;\n";
-                    *out << ind << "const auto& insertResult = w"<<predId.first<<".insert(Tuple(*tupleU));\n";
-                    *out << ind++ << "if (insertResult.second) {\n";
-                        *out << ind++ << "for (AuxMap* auxMap : predicateToAuxiliaryMaps[&_"<<predId.first<<"]) {\n";
-                            *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-                        *out << --ind << "}\n";
-                        *out << ind << "std::cout<<\"Prop internal predicate as true\";";
-                        *out << ind << "tupleU->print();\n";
-                        *out << ind << "std::cout<<std::endl;\n";
-                        *out << ind << "propagated = true;\n";
-                    *out << --ind << "}\n";
-                *out << --ind << "}\n";
-                *out << ind++ << "if(propagated){\n";
-                    *out << ind << "auto it = tupleToVar.find(*tupleU);\n";
-                    *out << ind << "int sign = isNegated != asNegative ? -1 : 1;\n";
-                    *out << ind++ << "if(it!=tupleToVar.end()){\n";
-                        *out << ind << "stack.push_back(sign*it->second);\n";
-                        *out << ind << "levelToIntLiterals[currentDecisionLevel].push_back(sign*it->second);\n";
-                    *out << --ind << "}\n";
-                    *out << ind << "u"<<predId.first<<".erase(*tupleU);\n";
-
-                *out << --ind << "}\n";
-            }else{
-                *out << ind << "auto it = tupleToVar.find(*tupleU);\n";
-                //isNegated and asNegative -> prop not a as false -> prop a -> -a
-                //!isNegated and !asNegative -> prop a ad true -> prop a -> -a
-                *out << ind << "int sign = isNegated == asNegative ? -1 : 1;\n";
-                *out << ind++ << "if(it!=tupleToVar.end()){\n";
-                    *out << ind << "std::cout<<\"Propagating: \";\n";
-                    *out << ind << "tupleU->print();\n";
-                    *out << ind << "std::cout <<\" \"<<sign*it->second<<std::endl;\n";
-                *out << --ind << "}\n";
+    *out << ind++ << "bool propUndefined(const Tuple* tupleU,bool isNegated,std::vector<int>& stack,bool asNegative,UnorderedSet<int> & propagatedLiterals){\n";
+        std::string internalIf;
+        for(const auto& predId : predicateIDs){
+            if(builder->isAuxPredicate(predId.first) || headPreds.count(predId.first)!=0){
+                if(internalIf!="")
+                    internalIf+=" || ";
+                internalIf += "tupleU->getPredicateName() == &_"+predId.first;
+                
             }
-            *out << --ind << "}\n";
         }
+        *out << ind++ << "if("<<internalIf<<"){\n";
+            *out << ind << "bool propagated=false;\n";
+            *out << ind << "std::unordered_map<const std::string*,PredicateWSet*>::iterator falseSet = predicateFSetMap.find(tupleU->getPredicateName());\n";
+            *out << ind << "std::unordered_map<const std::string*,PredicateWSet*>::iterator undefSet = predicateUSetMap.find(tupleU->getPredicateName());\n";
+            *out << ind << "std::unordered_map<const std::string*,PredicateWSet*>::iterator trueSet = predicateWSetMap.find(tupleU->getPredicateName());\n";
+
+            *out << ind++ << "if(falseSet==predicateFSetMap.end()){\n";
+                *out << ind << "std::cout<<\"Unable to find false set for: \"<<tupleU->getPredicateName()<<std::endl;\n";
+                *out << ind << "exit(180);\n";
+            *out << -- ind << "}\n";
+
+            *out << ind++ << "if(undefSet==predicateUSetMap.end()){\n";
+                *out << ind << "std::cout<<\"Unable to find undef set for: \"<<tupleU->getPredicateName()<<std::endl;\n";
+                *out << ind << "exit(180);\n";
+            *out << -- ind << "}\n";
+
+            *out << ind++ << "if(trueSet==predicateWSetMap.end()){\n";
+                *out << ind << "std::cout<<\"Unable to find true set for: \"<<tupleU->getPredicateName()<<std::endl;\n";
+                *out << ind << "exit(180);\n";
+            *out << -- ind << "}\n";
+            *out << ind++ << "if(isNegated == asNegative){\n";
+                *out << ind++ << "if(falseSet->second->find(*tupleU)!=NULL){\n";
+                    *out << ind << "std::cout<<\"Conflict: Literal is already false\"<<std::endl;\n";
+                    *out << ind << "return true;\n";
+                *out << --ind << "}else if(undefSet->second->find(*tupleU)!=NULL){\n";
+                ind++;
+                    *out << ind << "const auto& insertResult = trueSet->second->insert(Tuple(*tupleU));\n";
+                    *out << ind++ << "if (insertResult.second) {\n";
+                        *out << ind++ << "for (AuxMap* auxMap : predicateToAuxiliaryMaps[trueSet->first]) {\n";
+                            *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                        *out << --ind << "}\n";
+                        // *out << ind << "std::cout<<\"Literal propagated as True\";";
+                        // *out << ind << "tupleU->print();\n";
+                        // *out << ind << "std::cout<<std::endl;\n";
+                        *out << ind << "propagated = true;\n";
+                    *out << --ind << "}\n";
+                *out << --ind << "}\n";
+            *out << --ind << "}else{\n";
+            ind++;
+                *out << ind++ << "if(trueSet->second->find(*tupleU)!=NULL){\n";
+                    *out << ind << "std::cout<<\"Conflict: Literal is already true \";tupleU->print();std::cout<<std::endl;\n";
+                    *out << ind << "return true;\n";
+                *out << --ind << "}else if(undefSet->second->find(*tupleU)!=NULL){\n";
+                ind++;
+                    *out << ind << "const auto& insertResult = falseSet->second->insert(Tuple(*tupleU));\n";
+                    *out << ind++ << "if (insertResult.second) {\n";
+                        *out << ind++ << "for (AuxMap* auxMap : predicateToFalseAuxiliaryMaps[falseSet->first]) {\n";
+                            *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                        *out << --ind << "}\n";
+                        // *out << ind << "std::cout<<\"Literal propagated as False\";";
+                        // *out << ind << "tupleU->print();\n";
+                        // *out << ind << "std::cout<<std::endl;\n";
+                        *out << ind << "propagated = true;\n";
+                    *out << --ind << "}\n";
+                *out << --ind << "}\n";
+            *out << --ind << "}\n";
+            *out << ind++ << "if(propagated){\n";
+                *out << ind << "auto it = tupleToVar.find(*tupleU);\n";
+                *out << ind << "int sign = isNegated != asNegative ? -1 : 1;\n";
+                *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                    *out << ind << "stack.push_back(sign*it->second);\n";
+                    *out << ind << "levelToIntLiterals[currentDecisionLevel].push_back(sign*it->second);\n";
+                *out << --ind << "}\n";
+                *out << ind << "undefSet->second->erase(*tupleU);\n";
+            *out << --ind << "}\n";
+        *out << --ind << "}else{\n";
+        ind++;
+            *out << ind << "auto it = tupleToVar.find(*tupleU);\n";
+            *out << ind << "int sign = isNegated == asNegative ? -1 : 1;\n";
+            *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                // *out << ind << "std::cout<<\"Propagating external literal: \";\n";
+                // *out << ind << "tupleU->print();\n";
+                // *out << ind << "std::cout <<\" \"<<sign*it->second<<std::endl;\n";
+                *out << ind << "propagatedLiterals.insert(it->second*sign);\n";
+            *out << --ind << "}\n";
+        
+        *out << --ind << "}\n";
+        *out << ind << "return false;\n";
     *out << --ind << "}\n";
 
-    *out << ind++ << "void unRollToLevel(int decisionLevel){\n";
-        *out << ind++ << "for(auto& level :levelToIntLiterals){\n";
-            *out << ind++ << "if(level.first >=decisionLevel){\n";
-                *out << ind++ << "while(!level.second.empty()){\n";
-                    *out << ind << "int var = level.second.back();\n";
-                    *out << ind << "int uVar = var>0 ? var : -var;\n";
-                    *out << ind << "Tuple t = atomsTable[uVar];\n";
-                    for(const aspc::Rule& r : program.getRules()){
-                        if(r.isConstraint())
-                            continue;
-                        *out << ind++ << "if(t.getPredicateName() == &_"<<r.getHead()[0].getPredicateName()<<"){\n";
-                            *out << ind++ << "if(var>0){\n";
-                                *out << ind << "w"<<r.getHead()[0].getPredicateName()<<".erase(t);\n";
-                            *out << --ind << "}else{\n";
-                                *out << ++ind << "f"<<r.getHead()[0].getPredicateName()<<".erase(t);\n";
-                            *out << --ind << "}\n";
-                            *out << ind << "const auto& insertResult = u"<<r.getHead()[0].getPredicateName()<<".insert(Tuple(t));\n";
-                            *out << ind++ << "if (insertResult.second) {\n";
-                                *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<r.getHead()[0].getPredicateName()<<"]) {\n";
-                                    *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-                                *out << --ind << "}\n";
-                            *out << --ind << "}\n";
-                            *out << ind << "level.second.pop_back();\n";
+    *out << ind++ << "void Executor::unRollToLevel(int decisionLevel){\n";
+        // *out << ind << "std::cout<<\"Unrolling to level: \"<<decisionLevel << \" \" <<currentDecisionLevel<<std::endl;\n";
+        *out << ind++ << "while(currentDecisionLevel > decisionLevel){\n";
+            // *out << ind << "std::cout<<\"clear level: \"<<currentDecisionLevel<<std::endl;\n";
+            *out << ind << "levelToExtLiterals.erase(currentDecisionLevel);\n";
+            *out << ind++ << "while(!levelToIntLiterals[currentDecisionLevel].empty()){\n";
+                *out << ind << "int var = levelToIntLiterals[currentDecisionLevel].back();\n";
+                *out << ind << "levelToIntLiterals[currentDecisionLevel].pop_back();\n";
+                *out << ind << "reasonForLiteral.erase(var);\n";
+                *out << ind++ << "if(supportedLiterals[var] >= currentDecisionLevel)\n";
+                    *out << ind-- << "supportedLiterals.erase(var);\n";
+                *out << ind << "int uVar = var>0 ? var : -var;\n";
+                *out << ind << "Tuple tuple = atomsTable[uVar];\n";
+                
+                *out << ind++ << "if (var > 0) {\n";
+                    *out << ind << "std::unordered_map<const std::string*, PredicateWSet*>::iterator wSetIt = predicateWSetMap.find(tuple.getPredicateName());\n";
+                    *out << ind++ << "if (wSetIt != predicateWSetMap.end()) {\n";
+                        // *out << ind << "std::cout<<\"Removing true literal\"<<std::endl;\n";
+                        *out << ind << "wSetIt->second->erase(tuple);\n";
+                    *out << --ind << "}\n";
+                *out << --ind << "} //true removing\n";
+
+                *out << ind++ << "if (var < 0) {\n";
+                    *out << ind << "std::unordered_map<const std::string*, PredicateWSet*>::iterator fSetIt = predicateFSetMap.find(tuple.getPredicateName());\n";
+                    *out << ind++ << "if (fSetIt != predicateFSetMap.end()) {\n";
+                        // *out << ind << "std::cout<<\"Removing false literal\"<<std::endl;\n";
+                        *out << ind << "fSetIt->second->erase(tuple);\n";
+                    *out << --ind << "}\n";
+                *out << --ind << "}//false removing\n";
+
+                *out << ind << "std::unordered_map<const std::string*, PredicateWSet*>::iterator it = predicateUSetMap.find(tuple.getPredicateName());\n";
+                *out << ind++ << "if (it == predicateUSetMap.end()) {\n";
+                *out << ind << "} else {\n";
+                    *out << ind << "const auto& insertResult = it->second->insert(Tuple(tuple));\n";
+                    *out << ind++ << "if (insertResult.second) {\n";
+                    // *out << ind << "std::cout<<\"Saving undef literal\"<<std::endl;\n";
+                        *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[it->first]) {\n";
+                            *out << ind << "auxMap -> insert2(*insertResult.first);\n";
                         *out << --ind << "}\n";
-                    }
-                *out << --ind << "}\n";
+                    *out << --ind << "}\n";
+                *out << --ind << "} // close undef insert \n";
+
             *out << --ind << "}\n";
+            *out << ind << "currentDecisionLevel--;\n";
         *out << --ind << "}\n";
+        *out << ind << "clearConflictReason();\n";
+        // *out << ind << "for(const Tuple* t :waux0.getTuples()){std::cout<<\"True aux: \";t->print();std::cout<<std::endl;}\n";
+        // *out << ind << "for(const Tuple* t :faux0.getTuples()){std::cout<<\"False aux: \";t->print();std::cout<<std::endl;}\n";
+        // *out << ind << "for(const Tuple* t :uaux0.getTuples()){std::cout<<\"Undef aux: \";t->print();std::cout<<std::endl;}\n";
+
     *out << --ind << "}\n";
     // ---------------------- executeProgramOnFacts() --------------------------------------//
     if (mode == LAZY_MODE) {
@@ -3244,9 +3875,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         //facts[0] is the decision level for eager mode (-1 is facts level)
         *out << ind << "int decisionLevel = facts[0];\n";
         //*out << ind << "std::cout<<\"Execute program on facts: decision level \"<<decisionLevel<<std::endl;\n";
-        *out << ind++ << "if(currentDecisionLevel > decisionLevel)\n";
-            *out << ind-- << "unRollToLevel(decisionLevel);\n";
+        // *out << ind++ << "if(currentDecisionLevel > decisionLevel || unRoll)\n";
+        //     *out << ind-- << "unRollToLevel(decisionLevel);\n";
         *out << ind << "currentDecisionLevel=decisionLevel;\n";
+        // *out << ind << "std::cout<<\"Current Decision Level: \"<<currentDecisionLevel<<std::endl;\n";
 #ifdef EAGER_DEBUG
         *out << ind << "std::cout<<\"Execute program on facts: decision level \"<<decisionLevel<<std::endl;\n";
 #endif
@@ -3266,9 +3898,14 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << --ind << "}\n";
     } else {
         // mode == EAGER_MODE
+        *out << ind << "std::vector<int> propagationStack;\n";
         *out << ind++ << "for(unsigned i=1;i<facts.size();i++) {\n";
-        // *out << ind << "std::cout<<\"facts: \"<<facts[i]<<std::endl;\n";
-        *out << ind << "onLiteralTrue(facts[i]);\n";
+            // *out << ind << "std::cout<<\"facts: \"<<facts[i]<<std::endl;\n";
+            *out << ind << "onLiteralTrue(facts[i]);\n";
+            *out << ind << "propagationStack.push_back(facts[i]);\n";
+            *out << ind << "externalLiteralsLevel[facts[i]]=currentDecisionLevel;\n";
+            // *out << ind << "std::cout<<\"current level size \"<<levelToExtLiterals[currentDecisionLevel].size()<<std::endl;\n";
+            *out << ind << "levelToExtLiterals[currentDecisionLevel].push_back(facts[i]);\n";
 
         *out << --ind << "}\n";
     }
@@ -3335,174 +3972,53 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         }
     } else {
         //mode == EAGER_MODE
-        // *out << ind << "std::cout<<\"Decision level \"<<decisionLevel<<\" \"<<facts[1]<<std::endl;\n";
-        *out << ind << "std::vector<int> propagationStack;\n";
 
         *out << ind++ << "if(decisionLevel==-1) {\n";
-        // *out << ind << "std::cout<<\"decisionLevelif\"<<std::endl;\n";
-        for (const aspc::Rule& r : program.getRules()) {
-            compileEagerRule(r,r.getBodySize());
-            // if (r.isConstraint() && !r.containsAggregate()) {
-            //     *out << ind++ << "{\n";
-            //     *out << ind << "const Tuple * tupleU = NULL;\n";
-            //     *out << ind << "bool tupleUNegated = false;\n";
-
-            //     compileRule(r, r.getBodySize(), program);
-
-
-            //     *out << --ind << "}//close local scope\n";
-            // }else if (r.isConstraint()){
-            //     *out << ind++ << "{\n";
-            //     *out << ind << "const Tuple * tupleU = NULL;\n";
-            //     *out << ind << "bool tupleUNegated = false;\n";
-            //     compileConstraintWithAggregate(r, r.getBodySize(), program);
-
-            //     *out << --ind << "}//close local scope\n";
-            // }
-        }
-        
-        *out << --ind << "}//close decision level == -1\n";
-        // *out << ind << "if(decisionLevel!=-1) std::cout<<\"Level not -1\"<<std::endl;\n";
-        // *out << ind << "else std::cout<<\"outOfDecisionLevel\"<<std::endl;\n";
-        //*out << ind << "std::cout<<\"start for on facts\"<<decisionLevel<<std::endl;\n";
-
-        *out << ind++ << "for(unsigned i=1;i<facts.size();i++) {\n";
-        *out << ind << "unsigned factVar = facts[i] > 0 ? facts[i] : -facts[i];\n";
-        *out << ind << "Tuple starter = atomsTable[factVar];\n";
-        *out << ind << "starter.print();\n";
-        *out << ind << "starter.setNegated(facts[i]<0);\n";
-
-        //*out << ind << "starter.print();std::cout<<\" Starter\"<<std::endl;\n";
-        //*out << ind << "std::cout<<\"Starting from \";starter.print();std::cout<<std::endl;\n";
-        /**out << ind << "std::cout<<\"False size: \"<<fp_1_.getValues({}).size()<<std::endl;\n";
-        *out << ind << "std::cout<<\"True size: \"<<pp_1_.getValues({}).size()<<std::endl;\n";
-        *out << ind << "std::cout<<\"Undef size: \"<<up_1_.getValues({}).size()<<std::endl;\n";*/
-        for(auto& predId : predicateIDs){
-            if(!builder->isInternalPredicate(predId.second)){
-                for(int ruleId : externalPredicatesToRules[predId.second]){
-                    const aspc::Rule* r = &program.getRules()[ruleId];
-                    for(unsigned starter : r->getStarters()){
-                        if(starter < r->getBodySize() && r->getFormulas()[starter]->isLiteral()){
-                            const aspc::Literal* l = (aspc::Literal*) r->getFormulas()[starter];
-                            if(l->getPredicateName() == predId.first){
-                                compileEagerRule(*r,starter);
+            *out << ind++ << "if(!undefinedLoaded)\n";
+                *out << ind-- << "undefLiteralsReceived();\n";
+            std::unordered_set<unsigned> compiledRuleIndices;
+            while(compiledRuleIndices.size()<program.getRulesSize()){
+                const aspc::Rule* rule = NULL;
+                for (const aspc::Rule& r : program.getRules()) {
+                    if(compiledRuleIndices.count(r.getRuleId())==0){
+                        bool noInternalLiteral = true;
+                        for(const aspc::Literal& l : r.getBodyLiterals()){
+                            if(builder->isAuxPredicate(l.getPredicateName()) || headPreds.count(l.getPredicateName())!=0){
+                                noInternalLiteral=false;
+                                break;
                             }
+                        }
+                        if(noInternalLiteral){
+                            rule=&r;
+                            break;
+                        }else if(r.isConstraint()){
+                            rule=&r;
+                        }else if(rule==NULL){
+                            rule=&r;
                         }
                     }
                 }
+                compiledRuleIndices.insert(rule->getRuleId());
+                compileEagerRule(*rule,false);
+
             }
-        }
-        // for (unsigned i = 0; i < sccsSize; i++) {
-        //     const std::map<std::string, std::vector<unsigned>>&startersExitRules = starterToExitRulesByComponent[i];
-        //     // std::vector<std::string> preds={"#3:1","yvalue","#2:1","#1:1","xvalue","#0:1"};
-        //     // for(unsigned int j=0;j<preds.size();j++){
+            
+        *out << --ind << "}//close decision level == -1\n";
+        // *out << ind << "std::cout<<\"outOfDecisionLevel\"<<std::endl;\n";
 
-        //      for (const auto& rulesByPredicate : startersExitRules) {
-        //         // const std::pair<std::string,std::vector<unsigned>>& rulesByPredicate = *startersExitRules.find(preds[j]);
-        //         //*out << ind++ << "if(facts[i]->getPredicateName() == \"" << rulesByPredicate.first << "\") { \n";
-        //         if(rulesByPredicate.first[0]=='#'){
-
-        //             /*int start = rulesByPredicate.first.find(':');
-        //             *out << ind++ << "if(starter.getPredicateName() == &_" << rulesByPredicate.first.substr(start+1) << ") { \n";
-        //             *out << ind << "const Tuple * tuple0 = &starter;\n";*/
-
-        //         }else{
-        //             *out << ind++ << "if(starter.getPredicateName() == &_" << rulesByPredicate.first << ") { \n";
-        //             *out << ind << "const Tuple * tuple0 = &starter;\n";
-
-        //         }
-        //         std::cout << "Print prop cod starting from "<<rulesByPredicate.first<<std::endl;
-        //         for (unsigned ruleId : rulesByPredicate.second) {
-        //             std::cout<<"Evaluatin rule "<<ruleId<<std::endl;
-        //             const aspc::Rule& r = program.getRule(ruleId);
-        //             for (unsigned starter : r.getStarters()) {
-        //                 if (starter != r.getBodySize()) {
-        //                     //std::cout<<starter<<std::endl;
-        //                     if(!r.containsAggregate()){
-        //                         aspc::Literal* starterBodyLiteral = (aspc::Literal*)(r.getFormulas()[starter]);
-        //                         string negationCheck = starterBodyLiteral->isNegated() ? "<" : ">";
-        //                         if (rulesByPredicate.first == starterBodyLiteral->getPredicateName()) {
-        //                             *out << ind++ << "if(facts[i] " << negationCheck << " 0){\n";
-        //                             *out << ind++ << "{\n";
-        //                             *out << ind << "const Tuple * tupleU = NULL;\n";
-        //                             *out << ind << "bool tupleUNegated = false;\n";
-        //                             compileRule(r, starter, program);
-        //                             *out << --ind << "}//close loop nested join\n";
-        //                             *out << --ind << "}//close loop nested join\n";
-        //                         }
-        //                     }else{
-        //                         if(r.getFormulas()[starter]->isLiteral()){
-        //                             aspc::Literal* starterBodyLiteral = (aspc::Literal*)(r.getFormulas()[starter]);
-        //                             string negationCheck = starterBodyLiteral->isNegated() ? "<" : ">";
-        //                             if (rulesByPredicate.first == starterBodyLiteral->getPredicateName()) {
-        //                                 *out << ind++ << "if(facts[i] " << negationCheck << " 0){\n";
-        //                                 *out << ind++ << "{\n";
-        //                                 *out << ind << "const Tuple * tupleU = NULL;\n";
-        //                                 *out << ind << "bool tupleUNegated = false;\n";
-        //                                 compileConstraintWithAggregate(r, starter, program);
-        //                                 *out << --ind << "}//close loop nested join\n";
-        //                                 *out << --ind << "}//close loop nested join\n";
-        //                             }
-        //                         }else if (r.getFormulas()[starter]->containsAggregate()){
-        //                             aspc::ArithmeticRelationWithAggregate* aggr = (aspc::ArithmeticRelationWithAggregate*)(r.getFormulas()[starter]);
-        //                             string negationCheck = aggr->isNegated() ? "<" : ">";
-
-        //                             //per constraint con multi aggregato controllare che il formulaIndex corrisponda
-        //                             if (rulesByPredicate.first == "#"+std::to_string(r.getRuleId())+":"+std::to_string(aggr->getFormulaIndex())) {
-
-        //                                 //*out << ind++ << "if(facts[i] "<<negationCheck<<" 0){\n";
-        //                                 *out << ind++ << "{\n";
-
-        //                                 *out << ind << "bool tupleUNegated = false;\n";
-        //                                 *out << ind << "const Tuple * tupleU = NULL;\n";
-
-        //                                 compileConstraintWithAggregate(r, starter, program);
-        //                                 *out << --ind << "}//local scope\n";
-        //                                 //*out << --ind << "}//close if\n";
-        //                             }
-
-        //                         }
-        //                     }
-        //                 }
-        //             }
-
-        //         }
-        //         if(rulesByPredicate.first[0]!='#')
-        //             *out << --ind << "}//close predicate joins\n";
-        //     }
-        // }
-        *out << --ind << "}\n";
-
+        // *out << ind++ << "for(unsigned i=1;i<facts.size();i++) {\n";
+        //     *out << ind << "propagationStack.push_back(facts[i]);\n";
+        // *out << --ind << "}\n";
+        // *out << ind << "std::cout<<propagationStack.size()<<std::endl;\n";
         *out << ind++ << "while(!propagationStack.empty()){\n";
             *out << ind << "int startVar = propagationStack.back();\n";
             *out << ind << "int uStartVar = startVar<0 ? -startVar : startVar;\n";
             *out << ind << "Tuple starter = atomsTable[uStartVar];\n";
             *out << ind << "starter.setNegated(startVar<0);\n";
-            *out << ind << "starter.print();std::cout<<\" Starter\"<<std::endl;\n";
+            // *out << ind << "starter.print();std::cout<<\" Starter\"<<std::endl;\n";
             *out << ind << "propagationStack.pop_back();\n";
-            //*out << ind << "std::cout<<\"Starting from \";starter.print();std::cout<<std::endl;\n";
-            /**out << ind << "std::cout<<\"False size: \"<<fp_1_.getValues({}).size()<<std::endl;\n";
-            *out << ind << "std::cout<<\"True size: \"<<pp_1_.getValues({}).size()<<std::endl;\n";
-            *out << ind << "std::cout<<\"Undef size: \"<<up_1_.getValues({}).size()<<std::endl;\n";*/
-            for(auto& predId : predicateIDs){
-                if(builder->isInternalPredicate(predId.second)){
-                    for(int ruleId : internalPredicatesToRules[predId.second]){
-                        const aspc::Rule* r = &program.getRules()[ruleId];
-                        for(unsigned starter : r->getStarters()){
-                            if(starter < r->getBodySize() && r->getFormulas()[starter]->isLiteral()){
-                                const aspc::Literal* l = (aspc::Literal*) r->getFormulas()[starter];
-                                if(l->getPredicateName() == predId.first){
-                                    compileEagerRule(*r,starter);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            for(const aspc::Rule& r : program.getRules()){
-                if(!r.isConstraint()){
-                    compileEagerRule(r,r.getFormulas().size()+1);
-                }
+            for(const aspc::Rule& r: program.getRules()){
+                compileEagerRule(r,true);
             }
         *out << --ind << "}\n";
     }
@@ -3558,19 +4074,17 @@ void CompilationManager::declareDataStructures(const aspc::Rule& r, unsigned sta
             }
             *out << "});\n";
             
-            if(builder->isInternalPredicateName(li->getPredicateName())){
 
-                *out << ind << "AuxMap f" << mapVariableName << "({";
-                for (unsigned k = 0; k < keyIndexes.size(); k++) {
-                    if (k > 0) {
-                        *out << ",";
-                    }
-                    *out << keyIndexes[k];
+            *out << ind << "AuxMap f" << mapVariableName << "({";
+            for (unsigned k = 0; k < keyIndexes.size(); k++) {
+                if (k > 0) {
+                    *out << ",";
                 }
-                *out << "});\n";
-                predicateToFalseAuxiliaryMaps[li->getPredicateName()].insert(mapVariableName);
-
+                *out << keyIndexes[k];
             }
+            *out << "});\n";
+            predicateToFalseAuxiliaryMaps[li->getPredicateName()].insert(mapVariableName);
+
 
             predicateToAuxiliaryMaps[li->getPredicateName()].insert(mapVariableName);
             if (mode == EAGER_MODE) {
@@ -3584,9 +4098,9 @@ void CompilationManager::declareDataStructures(const aspc::Rule& r, unsigned sta
         if (f->isLiteral()) {
             const aspc::Literal * li = (aspc::Literal *) f;
             if (li->isPositiveLiteral() && !li->isBoundedLiteral(boundVariables)) {
-                std::cout<<"Declare map for: ";
-                li->print();
-                std::cout<<std::endl;
+                // std::cout<<"Declare map for: ";
+                // li->print();
+                // std::cout<<std::endl;
                 std::vector< unsigned > keyIndexes;
                 std::string mapVariableName = li->getPredicateName() + "_";
                 for (unsigned tiIndex = 0; tiIndex < li->getTerms().size(); tiIndex++) {
@@ -3616,21 +4130,19 @@ void CompilationManager::declareDataStructures(const aspc::Rule& r, unsigned sta
                     }
                     *out << "});\n";
                     
-                    if(builder->isInternalPredicateName(li->getPredicateName())){
 
-                        *out << ind << "AuxMap f" << mapVariableName << "({";
-                        for (unsigned k = 0; k < keyIndexes.size(); k++) {
-                            if (k > 0) {
-                                *out << ",";
-                            }
-                            *out << keyIndexes[k];
+                    *out << ind << "AuxMap f" << mapVariableName << "({";
+                    for (unsigned k = 0; k < keyIndexes.size(); k++) {
+                        if (k > 0) {
+                            *out << ",";
                         }
-                        *out << "});\n";
-                        predicateToFalseAuxiliaryMaps[li->getPredicateName()].insert(mapVariableName);
-
+                        *out << keyIndexes[k];
                     }
+                    *out << "});\n";
+
 
                     predicateToAuxiliaryMaps[li->getPredicateName()].insert(mapVariableName);
+                    predicateToFalseAuxiliaryMaps[li->getPredicateName()].insert(mapVariableName);
                     if (mode == EAGER_MODE) {
                         predicateToUndefAuxiliaryMaps[li->getPredicateName()].insert(mapVariableName);
                     }
@@ -3645,74 +4157,118 @@ void CompilationManager::declareRuleEagerStructures(const aspc::Rule& r){
 
     if(mode == EAGER_MODE){
         std::unordered_map<std::string,std::pair<std::vector<unsigned>,unsigned>> declaringMaps;
+        std::unordered_map<std::string,std::string> mapNames;
         if(!r.isConstraint()){
-            for(unsigned i = 0; i < r.getFormulas().size(); i++){
-                if(!r.getFormulas()[i]->isLiteral())
-                    continue;
+            if(r.containsAggregate()){
                 
+                // *out << ind << "DynamicTrie sharedVarMap"<<r.getRuleId()<<";\n";
+                // *out << ind << "std::unordered_map<DynamicCompilationVector*,DynamicTrie> wsharedVarMap"<<r.getRuleId()<<";\n";
+                // *out << ind << "std::unordered_map<DynamicCompilationVector*,DynamicTrie> usharedVarMap"<<r.getRuleId()<<";\n";
+                // *out << ind << "std::unordered_map<DynamicCompilationVector*,DynamicTrie> fsharedVarMap"<<r.getRuleId()<<";\n";
+
                 std::unordered_set<std::string> bodyVars;
-                for(unsigned j = 0; j < r.getFormulas().size(); j++){
-                    if(i!=j){
-                        if(!r.getFormulas()[j]->isLiteral())
-                            continue;
-                        const aspc::Literal* l = (aspc::Literal*)r.getFormulas()[j];
-                        for(unsigned termI = 0; termI < l->getAriety(); termI++){
-                            if(l->isVariableTermAt(termI)){
-                                bodyVars.insert(l->getTermAt(termI));
+
+                const aspc::Literal* domBody = !r.getBodyLiterals().empty() ?  &r.getBodyLiterals()[0] : NULL;
+                const aspc::Literal* aggregate = &r.getArithmeticRelationsWithAggregate()[0].getAggregate().getAggregateLiterals()[0];
+                const aspc::Atom* aggrId = &r.getHead()[0];
+                aggrIdToRule[aggrId->getPredicateName()]=r.getRuleId();
+                // sharedVarToAggr[domBody->getPredicateName()]="sharedVarMap"+std::to_string(r.getRuleId());
+                // aggrSetToSharedVar[aggregate->getPredicateName()]=r.getRuleId();
+                if(domBody!=NULL){
+                    for(unsigned i = 0; i<domBody->getAriety(); i++){
+                        for(unsigned j=0; j<aggregate->getAriety();j++){
+                            if(aggregate->getTermAt(j)==domBody->getTermAt(i)){
+                                sharedVarToBodyIndices[domBody->getPredicateName()].push_back(i);
+                                sharedVarToAggrSetIndices[aggregate->getPredicateName()].push_back(j);
+                                break;
                             }
                         }
                     }
                 }
-                const aspc::Atom* head = &r.getHead()[0];
-                std::unordered_set<std::string> headVars;
-
-                for(unsigned termI=0; termI<head->getAriety(); termI++){
-                    if(head->isVariableTermAt(termI)){
-                        bodyVars.insert(head->getTermAt(termI));
-                        headVars.insert(head->getTermAt(termI));
-                    }
-                }
-                const aspc::Literal* li = (aspc::Literal*)r.getFormulas()[i];
                 
-                std::vector<unsigned> keys;
-                std::string mapVariableName=li->getPredicateName()+"_";
-                for(unsigned termI = 0; termI < li->getAriety(); termI++){
-                    if(li->isVariableTermAt(termI) && bodyVars.count(li->getTermAt(termI))!=0){
-                        keys.push_back(termI);
-                        mapVariableName+=std::to_string(termI)+"_";
+                for(std::string aggrVar : r.getArithmeticRelationsWithAggregate()[0].getAggregate().getAggregateVariables()){
+                    for(unsigned j=0; j<aggregate->getAriety();j++){
+                        if(aggrVar == aggregate->getTermAt(j)){
+                            aggrVarToAggrSetIndices[aggregate->getPredicateName()].push_back(j);
+                            break;
+                        }
                     }
                 }
-                if(declaringMaps.count(mapVariableName)==0){
-                    declaringMaps[mapVariableName]={std::vector<unsigned>(keys),li->getAriety()};
+                std::string mapName = aggrId->getPredicateName()+"_";
+                if (!declaredMaps.count(mapName)){
+                    *out << ind << "AuxMap p" << mapName << "({});\n";
+                    *out << ind << "AuxMap u" << mapName << "({});\n";
+                    *out << ind << "AuxMap f" << mapName << "({});\n";
+                    predicateToAuxiliaryMaps[aggrId->getPredicateName()].insert(mapName);
+                    predicateToUndefAuxiliaryMaps[aggrId->getPredicateName()].insert(mapName);
+                    predicateToFalseAuxiliaryMaps[aggrId->getPredicateName()].insert(mapName);
+                    declaredMaps.insert(mapName);
                 }
-                std::unordered_set<std::string> sharedVarsWithHead;
-                keys.clear();
-                mapVariableName=li->getPredicateName()+"_";
-                for(unsigned k=0; k<li->getAriety();k++){
-                    if(li->isVariableTermAt(k) && headVars.count(li->getTermAt(k))!=0){
-                        keys.push_back(k);
-                        mapVariableName+=std::to_string(k)+"_";
-                        sharedVarsWithHead.insert(li->getTermAt(k));
-                    }
+                mapName = aggregate->getPredicateName()+"_";
+                std::string indices="";
+                for(unsigned index : sharedVarToAggrSetIndices[aggregate->getPredicateName()]){
+                    mapName+=std::to_string(index)+"_";
+                    if(indices!="")
+                        indices+=",";
+                    indices+=std::to_string(index);
                 }
-                if(declaringMaps.count(mapVariableName)==0){
-                    declaringMaps[mapVariableName]={std::vector<unsigned>(keys),li->getAriety()};
+                if (!declaredMaps.count(mapName)){
+                    *out << ind << "AuxMap p" << mapName << "({"<<indices<<"});\n";
+                    *out << ind << "AuxMap u" << mapName << "({"<<indices<<"});\n";
+                    *out << ind << "AuxMap f" << mapName << "({"<<indices<<"});\n";
+                    predicateToAuxiliaryMaps[aggregate->getPredicateName()].insert(mapName);
+                    predicateToUndefAuxiliaryMaps[aggregate->getPredicateName()].insert(mapName);
+                    predicateToFalseAuxiliaryMaps[aggregate->getPredicateName()].insert(mapName);
+                    declaredMaps.insert(mapName);
                 }
-                mapVariableName=head->getPredicateName()+"_";
-                keys.clear();
-                for(unsigned k=0; k<head->getAriety();k++){
-                    if(head->isVariableTermAt(k) && sharedVarsWithHead.count(head->getTermAt(k))!=0){
-                        mapVariableName+=std::to_string(k)+"_";
-                        keys.push_back(k);
-                    }
-                }
-                if(declaringMaps.count(mapVariableName)==0){
-                    declaringMaps[mapVariableName]={std::vector<unsigned>(keys),head->getAriety()};
+                return;
+            }
+            const aspc::Atom* head = &r.getHead()[0];
+            const aspc::Literal* lit = &r.getBodyLiterals()[0];
+
+            std::vector<unsigned> indices;
+            std::string mapName=head->getPredicateName()+"_";
+            if(declaringMaps.find(mapName)==declaringMaps.end()){
+                declaringMaps[mapName]={indices,head->getAriety()};
+                mapNames[mapName]=head->getPredicateName();
+            }
+            std::unordered_set<std::string> bodyVars;
+            lit->addVariablesToSet(bodyVars);
+            
+            for(unsigned k=0; k<head->getAriety(); k++){
+                if(!head->isVariableTermAt(k) || bodyVars.count(head->getTermAt(k))!=0){
+                    mapName+=std::to_string(k)+"_";
+                    indices.push_back(k);
                 }
             }
 
+            if(declaringMaps.find(mapName)==declaringMaps.end()){
+                declaringMaps[mapName]={indices,head->getAriety()};
+                mapNames[mapName]=head->getPredicateName();
+            }
+            
+
+            std::unordered_set<std::string> headVars;
+            aspc::Literal headLit(false,*head);
+            headLit.addVariablesToSet(headVars);
+            mapName=lit->getPredicateName()+"_";
+            indices.clear();
+            for(unsigned k=0; k<lit->getAriety(); k++){
+                if(!lit->isVariableTermAt(k) || headVars.count(lit->getTermAt(k))!=0){
+                    mapName+=std::to_string(k)+"_";
+                    indices.push_back(k);
+                }
+            }
+
+            if(declaringMaps.find(mapName)==declaringMaps.end()){
+                declaringMaps[mapName]={indices,lit->getAriety()};
+                mapNames[mapName]=lit->getPredicateName();
+
+            }
+            
         }
         for(auto declareMap : declaringMaps){
+            std::cout<<declareMap.first<<std::endl;
             if (!declaredMaps.count(declareMap.first) && declareMap.second.first.size()<declareMap.second.second) {
                 *out << ind << "AuxMap p" << declareMap.first << "({";
                 for (unsigned k = 0; k < declareMap.second.first.size(); k++) {
@@ -3732,10 +4288,24 @@ void CompilationManager::declareRuleEagerStructures(const aspc::Rule& r){
                     *out << declareMap.second.first[k];
                 }
                 *out << "});\n";
-                std::string predName = declareMap.first.substr(0,declareMap.first.find("_"));
+
+
+                //TODO remove duplication
+                *out << ind << "AuxMap f" << declareMap.first << "({";
+                for (unsigned k = 0; k < declareMap.second.first.size(); k++) {
+                    if (k > 0) {
+                        *out << ",";
+                    }
+                    *out << declareMap.second.first[k];
+                }
+                *out << "});\n";
+
+
+                std::string predName = mapNames[declareMap.first];
                 std::cout<<predName<<std::endl;
                 predicateToAuxiliaryMaps[predName].insert(declareMap.first);
                 predicateToUndefAuxiliaryMaps[predName].insert(declareMap.first);
+                predicateToFalseAuxiliaryMaps[predName].insert(declareMap.first);
                 declaredMaps.insert(declareMap.first);
             }
         }
@@ -6702,52 +7272,23 @@ void CompilationManager::compileConstraintWithAggregate(const aspc::Rule & r, un
         evaluationEndingWithAggregate(r,joinOrder,start);
     }
 }
-void CompilationManager::compileEagerRule(const aspc::Rule& r,unsigned start){
-    
-    const std::vector<const aspc::Formula*> body = r.getOrderedBodyByStarter(start);
-    std::unordered_set<std::string> boundVars;
-    unsigned closingPars = 0;
-    unsigned litIndex = 1;
-    std::vector<unsigned> literalsNotBound;
-    if(start < r.getBodySize()){
-        const aspc::Literal* starter = (const aspc::Literal*) body[0];
-        string sign = starter->isNegated() ? "" : "!";
-        *out << ind << "//propagation starting from true body literal\n";
-        *out << ind++ << "if(starter.getPredicateName() == &_"<<starter->getPredicateName()<<" && "<<sign<<"starter.isNegated()){\n";
-        for(int i=0;i<starter->getAriety();i++){
-            if(starter->isVariableTermAt(i) && boundVars.count(starter->getTermAt(i))==0){
-                *out << ind << "int "<<starter->getTermAt(i)<<" = starter["<<i<<"];\n";
-                boundVars.insert(starter->getTermAt(i));
-            }
-        }
-        closingPars++;
-    }else if (start==r.getBodySize()){
-        litIndex=0;
-        *out << ind << "//propagation at level -1 no starter\n";
-        
-        *out << ind++ << "{\n";
-        closingPars++;
-    }else{
-        litIndex=0;
-        const aspc::Atom* head = &r.getHead()[0];
-        *out << ind << "//propagation starting from false head\n";
-        *out << ind++ << "if(starter.getPredicateName() == &_"<<head->getPredicateName()<<" && starter.isNegated()){\n";
-        for(int i=0;i<head->getAriety();i++){
-            if(head->isVariableTermAt(i) && boundVars.count(head->getTermAt(i))==0){
-                *out << ind << "int "<<head->getTermAt(i)<<" = starter["<<i<<"];\n";
-                boundVars.insert(head->getTermAt(i));
-            }
-        }
-        closingPars++;
-    }
+unsigned CompilationManager::compileRuleBody(const std::vector<unsigned> body,unsigned start,const aspc::Rule& r,std::unordered_set<std::string>boundVars,bool searchOneUndef){
     *out << ind << "const Tuple* tupleU=NULL;\n";
     *out << ind << "bool tupleUNegated=false;\n";
     *out << ind << "bool boundTupleU=false;\n";
-    
-    for(unsigned i=litIndex;i<body.size();i++){
+    unsigned closingPars = 0;
+    std::vector<unsigned> literalsNotBound;
+
+    bool first=true;
+    for(unsigned i : body){
+        if(start == 1 && first){
+            first=false;
+            continue;
+        }
+        const aspc::Formula* f =r.getFormulas()[i];
         std::vector<unsigned> boundIndices;
-        if(body[i]->isLiteral()){
-            const aspc::Literal* lit = (aspc::Literal*) body[i];
+        if(f->isLiteral()){
+            const aspc::Literal* lit = (aspc::Literal*) f;
             if(lit->isBoundedLiteral(boundVars)){
                 std::string terms;
                 for(int termI=0;termI<lit->getAriety();termI++){
@@ -6756,26 +7297,35 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,unsigned start){
                     terms+=lit->getTermAt(termI);
                     // TODO: Handle alfanumeric constant
                 }
+                *out << ind << "bool undef"<<i<<"=false;\n";
                 if(lit->isNegated()){
                     *out << ind << "Tuple negativeTuple({"<<terms<<"},&_"<<lit->getPredicateName()<<");\n";
+                    
                     *out << ind << "const Tuple* tuple"<<i<<"=NULL;\n";
                     *out << ind++ << "if(w"<<lit->getPredicateName()<<".find(negativeTuple) == NULL && u"<<lit->getPredicateName()<<".find(negativeTuple) == NULL)\n";
                         *out << ind << "tuple"<<i<<"=&negativeTuple;\n";
-                    *out << --ind << "else if(tupleU==NULL && u"<<lit->getPredicateName()<<".find(negativeTuple)!=NULL){\n";
+                    if(searchOneUndef)
+                        *out << --ind << "else if(tupleU==NULL && u"<<lit->getPredicateName()<<".find(negativeTuple)!=NULL){\n";
+                    else
+                        *out << --ind << "else if(u"<<lit->getPredicateName()<<".find(negativeTuple)!=NULL){\n";
                         *out << ++ind << "tuple"<<i<<"= tupleU = &negativeTuple;\n";
                         *out << ind << "tupleUNegated=true;\n";
                         *out << ind << "boundTupleU=true;\n";
+                        *out << ind << "undef"<<i<<"=true;\n";
                     *out << --ind << "}\n";
                     *out << ind++ << "if(tuple"<<i<<"!=NULL){\n";
                 }else{
                     *out << ind << "Tuple positiveTuple({"<<terms<<"},&_"<<lit->getPredicateName()<<");\n";
-                    *out << ind << "const Tuple* tuple"<<i<<"=NULL;\n";
-                    *out << ind++ << "if(w"<<lit->getPredicateName()<<".find(positiveTuple) != NULL){\n";
-                        *out << ind << "tuple"<<i<<"=&positiveTuple;\n";
-                    *out << --ind << "}else if(tupleU==NULL && u"<<lit->getPredicateName()<<".find(positiveTuple)!=NULL){\n";
-                        *out << ++ind << "tupleU = tuple"<<i<<" = &positiveTuple;\n";
+                    *out << ind << "const Tuple* tuple"<<i<<"=w"<<lit->getPredicateName()<<".find(positiveTuple);\n";
+                    if(searchOneUndef)
+                        *out << ind++ << "if(tuple"<<i<<"==NULL && tupleU==NULL){\n";
+                    else
+                        *out << ind++ << "if(tuple"<<i<<"==NULL){\n";
+                    
+                        *out << ind << "tupleU = tuple"<<i<<" = u"<<lit->getPredicateName()<<".find(positiveTuple);\n";
                         *out << ind << "tupleUNegated=false;\n";
                         *out << ind << "boundTupleU=true;\n";
+                        *out << ind << "undef"<<i<<"=true;\n";
                     *out << --ind << "}\n";
                     *out << ind++ << "if(tuple"<<i<<"!=NULL){\n";
                 }
@@ -6807,7 +7357,8 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,unsigned start){
                 }
                 *out << "});\n";
                 *out << ind << "const std::vector<const Tuple*>* tuplesU = &EMPTY_TUPLES;\n";
-                *out << ind++ << "if(tupleU==NULL)\n";
+                if(searchOneUndef)
+                    *out << ind++ << "if(tupleU==NULL)\n";
                     *out << ind << "tuplesU = &u"<<lit->getPredicateName()<<"_";
                     for(unsigned term: boundTerms){
                         *out << term << "_";
@@ -6825,213 +7376,1169 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,unsigned start){
                         }
                     }
                     *out << "});\n";
-                --ind;
+                if(searchOneUndef)
+                    --ind;
                 *out << ind++ << "for(int i=0;i<tuples->size()+tuplesU->size();i++){\n";
                 closingPars++;
+                    if(searchOneUndef){
+                        *out << ind++ << "if(tuplesU != &EMPTY_TUPLES)\n";
+                        *out << ind-- << "tupleU = NULL;\n";
+                    }
                     *out << ind << "const Tuple* tuple"<<i<<"=NULL;\n";
+                    *out << ind << "bool undef"<<i<<"=false;\n";
                     *out << ind++ << "if(i<tuples->size())\n";
                         *out << ind << "tuple"<<i<<"=tuples->at(i);\n";
                     *out << --ind << "else{\n";
                         *out << ++ind << "tupleU = tuple"<<i<<" = tuplesU->at(i-tuples->size());\n";
                         *out << ind << "tupleUNegated=false;\n";
                         *out << ind << "boundTupleU=false;\n";
+                        *out << ind << "undef"<<i<<"=true;\n";
                     *out << --ind << "}\n";
                     *out << ind++ << "if(tuple"<<i<<"!= NULL){\n";
                     closingPars++;
-                        for(unsigned termI=0;termI<lit->getAriety();termI++){
-                            if(lit->isVariableTermAt(termI) && boundVars.count(lit->getTermAt(termI))==0){
-                                *out << ind << "int "<<lit->getTermAt(termI)<<" = tuple"<<i<<"->at("<<termI<<");\n";
-                                boundVars.insert(lit->getTermAt(termI));
-                            }
+                    for(unsigned termI=0;termI<lit->getAriety();termI++){
+                        if(lit->isVariableTermAt(termI) && boundVars.count(lit->getTermAt(termI))==0){
+                            *out << ind << "int "<<lit->getTermAt(termI)<<" = tuple"<<i<<"->at("<<termI<<");\n";
+                            boundVars.insert(lit->getTermAt(termI));
                         }
-
-
+                    }
             }
             
         }
     }
-    if(r.isConstraint() || start > r.getFormulas().size()){
-        *out << ind++ << "if(tupleU==NULL){\n";
-            *out << ind << "std::cout<<\"Conflict\"<<std::endl;\n";
-        *out << --ind <<"}else{\n";
-            *out << ++ind << "//propagate body lit as false\n";
-            *out << ind << "propUndefined(tupleU,tupleUNegated,propagationStack,true);\n";
-        *out << --ind << "}\n";
-    }else{
-        
-        *out << ind << "Tuple head({";
-        const aspc::Atom* head = &r.getHead()[0];
-        for(int termI=0;termI<head->getAriety();termI++){
-            if(termI>0){
-                *out << ",";
-            }
-            *out << head->getTermAt(termI);
+    return closingPars;
+}
+unsigned CompilationManager::exploreLiteral(const aspc::Literal* lit,std::unordered_set<std::string>& boundVariables,unsigned currentLitIndex){
+    unsigned pars=0;
+    // std::cout<<"Explore literal ";
+    // lit->print();
+    // std::cout<<std::endl;
+    std::string boundTerms;
+    std::vector<unsigned> boundIndices;
+    for(unsigned k=0; k<lit->getAriety();k++){
+        if(!lit->isVariableTermAt(k) || boundVariables.count(lit->getTermAt(k))!=0){
+            boundIndices.push_back(k);
+            if(boundTerms != "")
+                boundTerms+=",";
+            boundTerms+=lit->getTermAt(k);
         }
-        *out << "},&_"<<head->getPredicateName()<<");\n";
-        *out << ind++ << "if(tupleU==NULL){\n";
-
-            *out << ind++ << "if(w"<<head->getPredicateName()<<".find(head)==NULL && u"<<head->getPredicateName()<<".find(head)==NULL){\n";
-                *out << ind << "std::cout<<\"Conflict\"<<std::endl;\n";
-            *out << --ind << "}else{\n";
-                *out << ++ind << "if(u"<<head->getPredicateName()<<".find(head)!=NULL){\n";
-                    *out << ++ind << "//propagate head as true\n";
-                    *out << ind << "tupleU=&head;\n";
-                    *out << ind << "propUndefined(tupleU,tupleUNegated,propagationStack,false);\n";
+    }
+    if(lit->isBoundedLiteral(boundVariables)){
+        if(lit->isNegated()){
+            *out << ind << "Tuple negativeTuple({"<<boundTerms<<"},&_"<<lit->getPredicateName()<<");\n";
+            *out << ind << "const Tuple* tuple"<<currentLitIndex<<" = w"<<lit->getPredicateName()<<".find(negativeTuple);\n";
+            *out << ind << "const Tuple* tupleUndef"<<currentLitIndex<<" = u"<<lit->getPredicateName()<<".find(negativeTuple);\n";
+            *out << ind++ << "if(tuple"<<currentLitIndex<<" == tupleUndef"<<currentLitIndex<<" && tupleUndef"<<currentLitIndex<<" == NULL)\n";
+                *out << ind-- << "tuple"<<currentLitIndex<<" = &negativeTuple;\n";
+            *out << ind++ << "else if(tupleU == NULL & tupleUndef"<<currentLitIndex<<" != NULL){\n";
+                *out << ind << "tupleU = tuple"<<currentLitIndex<<" = tupleUndef"<<currentLitIndex<<";\n";
+                *out << ind << "tupleUNegated=true;\n";
+            *out << --ind << "}else if(tupleU!=NULL && tupleU->getPredicateName() == &_"<<lit->getPredicateName()<<" && tupleUNegated && tupleU==tupleUndef"<<currentLitIndex<<"){\n";
+            ind++;
+                *out << ind << "tuple"<<currentLitIndex<<"=tupleU;\n";
+            *out << --ind << "}else if(tuple"<<currentLitIndex<<"!=NULL){\n";
+            ind++;
+                *out << ind << "tuple"<<currentLitIndex<<"=NULL;\n";
+            *out << --ind << "}\n";
+            
+        }else{
+            *out << ind << "Tuple positiveTuple({"<<boundTerms<<"},&_"<<lit->getPredicateName()<<");\n";
+            *out << ind << "const Tuple* tuple"<<currentLitIndex<<" = w"<<lit->getPredicateName()<<".find(positiveTuple);\n";
+            *out << ind++ << "if(tuple"<<currentLitIndex<<" == tupleU && tupleU == NULL){\n";
+                *out << ind << "tuple"<<currentLitIndex<<" = tupleU = u"<<lit->getPredicateName()<<".find(positiveTuple);\n";
+                *out << ind << "tupleUNegated=false;\n";
+            *out << --ind << "}else if(tupleU!=NULL && tuple"<<currentLitIndex<<"==NULL && tupleU->getPredicateName() == &_"<<lit->getPredicateName()<<" && ! tupleUNegated){\n";
+            ind++;
+                *out << ind++ << "if(tupleU == u"<<lit->getPredicateName()<<".find(positiveTuple)){\n";
+                    *out << ind << "tuple"<<currentLitIndex<<"=tupleU;\n";
                 *out << --ind << "}\n";
             *out << --ind << "}\n";
-        *out << --ind <<"}else{\n";
-        ind++;
-            *out << ind++ << "if(w"<<head->getPredicateName()<<".find(head)!=NULL){\n";
-                *out << ind << "//support propagation of body literal as true\n";
-                *out << ind++ << "if(boundTupleU){\n";
-                    *out << ind << "propUndefined(tupleU,tupleUNegated,propagationStack,false);\n";
-                *out << --ind << "}\n";
-                *out << ind++ << "else{\n";
-                    *out << ind++ << "if(";
-                    unsigned condition = 0;
-                    for(auto& index : literalsNotBound){
-                        const aspc::Literal* l = (aspc::Literal*)body[index];
-                        std::unordered_set<std::string> bodyTerms;
-                        for(unsigned litPos=0;litPos<body.size();litPos++){
-                            if(index != litPos && body[litPos]->isLiteral()){
-                                body[litPos]->addVariablesToSet(bodyTerms);
-                            }
-                        }
-                        for(int termJ=0;termJ<head->getAriety();termJ++){
-                            if(head->isVariableTermAt(termJ)){
-                                bodyTerms.insert(head->getTermAt(termJ));
-                            }
-                        }    
-                        
-                        std::vector<unsigned> boundIndexs;
-                        std::string boundTerms;
-                        for(unsigned termI=0; termI < l->getAriety(); termI++){
-                            if(l->isVariableTermAt(termI) && bodyTerms.count(l->getTermAt(termI))!=0){
-                                if(boundTerms!="")
-                                    boundTerms+=",";
-                                boundTerms+=l->getTermAt(termI);
-                                boundIndexs.push_back(termI);
+        }
+        *out << ind++ << "if(tuple"<<currentLitIndex<<"!=NULL){\n";
+        pars++;
+    }else{
+        *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<lit->getPredicateName()<<"_";
+        for(unsigned k: boundIndices){
+            *out << k << "_";
+        }
+        *out << ".getValues({"<<boundTerms<<"});\n";
+        *out << ind << "const std::vector<const Tuple*>* tuplesU = &EMPTY_TUPLES;\n";
+        *out << ind << "std::vector<const Tuple*> undeRepeated;\n";
+        *out << ind++ << "if(tupleU == NULL)\n";
+            *out << ind-- << "tuplesU = &u"<<lit->getPredicateName()<<"_";
+            for(unsigned k: boundIndices){
+                *out << k << "_";
+            }
+            *out << ".getValues({"<<boundTerms<<"});\n";
+        *out << ind++ << "else if(tupleU->getPredicateName() == &_"<<lit->getPredicateName()<<" && !tupleUNegated)\n";
+            *out << ind-- << "undeRepeated.push_back(tupleU);\n";
 
-                            }   
-                        }
-                        if(boundIndexs.size()<l->getAriety()){
-                            if(condition > 0){
-                                *out << "||";
-                            }
-                            *out << "(tupleU->getPredicateName() == &_"<<l->getPredicateName() << " && u"<<l->getPredicateName()<<"_";
-                            for(int termI:boundIndexs){
-                                *out << termI << "_";
-                            }
-                            *out <<".getValues({"<<boundTerms<<"}).size() == 1)";
-                            condition++;
-                        }
+        *out << ind << "unsigned totalSize=tuples->size()+tuplesU->size()+undeRepeated.size();\n";
+        *out << ind++ << "for(unsigned i = 0; i<totalSize; i++){\n";
+        pars++;
+            *out << ind << "unsigned currentSize = tuples->size()+tuplesU->size()+undeRepeated.size();\n";
+            *out << ind++ << "if(totalSize>currentSize){\n";
+                *out << ind << "i-=totalSize-currentSize;\n";
+                *out << ind << "totalSize=currentSize;\n";
+            *out << --ind << "}\n";
+            *out << ind++ << "if(tuplesU!=&EMPTY_TUPLES)\n";
+                *out << ind-- << "tupleU = NULL;\n";
+            *out << ind << "const Tuple* tuple"<<currentLitIndex<<" = NULL;\n";
+            *out << ind++ << "if(i<tuples->size())\n";
+                *out << ind-- << "tuple"<<currentLitIndex<<" = tuples->at(i);\n";
+            *out << ind++ << "else if(i<tuples->size()+tuplesU->size()){\n";
+                *out << ind << "tupleU = tuple"<<currentLitIndex<<" = tuplesU->at(i-tuples->size());\n";
+                *out << ind << "tupleUNegated=false;\n";
+            *out << --ind << "}else if(!undeRepeated.empty()){\n";
+            ind++;
+                std::string conditions="";
+                for(unsigned k: boundIndices){
+                    if(conditions!="")
+                        conditions+=" && ";
+                    conditions+="tupleU->at("+std::to_string(k)+") == "+lit->getTermAt(k);
+                }
+                if(conditions!="")
+                    *out << ind++ << "if("<<conditions<<")\n";
+
+                *out << ind << "tuple"<<currentLitIndex<<" = tupleU;\n";
+                
+                if(conditions!="")
+                    ind--;
+            *out << --ind << "}\n";
+            *out << ind++ << "if(tuple"<<currentLitIndex<<"!=NULL){\n";
+            pars++;
+            if(checkTupleFormat(*lit,"tuple"+std::to_string(currentLitIndex),true))
+                pars++;
+            for(unsigned k = 0; k < lit->getAriety(); k++){
+                if(lit->isVariableTermAt(k) && boundVariables.count(lit->getTermAt(k))==0){
+                    *out << ind << "int "<<lit->getTermAt(k)<<" = tuple"<<currentLitIndex<<"->at("<<k<<");\n";
+                    boundVariables.insert(lit->getTermAt(k));
+                }
+            }
+    }
+    return pars;
+}
+void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool fromStarter){
+
+    const aspc::Literal* bodyPred = !r.getBodyLiterals().empty() ? &r.getBodyLiterals()[0] : NULL;
+    const aspc::Literal* aggrSetPred = &r.getArithmeticRelationsWithAggregate()[0].getAggregate().getAggregateLiterals()[0];
+    const aspc::Atom* aggrIdAtom = &r.getHead()[0];
+    std::cout<<"Compile eager rule with aggr"<<std::endl;
+    if(fromStarter){
+        {
+
+            *out << ind++ << "if(starter.getPredicateName() == &_"<<aggrIdAtom->getPredicateName()<<"){\n";
+            std::unordered_set<std::string> boundVariables;
+            for(unsigned i = 0; i<aggrIdAtom->getAriety(); i++){
+                if(aggrIdAtom->isVariableTermAt(i) && boundVariables.count(aggrIdAtom->getTermAt(i))==0){
+                    *out << ind << "int "<<aggrIdAtom->getTermAt(i)<<" = starter["<<i<<"];\n";
+                    boundVariables.insert(aggrIdAtom->getTermAt(i));
+                }
+            }
+                *out << ind << "std::vector<int> sharedVar({";
+                if(bodyPred!=NULL){
+                    bool first=true;
+                    for(unsigned i : sharedVarToBodyIndices[bodyPred->getPredicateName()]){
+                        if(first)
+                            first=false;
+                        else *out <<",";
+
+                        *out << "starter["<<i<<"]";
                     }
-                    if(condition==0){
-                        *out << "true";
+                }
+                
+                *out << "});\n";
+                
+                std::string mapName=aggrSetPred->getPredicateName()+"_";
+                for(unsigned i : sharedVarToAggrSetIndices[aggrSetPred->getPredicateName()]){
+                    mapName+=std::to_string(i)+"_";
+                }
+                std::string plusOne = r.getArithmeticRelationsWithAggregate()[0].isPlusOne() ? "+1":"";
+                std::string guard = r.getArithmeticRelationsWithAggregate()[0].getGuard().getStringRep()+plusOne;
+                *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<mapName<<".getValues(sharedVar);\n";
+                *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<mapName<<".getValues(sharedVar);\n";
+                string bodyTerms = "";
+                if(bodyPred!=NULL){
+                    for(unsigned i = 0; i<bodyPred->getAriety();i++){
+                        if(bodyTerms!="")
+                            bodyTerms+=",";
+                        bodyTerms+=bodyPred->getTermAt(i);
                     }
-                    *out << "){\n";
-                        *out << ind << "propUndefined(tupleU,tupleUNegated,propagationStack,false);\n";
+                }
+                
+                *out << ind++ << "if(starter.isNegated()){\n";
+                    *out << ind++ << "if(tuples->size()>="<<guard<<"){\n";
+                        //*out << ind << "std::cout<<\"Conflitct on aggregate\"<<std::endl;\n";
+                        *out << ind++ << "for(unsigned i =0; i< tuples->size(); i++){\n";
+                            *out << ind << "auto it = tupleToVar.find(*tuples->at(i));\n";
+                            *out << ind++ << "if(it != tupleToVar.end()){\n";
+                                *out << ind << "reasonForLiteral[-startVar].insert(it->second);\n";
+                            *out << --ind << "}\n";
+                        *out << --ind << "}\n";
+                        *out << ind << "handleConflict(-startVar);\n";
+                        *out << ind << "return;\n";
+                    *out << -- ind << "}else if(tuples->size() == "<<guard<<" -1){\n";
+                    ind++;
+                        *out << ind << "std::vector<int> reason;\n";
+                        *out << ind++ << "for(unsigned i =0; i< tuples->size(); i++){\n";
+                            *out << ind << "auto it = tupleToVar.find(*tuples->at(i));\n";
+                            *out << ind++ << "if(it != tupleToVar.end()){\n";
+                                *out << ind << "reason.push_back(it->second);\n";
+                            *out << --ind << "}\n";
+                        *out << --ind << "}\n";
+                        *out << ind << "reason.push_back(startVar);\n";
+                        *out << ind++ << "while(!tuplesU->empty()){\n";
+                            *out << ind << "auto itProp = tupleToVar.find(*tuplesU->at(0));\n";
+                            *out << ind++ << "if(itProp != tupleToVar.end()){\n";
+                                *out << ind++ << "if(reasonForLiteral.count(-itProp->second)==0){\n";
+                                    *out << ind++ << "for(int reasonLit : reason)\n";
+                                        *out << ind-- << "reasonForLiteral[-itProp->second].insert(reasonLit);\n";
+                                *out << --ind << "}\n";
+                            *out << --ind << "}\n";
+                            *out << ind << "propUndefined(tuplesU->at(0),false,propagationStack,true,propagatedLiterals);\n";
+                        *out << --ind << "}\n";
+                    *out << --ind << "}\n";
+                *out << --ind << "}else{\n";
+                ind++;
+                    *out << ind++ << "if(tuples->size()+tuplesU->size() < "<<guard<<"){\n";
+                        //*out << ind << "std::cout<<\"Conflitct on aggregate\"<<std::endl;\n";
+                        *out << ind << "const std::vector<const Tuple*>* tuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                        *out << ind++ << "for(unsigned i = 0; i < tuplesF->size(); i++){\n";
+                            *out << ind << "auto it = tupleToVar.find(*tuplesF->at(i));\n";
+                            *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                *out << ind << "reasonForLiteral[-startVar].insert(-it->second);\n";
+                            *out << --ind << "}\n";
+                        *out << --ind << "}\n";
+                        *out << ind << "handleConflict(-startVar);\n";
+                        *out << ind << "return;\n";
+                    *out << --ind << "}else if(tuples->size() + tuplesU->size() == "<<guard<<"){\n";
+                    ind++;
+                        *out << ind++ << "while(tuplesU->size()>0){\n";
+                            *out << ind << "auto itProp = tupleToVar.find(*tuplesU->at(0));\n";
+                            *out << ind++ << "if(itProp != tupleToVar.end()){\n";
+                                *out << ind++ << "if(reasonForLiteral.count(itProp->second) == 0){\n";
+                                    *out << ind << "const std::vector<const Tuple*>* tuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                                    *out << ind++ << "for(unsigned i = 0; i < tuplesF->size(); i++){\n";
+                                        *out << ind << "auto it = tupleToVar.find(*tuplesF->at(i));\n";
+                                        *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                            *out << ind << "reasonForLiteral[itProp->second].insert(-it->second);\n";
+                                        *out << --ind << "}\n";
+                                    *out << --ind << "}\n";
+                                    *out << ind << "reasonForLiteral[itProp->second].insert(startVar);\n";
+                                *out << --ind << "}\n";
+                                // reason contains aggr_id and all aggr_set false
+                                *out << ind << "propUndefined(tuplesU->at(0),false,propagationStack,false,propagatedLiterals);\n";
+                            *out << --ind << "}\n";
+                        *out << --ind << "}\n";
                     *out << --ind << "}\n";
                 *out << --ind << "}\n";
-            *out << --ind << "}else if(u"<<head->getPredicateName()<<".find(head)==NULL){\n";
-                *out << ++ind << "//false head and undefined body -> propagate undefined as false\n";
-                *out << ind << "propUndefined(tupleU,tupleUNegated,propagationStack,true);\n";
-            *out << --ind << "}\n";
-        *out << --ind << "}\n";
+            *out << --ind << "}//close aggr id starter\n";
+            std::cout<<"Compiled starter aggr id"<<std::endl;
 
+        }
     }
-    while(closingPars>0){
-        *out << --ind << "}\n";
-        closingPars--;
-    }
-    if(start<r.getBodySize() && !r.isConstraint()){
-        
-        const aspc::Literal* starter = (const aspc::Literal*) body[0];
-        const aspc::Atom* head = &r.getHead()[0];
-        string sign = starter->isNegated() ? "!" : "";
-        std::unordered_set<std::string> starterVars;
-        std::vector<unsigned> headBoundVars;
-        std::string headTerms;
-        
-        for(unsigned k=0;k<starter->getAriety();k++){
-            if(starter->isVariableTermAt(k)){
-                for(unsigned kk = 0; kk < head->getAriety(); kk++){
-                    if(head->getTermAt(kk)==starter->getTermAt(k)){
-                        headBoundVars.push_back(k);
-                        if(headTerms!="")
-                            headTerms+=",";
-                        headTerms+=starter->getTermAt(k);
-                        break;
-                    }
-                }
-                starterVars.insert(starter->getTermAt(k));
+    {
+        if(fromStarter)
+            *out << ind++ << "if(starter.getPredicateName() == &_"<<aggrSetPred->getPredicateName()<<"){\n";
+        else *out << ind++ << "{\n";
+        std::string mapName=aggrSetPred->getPredicateName()+"_";
+        for(unsigned i : sharedVarToAggrSetIndices[aggrSetPred->getPredicateName()]){
+            mapName+=std::to_string(i)+"_";
+        }
+        std::string plusOne = r.getArithmeticRelationsWithAggregate()[0].isPlusOne() ? "+1":"";
+        std::string guard = r.getArithmeticRelationsWithAggregate()[0].getGuard().getStringRep()+plusOne;
+        string bodyTerms = "";
+        if(bodyPred!=NULL){
+            for(unsigned i = 0; i<bodyPred->getAriety();i++){
+                if(bodyTerms!="")
+                    bodyTerms+=",";
+                bodyTerms+=bodyPred->getTermAt(i);
             }
         }
-        if(headBoundVars.size()<=0)
-            return;
         
-        *out << ind++ << "else if(starter.getPredicateName() == &_"<<starter->getPredicateName()<<" && "<<sign<<"starter.isNegated()){\n";
-            std::unordered_set<string> boundVars;
-            for(unsigned k=0;k<starter->getAriety();k++){
-                if(starter->isVariableTermAt(k) && boundVars.count(starter->getTermAt(k))==0){
-                    *out << ind << "int "<<starter->getTermAt(k)<<" = starter["<<k<<"];\n";
-                    boundVars.insert(starter->getTermAt(k));
-                }
-            }
-            if(headBoundVars.size()<starterVars.size()){
-                *out << ind++ << "if(u"<<starter->getPredicateName()<<"_";
-                for(unsigned index : headBoundVars)
-                    *out << index << "_";
-                *out << ".getValues({"<<headTerms<<"}).size()==0){\n";
-                closingPars++;
-            }
-            bool boundHead=true;
-            for(unsigned k = 0; k < head->getAriety(); k++){
-                if(head->isVariableTermAt(k) && starterVars.count(head->getTermAt(k))==0)
-                    boundHead=false;
-            }
-            *out << ind << "//propagate false head when no other literal undefined with starter predicate name\n";
-            if(!boundHead){
-                *out << ind << "const std::vector<const Tuple*>* undefHeads = &u"<<head->getPredicateName()<<"_";
-                headTerms="";
-                for(unsigned k = 0; k < head->getAriety(); k++){
-                    if(head->isVariableTermAt(k) && starterVars.count(head->getTermAt(k))!=0){
-                        *out << k << "_";
-                        if(headTerms!="")
-                            headTerms+=",";
-                        headTerms+=head->getTermAt(k);
+            *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<aggrIdAtom->getPredicateName()<<"_.getValues({});\n";
+            *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<aggrIdAtom->getPredicateName()<<"_.getValues({});\n";
+            *out << ind << "const std::vector<const Tuple*>* tuplesF = &f"<<aggrIdAtom->getPredicateName()<<"_.getValues({});\n";
+            //OPTIMIZATION Add if starter.isNegated
+            *out << ind++ << "for(unsigned i = 0; i<tuples->size(); i++){\n";
+            {
+                std::unordered_set<std::string> boundVariables;
+                for(unsigned i = 0; i<aggrIdAtom->getAriety(); i++){
+                    if(aggrIdAtom->isVariableTermAt(i) && boundVariables.count(aggrIdAtom->getTermAt(i))==0){
+                        *out << ind << "int "<<aggrIdAtom->getTermAt(i)<<" = tuples->at(i)->at("<<i<<");\n";
+                        boundVariables.insert(aggrIdAtom->getTermAt(i));
                     }
                 }
-                *out << ".getValues({"<<headTerms<<"});\n";
-                *out << ind++ << "for(unsigned i = 0; i < undefHeads->size(); i++){\n";
-                closingPars++;
-                    *out << ind << "propUndefined(undefHeads->at(i),false,propagationStack,true);\n";
-            }else{
-                headTerms="";
-                *out << ind << "const Tuple* tupleU = u"<<head->getPredicateName()<<".find(Tuple({";
-                for(unsigned k = 0; k < head->getAriety(); k++){
-                    if(head->isVariableTermAt(k) && starterVars.count(head->getTermAt(k))!=0){
-                        if(headTerms!="")
-                            *out << ",";
-                        headTerms=head->getTermAt(k);
-                        *out << headTerms;
+                *out << ind << "std::vector<int> sharedVar({";
+                if(bodyPred!=NULL){
+                    bool first=true;
+                    for(unsigned i : sharedVarToBodyIndices[bodyPred->getPredicateName()]){
+                        if(first)
+                            first=false;
+                        else *out <<",";
+
+                        *out << "tuples->at(i)->at("<<i<<")";
                     }
                 }
-                *out << "},&_"<<head->getPredicateName()<<"));\n";
-                *out << ind++ << "if(tupleU != NULL){\n";
-                closingPars++;
-                    *out << ind << "propUndefined(tupleU,false,propagationStack,true);\n";
-            }
-            
-            while(closingPars>0){
+                *out << "});\n";
+
+                *out << ind << "const std::vector<const Tuple*>* joinTuples = &p"<<mapName<<".getValues(sharedVar);\n";
+                *out << ind << "const std::vector<const Tuple*>* joinTuplesU = &u"<<mapName<<".getValues(sharedVar);\n";
+                *out << ind++ << "if(joinTuples->size() + joinTuplesU->size() < "<<guard<<"){\n";
+                    //*out << ind << "std::cout<<\"Conflitct on aggregate\"<<std::endl;\n";
+                    if(fromStarter){
+                        *out << ind << "auto itProp = tupleToVar.find(*tuples->at(i));\n";
+                        *out << ind++ << "if(itProp!=tupleToVar.end()){\n";
+                            *out << ind << "const std::vector<const Tuple*>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                            *out << ind++ << "for(unsigned j = 0; j < joinTuplesF->size(); j++){\n";
+                                *out << ind << "auto it = tupleToVar.find(*joinTuplesF->at(j));\n";
+                                *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                    *out << ind << "reasonForLiteral[-itProp->second].insert(-it->second);\n";
+                                *out << --ind << "}\n";
+                            *out << --ind << "}\n";
+                            *out << ind << "handleConflict(-itProp->second);\n";
+                            *out << ind << "return;\n";
+                        *out << --ind << "}\n";
+                    }else{
+                        *out << ind << "propagatedLiterals.insert(-1);\n";
+                    }
+                    
+                *out << --ind << "}else if(joinTuples->size() + joinTuplesU->size() == "<<guard<<"){\n";
+                ind++;
+                    *out << ind++ << "while(joinTuplesU->size()>0){\n";
+                        *out << ind << "auto itProp = tupleToVar.find(*joinTuplesU->at(0));\n";
+                        *out << ind++ << "if(itProp != tupleToVar.end()){\n";
+                            *out << ind++ << "if(reasonForLiteral.count(itProp->second) == 0 ){\n";
+                                *out << ind << "const std::vector<const Tuple*>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                                *out << ind++ << "for(unsigned i = 0; i < joinTuplesF->size(); i++){\n";
+                                    *out << ind << "auto it = tupleToVar.find(*joinTuplesF->at(i));\n";
+                                    *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                        *out << ind << "reasonForLiteral[itProp->second].insert(-it->second);\n";
+                                    *out << --ind << "}\n";
+                                *out << --ind << "}\n";
+                                *out << ind << "auto itAggrId = tupleToVar.find(*tuples->at(i));\n";
+                                *out << ind++ << "if(itAggrId!= tupleToVar.end()){\n";
+                                    *out << ind << "reasonForLiteral[itProp->second].insert(itAggrId->second);\n";
+                                *out << --ind << "}\n";
+                            *out << --ind << "}\n";
+                            // reason contains body, aggr_id and all aggr_set false
+                            *out << ind << "propUndefined(joinTuplesU->at(0),false,propagationStack,false,propagatedLiterals);\n";
+                        *out << --ind << "}\n";
+                    *out << --ind << "}\n";
                 *out << --ind << "}\n";
-                closingPars--;
             }
-            
-        *out << --ind << "}\n";     
-        
+            *out << --ind << "}//close true for\n";
+            //OPTIMIZATION Add if !starter.isNegated
+            *out << ind++ << "for(unsigned i = 0; i<tuplesF->size(); i++){\n";
+            {
+                std::unordered_set<std::string> boundVariables;
+                for(unsigned i = 0; i<aggrIdAtom->getAriety(); i++){
+                    if(aggrIdAtom->isVariableTermAt(i) && boundVariables.count(aggrIdAtom->getTermAt(i))==0){
+                        *out << ind << "int "<<aggrIdAtom->getTermAt(i)<<" = tuplesF->at(i)->at("<<i<<");\n";
+                        boundVariables.insert(aggrIdAtom->getTermAt(i));
+                    }
+                }
+                *out << ind << "std::vector<int> sharedVar({";
+                if(bodyPred != NULL){
+                    bool first=true;
+                    for(unsigned i : sharedVarToBodyIndices[bodyPred->getPredicateName()]){
+                        if(first)
+                            first=false;
+                        else *out <<",";
+
+                        *out << "tuplesF->at(i)->at("<<i<<")";
+                    }
+                }
+                *out << "});\n";
+
+                *out << ind << "const std::vector<const Tuple*>* joinTuples = &p"<<mapName<<".getValues(sharedVar);\n";
+                *out << ind << "const std::vector<const Tuple*>* joinTuplesU = &u"<<mapName<<".getValues(sharedVar);\n";
+                *out << ind++ << "if(joinTuples->size()>="<<guard<<"){\n";
+                    //*out << ind << "std::cout<<\"Conflitct on aggregate\"<<std::endl;\n";
+                    if(fromStarter){
+                        *out << ind << "auto itProp = tupleToVar.find(*tuplesF->at(i));\n";
+                        *out << ind++ << "if(itProp != tupleToVar.end()){\n";
+                            *out << ind++ << "for(unsigned j =0; j< joinTuples->size(); j++){\n";
+                                *out << ind << "auto it = tupleToVar.find(*joinTuples->at(j));\n";
+                                *out << ind++ << "if(it != tupleToVar.end()){\n";
+                                    *out << ind << "reasonForLiteral[itProp->second].insert(it->second);\n";
+                                *out << --ind << "}\n";
+                            *out << --ind << "}\n";
+                            *out << ind << "handleConflict(itProp->second);\n";
+                            *out << ind << "return;\n";
+                        *out << --ind << "}\n";
+                    }else{
+                        *out << ind << "propagatedLiterals.insert(-1);\n";
+                    }
+                    
+                *out << -- ind << "}else if(joinTuples->size() == "<<guard<<" -1){\n";
+                ind++;
+                    //*out << ind << "std::cout << \"aggr propagation\"<<std::endl;\n";
+                    *out << ind << "std::vector<int> reason;\n";
+                    *out << ind++ << "for(unsigned i =0; i< joinTuples->size(); i++){\n";
+                        *out << ind << "auto it = tupleToVar.find(*joinTuples->at(i));\n";
+                        *out << ind++ << "if(it != tupleToVar.end()){\n";
+                            *out << ind << "reason.push_back(it->second);\n";
+                        *out << --ind << "}\n";
+                    *out << --ind << "}\n";
+                    *out << ind << "auto it = tupleToVar.find(*tuplesF->at(i));\n";
+                        *out << ind++ << "if(it!= tupleToVar.end()){\n";
+                            *out << ind << "reason.push_back(-it->second);\n";
+                        *out << --ind << "}\n";
+                    *out << ind++ << "while(!joinTuplesU->empty()){\n";
+                        *out << ind << "auto itProp = tupleToVar.find(*joinTuplesU->at(0));\n";
+                        *out << ind++ << "if(itProp != tupleToVar.end()){\n";
+                            *out << ind++ << "if(reasonForLiteral.count(-itProp->second) == 0 ){\n";
+                                *out << ind++ << "for(int reasonLit : reason)\n";
+                                    *out << ind-- << "reasonForLiteral[-itProp->second].insert(reasonLit);\n";
+                            *out << --ind << "}\n";
+                        *out << --ind << "}\n";
+                        *out << ind << "propUndefined(joinTuplesU->at(0),false,propagationStack,true,propagatedLiterals);\n";
+                    *out << --ind << "}\n";
+                *out << --ind << "}\n";
+            }
+            *out << --ind << "}//close false for\n";
+            *out << ind++ << "for(unsigned i = 0; i<tuplesU->size();){\n";
+            {
+                std::unordered_set<std::string> boundVariables;
+                for(unsigned i = 0; i<aggrIdAtom->getAriety(); i++){
+                    if(aggrIdAtom->isVariableTermAt(i) && boundVariables.count(aggrIdAtom->getTermAt(i))==0){
+                        *out << ind << "int "<<aggrIdAtom->getTermAt(i)<<" = tuplesU->at(i)->at("<<i<<");\n";
+                        boundVariables.insert(aggrIdAtom->getTermAt(i));
+                    }
+                }
+                *out << ind << "std::vector<int> sharedVar({";
+                if(bodyPred!=NULL){
+                    bool first=true;
+                    for(unsigned i : sharedVarToBodyIndices[bodyPred->getPredicateName()]){
+                        if(first)
+                            first=false;
+                        else *out <<",";
+                        *out << "tuplesU->at(i)->at("<<i<<")";
+                    }
+                }
+                *out << "});\n";
+
+                *out << ind << "const std::vector<const Tuple*>* joinTuples = &p"<<mapName<<".getValues(sharedVar);\n";
+                *out << ind << "const std::vector<const Tuple*>* joinTuplesU = &u"<<mapName<<".getValues(sharedVar);\n";
+                *out << ind++ << "if(joinTuples->size() >= "<<guard<<"){\n";
+                    *out << ind << "auto itProp = tupleToVar.find(*tuplesU->at(i));\n";
+                    *out << ind++ << "if(itProp != tupleToVar.end()){\n";
+                        *out << ind++ << "if(reasonForLiteral.count(itProp->second) == 0 ){\n";
+                            *out << ind++ << "for(unsigned j = 0; j < joinTuples->size(); j++){\n";
+                                *out << ind << "auto it = tupleToVar.find(*joinTuples->at(j));\n";
+                                *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                    *out << ind << "reasonForLiteral[itProp->second].insert(it->second);\n";
+                                *out << --ind << "}\n";
+                            *out << --ind << "}\n";
+                        *out << --ind << "}\n";
+                        *out << ind << "propUndefined(tuplesU->at(i),false,propagationStack,false,propagatedLiterals);\n";
+                    *out << --ind << "}\n";
+                *out << --ind << "}else if(joinTuples->size() + joinTuplesU->size() < "<<guard<<"){\n";
+                ind++;
+                    *out << ind << "auto itProp = tupleToVar.find(*tuplesU->at(i));\n";
+                    *out << ind++ << "if(itProp != tupleToVar.end()){\n";
+                        *out << ind++ << "if(reasonForLiteral.count(-itProp->second) == 0 ){\n";
+                            *out << ind << "const std::vector<const Tuple*>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                            *out << ind++ << "for(unsigned j = 0; j < joinTuplesF->size(); j++){\n";
+                                *out << ind << "auto it = tupleToVar.find(*joinTuplesF->at(j));\n";
+                                *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                    *out << ind << "reasonForLiteral[-itProp->second].insert(-it->second);\n";
+                                *out << --ind << "}\n";
+                            *out << --ind << "}\n";
+                        *out << --ind << "}\n";
+                        *out << ind << "propUndefined(tuplesU->at(i),false,propagationStack,true,propagatedLiterals);\n";
+                    *out << --ind << "}\n";
+                *out << --ind << "}else{\n";
+                ind++;
+                    *out << ind << "i++;\n";
+                *out << --ind << "}\n";
+            }   
+            *out << --ind << "}//close undef for\n";
+        *out << --ind << "}//close aggr set starter\n";
     }
 }
+void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
+    
+    // std::cout<<"Compiling Eager rule ";
+    // r.print();
+    if(r.containsAggregate()){
+        compileEagerRuleWithAggregate(r,fromStarter);
+        std::cout<<"compiled"<<std::endl;
+        return;
+    }
+    if(!r.isConstraint()){
+        if(fromStarter){
+            for(unsigned starterIndex:r.getStarters()){
+                if(starterIndex < r.getBodySize()){
+                    const aspc::Literal* l = &r.getBodyLiterals()[0];
+                    *out << ind++ << "if(starter.getPredicateName() == &_"<<l->getPredicateName()<<"){\n";
+                        std::unordered_set<std::string> boundVariables;
+                        for(unsigned k=0; k<l->getAriety(); k++){
+                            if(l->isVariableTermAt(k) && boundVariables.count(l->getTermAt(k))==0){
+                                *out << ind << "int "<<l->getTermAt(k)<<" = starter["<<k<<"];\n";
+                                boundVariables.insert(l->getTermAt(k));
+                            }
+                        }
+                        *out << ind++ << "if(!starter.isNegated()){\n";
+                            const aspc::Atom* head = &r.getHead()[0];
+                            *out << ind << "Tuple head({";
+                            for(unsigned k=0; k<head->getAriety(); k++){
+                                if(k>0)
+                                    *out << ",";
+                                *out << head->getTermAt(k);
+                            }
+                            *out << "}, &_"<<head->getPredicateName()<<");\n";
+                            *out << ind << "const Tuple* tupleU = u"<<head->getPredicateName()<<".find(head);\n";
+                            *out << ind++ << "if(w"<<head->getPredicateName()<<".find(head) == tupleU && tupleU==NULL){\n";
+                                //*out << ind << "std::cout<<\"Conflict: exists support for false head\"<<std::endl;\n";
+                                *out << ind << "const auto& it = tupleToVar.find(head);\n";
+                                *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                    *out << ind << "reasonForLiteral[it->second].insert(startVar);\n";
+                                    *out << ind << "handleConflict(it->second);\n";
+                                    *out << ind << "return;\n";
+                                *out << --ind << "}\n";
+                            *out << --ind << "}else if(tupleU != NULL){\n";
+                            ind++;
+                                *out << ind << "const auto& it = tupleToVar.find(head);\n";
+                                *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                    *out << ind++ << "if(reasonForLiteral.count(it->second) == 0 )\n";
+                                        *out << ind-- << "reasonForLiteral[it->second].insert(startVar);\n";
+                                    *out << ind << "propUndefined(tupleU,false,propagationStack,false,propagatedLiterals);\n";
+                                *out << --ind << "}\n";
+                            *out << --ind << "}\n";
+                        *out << --ind << "}else{\n";
+                        ind++;
+                            std::unordered_set<std::string> headVariables;
+                            for(unsigned k=0; k<head->getAriety(); k++){
+                                if(head->isVariableTermAt(k)){
+                                    headVariables.insert(head->getTermAt(k));
+                                }
+                            }
+                            std::vector<unsigned>boundIndices;
+                            std::string boundTerms;
+                            for(unsigned k=0; k<l->getAriety(); k++){
+                                if(!l->isVariableTermAt(k) || headVariables.count(l->getTermAt(k))!=0){
+                                    boundIndices.push_back(k);
+                                    if(boundTerms!="")
+                                        boundTerms+=",";
+                                    boundTerms+=l->getTermAt(k);
+                                }
+                            }
+                            *out << ind << "Tuple head({";
+                            for(unsigned k=0; k<head->getAriety(); k++){
+                                if(k>0)
+                                    *out << ",";
+                                *out << head->getTermAt(k);
+                            }
+                            *out << "}, &_"<<head->getPredicateName()<<");\n";
+                            if(l->isBoundedLiteral(headVariables)){
+                                *out << ind++ << "if(w"<<head->getPredicateName()<<".find(head) != NULL){\n";
+                                    //*out << ind << "std::cout<<\"Conflict: unsupported head atom\"<<std::endl;\n";
+                                    *out << ind << "const auto it = tupleToVar.find(head);\n";
+                                    *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                        *out << ind << "reasonForLiteral[-it->second].insert(startVar);\n";
+                                        *out << ind << "handleConflict(-it->second);\n";
+                                        *out << ind << "return;\n";
+                                    *out << --ind << "}\n";
+                                *out << --ind << "}else{\n";
+                                ind++;
+                                    *out << ind << "const Tuple* tupleU = u"<<head->getPredicateName()<<".find(head);\n";
+                                    *out << ind++ << "if(tupleU!=NULL){\n";
+                                        *out << ind << "const auto it = tupleToVar.find(head);\n";
+                                        *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                            *out << ind++ << "if(reasonForLiteral.count(-it->second) == 0 )\n";
+                                                *out << ind-- << "reasonForLiteral[-it->second].insert(startVar);\n";
+                                            *out << ind << "propUndefined(tupleU,false,propagationStack,true,propagatedLiterals);\n";
+                                        *out << --ind << "}\n";
+                                    *out << --ind << "}\n";
+                                *out << --ind << "}\n";
+                            }else{
+                                *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
+                                for(unsigned k : boundIndices){
+                                    *out << k << "_";
+                                }
+                                *out << ".getValues({"<<boundTerms<<"});\n";
+                                *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<l->getPredicateName()<<"_";
+                                for(unsigned k : boundIndices){
+                                    *out << k << "_";
+                                }
+                                *out << ".getValues({"<<boundTerms<<"});\n";
+                                *out << ind++ << "if(w"<<head->getPredicateName()<<".find(head) != NULL){\n";
+                                    *out << ind++ << "if(tuples->size()==0 && tuplesU->size()==0){\n";
+                                        //*out << ind << "std::cout<<\"Conflict: unable to find support for true head\"<<std::endl;\n";
+                                        *out << ind << "const auto itHead = tupleToVar.find(head);\n";
+                                        *out << ind++ << "if(itHead!=tupleToVar.end()){\n";
+                                            *out << ind << "const std::vector<const Tuple*>* tuplesF = &f"<<l->getPredicateName()<<"_";
+                                            for(unsigned k : boundIndices){
+                                                *out << k << "_";
+                                            }
+                                            *out << ".getValues({"<<boundTerms<<"});\n";
+                                            *out << ind++ << "for(unsigned i=0;i<tuplesF->size();i++){\n";
+                                                *out << ind << "const auto& it = tupleToVar.find(*tuplesF->at(i));\n";
+                                                *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                                    *out << ind << "reasonForLiteral[-itHead->second].insert(-it->second);\n";
+                                                *out << --ind << "}\n";
+                                            *out << --ind << "}\n";
+                                            *out << ind << "handleConflict(-itHead->second);\n";
+                                            *out << ind << "return;\n";
+                                        *out << --ind << "}\n";
+                                    *out << --ind << "}else if(tuples->size() == 0 && tuplesU->size() == 1){\n";
+                                    ind++;
+                                        *out << ind << "const auto itProp = tupleToVar.find(*tuplesU->at(0));\n";
+                                        *out << ind++ << "if(itProp!=tupleToVar.end()){\n";
+
+                                            *out << ind++ << "if(reasonForLiteral.count(itProp->second) == 0 ){\n";
+                                                *out << ind << "const std::vector<const Tuple*>* tuplesF = &f"<<l->getPredicateName()<<"_";
+                                                for(unsigned k : boundIndices){
+                                                    *out << k << "_";
+                                                }
+                                                *out << ".getValues({"<<boundTerms<<"});\n";
+                                                *out << ind++ << "for(unsigned i=0;i<tuplesF->size();i++){\n";
+                                                    *out << ind << "const auto& it = tupleToVar.find(*tuplesF->at(i));\n";
+                                                    *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                                        *out << ind << "reasonForLiteral[itProp->second].insert(-it->second);\n";
+                                                    *out << --ind << "}\n";
+                                                *out << --ind << "}\n";
+                                                *out << ind << "const auto& it = tupleToVar.find(head);\n";
+                                                *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                                    *out << ind << "reasonForLiteral[itProp->second].insert(it->second);\n";
+                                                *out << --ind << "}\n";
+                                            *out << --ind << "}\n";
+                                            *out << ind << "propUndefined(tuplesU->at(0),false,propagationStack,false,propagatedLiterals);\n";
+                                        *out << --ind << "}\n";
+                                    *out << --ind << "}\n";
+                                *out << --ind << "}else{\n";
+                                ind++; 
+                                    *out << ind << "const Tuple* tupleU = u"<<head->getPredicateName()<<".find(head);\n";
+                                    *out << ind++ << "if(tupleU != NULL && tuples->size() == 0 && tuplesU->size() == 0){\n";
+                                        *out << ind << "const auto itHead = tupleToVar.find(head);\n";
+                                        *out << ind++ << "if(itHead!=tupleToVar.end()){\n";
+                                            *out << ind++ << "if(reasonForLiteral.count(-itHead->second) == 0 ){\n";
+                                                *out << ind << "const std::vector<const Tuple*>* tuplesF = &f"<<l->getPredicateName()<<"_";
+                                                for(unsigned k : boundIndices){
+                                                    *out << k << "_";
+                                                }
+                                                *out << ".getValues({"<<boundTerms<<"});\n";
+                                                *out << ind++ << "for(unsigned i=0;i<tuplesF->size();i++){\n";
+                                                    *out << ind << "const auto& it = tupleToVar.find(*tuplesF->at(i));\n";
+                                                    *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                                        *out << ind << "reasonForLiteral[-itHead->second].insert(-it->second);\n";
+                                                    *out << --ind << "}\n";
+                                                *out << --ind << "}\n";
+                                            *out << --ind << "}\n";
+                                            *out << ind << "propUndefined(tupleU,false,propagationStack,true,propagatedLiterals);\n";
+                                        *out << --ind << "}\n";
+                                    *out << --ind << "}\n";
+                                *out << --ind << "}\n";
+                            }
+                        *out << --ind << "}\n";
+                    *out << --ind << "}\n";
+                }else{
+                    std::unordered_set<std::string> boundVariables;
+                    const aspc::Atom* head = &r.getHead()[0];
+                    *out << ind++ << "if(starter.getPredicateName() == &_"<<head->getPredicateName()<<"){\n";
+                        bool checkFormat = checkTupleFormat(aspc::Literal(false,*head),"starter",false);
+                        for(unsigned k=0;k<head->getAriety();k++){
+                            if(head->isVariableTermAt(k) && boundVariables.count(head->getTermAt(k))==0){
+                                *out << ind << "int "<<head->getTermAt(k) << " = starter["<<k<<"];\n";
+                                boundVariables.insert(head->getTermAt(k));
+                            }
+                        }
+                        std::vector<unsigned>boundIndices;
+                        std::string boundTerms;
+                        const aspc::Literal* l = &r.getBodyLiterals()[0];
+                        for(unsigned k=0; k<l->getAriety(); k++){
+                            if(!l->isVariableTermAt(k) || boundVariables.count(l->getTermAt(k))!=0){
+                                boundIndices.push_back(k);
+                                if(boundTerms!="")
+                                    boundTerms+=",";
+                                boundTerms+=l->getTermAt(k);
+                            }
+                        }
+                        if(l->isBoundedLiteral(boundVariables)){
+                            *out << ind << "const Tuple tuple ({"<<boundTerms<<"}, &_"<<l->getPredicateName()<<");\n";
+                            *out << ind << "const Tuple* tupleU = u"<<l->getPredicateName()<<".find(tuple);\n";
+                            *out << ind++ << "if(!starter.isNegated()){\n";
+                                *out << ind++ << "if(w"<<l->getPredicateName()<<".find(tuple) == tupleU && tupleU==NULL){\n";
+                                    //*out << ind << "std::cout<<\"Conflict: unable to find support for true head\"<<std::endl;\n";
+                                    *out << ind << "const auto& it = tupleToVar.find(tuple);\n";
+                                    *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                        *out << ind << "reasonForLiteral[it->second].insert(startVar);\n";
+                                        *out << ind << "handleConflict(it->second);\n";
+                                        *out << ind << "return;\n";
+                                    *out << --ind << "}\n";
+                                *out << --ind << "}else{\n";
+                                ind++;
+                                    *out << ind++ << "if(tupleU!=NULL){\n";
+                                        *out << ind << "const auto& it = tupleToVar.find(tuple);\n";
+                                        *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                            *out << ind++ << "if(reasonForLiteral.count(it->second) == 0 )\n";
+                                                *out << ind-- << "reasonForLiteral[it->second].insert(startVar);\n";
+                                            *out << ind << "propUndefined(tupleU,false,propagationStack,false,propagatedLiterals);\n";
+                                        *out << --ind << "}\n";
+                                    *out << --ind << "}\n";
+                                *out << --ind << "}\n";
+                            *out << --ind << "}else{\n";
+                            ind++;
+                                *out << ind++ << "if(w"<<l->getPredicateName()<<".find(tuple)!=NULL){\n";
+                                    //*out << ind << "std::cout<<\"Conflict: support found for false head\"<<std::endl;\n";
+                                    *out << ind << "const auto& it = tupleToVar.find(tuple);\n";
+                                    *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                        *out << ind << "reasonForLiteral[-it->second].insert(startVar);\n";
+                                        *out << ind << "handleConflict(-it->second);\n";
+                                        *out << ind << "return;\n";
+                                    *out << --ind << "}\n";
+                                *out << --ind << "}else{\n";
+                                ind++;
+                                    *out << ind++ << "if(tupleU!=NULL){\n";
+                                        *out << ind << "const auto& it = tupleToVar.find(tuple);\n";
+                                        *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                            *out << ind++ << "if(reasonForLiteral.count(-it->second) == 0)\n";
+                                                *out << ind-- << "reasonForLiteral[-it->second].insert(startVar);\n";
+                                            *out << ind << "propUndefined(tupleU,false,propagationStack,true,propagatedLiterals);\n";
+                                        *out << --ind << "}\n";
+                                    *out << --ind << "}\n";
+                                *out << --ind << "}\n";
+                            *out << --ind << "}\n";
+                        }else{
+                            *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
+                            for(unsigned k : boundIndices){
+                                *out << k << "_";
+                            }
+                            *out << ".getValues({"<<boundTerms<<"});\n";
+                            *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<l->getPredicateName()<<"_";
+                            for(unsigned k : boundIndices){
+                                *out << k << "_";
+                            }
+                            *out << ".getValues({"<<boundTerms<<"});\n";
+                            *out << ind++ << "if(!starter.isNegated()){\n";
+                                *out << ind++ << "if(tuples->size() == 0 && tuplesU->size() == 0){\n";
+                                    *out << ind << "const std::vector<const Tuple*>* tuplesF = &f"<<l->getPredicateName()<<"_";
+                                    for(unsigned k : boundIndices){
+                                        *out << k << "_";
+                                    }
+                                    *out << ".getValues({"<<boundTerms<<"});\n";
+                                    *out << ind++ << "for(unsigned i=0; i<tuplesF->size(); i++){\n";
+                                        *out << ind << "const auto& it = tupleToVar.find(*tuplesF->at(i));\n";
+                                        *out << ind++ << "if(it!=tupleToVar.end())\n";
+                                            *out << ind-- << "reasonForLiteral[-startVar].insert(-it->second);\n";
+                                    *out << --ind << "}\n";
+                                    *out << ind << "handleConflict(-startVar);\n";
+                                    *out << ind << "return;\n";
+                                *out << --ind << "}else if(tuples->size() == 0 && tuplesU->size()==1){\n";
+                                ind++;
+                                    *out << ind << "const auto& itProp = tupleToVar.find(*tuplesU->at(0));\n";
+                                    *out << ind++ << "if(itProp!=tupleToVar.end()){\n";
+                                        *out << ind++ << "if(reasonForLiteral.count(itProp->second) == 0){\n";
+                                            *out << ind << "const std::vector<const Tuple*>* tuplesF = &f"<<l->getPredicateName()<<"_";
+                                            for(unsigned k : boundIndices){
+                                                *out << k << "_";
+                                            }
+                                            *out << ".getValues({"<<boundTerms<<"});\n";
+                                            *out << ind++ << "for(unsigned i=0; i<tuplesF->size(); i++){\n";
+                                                *out << ind << "const auto& it = tupleToVar.find(*tuplesF->at(i));\n";
+                                                *out << ind++ << "if(it!=tupleToVar.end())\n";
+                                                    *out << ind-- << "reasonForLiteral[itProp->second].insert(-it->second);\n";
+                                            *out << --ind << "}\n";
+                                            *out << ind << "reasonForLiteral[itProp->second].insert(startVar);\n";
+                                        *out << --ind << "}\n";
+                                        *out << ind << "propUndefined(tuplesU->at(0),false,propagationStack,false,propagatedLiterals);\n";
+                                    *out << --ind << "}\n";
+                                *out << --ind << "}\n";
+                            *out << --ind << "}else{\n";
+                            ind++;
+                                *out << ind++ << "if(tuples->size()>0){\n";
+                                    //*out << ind << "std::cout<<\"Conflict: support found for negative head\"<<std::endl;\n";
+                                    *out << ind << "const auto& it = tupleToVar.find(*tuples->at(0));\n";
+                                    *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                        *out << ind << "reasonForLiteral[-it->second].insert(startVar);\n";
+                                        *out << ind << "handleConflict(-it->second);\n";
+                                        *out << ind << "return;\n";
+                                    *out << --ind << "}\n";
+                                *out << --ind << "}else{\n";
+                                ind++;
+                                    //NOTICE WORKS ONLY IF LITERALS WILL BE REMOVED FROM UNDEF IN PROP FUNCTION
+                                    *out << ind++ << "while(!tuplesU->empty()){\n";
+                                        *out << ind << "const auto& it = tupleToVar.find(*tuplesU->back());\n";
+
+                                        //ONLY FOR DEBUG
+                                        *out << ind << "unsigned size = tuplesU->size();\n";
+                                        //--------------
+                                        *out << ind++ << "if(reasonForLiteral.count(-it->second) == 0 )\n";
+                                            *out << ind-- << "reasonForLiteral[-it->second].insert(startVar);\n";
+                                        *out << ind << "propUndefined(tuplesU->back(),false,propagationStack,true,propagatedLiterals);\n";
+
+                                        //ONLY FOR DEBUG
+                                        //*out << ind << "if(size == tuplesU->size()) {std::cout<<\"loop\"<<std::endl;exit(180);}\n";
+                                        //--------------
+                                    *out << --ind << "}\n";    
+                                *out << --ind << "}\n";
+                            *out << --ind << "}\n";
+                        }  
+                        if(checkFormat)
+                            *out << --ind << "}//close check format\n";     
+                    *out << --ind << "}//close if starter\n"; 
+
+                }
+            }
+        }
+    }
+    if(!r.isConstraint()){
+        if(!fromStarter){
+            *out << ind++ << "{\n";
+
+            const aspc::Literal* l = &r.getBodyLiterals()[0];
+            const aspc::Atom* head = &r.getHead()[0];
+            {
+                //print support propagation
+                std::unordered_set<std::string> boundVariables;
+                *out << ind << "const std::vector<const Tuple*>* trueHeads = &p"<<head->getPredicateName()<<"_.getValues({});\n";
+                *out << ind++ << "for(unsigned i = 0; i < trueHeads->size(); i++){\n";
+                    *out << ind << "const Tuple* head = trueHeads->at(i);\n";
+                    for(unsigned k = 0; k<head->getAriety(); k++){
+                        if(head->isVariableTermAt(k) && boundVariables.count(head->getTermAt(k))==0){
+                            *out << ind << "int "<<head->getTermAt(k)<<" = head->at("<<k<<");\n";
+                            boundVariables.insert(head->getTermAt(k));
+                        }
+                    }
+                    std::vector<unsigned> boundIndices;
+                    std::string boundTerms;
+                    for(unsigned k = 0; k<l->getAriety(); k++){
+                        if(!l->isVariableTermAt(k) || boundVariables.count(l->getTermAt(k))!=0){
+                            boundIndices.push_back(k);
+                            if(boundTerms!="")
+                                boundTerms+=",";
+                            boundTerms+=l->getTermAt(k);
+                        }
+                    }
+                    if(l->isBoundedLiteral(boundVariables)){
+                        *out << ind << "const Tuple* tuple = w"<<l->getPredicateName()<<".find(Tuple({"<<boundTerms<<"},&_"<<l->getPredicateName()<<"));\n";
+                        *out << ind << "const Tuple* tupleU = u"<<l->getPredicateName()<<".find(Tuple({"<<boundTerms<<"},&_"<<l->getPredicateName()<<"));\n";
+                        *out << ind++ << "if(tuple == NULL){\n";
+                            *out << ind++ << "if(tupleU == NULL){\n";
+                                *out << ind << "propagatedLiterals.insert(-1);\n";
+                                //*out << ind << "std::cout<<\"Conflict at level -1: unable to find support for: \";head->print();std::cout<<std::endl;\n";
+                            *out << --ind << "}else{\n";
+                            ind++;
+                                *out << ind << "propUndefined(tupleU,false,propagationStack,false,propagatedLiterals);\n";
+                                *out << ind << "const auto & it = tupleToVar.find(*head);\n";
+                                *out << ind++ << "if(it != tupleToVar.end()){\n";
+                                    *out << ind << "supportedLiterals[it->second]=currentDecisionLevel;\n";
+                                *out << --ind << "}\n";
+                            *out << --ind << "}\n";
+                        *out << --ind << "}else{\n";
+                        ind++;
+                            *out << ind << "const auto & it = tupleToVar.find(*head);\n";
+                            *out << ind++ << "if(it != tupleToVar.end()){\n";
+                                *out << ind << "supportedLiterals[it->second]=currentDecisionLevel;\n";
+                            *out << --ind << "}\n";
+                        *out << --ind << "}\n";
+                        
+                    }else{
+                        
+                        *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
+                        for(unsigned k: boundIndices){
+                            *out << k << "_";
+                        }
+                        *out << ".getValues({"<<boundTerms<<"});\n";
+
+                        *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<l->getPredicateName()<<"_";
+                        for(unsigned k: boundIndices){
+                            *out << k << "_";
+                        }
+                        *out << ".getValues({"<<boundTerms<<"});\n";
+                        *out << ind++ << "if(tuples->size() == 0){\n";
+
+                            *out << ind++ << "if(tuplesU->size() == 0){\n";
+                                *out << ind << "propagatedLiterals.insert(-1);\n";
+                                //*out << ind << "std::cout<<\"Conflict at level -1: unable to find support for: \";head->print();std::cout<<std::endl;\n";
+                            *out << --ind << "}else if(tuplesU->size() == 1){\n";
+                            ind++;
+                                *out << ind << "propUndefined(tuplesU->at(0),false,propagationStack,false,propagatedLiterals);\n";
+                                *out << ind << "const auto & it = tupleToVar.find(*head);\n";
+                                *out << ind++ << "if(it != tupleToVar.end()){\n";
+                                    *out << ind << "supportedLiterals[it->second]=currentDecisionLevel;\n";
+                                *out << --ind << "}\n";
+                            *out << --ind << "}\n";
+
+                        *out << --ind << "}else{\n";
+                        ind++;
+                            *out << ind << "const auto & it = tupleToVar.find(*head);\n";
+                            *out << ind++ << "if(it != tupleToVar.end()){\n";
+                                *out << ind << "supportedLiterals[it->second]=currentDecisionLevel;\n";
+                            *out << --ind << "}\n";
+                        
+                        *out << --ind << "}\n";
+                    }
+                *out << --ind << "}\n";
+            }
+            {
+                //print false head propagation
+                std::unordered_set<std::string> boundVariables;
+                *out << ind << "const std::vector<const Tuple*>* undefHeads = &u"<<head->getPredicateName()<<"_.getValues({});\n";
+                *out << ind++ << "for(unsigned i = 0; i < undefHeads->size(); i++){\n";
+                    *out << ind << "const Tuple* head = undefHeads->at(i);\n";
+                    for(unsigned k = 0; k<head->getAriety(); k++){
+                        if(head->isVariableTermAt(k) && boundVariables.count(head->getTermAt(k))==0){
+                            *out << ind << "int "<<head->getTermAt(k)<<" = head->at("<<k<<");\n";
+                            boundVariables.insert(head->getTermAt(k));
+                        }
+                    }
+                    std::vector<unsigned> boundIndices;
+                    std::string boundTerms;
+                    for(unsigned k = 0; k<l->getAriety(); k++){
+                        if(!l->isVariableTermAt(k) || boundVariables.count(l->getTermAt(k))!=0){
+                            boundIndices.push_back(k);
+                            if(boundTerms!="")
+                                boundTerms+=",";
+                            boundTerms+=l->getTermAt(k);
+                        }
+                    }
+                    if(l->isBoundedLiteral(boundVariables)){
+                        *out << ind << "const Tuple* tuple = w"<<l->getPredicateName()<<".find(Tuple({"<<boundTerms<<"},&_"<<l->getPredicateName()<<"));\n";
+                        *out << ind << "const Tuple* tupleU = u"<<l->getPredicateName()<<".find(Tuple({"<<boundTerms<<"},&_"<<l->getPredicateName()<<"));\n";
+                        *out << ind++ << "if(tuple == NULL){\n";
+                            *out << ind++ << "if(tupleU == NULL){\n";
+                                *out << ind << "propUndefined(head,false,propagationStack,true,propagatedLiterals);\n";
+                            *out << --ind << "}\n";
+                        *out << --ind << "}else{\n";
+                        ind++;
+                            *out << ind << "propUndefined(head,false,propagationStack,false,propagatedLiterals);\n";
+                            *out << ind << "const auto& it = tupleToVar.find(*head);\n";
+                            *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                *out << ind << "supportedLiterals[it->second]=currentDecisionLevel;\n";
+                            *out << --ind << "}\n";
+                        *out << --ind << "}\n";
+                        
+
+                    }else{
+                        *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
+                        for(unsigned k: boundIndices){
+                            *out << k << "_";
+                        }
+                        *out << ".getValues({"<<boundTerms<<"});\n";
+
+                        *out << ind++ << "if(tuples->size() == 0){\n";
+                            
+                            *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<l->getPredicateName()<<"_";
+                            for(unsigned k: boundIndices){
+                                *out << k << "_";
+                            }
+                            *out << ".getValues({"<<boundTerms<<"});\n";
+                            *out << ind++ << "if(tuplesU->size() == 0){\n";
+                                *out << ind << "propUndefined(head,false,propagationStack,true,propagatedLiterals);\n";
+                            *out << --ind << "}\n";
+
+                        *out << --ind << "}else{\n";
+                        ind++;
+                            *out << ind << "propUndefined(head,false,propagationStack,false,propagatedLiterals);\n";
+                            *out << ind << "const auto& it = tupleToVar.find(*head);\n";
+                            *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                *out << ind << "supportedLiterals[it->second]=currentDecisionLevel;\n";
+                            *out << --ind << "}\n";
+
+                        *out << --ind << "}\n";
+
+                    }
+                *out << --ind << "}\n";
+            }
+            {
+                //print false head propagation
+                std::unordered_set<std::string> boundVariables;
+                *out << ind << "const std::vector<const Tuple*>* falseHeads = &f"<<head->getPredicateName()<<"_.getValues({});\n";
+                *out << ind++ << "for(unsigned i = 0; i < falseHeads->size(); i++){\n";
+                    *out << ind << "const Tuple* head = falseHeads->at(i);\n";
+                    for(unsigned k = 0; k<head->getAriety(); k++){
+                        if(head->isVariableTermAt(k) && boundVariables.count(head->getTermAt(k))==0){
+                            *out << ind << "int "<<head->getTermAt(k)<<" = head->at("<<k<<");\n";
+                            boundVariables.insert(head->getTermAt(k));
+                        }
+                    }
+                    std::vector<unsigned> boundIndices;
+                    std::string boundTerms;
+                    for(unsigned k = 0; k<l->getAriety(); k++){
+                        if(!l->isVariableTermAt(k) || boundVariables.count(l->getTermAt(k))!=0){
+                            boundIndices.push_back(k);
+                            if(boundTerms!="")
+                                boundTerms+=",";
+                            boundTerms+=l->getTermAt(k);
+                        }
+                    }
+                    if(l->isBoundedLiteral(boundVariables)){
+                        *out << ind << "const Tuple* tuple = w"<<l->getPredicateName()<<".find(Tuple({"<<boundTerms<<"},&_"<<l->getPredicateName()<<"));\n";
+                        *out << ind << "const Tuple* tupleU = u"<<l->getPredicateName()<<".find(Tuple({"<<boundTerms<<"},&_"<<l->getPredicateName()<<"));\n";
+                        *out << ind++ << "if(tuple == NULL){\n";
+                            *out << ind++ << "if(tupleU != NULL){\n";
+                                *out << ind << "propUndefined(tupleU,false,propagationStack,true,propagatedLiterals);\n";
+                            *out << --ind << "}\n";
+                        *out << --ind << "}else{\n";
+                        ind++;
+                            //*out << ind << "std::cout<<\"Conflict at level -1: true body found for not \";head->print();std::cout<<std::endl;\n";
+                            *out << ind << "propagatedLiterals.insert(-1);\n";
+                        *out << --ind << "}\n";    
+                    }else{
+                        *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
+                        for(unsigned k: boundIndices){
+                            *out << k << "_";
+                        }
+                        *out << ".getValues({"<<boundTerms<<"});\n";
+
+                        *out << ind++ << "if(tuples->size() == 0){\n";
+                            
+                            *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<l->getPredicateName()<<"_";
+                            for(unsigned k: boundIndices){
+                                *out << k << "_";
+                            }
+                            *out << ".getValues({"<<boundTerms<<"});\n";
+                            //WORKS ONLY IF PROP UNDEF REMOVES TUPLES FROM UNDEF
+                            *out << ind++ << "for(unsigned j = 0; j < tuplesU->size();){\n";
+                                *out << ind << "propUndefined(tuplesU->at(j),false,propagationStack,true,propagatedLiterals);\n";
+                            *out << --ind << "}\n";
+
+                        *out << --ind << "}else{\n";
+                        ind++;
+                            //*out << ind << "std::cout<<\"Conflict at level -1: true body found for not \";head->print();std::cout<<std::endl;\n";
+                            *out << ind << "propagatedLiterals.insert(-1);\n";
+                        
+                        *out << --ind << "}\n";
+                    }
+                    
+
+                *out << --ind << "}\n";
+            }
+            *out << --ind << "}\n";
+
+        }
+    }
+    if(r.isConstraint()){
+        *out << ind++ << "{\n";
+        std::vector<unsigned> starters;
+        if(fromStarter){
+            for(unsigned k: r.getStarters())
+                if(k!=r.getBodySize())
+                    starters.push_back(k);
+        }else{
+            starters.push_back(r.getBodySize());
+        }
+
+        for(unsigned i = 0; i<starters.size(); i++){
+            unsigned starter = starters[i];
+            
+            // std::cout << "starter: "<< starter<<std::endl;
+            std::unordered_set<std::string> boundVariables;
+            unsigned closingPars=0;
+            unsigned startJoining = 0;
+            if(starter!=r.getBodySize()){
+                const aspc::Atom* start=NULL;
+                std::string sign = "!";
+                if(starter < r.getBodySize()){
+                    start = &((aspc::Literal*)r.getFormulas()[starter])->getAtom();
+                    startJoining=1;
+                    if(r.getFormulas()[starter]->isLiteral() && !r.getFormulas()[starter]->isPositiveLiteral())
+                        sign="";
+                }else{
+                    start = &r.getHead()[0];
+                }
+
+                *out << ind++ << "if(starter.getPredicateName() == &_"<<start->getPredicateName()<<" && "<<sign<<"starter.isNegated()){\n";
+                closingPars++;
+                if(checkTupleFormat(aspc::Literal(sign=="",*start),"starter",false))
+                    closingPars++;
+                for(unsigned k = 0; k<start->getAriety(); k++){
+                    if(start->isVariableTermAt(k) && boundVariables.count(start->getTermAt(k))==0){
+                        *out << ind << "int "<<start->getTermAt(k)<<" = starter["<<k<<"];\n";
+                        boundVariables.insert(start->getTermAt(k));
+                    }
+                }
+                
+            }else{
+                *out << ind++ << "{\n";
+                closingPars++;
+            }
+            *out << ind << "const Tuple* tupleU = NULL;\n";
+            *out << ind << "bool tupleUNegated = false;\n";
+
+            std::vector<const aspc::Formula*> oredered_body = r.getOrderedBodyByStarter(starter);
+            for(unsigned index = startJoining; index<oredered_body.size();index++){
+                if(oredered_body[index]->isLiteral()){
+                    const aspc::Literal* l =  (aspc::Literal*)oredered_body[index];
+                    closingPars += exploreLiteral(l,boundVariables,index);
+
+                }else if(oredered_body[index]->isBoundedValueAssignment(boundVariables)){
+                    const aspc::ArithmeticRelation* ineq = (aspc::ArithmeticRelation*)oredered_body[index];
+                    *out << ind << "int "<< ineq->getAssignmentStringRep(boundVariables)<<";\n";
+                    boundVariables.insert(ineq->getAssignedVariable(boundVariables));
+
+                }else if(oredered_body[index]->isBoundedRelation(boundVariables)){
+                    const aspc::ArithmeticRelation* ineq = (aspc::ArithmeticRelation*)oredered_body[index];
+                    *out << ind++ << "if("<< ineq->getStringRep()<<"){\n";
+                    closingPars++;
+                }
+            }
+            *out << ind++ << "if(tupleU != NULL){\n";
+                if(fromStarter){
+                    *out << ind << "const auto& itUndef = tupleToVar.find(*tupleU);\n";
+                    *out << ind++ << "if(itUndef!=tupleToVar.end()){\n";
+                        *out << ind << "int var = tupleUNegated ? 1 : -1;\n";
+                        *out << ind << "var*=itUndef->second;\n";
+                        *out << ind++ << "if(reasonForLiteral.count(var) == 0){\n";
+                            
+                            for(unsigned index = 0; index<oredered_body.size();index++){
+                                if(oredered_body[index]->isLiteral()){
+                                    const aspc::Literal* l =  (aspc::Literal*)oredered_body[index];
+                                    if(index>0 || startJoining == 0){
+                                        *out << ind++ << "if(tuple"<<index<<"!=tupleU){\n";
+                                        *out << ind << "const auto& it = tupleToVar.find(*tuple"<<index<<");\n";
+                                    }else{
+                                        *out << ind++ << "{\n";
+                                        *out << ind << "const auto& it = tupleToVar.find(starter);\n";
+                                    }
+                                        *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                            std::string sign = l->isNegated() ? "-1" : "1";
+                                            *out << ind << "reasonForLiteral[var].insert(it->second*"<<sign<<");\n"; 
+                                        *out << --ind << "}\n";
+                                    *out << --ind << "}\n";
+                                }
+                            }   
+                        *out << --ind << "}\n";
+
+                    *out << --ind << "}\n";
+                }
+                //*out << ind << "std::cout<<\"Constraint propagation\"<<std::endl;\n";
+                *out << ind << "bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals);\n";
+            *out << --ind << "}else{\n";
+            ind++;
+                //*out << ind << "std::cout<<\"Conflict On Constraint "<<r.getRuleId()<<"\"<<std::endl;\n";
+                if(fromStarter){
+                    for(unsigned index = 1; index<oredered_body.size();index++){
+                        if(oredered_body[index]->isLiteral()){
+                            const aspc::Literal* l =  (aspc::Literal*)oredered_body[index];
+                            *out << ind++ << "if(tuple"<<index<<"!=NULL){\n";
+                                *out << ind << "const auto& it = tupleToVar.find(*tuple"<<index<<");\n";
+                                *out << ind++ << "if(it!=tupleToVar.end()){\n";
+                                    std::string sign = l->isNegated() ? "-1" : "1";
+                                    *out << ind << "reasonForLiteral[-startVar].insert(it->second*"<<sign<<");\n"; 
+                                *out << --ind << "}\n";
+                            *out << --ind << "}\n";
+                        }
+                    }
+                    *out << ind << "handleConflict(-startVar);\n";
+                    *out << ind << "return;\n";
+                }else{
+                    *out << ind << "propagatedLiterals.insert(-1);\n";
+                }
+            *out << --ind << "}\n";
+            while(closingPars>0){
+                closingPars--;
+                *out << --ind << "}\n";
+            }
+
+        }
+        *out << --ind << "}\n";
+    }
+}
+
 void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const aspc::Program & p) {
 
     //Iterate over starting workingset

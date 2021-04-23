@@ -39,6 +39,7 @@ namespace aspc {
 
         Atom(const std::string & predicateName, const std::vector<std::string> & terms);
         Atom(const Atom &);
+        
         virtual ~Atom();
         const std::string & getPredicateName() const;
         const std::string & getTermAt(unsigned) const;

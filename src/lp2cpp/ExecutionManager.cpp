@@ -70,7 +70,8 @@ void ExecutionManager::onLearning( const Solver& solver, Learning* strategy, Lit
     // std::cout << "onLearning" << lit.getId() <<std::endl;
     
     UnorderedSet<int> reason;
-    executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reason);
+    // executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reason);
+    executor->explainExternalLiteral(lit.getOppositeLiteral().getId(),reason);
     // sort(reason.begin(),reason.end());
     // auto it = unique(reason.begin(),reason.end());
     // reason.resize(distance(reason.begin(),it));
@@ -86,8 +87,20 @@ Reason* ExecutionManager::getPostponedeReason(Literal lit){
     if(lit == Literal::null){
         return this;
     }
+    if(lit.getVariable()==1){
+        const UnorderedSet<int>* conflictReason = &executor->getConflictReason();
+        Clause* clause = new Clause();
+        clause->addLiteral(Literal::null);
+        for(int i=0;i<conflictReason->size();i++){
+            clause->addLiteral(Literal::createLiteralFromInt(-conflictReason->at(i)));
+        }
+        executor->clearConflictReason();
+        return clause;
+    }
+
     UnorderedSet<int> reason;
-    executor->explainAggrLiteral(lit.getId(),reason);
+    // executor->explainAggrLiteral(lit.getId(),reason);
+    executor->explainExternalLiteral(lit.getId(),reason);
     // sort(reason.begin(),reason.end());
     // auto it = unique(reason.begin(),reason.end());
     // reason.resize(distance(reason.begin(),it));
@@ -105,7 +118,9 @@ bool ExecutionManager::onNavigatingLiteralForAllMarked( const Solver& solver, Le
     // std::cout << "onNavigatingLiteralForAllMarked" <<std::endl;
 
     UnorderedSet<int> reas ;
-    executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reas);
+    // executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reas);
+    executor->explainExternalLiteral(lit.getOppositeLiteral().getId(),reas);
+    
     for(int i=0;i<reas.size();i++){
     
         Literal l = Literal::createLiteralFromInt(-reas[i]);
@@ -122,7 +137,9 @@ void ExecutionManager::onNavigatingForUnsatCore( const Solver& solver, vector< u
     // std::cout << "onNavigatingForUnsatCore" <<std::endl;
     
     UnorderedSet<int> reas ;
-    executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reas);
+    // executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reas);
+    executor->explainExternalLiteral(lit.getOppositeLiteral().getId(),reas);
+    
     for(int i=0;i<reas.size();i++){
     
         Var v = reas[i]>0 ? reas[i] : -reas[i];
@@ -139,6 +156,7 @@ void ExecutionManager::parseFactsAndExecute(const char *filename) {
     director.parse(fileNames);
     executeProgramOnFacts(builder->getProblemInstance());
     delete builder;
+
 }
 
 #ifndef LP2CPP_DEBUG

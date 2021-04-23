@@ -163,6 +163,7 @@ void EagerConstraintImpl::onLiteralTrue(int var, int decisionLevel, std::vector<
 };
 
 void EagerConstraintImpl::onLiteralsUndefined(const std::vector<int> & params) {
+    // std::cout << "Literals undef at level "<<params[0]<<std::endl;
 
 #ifdef EAGER_DEBUG
     std::cout << "on literals undef at decision level" << params[0] << std::endl;
@@ -177,6 +178,8 @@ void EagerConstraintImpl::onLiteralsUndefined(const std::vector<int> & params) {
         //            executionManager.onLiteralUndef(literals[-lit]);
         //        }
     }
+    executionManager.unRollToLevel(params[0]);
+    executionManager.undefReceived();
 }
 
 void EagerConstraintImpl::getReasonForLiteral(int lit, std::vector<int> & reason) {
@@ -279,8 +282,6 @@ void EagerConstraintImpl::addedVarName(int var, const std::string & literalStrin
 
 void EagerConstraintImpl::simplifyAtLevelZero(std::vector<int>& output) {
 
-
-
     std::vector<int> inputInterpretation;
     inputInterpretation.push_back(-1);
     for(int fact:facts) {
@@ -289,7 +290,6 @@ void EagerConstraintImpl::simplifyAtLevelZero(std::vector<int>& output) {
         }
     }
     executionManager.executeProgramOnFacts(inputInterpretation);
-
     executionManager.simplifyAtLevelZero(output);
     //executionManager.clearPropagations();
     

@@ -57,6 +57,8 @@ public:
     void simplifyAtLevelZero(std::vector<int>& output);
     void clearPropagations();
     bool postponedReason()const{return true;}
+    void unRollToLevel(int decisionLevel){executor->unRollToLevel(decisionLevel);}
+    void undefReceived(){executor->undefLiteralsReceived();}
     Reason* getPostponedeReason(Literal lit);
     virtual void onLearning( const Solver& solver, Learning* strategy, Literal lit );
     virtual bool onNavigatingLiteralForAllMarked( const Solver& solver, Learning* strategy, Literal lit );
