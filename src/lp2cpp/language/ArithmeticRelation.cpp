@@ -29,10 +29,10 @@ std::map<aspc::ComparisonType, std::string> aspc::ArithmeticRelation::comparison
 
 };
 
-
-aspc::ArithmeticRelation::ArithmeticRelation(const aspc::ArithmeticExpression& left, const aspc::ArithmeticExpression& right, aspc::ComparisonType comparisonType) : left(left), right(right), comparisonType(comparisonType) {
-
+aspc::ArithmeticRelation::ArithmeticRelation(const aspc::ArithmeticExpression& left_, const aspc::ArithmeticExpression& right_, aspc::ComparisonType comparisonType_) : left(left_), right(right_), comparisonType(comparisonType_) {
+    
 }
+
 
 void aspc::ArithmeticRelation::addVariablesToSet(std::unordered_set<std::string>& set) const {
     //assert(isBoundedValueAssignment(set));

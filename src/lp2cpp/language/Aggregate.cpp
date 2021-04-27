@@ -36,40 +36,13 @@ aspc::Aggregate::Aggregate(){
 }
 
 
-aspc::Aggregate::Aggregate(const std::vector<aspc::Literal> & literals, const std::vector<aspc::ArithmeticRelation>& inequalities_, const std::vector<std::string> & variables, std::string function): inequalities(inequalities_), aggregateFunction(string2AggregateFunction[function]){ 
-    std::string tupleName= "";
-    int totalArity = 0;
-    int literalIndex=0;
+aspc::Aggregate::Aggregate(const std::vector<aspc::Literal> & literals, const std::vector<aspc::ArithmeticRelation>& inequalities_, const std::vector<std::string> & variables, std::string function): aggregateVariables(variables), aggregateFunction(string2AggregateFunction[function]){ 
     for(const aspc::Literal& l : literals){
-        if(!l.isNegated()){
-            aggregateLiteralsProjection.push_back("");
-            for(int i=0;i<l.getAriety();i++)
-                aggregateLiteralsProjection[literalIndex]+=std::to_string(i+totalArity)+"_";
-            aggregateLiterals.push_back(aspc::Literal(l));
-            literalIndex++;
-            totalArity+=l.getAriety();
-        }
+        aggregateLiterals.push_back(aspc::Literal(l));
     }
-    // std::cout<<"Aggregate"<<std::endl;
-
-    for(const aspc::Literal& l : literals){
-        if(l.isNegated()){
-            aggregateLiteralsProjection.push_back("");
-            for(int i=0;i<l.getAriety();i++)
-                aggregateLiteralsProjection[literalIndex]+=std::to_string(i+totalArity)+"_";
-            
-            aggregateLiterals.push_back(aspc::Literal(l));
-            
-            literalIndex++;
-            totalArity+=l.getAriety();
-        }
+    for(const aspc::ArithmeticRelation& ineq : inequalities_){
+        inequalities.push_back(aspc::ArithmeticRelation(ineq.getLeft(),ineq.getRight(),ineq.getComparisonType()));
     }
-    for(const std::string& v : variables){
-        if(containsVar(v)<0){
-            aggregateVariables.push_back(v);
-        }
-    }
-    computeJoinTupleName();
 }
 
 std::string aspc::Aggregate::aggrVarsToString()const{

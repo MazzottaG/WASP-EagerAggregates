@@ -36,6 +36,7 @@ namespace aspc {
     public:
 
         ArithmeticExpression();
+        ArithmeticExpression(const aspc::ArithmeticExpression& expr);
         ArithmeticExpression(const std::string &, const std::string &, char operation);
         ArithmeticExpression(const std::string &);
         bool isSingleTerm() const;

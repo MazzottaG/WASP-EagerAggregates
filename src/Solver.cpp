@@ -643,7 +643,6 @@ Solver::propagation(
         Propagator* propagator = wl[ i ].first;
         assert( "Post propagator is null." && propagator != NULL );
         bool res = propagator->onLiteralFalse( *this, complement, wl[ i ].second );  
-        
         if( res ){
             addInPropagatorsForUnroll( propagator );
         }

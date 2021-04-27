@@ -14,11 +14,19 @@
 #include "ArithmeticExpression.h"
 #include "../utils/SharedFunctions.h"
 #include <string>
+#include<iostream>
 
 aspc::ArithmeticExpression::ArithmeticExpression() {
 
 }
-
+aspc::ArithmeticExpression::ArithmeticExpression(const aspc::ArithmeticExpression& expr){
+    term1=expr.getTerm1();
+    if(!expr.isSingleTerm()){
+        operation=expr.getOperation();
+        term2=expr.getTerm2();
+    }
+    singleTerm = expr.isSingleTerm();
+}
 aspc::ArithmeticExpression::ArithmeticExpression(const std::string& term1, const std::string& term2, char operation) : term1(term1), term2(term2), operation(operation), singleTerm(false) {
 }
 
@@ -41,10 +49,10 @@ std::vector<std::string> aspc::ArithmeticExpression::getAllTerms() const {
 
 std::string aspc::ArithmeticExpression::getStringRep() const {
     std::string res = "";
-
     if (isInteger(term1) || isVariable(term1)) {
         res += term1;
     } else {
+        
         res += "ConstantsManager::getInstance().mapConstant(\"" + escapeDoubleQuotes(term1) + "\")";
     }
     if (!singleTerm) {

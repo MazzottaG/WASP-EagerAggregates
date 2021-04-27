@@ -582,7 +582,7 @@ ExternalPropagator::handleConflict(
     Clause* clause;
 
     if(check_postponed){
-        // std::cout<<"HandleConflict"<<conflictLiteral<<std::endl;
+        std::cout<<"HandleConflict"<<conflictLiteral<<std::endl;
         
         Reason* r = interpreter->computePostponedReason(conflictLiteral); 
         clause = dynamic_cast<Clause*>(r);
@@ -620,7 +620,6 @@ ExternalPropagator::handleConflict(
     }else
         clause = getReason( solver, check_getReasonForLiteral ? conflictLiteral : Literal::null );
 
-        
     if( clause == NULL )
     {
         clause = new Clause();
@@ -635,6 +634,7 @@ ExternalPropagator::handleConflict(
     if( size > 1 )
     {
         Learning::sortClause( clause, solver );
+        // std::cout<<*clause<<std::endl;
         if( solver.glucoseHeuristic() )
             clause->setLbd( solver.computeLBD( *clause ) );
         assert( !solver.isUndefined( clause->getAt( 1 ) ) );
@@ -664,6 +664,7 @@ ExternalPropagator::handleConflict(
     }
     solver.addLearnedClause( clause, false );
     solver.assignLiteral( clause );
+
 }
 
 void

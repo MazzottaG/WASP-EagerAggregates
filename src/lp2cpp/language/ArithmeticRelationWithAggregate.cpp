@@ -14,7 +14,7 @@
 #include "ArithmeticRelationWithAggregate.h"
 #include "../utils/SharedFunctions.h"
 
-aspc::ArithmeticRelationWithAggregate::ArithmeticRelationWithAggregate(bool isLower, const aspc::ArithmeticExpression & expression, const aspc::Aggregate & aggregate_, aspc::ComparisonType compare,bool isNegated):aggregate(aggregate_),guard(expression),negated(isNegated){
+aspc::ArithmeticRelationWithAggregate::ArithmeticRelationWithAggregate(bool isLower, const aspc::ArithmeticExpression & expression, const aspc::Aggregate & aggregate_, aspc::ComparisonType compare,bool isNegated):aggregate(aggregate_.getAggregateLiterals(),aggregate_.getAggregateInequalities(),aggregate_.getAggregateVariables(),aggregate_.getAggregateFunction()),guard(expression),negated(isNegated){
     //guard = aspc::ArithmeticExpression(expression);
 
     plusOne=false;

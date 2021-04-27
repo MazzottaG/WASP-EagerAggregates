@@ -53,25 +53,12 @@ public:
     
 private:
     unsigned exploreLiteral(const aspc::Literal*,std::unordered_set<std::string>&,unsigned);
-    void eraseUndefJoinTuple()const;
     unsigned compileRuleBody(const std::vector<unsigned>,unsigned ,const aspc::Rule& ,std::unordered_set<std::string>,bool);
     void compileEagerRule(const aspc::Rule&,bool);
     void compileEagerRuleWithAggregate(const aspc::Rule&,bool);
-    void printAggrEvaluation(const std::vector<const aspc::ArithmeticRelationWithAggregate*> aggregates,int rule_id,bool reason,std::vector<unsigned> joinOrder,const std::vector<const aspc::Formula*> body,const std::unordered_set<std::string> boundVariables,bool allTrue,const aspc::Rule& r);
-    void evaluationEndingWithAggregate(const aspc::Rule & r,std::vector<unsigned> joinOrder,unsigned start);
-    void propAggr(const aspc::ArithmeticRelationWithAggregate* aggregateRelation,std::string& aggregateIdentifier,bool withReason,std::string op,const std::vector<unsigned int>& joinOrder,const std::vector<const aspc::Formula*>& body,const aspc::Rule& r);
-    void propIfMultipleJoin(const aspc::ArithmeticRelationWithAggregate* aggregateRelation,std::string& aggregateIdentifier,bool withReason,const std::vector<const aspc::Formula *>& body,const std::vector<unsigned int>& joinOrder,const aspc::Rule& r);
-    void printAggregateTrueIf(std::string aggrIdentifier,const aspc::ArithmeticRelationWithAggregate* aggr,std::string joinTupleName,std::string op,bool isBound);
-    void printCanPropagateIf(std::string aggrIdentifier,const aspc::ArithmeticRelationWithAggregate* aggr,std::string op,bool bound);
-    void evaluationStartingFromAggregate(const aspc::Rule & r,std::vector<unsigned> joinOrder,unsigned start);
-    void compileConstraintWithAggregate(const aspc::Rule & r, unsigned start, const aspc::Program & p);
-    void declareDataStructureForAggregate(const aspc::Rule& r,const std::set< std::pair<std::string, unsigned> >& aggregatePredicates);
     bool checkTupleFormat(const aspc::Literal& li,std::string buildIndex,bool tuplePointer);
-    void checkExistsShareVariableMap(int ruleId, int aggrIndex,std::string& sharedVariables,bool create);
-    void updateUndefinedSharedVariablesMap(const aspc::Rule& r,int startLit);
     void declareAuxMap(std::string mapVariableName,std::vector<unsigned> keyIndexes,std::string predicateName,bool createFalseAuxMap,bool aggrStruct);
     void printVars(const aspc::Literal& li,std::string tupleName,std::unordered_set<std::string> & boundVars)const;
-    void buildReason(std::string aggrIdentifier,const aspc::ArithmeticRelationWithAggregate* aggregateRelation,bool declareReason);
     void compileRule(const aspc::Rule& r,unsigned start, const aspc::Program& p) ;
     void declareDataStructures(const aspc::Rule& r, unsigned start,const std::set< std::pair<std::string, unsigned> >& aggregatePredicates);
     void declareRuleEagerStructures(const aspc::Rule& r);
@@ -113,20 +100,6 @@ private:
     std::unordered_map<std::string, std::vector<std::string> > sharedVariablesMapForAggregateBody;
     std::unordered_map<std::string, std::vector< std::pair<int,int> > > aggrIdentifierForAggregateBody;
     
-    // std::unordered_map<std::string, std::string > aggregateLiteralToAuxiliaryMap;
-    
-    // std::unordered_map<std::string, std::string > aggregateLiteralToPredicateWSet;
-    
-    std::unordered_map<std::string, std::string > sharedVariablesMap;
-    
-    std::unordered_map<std::string, std::vector<unsigned> > sharedVariablesIndexesMap;
-    
-    std::unordered_map<std::string, std::vector<unsigned> > aggregateVariablesIndex;
-    std::unordered_map<std::string, std::vector<unsigned> > constantAggregateVariablesIndex;
-    
-    std::unordered_map<std::string, std::vector<unsigned> > inequalityAggregateVariablesIndex;
-    
-    std::unordered_map<std::string, std::string > sharedVarToAggr;
     std::unordered_map<std::string, std::vector<unsigned> > sharedVarToBodyIndices;
     std::unordered_map<std::string, std::vector<unsigned> > sharedVarToAggrSetIndices;
     std::unordered_map<std::string, std::vector<unsigned> > aggrVarToAggrSetIndices;
@@ -152,8 +125,6 @@ private:
     std::unordered_map<std::string,unsigned> aggregateToStructure;
     int mode;
 
-    std::map<int,std::vector<int>> internalPredicatesToRules;
-    std::map<int,std::vector<int>> externalPredicatesToRules;
     
 };
 
