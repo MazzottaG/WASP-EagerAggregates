@@ -582,7 +582,7 @@ ExternalPropagator::handleConflict(
     Clause* clause;
 
     if(check_postponed){
-        std::cout<<"HandleConflict"<<conflictLiteral<<std::endl;
+        // std::cout<<"HandleConflict"<<conflictLiteral<<std::endl;
         
         Reason* r = interpreter->computePostponedReason(conflictLiteral); 
         clause = dynamic_cast<Clause*>(r);

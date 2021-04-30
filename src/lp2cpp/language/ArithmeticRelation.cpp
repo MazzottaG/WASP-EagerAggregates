@@ -32,6 +32,9 @@ std::map<aspc::ComparisonType, std::string> aspc::ArithmeticRelation::comparison
 aspc::ArithmeticRelation::ArithmeticRelation(const aspc::ArithmeticExpression& left_, const aspc::ArithmeticExpression& right_, aspc::ComparisonType comparisonType_) : left(left_), right(right_), comparisonType(comparisonType_) {
     
 }
+aspc::ArithmeticRelation::ArithmeticRelation(const aspc::ArithmeticRelation & other): left(other.getLeft()),right(other.getRight()),comparisonType(other.getComparisonType()){
+
+}
 
 
 void aspc::ArithmeticRelation::addVariablesToSet(std::unordered_set<std::string>& set) const {

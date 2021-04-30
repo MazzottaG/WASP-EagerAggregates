@@ -100,8 +100,8 @@ private:
     std::unordered_map<std::string, std::vector<std::string> > sharedVariablesMapForAggregateBody;
     std::unordered_map<std::string, std::vector< std::pair<int,int> > > aggrIdentifierForAggregateBody;
     
-    std::unordered_map<std::string, std::vector<unsigned> > sharedVarToBodyIndices;
-    std::unordered_map<std::string, std::vector<unsigned> > sharedVarToAggrSetIndices;
+    std::unordered_map<std::string, std::vector<unsigned> > sharedVarAggrIDToBodyIndices;
+    std::unordered_map<std::string, std::vector<unsigned> > sharedVarAggrIDToAggrSetIndices;
     std::unordered_map<std::string, std::vector<unsigned> > aggrVarToAggrSetIndices;
     std::unordered_map<std::string, unsigned > aggrIdToRule;
     std::unordered_map<std::string, unsigned > aggrSetToSharedVar;
@@ -122,7 +122,6 @@ private:
     
     std::unordered_set<std::string> idbs;
     
-    std::unordered_map<std::string,unsigned> aggregateToStructure;
     int mode;
 
     

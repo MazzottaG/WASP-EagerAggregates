@@ -262,9 +262,9 @@ void aspc::Rule::bodyReordering(const vector<unsigned>& starters) {
     for (unsigned starter : starters) {
         unordered_set<string> boundVariables;
         if(starter < formulas.size()){
-            std::cout<<"Ordering starting from: ";
-            formulas[starter]->print();
-            std::cout<<std::endl;
+            // std::cout<<"Ordering starting from: ";
+            // formulas[starter]->print();
+            // std::cout<<std::endl;
         }
         
         if (starter < formulas.size()) {

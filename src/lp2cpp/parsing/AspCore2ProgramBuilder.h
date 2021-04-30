@@ -74,6 +74,11 @@ private:
     std::unordered_map<std::string,std::vector<aspc::Literal>> auxPredicateToBody;
     std::unordered_map<std::string,std::vector<aspc::ArithmeticRelation>> auxPredicateToInequality;
 
+    std::unordered_set<std::string> bodyPredicates;
+    std::unordered_set<std::string> aggrSetPredicates;
+    std::unordered_set<std::string> aggrIdPredicates;
+    
+
     void buildExpression();
     bool negatedTerm=false;
 public:
@@ -197,6 +202,14 @@ public:
     bool isAuxPredicate(std::string predicate){
         return auxPredicateToBody.count(predicate)!=0;
     }
+
+    bool isBodyPredicate(std::string predicate){
+        return bodyPredicates.count(predicate)!=0;
+    }
+    bool isAggrSetPredicate(std::string predicate){
+        return aggrSetPredicates.count(predicate)!=0;
+    }
+    void preprocessConstraint(bool& ,bool& );
     void rewriteRule();
 //    const void printSCC(){
 //        std::vector<std::vector<int> > SCC = graphWithTarjanAlgorithm.SCC();
