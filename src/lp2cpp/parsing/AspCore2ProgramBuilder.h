@@ -77,6 +77,8 @@ private:
     std::unordered_set<std::string> bodyPredicates;
     std::unordered_set<std::string> aggrSetPredicates;
     std::unordered_set<std::string> aggrIdPredicates;
+
+    std::unordered_map<std::string, std::unordered_set<unsigned>> aggrSetToRule;
     
 
     void buildExpression();
@@ -205,6 +207,10 @@ public:
 
     bool isBodyPredicate(std::string predicate){
         return bodyPredicates.count(predicate)!=0;
+    }
+
+    const std::unordered_set<std::string>& getAggrSetPredicate(){
+        return aggrSetPredicates;
     }
     bool isAggrSetPredicate(std::string predicate){
         return aggrSetPredicates.count(predicate)!=0;

@@ -101,10 +101,22 @@ private:
     std::unordered_map<std::string, std::vector< std::pair<int,int> > > aggrIdentifierForAggregateBody;
     
     std::unordered_map<std::string, std::vector<unsigned> > sharedVarAggrIDToBodyIndices;
+
+    //contains aggr_set variable indices that appear in aggr_id
     std::unordered_map<std::string, std::vector<unsigned> > sharedVarAggrIDToAggrSetIndices;
     std::unordered_map<std::string, std::vector<unsigned> > aggrVarToAggrSetIndices;
     std::unordered_map<std::string, unsigned > aggrIdToRule;
     std::unordered_map<std::string, unsigned > aggrSetToSharedVar;
+
+    //foreach aggrSet list of aggregateRules
+    std::unordered_map<std::string, std::vector<unsigned>> aggrSetToRule;
+
+    //contains aggr_set predicate inside sum aggregate
+    std::unordered_set<std::string> sumAggrSetPredicate;
+    std::unordered_map<std::string,std::set<std::pair<std::string,std::string>>> sumAggrSetPredicateToAggrId;
+    
+    std::unordered_map<std::string,std::vector<unsigned>> sharedVarAggrIdAggrSet;
+    
     
     std::unordered_map<std::string, std::set<std::string> > predicateToAuxiliaryMaps;
     std::unordered_map<std::string, std::set<std::string> > predicateToNegativeAuxiliaryMaps;
