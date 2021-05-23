@@ -31,6 +31,7 @@
 #include "../language/Aggregate.h"
 #include "../language/ArithmeticRelationWithAggregate.h"
 #include "../utils/SharedFunctions.h"
+#include "../utils/AggrSetPredicate.h"
 
 using namespace std;
 
@@ -407,20 +408,25 @@ void AspCore2ProgramBuilder::onConstraint() {
         }
         std::string aggrSetPredicate="";
         std::vector<std::string> aggrSetPredicateTerms;
+        bool aggrset_found = false;
         if(writeAggrSetRule){
            
             aggrSetPredicate="aggr_set"+std::to_string(aggrSetPredicates.size());
-            aggrSetPredicates.insert(aggrSetPredicate);
+            // aggrSetPredicates.insert(aggrSetPredicate);
+            AggrSetPredicate aggrset;
 
             std::unordered_set<std::string> bodyVars;
             for(const aspc::Literal& l : originalBody){
                 l.addVariablesToSet(bodyVars);
+                aggrset.addLiteral(l);
             }
             for(const aspc::ArithmeticRelation& ineq: originalBodyInequalities){
                 ineq.addVariablesToSet(bodyVars);
+                aggrset.addInequality(ineq);
             }
             for(std::string var: originalAggrRelation[0].getAggregate().getAggregateVariables()){
                 aggrSetPredicateTerms.push_back(var);
+                aggrset.addTerm(var);
             }
             for(std::string var : bodyVars){
                 bool foundVar=false;
@@ -455,27 +461,36 @@ void AspCore2ProgramBuilder::onConstraint() {
                             break;
                     }
                 }
-                // if(!foundVar){
-                //     for(std::string term : originalAggrRelation[0].getGuard().getAllTerms()){
-                //         if(term == var){
-                //             foundVar=true;
-                //             break;
-                //         }
-                //     }
-                // }
                 if(foundVar){
                     aggrSetPredicateTerms.push_back(var);
+                    aggrset.addTerm(var);
                 }
             }
-            //aspc::Atom(aggrSetPredicate,aggrSetPredicateTerms);
-            buildingHead.push_back(aspc::Atom(aggrSetPredicate,aggrSetPredicateTerms));
-            for(aspc::Literal l : originalAggrRelation[0].getAggregate().getAggregateLiterals()){
-                buildingBody.push_back(l);
+            std::cout<<"Search for previousAggrSet"<<std::endl;
+            for(auto& previousAggrSet : aggrSetPredicates){
+                std::cout<<previousAggrSet.first<<std::endl;
+                
+                if(previousAggrSet.second == aggrset){
+                    aggrset_found=true;
+                    aggrSetPredicate=previousAggrSet.first;
+                    aggrSetPredicateTerms=previousAggrSet.second.getTerms();
+                    break;
+                }
             }
-            for(aspc::ArithmeticRelation ineq: originalAggrRelation[0].getAggregate().getAggregateInequalities()){
-                inequalities.push_back(ineq);
+            if(!aggrset_found){
+                aggrSetPredicates.insert({aggrSetPredicate,aggrset});
+                //aspc::Atom(aggrSetPredicate,aggrSetPredicateTerms);
+                buildingHead.push_back(aspc::Atom(aggrSetPredicate,aggrSetPredicateTerms));
+                for(aspc::Literal l : originalAggrRelation[0].getAggregate().getAggregateLiterals()){
+                    buildingBody.push_back(l);
+                }
+                for(aspc::ArithmeticRelation ineq: originalAggrRelation[0].getAggregate().getAggregateInequalities()){
+                    inequalities.push_back(ineq);
+                }
+                onRule();
             }
-            onRule();
+                
+            
         }else{
             if(!originalAggrRelation[0].getAggregate().getAggregateLiterals().empty()){
                 aggrSetPredicate=originalAggrRelation[0].getAggregate().getAggregateLiterals()[0].getPredicateName();
@@ -731,7 +746,7 @@ void AspCore2ProgramBuilder::rewriteRule(){
             return;
         }
     }
-    
+    // bool exitCase = buildingHead[0].getPredicateName()=="aggr_set0";
     std::vector<aspc::Atom> originalHead(buildingHead);
     std::vector<aspc::Literal> originalBody(buildingBody);
     std::vector<aspc::ArithmeticRelation> orginalInequalities;
@@ -768,11 +783,47 @@ void AspCore2ProgramBuilder::rewriteRule(){
     for(std::string term : auxDistinctTerms){
         auxLiteralTerms[auxPredicate].push_back(term);
     }
-    buildingBody.clear();
-    buildingBody.push_back(aspc::Literal(false,aspc::Atom(auxPredicate,auxDistinctTerms)));
-    inequalities.clear();
-    //head:-aux
-    onRuleRewrited();
+    bool iffCase = false;
+
+    if(auxDistinctTerms.size() == buildingHead[0].getAriety()){
+        iffCase=true;
+        for(unsigned i=0; i<auxDistinctTerms.size(); i++){
+            if(auxDistinctTerms[i]!=buildingHead[0].getTermAt(i)){
+                iffCase=false;
+                break;
+            }
+        }
+        if(iffCase){
+            for(unsigned i=0;i<auxPredicateToBody[auxPredicate].size();i++){
+                auxPredicateToBody[buildingHead[0].getPredicateName()].push_back(auxPredicateToBody[auxPredicate][i]);
+            }
+            auxPredicateToBody.erase(auxPredicate);
+
+            for(unsigned i=0;i<auxPredicateToInequality[auxPredicate].size();i++){
+                auxPredicateToInequality[buildingHead[0].getPredicateName()].push_back(auxPredicateToInequality[auxPredicate][i]);
+            }
+            auxPredicateToInequality.erase(auxPredicate);
+
+            for(unsigned i=0;i<auxLiteralTerms[auxPredicate].size();i++){
+                auxLiteralTerms[buildingHead[0].getPredicateName()].push_back(auxLiteralTerms[auxPredicate][i]);
+            }
+            auxLiteralTerms.erase(auxPredicate);
+            
+            auxPredicate=buildingHead[0].getPredicateName();
+            buildingHead.clear();
+            buildingBody.clear();
+            inequalities.clear();
+        }
+    }
+    if(!iffCase){
+        buildingBody.clear();
+        buildingBody.push_back(aspc::Literal(false,aspc::Atom(auxPredicate,auxDistinctTerms)));
+        inequalities.clear();
+        //head:-aux
+        onRuleRewrited();
+        
+    }
+    
     for(const aspc::Literal& literal : originalBody){
         buildingBody.push_back(aspc::Literal(false,aspc::Atom(auxPredicate,auxDistinctTerms)));
         buildingBody.push_back(aspc::Literal(!literal.isNegated(),literal.getAtom()));

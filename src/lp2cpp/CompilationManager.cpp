@@ -943,6 +943,7 @@ void CompilationManager::declareAuxMap(std::string mapVariableName,std::vector<u
 // }
 void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & program, AspCore2ProgramBuilder* builder) {
 
+    std::cout<<"generateStratifiedCompilableProgram"<<std::endl;
     bool programHasConstraint = program.hasConstraint();
 
     *out << ind << "#include \"Executor.h\"\n\n";
@@ -996,10 +997,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::unordered_map<const std::string*, PredicateWSet*> predicateUSetMap;\n";
 
 
-        *out << ind << "std::unordered_map<const std::string*, DynamicTrie*> sharedVariables;\n";
-        *out << ind << "std::unordered_map<const std::string*, std::unordered_map<DynamicCompilationVector*,DynamicTrie>*> sharedVarWAggr;\n";
-        *out << ind << "std::unordered_map<const std::string*, std::unordered_map<DynamicCompilationVector*,DynamicTrie>*> sharedVarUAggr;\n";
-        *out << ind << "std::unordered_map<const std::string*, std::unordered_map<DynamicCompilationVector*,DynamicTrie>*> sharedVarFAggr;\n";
+        // *out << ind << "std::unordered_map<const std::string*, DynamicTrie*> sharedVariables;\n";
+        // *out << ind << "std::unordered_map<const std::string*, std::unordered_map<DynamicCompilationVector*,DynamicTrie>*> sharedVarWAggr;\n";
+        // *out << ind << "std::unordered_map<const std::string*, std::unordered_map<DynamicCompilationVector*,DynamicTrie>*> sharedVarUAggr;\n";
+        // *out << ind << "std::unordered_map<const std::string*, std::unordered_map<DynamicCompilationVector*,DynamicTrie>*> sharedVarFAggr;\n";
 
     }
 
@@ -1026,10 +1027,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         }
     }
     if(mode == EAGER_MODE){
-        *out << ind << "std::map<int,int> externalLiteralsLevel;\n";
-        *out << ind << "std::map<int,std::vector<int>> levelToIntLiterals;\n";
+        *out << ind << "std::unordered_map<int,int> externalLiteralsLevel;\n";
+        *out << ind << "std::unordered_map<int,std::vector<int>> levelToIntLiterals;\n";
         // *out << ind << "std::map<int,std::vector<int>> levelToExtLiterals;\n";
-        *out << ind << "std::map<int,UnorderedSet<int>> reasonForLiteral;\n";
+        *out << ind << "std::unordered_map<int,UnorderedSet<int>> reasonForLiteral;\n";
         *out << ind << "int currentDecisionLevel=-1;\n";
         // *out << ind << "std::unordered_map<int,int> supportedLiterals;\n";
         *out << ind << "bool undefinedLoaded=false;\n";
@@ -1048,10 +1049,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "std::unordered_map<int,int> possibleSum;\n";
     
     //REMOVING
-    *out << ind << "std::unordered_set<const std::string*> aggr_setPredicate;\n";
-    *out << ind << "std::unordered_map<const std::string*,std::vector<AuxMap*>> sumAggrIdForAggrSetAuxMap;\n";
-    *out << ind << "std::unordered_map<const std::string*,std::vector<AuxMap*>> sumAggrIdForAggrSetUAuxMap;\n";
-    *out << ind << "std::unordered_map<const std::string*,std::vector<AuxMap*>> sumAggrIdForAggrSetFAuxMap;\n";
+    // *out << ind << "std::unordered_set<const std::string*> aggr_setPredicate;\n";
+    // *out << ind << "std::unordered_map<const std::string*,std::vector<AuxMap*>> sumAggrIdForAggrSetAuxMap;\n";
+    // *out << ind << "std::unordered_map<const std::string*,std::vector<AuxMap*>> sumAggrIdForAggrSetUAuxMap;\n";
+    // *out << ind << "std::unordered_map<const std::string*,std::vector<AuxMap*>> sumAggrIdForAggrSetFAuxMap;\n";
     //dichiaro predicateWSet per joinTuple
     std::unordered_set<std::string> declaredJoinTupleSet;
 
@@ -1529,14 +1530,13 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     // *out << ind++ << "void explainAggrLiteral(int var){\n";
     *out << ind++ << "void Executor::handleConflict(int literal){\n";
-        *out << ind << "std::cout<<\"handle conflict \"<<literal<<std::endl;\n";
         *out << ind++ << "if(currentDecisionLevel == -1){\n";
             *out << ind << "propagatedLiterals.insert(-1);\n";
             *out << ind << "return;\n";
         *out << --ind << "}\n\n";
-
-        *out << ind << "explainExternalLiteral(literal,conflictReason);\n";
-        *out << ind << "explainExternalLiteral(-literal,conflictReason);\n";
+        *out << ind << "std::unordered_set<int> visitedLiterals;\n";
+        *out << ind << "explainExternalLiteral(literal,conflictReason,visitedLiterals);\n";
+        *out << ind << "explainExternalLiteral(-literal,conflictReason,visitedLiterals);\n";
         *out << ind << "propagatedLiterals.insert(-1);\n";
         *out << ind << "reasonForLiteral.erase(literal);\n";
         // *out << ind++ << "for(unsigned i =0; i<conflictReason.size();i++){\n";
@@ -1548,8 +1548,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         // *out << --ind << "}\n";
     *out << --ind << "}\n";
 
-    *out << ind++ << "int Executor::explainExternalLiteral(int var,UnorderedSet<int>& reas,bool getExternalLit){\n";
-        *out << ind << "std::unordered_set<int> visitedLiteral;\n";
+    *out << ind++ << "int Executor::explainExternalLiteral(int var,UnorderedSet<int>& reas,std::unordered_set<int>& visitedLiteral){\n";
+        // *out << ind << "std::unordered_set<int> visitedLiteral;\n";
         *out << ind << "std::vector<int> stack;\n";
         *out << ind << "stack.push_back(var);\n";
 
@@ -2846,42 +2846,42 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                             headTerms+=",";
                                         headTerms+=head->getTermAt(k);
                                     }
-
-                                    *out << ind << "Tuple head({"<<headTerms<<"},&_"<<head->getPredicateName()<<");\n";
-                                    *out << ind++ << "if(u"<<head->getPredicateName()<<".find(head)==NULL){\n";
-                                        *out << ind << "const auto& headInsertResult = u"<<head->getPredicateName()<<".insert(Tuple({"<<headTerms<<"},&_"<<head->getPredicateName()<<"));\n";
-                                        *out << ind++ << "if (headInsertResult.second) {\n";
-                                            *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<head->getPredicateName()<<"]) {\n";
-                                                *out << ind << "auxMap -> insert2(*headInsertResult.first);\n";
-                                            *out << --ind << "}\n";
-                                            *out << ind << "atomsTable.push_back(head);\n";
-                                            *out << ind << "tupleToVar[head]=atomsTable.size()-1;\n";
-                                        *out << --ind << "}\n";
-                                    *out << --ind << "}\n";
-                                    for(const aspc::Rule& aggr_r : program.getRules()){
-                                        if(!aggr_r.isConstraint() && aggr_r.containsAggregate() && !aggr_r.getBodyLiterals().empty() && aggr_r.getBodyLiterals()[0].getPredicateName() == head->getPredicateName()){
-                                            const aspc::Atom* aggr_id = &aggr_r.getHead()[0];
-                                            std::string aggrIdTerms="";
-                                            for(unsigned k=0; k<aggr_id->getAriety();k++){
-                                                if(aggrIdTerms!="")
-                                                    aggrIdTerms+=",";
-                                                aggrIdTerms+=aggr_id->getTermAt(k);
-                                            }
-
-                                            *out << ind << "Tuple aggr_id"<<aggr_r.getRuleId()<<"({"<<aggrIdTerms<<"},&_"<<aggr_id->getPredicateName()<<");\n";
-                                            *out << ind++ << "if(u"<<aggr_id->getPredicateName()<<".find(aggr_id"<<aggr_r.getRuleId()<<")==NULL){\n";
-                                                *out << ind << "const auto& aggrIdInsertResult = u"<<aggr_id->getPredicateName()<<".insert(Tuple({"<<aggrIdTerms<<"},&_"<<aggr_id->getPredicateName()<<"));\n";
-                                                *out << ind++ << "if (aggrIdInsertResult.second) {\n";
-                                                    *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<aggr_id->getPredicateName()<<"]) {\n";
-                                                        *out << ind << "auxMap -> insert2(*aggrIdInsertResult.first);\n";
-                                                    *out << --ind << "}\n";
-                                                    *out << ind << "atomsTable.push_back(aggr_id"<<aggr_r.getRuleId()<<");\n";
-                                                    *out << ind << "tupleToVar[aggr_id"<<aggr_r.getRuleId()<<"]=atomsTable.size()-1;\n";
+                                    *out << ind++ << "{\n";
+                                        *out << ind << "Tuple head({"<<headTerms<<"},&_"<<head->getPredicateName()<<");\n";
+                                        *out << ind++ << "if(u"<<head->getPredicateName()<<".find(head)==NULL){\n";
+                                            *out << ind << "const auto& headInsertResult = u"<<head->getPredicateName()<<".insert(Tuple({"<<headTerms<<"},&_"<<head->getPredicateName()<<"));\n";
+                                            *out << ind++ << "if (headInsertResult.second) {\n";
+                                                *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<head->getPredicateName()<<"]) {\n";
+                                                    *out << ind << "auxMap -> insert2(*headInsertResult.first);\n";
                                                 *out << --ind << "}\n";
+                                                *out << ind << "atomsTable.push_back(head);\n";
+                                                *out << ind << "tupleToVar[head]=atomsTable.size()-1;\n";
                                             *out << --ind << "}\n";
-                                        }
-                                    }
+                                        *out << --ind << "}\n";
+                                        for(const aspc::Rule& aggr_r : program.getRules()){
+                                            if(!aggr_r.isConstraint() && aggr_r.containsAggregate() && !aggr_r.getBodyLiterals().empty() && aggr_r.getBodyLiterals()[0].getPredicateName() == head->getPredicateName()){
+                                                const aspc::Atom* aggr_id = &aggr_r.getHead()[0];
+                                                std::string aggrIdTerms="";
+                                                for(unsigned k=0; k<aggr_id->getAriety();k++){
+                                                    if(aggrIdTerms!="")
+                                                        aggrIdTerms+=",";
+                                                    aggrIdTerms+=aggr_id->getTermAt(k);
+                                                }
 
+                                                *out << ind << "Tuple aggr_id"<<aggr_r.getRuleId()<<"({"<<aggrIdTerms<<"},&_"<<aggr_id->getPredicateName()<<");\n";
+                                                *out << ind++ << "if(u"<<aggr_id->getPredicateName()<<".find(aggr_id"<<aggr_r.getRuleId()<<")==NULL){\n";
+                                                    *out << ind << "const auto& aggrIdInsertResult = u"<<aggr_id->getPredicateName()<<".insert(Tuple({"<<aggrIdTerms<<"},&_"<<aggr_id->getPredicateName()<<"));\n";
+                                                    *out << ind++ << "if (aggrIdInsertResult.second) {\n";
+                                                        *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<aggr_id->getPredicateName()<<"]) {\n";
+                                                            *out << ind << "auxMap -> insert2(*aggrIdInsertResult.first);\n";
+                                                        *out << --ind << "}\n";
+                                                        *out << ind << "atomsTable.push_back(aggr_id"<<aggr_r.getRuleId()<<");\n";
+                                                        *out << ind << "tupleToVar[aggr_id"<<aggr_r.getRuleId()<<"]=atomsTable.size()-1;\n";
+                                                    *out << --ind << "}\n";
+                                                *out << --ind << "}\n";
+                                            }
+                                        }
+                                    *out << --ind << "}\n";
                                 }
                             }
 
@@ -3232,20 +3232,20 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind << "predicateToFalseAuxiliaryMaps[" << reference << "_" << entry.first << "].push_back(&f" << auxSet << ");\n";
         }
     }
-    for(std::string aggrSetPred : sumAggrSetPredicate){
-        *out << ind << "aggr_setPredicate.insert(&_"<<aggrSetPred<<");\n";
-        for(auto mapName : sumAggrSetPredicateToAggrId[aggrSetPred]){
-            if(mapName.first!=""){
-                *out << ind << "sumAggrIdForAggrSetAuxMap[&_"<<aggrSetPred<<"].push_back(&p"<<mapName.first<<");\n";
-                *out << ind << "sumAggrIdForAggrSetUAuxMap[&_"<<aggrSetPred<<"].push_back(&u"<<mapName.first<<");\n";
-                *out << ind << "sumAggrIdForAggrSetFAuxMap[&_"<<aggrSetPred<<"].push_back(&f"<<mapName.first<<");\n";
-            }
-            // else{
-            //     *out << ind << "sumAggrIdForAggrSet[&_"<<aggrSetPred<<"].push_back(&w"<<mapName.second<<");\n";
-            //     *out << ind << "sumAggrIdForAggrSetU[&_"<<aggrSetPred<<"].push_back(&u"<<mapName.second<<");\n";
-            // }
-        }
-    }
+    // for(std::string aggrSetPred : sumAggrSetPredicate){
+    //     // *out << ind << "aggr_setPredicate.insert(&_"<<aggrSetPred<<");\n";
+    //     for(auto mapName : sumAggrSetPredicateToAggrId[aggrSetPred]){
+    //         if(mapName.first!=""){
+    //             // *out << ind << "sumAggrIdForAggrSetAuxMap[&_"<<aggrSetPred<<"].push_back(&p"<<mapName.first<<");\n";
+    //             // *out << ind << "sumAggrIdForAggrSetUAuxMap[&_"<<aggrSetPred<<"].push_back(&u"<<mapName.first<<");\n";
+    //             // *out << ind << "sumAggrIdForAggrSetFAuxMap[&_"<<aggrSetPred<<"].push_back(&f"<<mapName.first<<");\n";
+    //         }
+    //         // else{
+    //         //     *out << ind << "sumAggrIdForAggrSet[&_"<<aggrSetPred<<"].push_back(&w"<<mapName.second<<");\n";
+    //         //     *out << ind << "sumAggrIdForAggrSetU[&_"<<aggrSetPred<<"].push_back(&u"<<mapName.second<<");\n";
+    //         // }
+    //     }
+    // }
     *out << --ind << "}\n";
     // ---------------------- end init() --------------------------------------//
     *out << ind++ << "bool propUndefined(const Tuple* tupleU,bool isNegated,std::vector<int>& stack,bool asNegative,UnorderedSet<int> & propagatedLiterals){\n";

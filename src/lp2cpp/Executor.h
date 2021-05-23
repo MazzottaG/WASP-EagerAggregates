@@ -59,7 +59,7 @@ namespace aspc {
         virtual void clear();
         virtual void clearPropagations();
         virtual void explainAggrLiteral(int,UnorderedSet<int>&);
-        virtual int explainExternalLiteral(int,UnorderedSet<int>&,bool=false);
+        virtual int explainExternalLiteral(int,UnorderedSet<int>&,std::unordered_set<int>&);
         virtual void handleConflict(int);
         virtual void unRollToLevel(int);
         virtual const std::vector<std::vector<aspc::Literal> > & getFailedConstraints() {

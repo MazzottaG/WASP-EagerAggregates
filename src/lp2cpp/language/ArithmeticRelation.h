@@ -34,7 +34,7 @@ namespace aspc {
     public:
         ArithmeticRelation(const aspc::ArithmeticExpression & left, const aspc::ArithmeticExpression & right, aspc::ComparisonType comparisonType);
         ArithmeticRelation(const aspc::ArithmeticRelation & other);
-
+        bool operator==(const aspc::ArithmeticRelation& other);
         virtual bool isBoundedRelation(const std::unordered_set<std::string> &) const override;
         virtual bool isBoundedLiteral(const std::unordered_set<std::string> &) const override;
         virtual bool isBoundedValueAssignment(const std::unordered_set<std::string> &) const override;

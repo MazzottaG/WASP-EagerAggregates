@@ -35,7 +35,14 @@ aspc::ArithmeticRelation::ArithmeticRelation(const aspc::ArithmeticExpression& l
 aspc::ArithmeticRelation::ArithmeticRelation(const aspc::ArithmeticRelation & other): left(other.getLeft()),right(other.getRight()),comparisonType(other.getComparisonType()){
 
 }
-
+bool aspc::ArithmeticRelation::operator==(const aspc::ArithmeticRelation& other){
+    if(comparisonType!=other.comparisonType)
+        return false;
+    if(right == other.right && left == other.left)
+        return true;
+    return false;
+    
+}
 
 void aspc::ArithmeticRelation::addVariablesToSet(std::unordered_set<std::string>& set) const {
     //assert(isBoundedValueAssignment(set));

@@ -39,6 +39,7 @@ namespace aspc {
         ArithmeticExpression(const aspc::ArithmeticExpression& expr);
         ArithmeticExpression(const std::string &, const std::string &, char operation);
         ArithmeticExpression(const std::string &);
+        bool operator==(const aspc::ArithmeticExpression& expr);
         bool isSingleTerm() const;
 
         const std::string & getTerm1() const {

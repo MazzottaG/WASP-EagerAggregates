@@ -36,6 +36,7 @@
 #include <unordered_map>
 #include "../language/Aggregate.h"
 #include "../../stl/UnorderedSet.h"
+#include "../utils/AggrSetPredicate.h"
 
 class AspCore2ProgramBuilder : public DLV2::InputBuilder {
 private:
@@ -75,7 +76,8 @@ private:
     std::unordered_map<std::string,std::vector<aspc::ArithmeticRelation>> auxPredicateToInequality;
 
     std::unordered_set<std::string> bodyPredicates;
-    std::unordered_set<std::string> aggrSetPredicates;
+    std::unordered_map<std::string,AggrSetPredicate> aggrSetPredicates;
+    // std::unordered_set<AggrSetPredicate> aggrSetPredicatesData;
     std::unordered_set<std::string> aggrIdPredicates;
 
     std::unordered_map<std::string, std::unordered_set<unsigned>> aggrSetToRule;
@@ -209,9 +211,9 @@ public:
         return bodyPredicates.count(predicate)!=0;
     }
 
-    const std::unordered_set<std::string>& getAggrSetPredicate(){
-        return aggrSetPredicates;
-    }
+    // const std::unordered_map<std::string,AggrSetPredicate>& getAggrSetPredicate(){
+    //     return aggrSetPredicates;
+    // }
     bool isAggrSetPredicate(std::string predicate){
         return aggrSetPredicates.count(predicate)!=0;
     }

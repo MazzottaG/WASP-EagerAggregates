@@ -32,7 +32,15 @@ aspc::ArithmeticExpression::ArithmeticExpression(const std::string& term1, const
 
 aspc::ArithmeticExpression::ArithmeticExpression(const std::string& term1) : term1(term1), singleTerm(true) {
 }
-
+bool aspc::ArithmeticExpression::operator==(const aspc::ArithmeticExpression& expr){
+    if(term1!=expr.term1 || singleTerm!=expr.singleTerm)
+        return false;
+    if(!singleTerm){
+        if(term2 != expr.term2 || operation!=expr.operation)
+            return false;
+    }
+    return true;
+}
 bool aspc::ArithmeticExpression::isSingleTerm() const {
     return singleTerm;
 }
