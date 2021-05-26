@@ -30,6 +30,21 @@ class AggrSetPredicate {
         //         inequalities.push_back(r);
         //     }
         // }
+        AggrSetPredicate& operator=(const AggrSetPredicate& p){
+            this->terms.clear();
+            for(std::string t : p.terms)
+                this->terms.push_back(t);
+
+            this->literals.clear();
+            for(aspc::Literal l : p.literals){
+                this->literals.push_back(l);
+            }
+            this->inequalities.clear();
+            for(aspc::ArithmeticRelation ineq : p.inequalities){
+                this->inequalities.push_back(ineq);
+            }
+            return *this;
+        }
         bool operator==(const AggrSetPredicate& predicate){
             std::cout<<"operator =="<<std::endl;
             if(this->terms.size() != predicate.terms.size()){

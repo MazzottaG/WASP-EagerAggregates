@@ -41,6 +41,16 @@ bool aspc::ArithmeticExpression::operator==(const aspc::ArithmeticExpression& ex
     }
     return true;
 }
+
+aspc::ArithmeticExpression& aspc::ArithmeticExpression::operator=(const aspc::ArithmeticExpression& o){
+    
+        this->term1=o.term1;
+        this->term2=o.term2;
+        this->operation=o.operation;
+        this->singleTerm=o.singleTerm;
+        return *this;
+        
+}
 bool aspc::ArithmeticExpression::isSingleTerm() const {
     return singleTerm;
 }

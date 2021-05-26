@@ -32,7 +32,7 @@ namespace aspc {
     public:
         Aggregate();
         Aggregate(const std::vector<aspc::Literal> & literals,const std::vector<aspc::ArithmeticRelation>& inequalities, const std::vector<std::string> & variables, std::string function);
-
+        aspc::Aggregate& operator=(const aspc::Aggregate&);
         virtual bool isBoundedRelation(const std::unordered_set<std::string> &) const override;
         virtual bool isBoundedLiteral(const std::unordered_set<std::string> &) const override;
         virtual bool isBoundedValueAssignment(const std::unordered_set<std::string> &) const override;
@@ -63,6 +63,8 @@ namespace aspc {
         std::string getAggregateFunction()const;
         std::string getTermAt(unsigned int termIndex)const;
         std::string getStringRep()const;
+        void clearAggregateLiterals(){aggregateLiterals.clear();}
+        void addLiteral(aspc::Literal l){aggregateLiterals.push_back(l);}
         virtual ~Aggregate();
         
     private:

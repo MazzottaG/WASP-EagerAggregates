@@ -26,7 +26,7 @@
 #include "../propagators/ExternalPropagator.h"
 #include "../Literal.h";
 
-const set<string> supportedMethods = {method_plugins_onLitTrue, method_plugins_getReasonForLiteral, method_plugins_addedVarName, 
+const set<string> supportedMethods = {method_plugins_onAnswerSet, method_plugins_onLitTrue, method_plugins_getReasonForLiteral, method_plugins_addedVarName, 
     method_plugins_onLiteralsUndefined, method_plugins_getVariablesToFreeze, method_plugins_onStartingSolver, method_plugins_onFact, method_plugins_getLiterals, method_plugins_simplifyAtLevelZero};
 
 MyCppEagerInterpreter::~MyCppEagerInterpreter() {
@@ -38,7 +38,11 @@ MyCppEagerInterpreter::MyCppEagerInterpreter(char* filenameToCompile, const stri
 }
 
 void MyCppEagerInterpreter::callListMethod(const string& method_name, const vector<int>& parameters, vector<int>& output) {
-    
+    if (method_name == method_plugins_onAnswerSet) {
+        std::cout<<"onAnswerSet"<<std::endl;
+        eagerConstraint.onAnswerSet(parameters); 
+
+    }
     if (method_name == method_plugins_onLitTrue) {
         eagerConstraint.onLiteralTrue(parameters[0], parameters[1], output); 
     

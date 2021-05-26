@@ -62,6 +62,7 @@ namespace aspc {
         virtual int explainExternalLiteral(int,UnorderedSet<int>&,std::unordered_set<int>&);
         virtual void handleConflict(int);
         virtual void unRollToLevel(int);
+        virtual void printInternalLiterals();
         virtual const std::vector<std::vector<aspc::Literal> > & getFailedConstraints() {
             return failedConstraints;
         }

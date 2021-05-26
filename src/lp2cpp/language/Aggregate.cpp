@@ -44,7 +44,31 @@ aspc::Aggregate::Aggregate(const std::vector<aspc::Literal> & literals, const st
         inequalities.push_back(aspc::ArithmeticRelation(ineq.getLeft(),ineq.getRight(),ineq.getComparisonType()));
     }
 }
-
+aspc::Aggregate& aspc::Aggregate::operator=(const aspc::Aggregate& o){
+    this->aggregateLiterals.clear();
+    for(aspc::Literal l : o.aggregateLiterals){
+        this->aggregateLiterals.push_back(l);
+    }
+    this->inequalities.clear();
+    for(aspc::ArithmeticRelation ineq : o.inequalities){
+        this->inequalities.push_back(ineq);
+    }
+    this->normalized_inequalities.clear();
+    for(aspc::ArithmeticRelation ineq : o.normalized_inequalities){
+        this->normalized_inequalities.push_back(ineq);
+    }
+    this->aggregateVariables.clear();
+    for(std::string v: o.aggregateVariables)
+        this->aggregateVariables.push_back(v);
+    
+    this->aggregateFunction = o.aggregateFunction;
+    this->tupleName = o.tupleName;
+    this->aggregateLiteralsProjection.clear();
+    for(std::string proj: o.aggregateLiteralsProjection){
+        this->aggregateLiteralsProjection.push_back(proj);
+    }
+    return *this;
+}
 std::string aspc::Aggregate::aggrVarsToString()const{
     std::string aggrVars;
     for(std::string v : aggregateVariables){

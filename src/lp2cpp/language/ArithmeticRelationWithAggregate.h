@@ -24,6 +24,7 @@ namespace aspc {
         public:
             
             ArithmeticRelationWithAggregate(bool isLower, const aspc::ArithmeticExpression & expression, const aspc::Aggregate & aggregate, aspc::ComparisonType comparisonType,bool isNegated);
+            ArithmeticRelationWithAggregate(const aspc::ArithmeticRelationWithAggregate& );
             virtual bool isBoundedRelation(const std::unordered_set<std::string> &) const override;
             virtual bool isBoundedLiteral(const std::unordered_set<std::string> &) const override;
             virtual bool isBoundedValueAssignment(const std::unordered_set<std::string> &) const override;
@@ -70,6 +71,8 @@ namespace aspc {
                 return comparisonType;
             }
             std::string getAggrVarAsString()const{return aggregate.aggrVarsToString();}
+            void clearAggregateLiterals(){aggregate.clearAggregateLiterals();}
+            void addAggregateLiteral(aspc::Literal l) {aggregate.addLiteral(l);}
         private:
             unsigned formulaIndex;
             aspc::Aggregate aggregate;

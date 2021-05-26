@@ -81,6 +81,7 @@ private:
     std::unordered_set<std::string> aggrIdPredicates;
 
     std::unordered_map<std::string, std::unordered_set<unsigned>> aggrSetToRule;
+    std::unordered_set<std::string> printingPredicate;
     
 
     void buildExpression();
@@ -188,6 +189,8 @@ public:
     bool isInternalPredicate(int predId)const {
         return internalPredicatesId.find(predId)!=internalPredicatesId.end();
     }
+    const unordered_set<std::string> getPrintingPredicates(){return printingPredicate;}
+    
     const std::unordered_map<std::string,std::vector<aspc::Literal>>& getAuxPredicateBody()const{
         return auxPredicateToBody;
     }
@@ -219,6 +222,9 @@ public:
     }
     void preprocessConstraint(bool& ,bool& );
     void rewriteRule();
+    void rewriteRuleWithAggregate();
+    std::vector<aspc::Literal> rewriteAggregate(const aspc::Atom& ,const std::unordered_set<string>& ,const aspc::ArithmeticRelationWithAggregate& );
+
 //    const void printSCC(){
 //        std::vector<std::vector<int> > SCC = graphWithTarjanAlgorithm.SCC();
 //        for(int i = 0;i< SCC.size();i++)

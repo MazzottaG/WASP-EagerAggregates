@@ -3450,6 +3450,14 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "return false;\n";
     *out << --ind << "}\n";
 
+    *out << ind++ << "void Executor::printInternalLiterals(){\n";
+        for(std::string pred : builder->getPrintingPredicates()){
+            *out << ind++ << "for(const Tuple* t : w"<<pred<<".getTuples()){\n";
+                *out << ind << "t->print();\n";
+                *out << ind << "std::cout<<std::endl;\n";
+            *out << --ind << "}\n";
+        }
+    *out << --ind << "}\n";
     *out << ind++ << "void Executor::unRollToLevel(int decisionLevel){\n";
         // *out << ind << "std::cout<<\"Unrolling to level: \"<<decisionLevel << \" \" <<currentDecisionLevel<<std::endl;\n";
         *out << ind++ << "for(unsigned i = 0; i<propagatedLiterals.size(); i++)\n";
@@ -4037,7 +4045,7 @@ void CompilationManager::declareRuleEagerStructures(const aspc::Rule& r){
         }
         for(auto declareMap : declaringMaps){
             // std::cout<<declareMap.first<<std::endl;
-            if (!declaredMaps.count(declareMap.first) && declareMap.second.first.size()<declareMap.second.second) {
+            if (!declaredMaps.count(declareMap.first) && (declareMap.second.first.size()<declareMap.second.second ||declareMap.second.first.size()==0)) {
                 *out << ind << "AuxMap p" << declareMap.first << "({";
                 for (unsigned k = 0; k < declareMap.second.first.size(); k++) {
                     if (k > 0) {
