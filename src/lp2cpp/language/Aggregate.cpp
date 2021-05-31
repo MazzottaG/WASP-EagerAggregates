@@ -317,7 +317,57 @@ void aspc::Aggregate::print() const {
     std::cout<<"}";
     
 }
-
+void aspc::Aggregate::getOrderedAggregateBody(std::vector<aspc::Formula*>& orderedBody,std::unordered_set<std::string> boundVars)const{
+    std::unordered_set<std::string> boundVariables(boundVars);
+    std::unordered_set<unsigned> selectedLiterals;
+    std::unordered_set<unsigned> selectedInequalities;
+    while(orderedBody.size()<aggregateLiterals.size()+inequalities.size()){
+        unsigned selectedIndex=-1;
+        bool isBoundFormula=false;
+        bool isPositiveLiteralSelected=false;
+        bool isBoundedValueAssignmentSelected=false;
+        for(unsigned i=0;i<inequalities.size();i++){
+            if(selectedInequalities.count(i)==0){
+                if(inequalities[i].isBoundedRelation(boundVariables)){
+                    selectedIndex=i;
+                    isBoundFormula=true;
+                    break;
+                }else if(inequalities[i].isBoundedValueAssignment(boundVariables)){
+                    if(!isBoundedValueAssignmentSelected){
+                        selectedIndex=i;
+                        isBoundedValueAssignmentSelected=true;
+                    }
+                }
+            }
+        }
+        if(selectedIndex==-1){
+            for(unsigned i=0;i<aggregateLiterals.size();i++){
+                if(selectedLiterals.count(i)==0){
+                    if(aggregateLiterals[i].isBoundedLiteral(boundVariables)){
+                        selectedIndex=i;
+                        isBoundFormula=true;
+                        break;
+                    }if(aggregateLiterals[i].isPositiveLiteral()){
+                        if(!isPositiveLiteralSelected){
+                            selectedIndex=i;
+                            isPositiveLiteralSelected=true;
+                        }
+                    }
+                }
+            }
+        }else{
+            inequalities[selectedIndex].addVariablesToSet(boundVariables);
+            selectedInequalities.insert(selectedIndex);
+            orderedBody.push_back(new aspc::ArithmeticRelation(inequalities[selectedIndex]));
+            continue;
+        }
+        if(selectedIndex!=-1){
+            aggregateLiterals[selectedIndex].addVariablesToSet(boundVariables);
+            selectedLiterals.insert(selectedIndex);
+            orderedBody.push_back(new aspc::Literal(aggregateLiterals[selectedIndex]));
+        }
+    }
+}
 bool aspc::Aggregate::isLiteral() const {
     return false;
 }

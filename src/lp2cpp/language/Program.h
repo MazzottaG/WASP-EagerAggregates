@@ -54,6 +54,7 @@ namespace aspc {
         std::set<std::string> getHeadPredicates() const;
         bool hasConstraintWithLiteral()const;
         bool hasConstraint() const;
+        bool clear();
 
     private:
         std::vector<aspc::Rule> rules; //only rules are compiled

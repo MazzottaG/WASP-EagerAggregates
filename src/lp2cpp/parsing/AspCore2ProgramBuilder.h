@@ -41,6 +41,9 @@
 class AspCore2ProgramBuilder : public DLV2::InputBuilder {
 private:
     aspc::Program program;
+    aspc::Program original_program;
+    bool analyzeDependencyGraph=true;
+    std::vector<aspc::Rule> ruleWithoutComplition;
     
     bool buildingAggregate = false;
     std::string aggregateFunction="None";
@@ -67,9 +70,14 @@ private:
     std::vector<aspc::ArithmeticRelationWithAggregate> inequalitiesWithAggregate;
     std::string predicateName;
     GraphWithTarjanAlgorithm graphWithTarjanAlgorithm;
+    GraphWithTarjanAlgorithm original_graphWithTarjanAlgorithm;
     std::set<int> internalPredicatesId;
+
     std::unordered_map<std::string, int> predicateIDs;
     std::unordered_map<int, Vertex> vertexByID;
+    
+    std::unordered_map<std::string, int> originalPredicateIDs;
+    std::unordered_map<int, Vertex> originalVertexByID;
     
     std::unordered_map<std::string,std::vector<std::string>> auxLiteralTerms;
     std::unordered_map<std::string,std::vector<aspc::Literal>> auxPredicateToBody;
@@ -213,7 +221,7 @@ public:
     bool isBodyPredicate(std::string predicate){
         return bodyPredicates.count(predicate)!=0;
     }
-
+    const std::vector<aspc::Rule>& getRuleWithoutComplition()const{return ruleWithoutComplition;}
     // const std::unordered_map<std::string,AggrSetPredicate>& getAggrSetPredicate(){
     //     return aggrSetPredicates;
     // }
@@ -223,6 +231,8 @@ public:
     void preprocessConstraint(bool& ,bool& );
     void rewriteRule();
     void rewriteRuleWithAggregate();
+    void rewriteRuleWithComplition();
+    void rewriteConstraint();
     std::vector<aspc::Literal> rewriteAggregate(const aspc::Atom& ,const std::unordered_set<string>& ,const aspc::ArithmeticRelationWithAggregate& );
 
 //    const void printSCC(){
@@ -245,6 +255,7 @@ public:
     void normalizeArithmeticRelationsWithAggregate();
     const std::unordered_map<int, Vertex>& getVertexByIDMap() const;
     const std::unordered_map<std::string, int>& getPredicateIDsMap() const;
+    void addRuleToOriginalProgram();
 
 };
 

@@ -65,6 +65,7 @@ namespace aspc {
         std::string getStringRep()const;
         void clearAggregateLiterals(){aggregateLiterals.clear();}
         void addLiteral(aspc::Literal l){aggregateLiterals.push_back(l);}
+        void getOrderedAggregateBody(std::vector<aspc::Formula*>& orderedBody,std::unordered_set<std::string>)const;
         virtual ~Aggregate();
         
     private:

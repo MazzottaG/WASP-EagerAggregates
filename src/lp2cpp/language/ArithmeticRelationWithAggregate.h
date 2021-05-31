@@ -73,6 +73,7 @@ namespace aspc {
             std::string getAggrVarAsString()const{return aggregate.aggrVarsToString();}
             void clearAggregateLiterals(){aggregate.clearAggregateLiterals();}
             void addAggregateLiteral(aspc::Literal l) {aggregate.addLiteral(l);}
+            void getOrderedAggregateBody(std::vector<aspc::Formula*>& orderedAggrBody,std::unordered_set<std::string> boundVariables)const{aggregate.getOrderedAggregateBody(orderedAggrBody,boundVariables);}
         private:
             unsigned formulaIndex;
             aspc::Aggregate aggregate;

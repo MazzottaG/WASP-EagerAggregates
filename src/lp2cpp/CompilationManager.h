@@ -83,7 +83,6 @@ private:
     void printLiteralTuple(const aspc::Literal* l, const std::unordered_set<std::string> & boundVariables);
     void printLiteralTuple(const aspc::Literal* l);
     
-    
     std::ostream* out;
     
     std::set<std::string> bodyPredicates;

@@ -41,10 +41,12 @@ namespace aspc {
     class Rule {
     public:
         static unsigned rulesCounter;
+        static unsigned rulesCounterRewriting;
         static std::string inequalityStrings[];
+        Rule(const std::vector<aspc::Atom> & head, const std::vector<aspc::Literal> & body, const std::vector<ArithmeticRelation> & arithmeticRelation,const std::vector<aspc::ArithmeticRelationWithAggregate> & arithmeticRelationsWithAggregate, bool rewriting);
         Rule(const std::vector<aspc::Atom> & head, const std::vector<aspc::Literal> & body, const std::vector<ArithmeticRelation> & arithmeticRelation,const std::vector<aspc::ArithmeticRelationWithAggregate> & arithmeticRelationsWithAggregate);
         Rule(const std::vector<aspc::Atom> & head, const std::vector<aspc::Literal> & body, const std::vector<ArithmeticRelation> & inequalities, bool reorderBody);
-        Rule(const std::vector<aspc::Atom> & head, const std::vector<aspc::Literal> & body, const std::vector<ArithmeticRelation> & inequalities,const std::vector<ArithmeticRelationWithAggregate> & inequalitiesWithAggregate, bool reorderBody);
+        Rule(const std::vector<aspc::Atom> & head, const std::vector<aspc::Literal> & body, const std::vector<ArithmeticRelation> & inequalities, const std::vector<ArithmeticRelationWithAggregate> & inequalitiesWithAggregate, bool reorderBody, bool rewriting);
         Rule(const Rule& other);
 
         virtual ~Rule();
@@ -64,7 +66,7 @@ namespace aspc {
         bool containsAggregate() const;
         bool isConstraint() const;
         std::pair<int, int> findFirstOccurrenceOfVariableByStarter(const std::string & var, unsigned starter) const;
-
+        void orderBodyFormulas(std::vector<unsigned>& )const;
         void bodyReordering();
         void bodyReordering(const std::vector<unsigned> & starters);
         void printOrderedBodies() const;

@@ -146,6 +146,7 @@ bool aspc::Program::hasConstraintWithLiteral() const{
     }
     return false;
 }
+
 bool aspc::Program::hasConstraint() const {
     for(const Rule & r: rules) {
         if(r.isConstraint()) {
@@ -153,5 +154,14 @@ bool aspc::Program::hasConstraint() const {
         }
     }
     return false;
+
+}
+
+bool aspc::Program::clear(){
+    rules.clear();
+    facts.clear(); 
+    predicates.clear();
+    aggregatePredicates.clear();
+    rules_by_type.clear();
 
 }

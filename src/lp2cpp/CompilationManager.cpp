@@ -60,6 +60,16 @@ void CompilationManager::loadProgram(const std::string& filename) {
     fileNames.push_back(filename.c_str());
     director.parse(fileNames);
     bodyPredicates = builder->getProgram().getBodyPredicates();
+    for(const aspc::Rule& r :builder->getRuleWithoutComplition()){
+        for(const aspc::Literal& l : r.getBodyLiterals()){
+            bodyPredicates.insert(l.getPredicateName());
+        }
+        for(const aspc::ArithmeticRelationWithAggregate& aggrRelation: r.getArithmeticRelationsWithAggregate()){
+            for(const aspc::Literal& l : aggrRelation.getAggregate().getAggregateLiterals()){
+                bodyPredicates.insert(l.getPredicateName());
+            }
+        }
+    }
     headPredicates = builder->getProgram().getHeadPredicates();
 
 }
@@ -529,418 +539,6 @@ void CompilationManager::declareAuxMap(std::string mapVariableName,std::vector<u
         declaredMaps.insert(mapVariableName);
     }
 }
-// void CompilationManager::updateUndefinedSharedVariablesMap(const aspc::Rule& r,int startLit){
-
-//     std::unordered_set<std::string> boundVars;
-//     printVars(r.getBodyLiterals()[startLit],"tuple.",boundVars);
-//     // *out << ind << "tuple.print();\n";
-//     // *out << ind << "std::cout<<\"updatesharedvariables\"<<std::endl;\n";
-//     r.getBodyLiterals()[startLit].addVariablesToSet(boundVars);
-//     bool checkFormat = checkTupleFormat(r.getBodyLiterals()[startLit],"",false);
-//     int closingParenthesis = checkFormat ? 1:0;
-//     const std::vector<unsigned> & joinOrder = r.getOrderedBodyIndexesByStarter(startLit);
-
-//     for(unsigned i=0;i<joinOrder.size();i++){
-//         const aspc::Formula* f =r.getFormulas()[joinOrder[i]];
-
-//         if(joinOrder[i] !=startLit && !f->containsAggregate()){
-//             if(f->isBoundedRelation(boundVars)){
-//                 *out << ind << "if("<< ((const aspc::ArithmeticRelation*)f)->getStringRep()<<"){\n";
-//                 closingParenthesis++;
-//             }else if(f->isBoundedValueAssignment(boundVars)){
-//                 *out << ind << "int " << ((const aspc::ArithmeticRelation*)f)->getAssignmentStringRep(boundVars) << ";\n";
-//                 f->addVariablesToSet(boundVars);
-//             }else if(!f->isBoundedLiteral(boundVars)){
-//                 const aspc::Literal* l = (const aspc::Literal*)f;
-//                 std::string mapVariableName = l->getPredicateName() + "_";
-//                 for (unsigned tiIndex = 0; tiIndex < l->getAriety(); tiIndex++) {
-//                     if ((l->isVariableTermAt(tiIndex) && boundVars.count(l->getTermAt(tiIndex))) || !l->isVariableTermAt(tiIndex)) {
-//                         mapVariableName += std::to_string(tiIndex) + "_";
-//                     }
-//                 }
-//                 *out << ind << "const std::vector<const Tuple *>& undefTuples"<<i<<" = u"<<mapVariableName<<".getValues({";
-//                 printLiteralTuple(l,boundVars);
-//                 *out << "});\n";
-//                 *out << ind << "const std::vector<const Tuple*>& trueTuples"<<i<<" = p"<<mapVariableName<<".getValues({";
-//                 printLiteralTuple(l,boundVars);
-//                 *out << "});\n";
-//                 *out << ind++ << "for(int i=0;i<undefTuples"<<i<<".size()+trueTuples"<<i<<".size();i++){\n";
-//                 *out << ind << "const Tuple * tuple"<<i<<";\n";
-
-//                 *out << ind++ << "if(i<undefTuples"<<i<<".size())\n";
-//                 *out << ind << "tuple"<<i<<" = undefTuples"<<i<<"[i];\n";
-//                 *out << --ind << "else tuple"<<i<<" = trueTuples"<<i<<"[i-undefTuples"<<i<<".size()];\n";
-
-//                 closingParenthesis++;
-//                 printVars(*l,"tuple"+std::to_string(i)+"->",boundVars);
-//                 l->addVariablesToSet(boundVars);
-//                 if(checkTupleFormat(*l,std::to_string(i),true))
-//                     closingParenthesis++;
-//             }
-//         }
-//     }
-
-    //join partendos dal letterale startLit costruito
-
-//     for(const aspc::ArithmeticRelationWithAggregate& ar: r.getArithmeticRelationsWithAggregate()){
-//         //vedo le variabili condivise tra i letterali del corpo ed ogni aggregato della regola
-//         std::string key(std::to_string(r.getRuleId())+":"+std::to_string(ar.getFormulaIndex()));
-
-
-//         std::string sharedVarsIndexesToString="";
-//         for(unsigned varIndex : sharedVariablesIndexesMap[key]){
-
-//             //salvo gli indici delle variabili di aggregazione
-//             sharedVarsIndexesToString+=std::to_string(varIndex)+"_";
-//         }
-
-//         std::string sharedVars = sharedVariablesMap[key];
-//         if(sharedVars!=""){
-//             *out << ind++ << "{\n";
-//                 checkExistsShareVariableMap(r.getRuleId(),ar.getFormulaIndex(),sharedVars,true);
-//                 *out << --ind << "}\n";
-//             *out << --ind << "}\n";
-//             //*out << ind << "std::cout<<\"True size: \"<<sharedVariables_"<<r.getRuleId()<<"_ToAggregate_"<<ar.getFormulaIndex()<<"[sharedTuple]->first->size()<<std::endl;\n";
-//             //*out << ind << "std::cout<<\"Undef size: \"<<sharedVariables_"<<r.getRuleId()<<"_ToAggregate_"<<ar.getFormulaIndex()<<"[sharedTuple]->second->size()<<std::endl;\n";
-
-//         }
-//     }
-
-//     for(int i=0;i<closingParenthesis;i++){
-//         *out << --ind << "}\n";
-//     }
-
-//     //comment
-//     // *out << ind << "std::cout<<\"saved for all aggregate\"<<std::endl;\n";
-
-// }
-// void CompilationManager::declareDataStructureForAggregate(const aspc::Rule& r,const std::set< pair<std::string, unsigned> >& aggregatePredicates){
-
-//     //BUILD AGGREGATE JOIN
-//     for(const aspc::ArithmeticRelationWithAggregate& aggr : r.getArithmeticRelationsWithAggregate()){
-//         sharedVariablesMapForAggregateBody[aggr.getJoinTupleName()].push_back("sharedVariables_"+std::to_string(r.getRuleId())+"_ToAggregate_"+std::to_string(aggr.getFormulaIndex()));
-//         aggrIdentifierForAggregateBody[aggr.getJoinTupleName()].push_back({r.getRuleId(),aggr.getFormulaIndex()});
-
-//         int startingId = 0;
-//         for(const aspc::Literal& starter :aggr.getAggregate().getAggregateLiterals()){
-//             std::unordered_set<std::string> boundVars;
-//             for(int i=0;i<starter.getAriety();i++){
-//                 if(starter.isVariableTermAt(i)){
-//                     boundVars.insert(starter.getTermAt(i));
-//                 }
-//             }
-//             int liIndex=0;
-//             for(const aspc::Literal& li :aggr.getAggregate().getAggregateLiterals()){
-//                 std::vector<unsigned> boundIndices;
-//                 std::string auxMapName = li.getPredicateName()+"_";
-//                 if(liIndex!=startingId){
-//                     for(unsigned i=0;i<li.getAriety();i++){
-//                         if(!li.isVariableTermAt(i) || boundVars.count(li.getTermAt(i))){
-//                             boundIndices.push_back(i);
-//                             auxMapName+=std::to_string(i)+"_";
-//                         }
-//                     }
-//                     for(unsigned i=0;i<li.getAriety();i++){
-//                         if(li.isVariableTermAt(i))
-//                             boundVars.insert(li.getTermAt(i));
-//                     }
-//                     declareAuxMap(auxMapName,boundIndices,li.getPredicateName(),false,false);
-//                 }
-//                 liIndex++;
-//             }
-//             startingId++;
-//         }
-//     }
-
-//     //Jointuple auxMap
-//     for(const aspc::ArithmeticRelationWithAggregate& aggr : r.getArithmeticRelationsWithAggregate()){
-//         std::string aggrIdentifier = std::to_string(r.getRuleId())+":"+std::to_string(aggr.getFormulaIndex());
-//         std::vector<unsigned int> sharedVariablesIndex(sharedVariablesIndexesMap[aggrIdentifier]);
-//         std::string sharedVarProj;
-//         for(unsigned int i : sharedVariablesIndex){
-//             sharedVarProj+=std::to_string(i)+"_";
-//         }
-//         declareAuxMap("_"+aggr.getJoinTupleName()+sharedVarProj,sharedVariablesIndex,aggr.getJoinTupleName(),false,true);
-//         std::vector<unsigned int> aggrVarIndex(aggregateVariablesIndex[aggrIdentifier]);
-//         std::string aggrVarProj;
-//         for(unsigned int i : aggrVarIndex){
-//             aggrVarProj+=std::to_string(i)+"_";
-//             sharedVariablesIndex.push_back(i);
-//         }
-//         declareAuxMap("_"+aggr.getJoinTupleName()+aggrVarProj,aggrVarIndex,aggr.getJoinTupleName(),false,true);
-
-
-//         declareAuxMap("_"+aggr.getJoinTupleName()+sharedVarProj+aggrVarProj,sharedVariablesIndex,aggr.getJoinTupleName(),false,true);
-//         int ariety=0;
-//         for(const aspc::Literal& li : aggr.getAggregate().getAggregateLiterals()){
-//             std::vector<unsigned int> index;
-//             std::string proj;
-//             for(unsigned int i=0;i<li.getAriety();i++){
-//                 proj+=std::to_string(ariety+i)+"_";
-//                 index.push_back(ariety+i);
-//             }
-//             declareAuxMap("_"+aggr.getJoinTupleName()+proj,index,aggr.getJoinTupleName(),false,true);
-//             ariety+=li.getAriety();
-//         }
-
-//     }
-
-//     int startLit=0;
-//     for(const aspc::Literal& starter: r.getBodyLiterals()){
-//         for(const aspc::ArithmeticRelationWithAggregate& aggr : r.getArithmeticRelationsWithAggregate()){
-//             std::string aggrIdentifier = std::to_string(r.getRuleId())+":"+std::to_string(aggr.getFormulaIndex());
-//             std::string auxMapName=starter.getPredicateName()+"_";
-//             std::vector<unsigned int> boundIndices;
-//             for(int i=0;i<starter.getAriety();i++){
-//                 if(!starter.isVariableTermAt(i)){
-//                     auxMapName+=std::to_string(i)+"_";
-//                     boundIndices.push_back(i);
-//                 }else{
-//                     for(int v:sharedVariablesIndexesMap[aggrIdentifier]){
-//                         if(starter.getTermAt(i) == aggr.getTermAt(v)){
-//                             auxMapName+=std::to_string(i)+"_";
-//                             boundIndices.push_back(i);
-//                             break;
-//                         }
-//                     }
-//                 }
-//             }
-//             declareAuxMap(auxMapName,boundIndices,starter.getPredicateName(),false,false);
-//         }
-//     }
-
-//     //dichiaro le auxMap che vengono utilizzate per costruire le jointuple
-//     // for(const aspc::ArithmeticRelationWithAggregate& aggr : r.getArithmeticRelationsWithAggregate()){
-
-//     //     std::string joinTupleName=aggr.getJoinTupleName();
-//     //     // std::cout<<joinTupleName<<std::endl;
-//     //     std::set<string> varAlreadyAdded;
-//     //     std::vector<std::vector<unsigned>> aggregateLiteralIndexes;
-//     //     int varIndex=0;
-//     //     int index=0;
-//     //     std::string aggrIdentifier = std::to_string(r.getRuleId())+":"+std::to_string(aggr.getFormulaIndex());
-
-//     //     for(const aspc::Literal& li: aggr.getAggregate().getAggregateLiterals()){
-
-//     //         aggregateLiteralIndexes.push_back(std::vector<unsigned>());
-
-//     //         //creo una mappa per ogni letterale indicizzata su tutte le variabili
-//     //         std::string mapIndexedAllVars=li.getPredicateName()+"_";
-
-//     //         std::vector<unsigned> localIndex;
-//     //         for (unsigned tiIndex = 0; tiIndex < li.getAriety(); tiIndex++) {
-
-//     //             mapIndexedAllVars+=std::to_string(tiIndex)+"_";
-//     //             aggregateLiteralIndexes[index].push_back(varIndex);
-//     //             localIndex.push_back(tiIndex);
-//     //             varIndex++;
-
-//     //         }
-
-//     //         declareAuxMap(mapIndexedAllVars,localIndex,li.getPredicateName(),true,false);
-
-//     //         //creo una mappa non indicizzata per iniziare il join
-//     //         declareAuxMap(li.getPredicateName() + "_",std::vector<unsigned>(),li.getPredicateName(),true,false);
-
-//     //         //creo una mappa per gli altri letterali indicizzata rispetto al letterale corrente
-//     //         std::unordered_set<std::string> boundVariables;
-//     //         li.addVariablesToSet(boundVariables);
-//     //         int buildIndex=0;
-//     //         for(const aspc::Literal& li_: aggr.getAggregate().getAggregateLiterals()){
-//     //             std::string mapVariableName = li_.getPredicateName() + "_";
-//     //             std::vector< unsigned > keyIndexes;
-//     //             if(buildIndex != index){
-//     //                 for (unsigned tiIndex = 0; tiIndex < li_.getAriety(); tiIndex++) {
-//     //                     if ((li_.isVariableTermAt(tiIndex) && boundVariables.count(li_.getTermAt(tiIndex))) || !li_.isVariableTermAt(tiIndex)) {
-//     //                         mapVariableName += std::to_string(tiIndex) + "_";
-//     //                         keyIndexes.push_back(tiIndex);
-
-//     //                     }
-//     //                 }
-//     //                 li_.addVariablesToSet(boundVariables);
-//     //                 declareAuxMap(mapVariableName,keyIndexes,li_.getPredicateName(),true,false);
-//     //             }
-//     //             buildIndex++;
-//     //         }
-//     //         index++;
-//     //     }
-//     //     sharedVariablesMapForAggregateBody[joinTupleName].push_back("sharedVariables_"+std::to_string(r.getRuleId())+"_ToAggregate_"+std::to_string(aggr.getFormulaIndex()));
-//     //     aggrIdentifierForAggregateBody[aggr.getJoinTupleName()].push_back({r.getRuleId(),aggr.getFormulaIndex()});
-//     //     /*for(const std::string& v : aggr.getAggregate().getAggregateVariables()){
-//     //         int joinTupleIndex=0;
-//     //         for(const aspc::Literal& li: aggr.getAggregate().getAggregateLiterals()){
-//     //             for (unsigned tiIndex = 0; tiIndex < li.getAriety(); tiIndex++) {
-
-//     //                 if( v == li.getTermAt(tiIndex)){make
-//     //                     if(!varAlreadyAdded.count(li.getTermAt(tiIndex))){
-//     //                         aggregateVariablesIndex[aggrIdentifier].push_back(joinTupleIndex);
-//     //                         varAlreadyAdded.insert(li.getTermAt(tiIndex));
-//     //                     }
-//     //                 }
-//     //                 joinTupleIndex++;
-//     //             }
-//     //         }
-//     //     }*/
-//     //     //dichiaro una mappa per le joinTuple indicizzata sulle variabili di aggregazione
-//     //     std::string aggregateVarsIndex="";
-//     //     for(unsigned index_ : aggregateVariablesIndex[aggrIdentifier]){
-//     //         aggregateVarsIndex+=std::to_string(index_)+"_";
-
-//     //     }
-//     //     declareAuxMap("_"+joinTupleName+aggregateVarsIndex,aggregateVariablesIndex[aggrIdentifier],joinTupleName,false,true);
-
-
-//     //     //dichiaro una mappa per le joinTuple non indicizzata
-//     //     // declareAuxMap("_"+joinTupleName,std::vector<unsigned>(),joinTupleName,false,true);
-
-
-//     //     //dichiaro una mappa per le joinTuple indicizzata sulle variabili condivise con il corpo
-//     //     std::string sharedVarsIndexToString="";
-//     //     for(unsigned index_ : sharedVariablesIndexesMap[aggrIdentifier])
-//     //         sharedVarsIndexToString+=std::to_string(index_)+"_";
-//     //     std::vector<unsigned> sharedVarsIndex = sharedVariablesIndexesMap[aggrIdentifier];
-//     //     declareAuxMap("_"+joinTupleName+sharedVarsIndexToString,sharedVarsIndex,joinTupleName,false,true);
-
-//     //     //mappa indicizzata su aggrVars and sharedVars
-//     //     std::vector<unsigned> sharedAndAggrVarIndex(sharedVarsIndex);
-//     //     for(unsigned index_ : aggregateVariablesIndex[aggrIdentifier])
-//     //         sharedAndAggrVarIndex.push_back(index_);
-//     //     declareAuxMap("_"+joinTupleName+sharedVarsIndexToString+aggregateVarsIndex,sharedAndAggrVarIndex,joinTupleName,false,true);
-
-//     //     // int totalAriety=0;
-//     //     // for(const aspc::Literal& l : aggr.getAggregate().getAggregateLiterals()){
-//     //     //     std::string lit_indeces="";
-//     //     //     std::vector<unsigned> total_indeces(sharedVarsIndex);
-//     //     //     for(int i=0;i<l.getAriety();i++){
-//     //     //         lit_indeces+=std::to_string(i+totalAriety)+"_";
-//     //     //         total_indeces.push_back(i+totalAriety);
-//     //     //     }
-//     //     //     declareAuxMap("_"+joinTupleName+sharedVarsIndexToString+lit_indeces,total_indeces,joinTupleName,false,true);
-//     //     //     totalAriety+=l.getAriety();
-//     //     // }
-//     //     std::string sharedVariables = sharedVariablesMap[aggrIdentifier];
-
-//     //     //dichiaro una mappa per le join tuples indicizzata sull variabili di ogni letterale nell'aggregato
-//     //     index=0;
-//     //     for(std::vector<unsigned>& indexes : aggregateLiteralIndexes){
-//     //         std::string literalTermIndex="";
-//     //         for(unsigned var : indexes)
-//     //             literalTermIndex = literalTermIndex + std::to_string(var) + "_";
-//     //         //salvo per ogni letterale il nome dell'AuxMap delle join tuple indicizzata secondo il letterale
-//     //         // aggregateLiteralToAuxiliaryMap[aggr.getAggregate().getAggregateLiterals()[index].getPredicateName()+"_"+std::to_string(index)+"_"+aggrIdentifier]=std::string("_"+joinTupleName+literalTermIndex);
-//     //         // aggregateLiteralToPredicateWSet[aggr.getAggregate().getAggregateLiterals()[index].getPredicateName()+"_"+aggrIdentifier]=std::string(joinTupleName);
-
-//     //         declareAuxMap("_"+joinTupleName+literalTermIndex,indexes,joinTupleName,false,true);
-//     //         // for(unsigned var :sharedVariablesIndexesMap[aggrIdentifier])
-//     //         //     indexes.push_back(var);
-//     //         // if(sharedVariables!="")
-//     //         //     declareAuxMap("_"+joinTupleName+literalTermIndex+sharedVarsIndexToString,indexes,joinTupleName,false,true);
-//     //         // for(unsigned v : aggregateVariablesIndex[aggrIdentifier]){
-//     //         //     indexes.push_back(v);
-//     //         // }
-//     //         // declareAuxMap("_"+joinTupleName+literalTermIndex+sharedVarsIndexToString+aggregateVarsIndex,indexes,joinTupleName,false,true);
-
-//     //         index++;
-//     //     }
-
-//     //     if(sharedVariables!=""){
-
-//     //         //dichiaro una mappa per ogni letterale del corpo indicizzata sulle shared variable e costanti
-//     //         int literalIndex=0;
-//     //         //std::cout<<"Declaring map for external predicates"<<std::endl;
-//     //         for(const aspc::Literal& bodyLiteral : r.getBodyLiterals()){
-//     //             //std::cout<<"Start from ";
-//     //             //bodyLiteral.print();
-//     //             //std::cout<<std::endl;
-
-//     //             std::string auxMapName = bodyLiteral.getPredicateName()+"_";
-//     //             std::unordered_set<std::string> boundVars;
-//     //             std::vector<unsigned> indexes;
-//     //             for(int i=0;i<bodyLiteral.getAriety();i++){
-//     //                 if(sharedVariables.find(bodyLiteral.getTermAt(i))!=std::string::npos || !bodyLiteral.isVariableTermAt(i)){
-//     //                     auxMapName+=std::to_string(i)+"_";
-//     //                     indexes.push_back(i);
-//     //                 }
-//     //                 if(bodyLiteral.isVariableTermAt(i)){
-//     //                     boundVars.insert(bodyLiteral.getTermAt(i));
-//     //                 }
-//     //             }
-
-//     //             bool declareFalseAuxMap = aggregatePredicates.count(std::pair<std::string,unsigned>(bodyLiteral.getPredicateName(),bodyLiteral.getAriety()))!=0;
-//     //             declareAuxMap(auxMapName,indexes,bodyLiteral.getPredicateName(),declareFalseAuxMap,false);
-
-//     //             //join dei letterali del corpo considerando le sharedVariables bound
-//     //             int bodyLiteralIndex=0;
-//     //             for(const aspc::Literal& buildBodyLiteral : r.getBodyLiterals()){
-//     //                 if(bodyLiteralIndex!=literalIndex){
-//     //                     std::string buildAuxMapName = buildBodyLiteral.getPredicateName()+"_";
-//     //                     std::vector<unsigned> buildindexes;
-
-//     //                     for(int i=0;i<buildBodyLiteral.getAriety();i++){
-//     //                         if(sharedVariables.find(buildBodyLiteral.getTermAt(i))!=std::string::npos || !buildBodyLiteral.isVariableTermAt(i) || boundVars.count(buildBodyLiteral.getTermAt(i))){
-//     //                             buildAuxMapName+=std::to_string(i)+"_";
-//     //                             buildindexes.push_back(i);
-//     //                         }
-//     //                         if(buildBodyLiteral.isVariableTermAt(i)){
-//     //                             boundVars.insert(buildBodyLiteral.getTermAt(i));
-//     //                         }
-//     //                     }
-//     //                     bool declareFalseAuxMap = aggregatePredicates.count(std::pair<std::string,unsigned>(buildBodyLiteral.getPredicateName(),buildBodyLiteral.getAriety()))!=0;
-//     //                     //std::cout<<"Declare "<<buildAuxMapName<<std::endl;
-//     //                     declareAuxMap(buildAuxMapName,buildindexes,buildBodyLiteral.getPredicateName(),declareFalseAuxMap,false);
-
-//     //                 }
-//     //                 bodyLiteralIndex++;
-//     //             }
-//     //             literalIndex++;
-//     //         }
-//     //         for(const aspc::ArithmeticRelationWithAggregate& aggr : r.getArithmeticRelationsWithAggregate()){
-//     //             int literalIndex=0;
-//     //             for(const aspc::Literal& aggrLit : aggr.getAggregate().getAggregateLiterals()){
-//     //                 std::string auxMapName = aggrLit.getPredicateName()+"_";
-//     //                 std::unordered_set<std::string> boundVars;
-//     //                 std::vector<unsigned> indexes;
-//     //                 for(int i=0;i<aggrLit.getAriety();i++){
-//     //                     if(sharedVariables.find(aggrLit.getTermAt(i))!=std::string::npos || !aggrLit.isVariableTermAt(i)){
-//     //                         auxMapName+=std::to_string(i)+"_";
-//     //                         indexes.push_back(i);
-//     //                     }
-//     //                     if(aggrLit.isVariableTermAt(i)){
-//     //                         boundVars.insert(aggrLit.getTermAt(i));
-//     //                     }
-//     //                 }
-
-//     //                 bool declareFalseAuxMap = aggregatePredicates.count(std::pair<std::string,unsigned>(aggrLit.getPredicateName(),aggrLit.getAriety()))!=0;
-//     //                 declareAuxMap(auxMapName,indexes,aggrLit.getPredicateName(),declareFalseAuxMap,false);
-
-//     //                 //join dei letterali del corpo considerando le sharedVariables bound
-//     //                 int bodyLiteralIndex=0;
-//     //                 for(const aspc::Literal& buildAggrLiteral : aggr.getAggregate().getAggregateLiterals()){
-//     //                     if(bodyLiteralIndex!=literalIndex){
-//     //                         std::string buildAuxMapName = buildAggrLiteral.getPredicateName()+"_";
-//     //                         std::vector<unsigned> buildindexes;
-
-//     //                         for(int i=0;i<buildAggrLiteral.getAriety();i++){
-//     //                             if(sharedVariables.find(buildAggrLiteral.getTermAt(i))!=std::string::npos || !buildAggrLiteral.isVariableTermAt(i) || boundVars.count(buildAggrLiteral.getTermAt(i))){
-//     //                                 buildAuxMapName+=std::to_string(i)+"_";
-//     //                                 buildindexes.push_back(i);
-//     //                             }
-//     //                             if(buildAggrLiteral.isVariableTermAt(i)){
-//     //                                 boundVars.insert(buildAggrLiteral.getTermAt(i));
-//     //                             }
-//     //                         }
-//     //                         bool declareFalseAuxMap = aggregatePredicates.count(std::pair<std::string,unsigned>(buildAggrLiteral.getPredicateName(),buildAggrLiteral.getAriety()))!=0;
-//     //                         //std::cout<<"Declare "<<buildAuxMapName<<std::endl;
-//     //                         declareAuxMap(buildAuxMapName,buildindexes,buildAggrLiteral.getPredicateName(),declareFalseAuxMap,false);
-//     //                     }
-//     //                     bodyLiteralIndex++;
-//     //                 }
-//     //                 literalIndex++;
-//     //             }
-//     //         }
-//     //     }
-//     // }
-// }
 void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & program, AspCore2ProgramBuilder* builder) {
 
     std::cout<<"generateStratifiedCompilableProgram"<<std::endl;
@@ -1047,161 +645,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     *out << ind << "std::unordered_map<int,int> actualSum;\n";
     *out << ind << "std::unordered_map<int,int> possibleSum;\n";
-    
-    //REMOVING
-    // *out << ind << "std::unordered_set<const std::string*> aggr_setPredicate;\n";
-    // *out << ind << "std::unordered_map<const std::string*,std::vector<AuxMap*>> sumAggrIdForAggrSetAuxMap;\n";
-    // *out << ind << "std::unordered_map<const std::string*,std::vector<AuxMap*>> sumAggrIdForAggrSetUAuxMap;\n";
-    // *out << ind << "std::unordered_map<const std::string*,std::vector<AuxMap*>> sumAggrIdForAggrSetFAuxMap;\n";
-    //dichiaro predicateWSet per joinTuple
-    std::unordered_set<std::string> declaredJoinTupleSet;
-
-    // for(aspc::Rule & r : program.getRules()){
-        // if(r.isConstraint() && r.containsAggregate()){
-        //     for(const aspc::ArithmeticRelationWithAggregate& ar : r.getArithmeticRelationsWithAggregate()){
-
-        //         std::string joinTupleName =ar.getJoinTupleName();
-
-        //         //contains variable index inside jointuple
-        //         std::vector<pair<std::string,int>> bodyAggregateVars;
-        //         std::unordered_set<std::string> vars;
-        //         int arity=0;
-        //         for(const aspc::Literal& l : ar.getAggregate().getAggregateLiterals()){
-        //             for(unsigned i=0;i<l.getAriety();i++){
-        //                 if(l.isVariableTermAt(i) && l.getTermAt(i)!="_"){
-        //                     bodyAggregateVars.push_back(std::pair<std::string,int>(l.getTermAt(i),arity+i));
-        //                     vars.insert(l.getTermAt(i));
-        //                 }
-        //             }
-        //             arity+=l.getAriety();
-        //         }
-        //         std::vector<pair<std::string,int>> inequalityAggregateVars;
-        //         for(const aspc::ArithmeticRelation& inequality : ar.getAggregate().getAggregateInequalities()){
-        //             if(inequality.isBoundedValueAssignment(vars)){
-        //                 std::string v = inequality.getAssignedVariable(vars);
-        //                 inequalityAggregateVars.push_back(std::pair<std::string,int>({v,arity}));
-        //                 vars.insert(v);
-        //                 arity++;
-        //             }
-        //         }
-        //         for(auto pair : inequalityAggregateVars){
-        //             bool found = false;
-        //             for(const aspc::Literal& l : r.getBodyLiterals()){
-        //                 if(l.getVariables().count(pair.first)!=0){
-        //                     found=true;
-        //                     break;
-        //                 }
-        //             }
-        //             bodyAggregateVars.push_back(pair);
-        //             joinTupleName+=pair.first+"_";
-        //         }
-        //         //dichiaro le shared variables per l'aggregato formulaIndex e la regola
-        //         std::string key(std::to_string(r.getRuleId())+":"+std::to_string(ar.getFormulaIndex()));
-        //         std::unordered_set<std::string> sharedVars;
-        //         for(std::string v: ar.getAggregate().getAggregateVariables()){
-        //             if(isVariable(v)){
-        //                 for(auto pair : bodyAggregateVars)
-        //                     if(v==pair.first){
-        //                         aggregateVariablesIndex[key].push_back(pair.second);
-        //                         break;
-        //                     }
-        //             }else{
-        //                 std::cout<<v<<std::endl;
-        //             }
-        //         }
-        //         bool firstVarAdded=false;
-        //         for(auto pair : bodyAggregateVars){
-        //             bool found=false;
-        //             std::unordered_set<std::string> boundVars;
-        //             for(const aspc::Literal& l : r.getBodyLiterals()){
-        //                 l.addVariablesToSet(boundVars);
-        //                 if(l.getVariables().count(pair.first)!=0){
-        //                     found=true;
-        //                     if (firstVarAdded){
-        //                         sharedVariablesMap[key]+=",";
-        //                     }
-        //                     firstVarAdded=true;
-        //                     sharedVariablesMap[key]+=pair.first;
-        //                     sharedVariablesIndexesMap[key].push_back(pair.second);
-        //                     //variable founded in at least one body literal
-        //                     break;
-        //                 }
-        //             }
-        //             if(!found){
-        //                 for(const aspc::ArithmeticRelation& inequality : r.getArithmeticRelations()){
-        //                     if(inequality.isBoundedValueAssignment(boundVars)){
-        //                         if(pair.first == inequality.getAssignedVariable(boundVars)){
-        //                             found=true;
-        //                             if (firstVarAdded){
-        //                                 sharedVariablesMap[key]+=",";
-        //                             }
-        //                             firstVarAdded=true;
-        //                             sharedVariablesMap[key]+=pair.first;
-        //                             sharedVariablesIndexesMap[key].push_back(pair.second);
-        //                             //variable founded in at least one body literal
-        //                             break;
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //         }
-
-
-        //         r.updateJoinTupleName(ar.getFormulaIndex(),joinTupleName);
-        //         if(!declaredJoinTupleSet.count(joinTupleName)){
-        //             *out << ind << "const std::string _" << joinTupleName << " = \"" << joinTupleName << "\";\n";
-        //             *out << ind << "PredicateWSet w"<<joinTupleName<<"("<<arity<<");\n";
-        //             *out << ind << "PredicateWSet u"<<joinTupleName<<"("<<arity<<");\n";
-        //             *out << ind << "PredicateWSet nw"<<joinTupleName<<"("<<arity<<");\n";
-        //             *out << ind << "PredicateWSet nu"<<joinTupleName<<"("<<arity<<");\n";
-        //             declaredJoinTupleSet.insert(joinTupleName);
-        //         }
-
-        //         aggregateToStructure.insert({joinTupleName+sharedVariablesMap[key]+ar.getAggrVarAsString(),aggregateToStructure.size()});
-        //         // std::cout << joinTupleName<<sharedVariablesMap[key]<<ar.getAggrVarAsString()<<" "<<aggregateToStructure[joinTupleName+sharedVariablesMap[key]+ar.getAggrVarAsString()]<<std::endl;
-        //         // *out << ind << "std::set<std::vector<int>> sharedVariables_"<<r.getRuleId()<<"_ToAggregate_"<<ar.getFormulaIndex()<<";\n";
-        //         // *out << ind << "std::map<std::vector<int>, std::pair< AuxMap*,AuxMap*>*> sharedVariables_"<<r.getRuleId()<<"_ToAggregate_"<<ar.getFormulaIndex()<<";\n";
-        //     }
-        // }
-    // }
-    // *out << ind << "std::unordered_map < unsigned int, std::set < VarsIndex > > trueAggrVars["<<aggregateToStructure.size()<<"];\n";
-    // *out << ind << "std::unordered_map < unsigned int, std::set < VarsIndex > > undefAggrVars["<<aggregateToStructure.size()<<"];\n";
-    // *out << ind << "std::unordered_map < unsigned int, std::set < VarsIndex > > trueNegativeAggrVars["<<aggregateToStructure.size()<<"];\n";
-    // *out << ind << "std::unordered_map < unsigned int, std::set < VarsIndex > > undefNegativeAggrVars["<<aggregateToStructure.size()<<"];\n";
-
-
-    // *out << ind << "DynamicTrie aggrVariable["<<aggregateToStructure.size()<<"];\n";
-    // *out << ind << "DynamicTrie sharedVariable["<<aggregateToStructure.size()<<"];\n";
-
-    // *out << ind << "VariablesMapping sharedVariable["<<aggregateToStructure.size()<<"];\n";
-    // *out << ind << "VariablesMapping aggrVariable["<<aggregateToStructure.size()<<"];\n";
-
-    // *out << ind << "std::unordered_map < unsigned int, ReasonTable > positiveAggrReason["<<aggregateToStructure.size()<<"];\n";
-    // *out << ind << "std::unordered_map < unsigned int, ReasonTable > negativeAggrReason["<<aggregateToStructure.size()<<"];\n";
-
-    // *out << ind << "std::unordered_map < unsigned int, int > actualSum["<<aggregateToStructure.size()<<"];\n";
-    // *out << ind << "std::unordered_map < unsigned int, int > possibleSum["<<aggregateToStructure.size()<<"];\n";
-    // *out << ind << "std::unordered_map < unsigned int, int > actualNegativeSum["<<aggregateToStructure.size()<<"];\n";
-    // *out << ind << "std::unordered_map < unsigned int, int > possibleNegativeSum["<<aggregateToStructure.size()<<"];\n";
-
-    // *out << ind << "std::unordered_map < unsigned int, int > maxPossibleNegativeSum["<<aggregateToStructure.size()<<"];\n";
-
-    // *out << ind << "std::unordered_map<std::vector<int>,std::set<std::vector<int>>,TuplesHash> trueAggrVars["<<aggregateToStructure.size()<<"];\n";
-    // *out << ind << "std::unordered_map<std::vector<int>,std::set<std::vector<int>>,TuplesHash> undefAggrVars["<<aggregateToStructure.size()<<"];\n";
-    // *out << ind << "std::unordered_map<std::vector<int>,std::set<std::vector<int>>,TuplesHash> trueNegativeAggrVars["<<aggregateToStructure.size()<<"];\n";
-    // *out << ind << "std::unordered_map<std::vector<int>,std::set<std::vector<int>>,TuplesHash> undefNegativeAggrVars["<<aggregateToStructure.size()<<"];\n";
-
-    // *out << ind << "std::unordered_map<std::vector<int>,ReasonTable,TuplesHash> positiveAggrReason["<<aggregateToStructure.size()<<"];\n";
-    // *out << ind << "std::unordered_map<std::vector<int>,ReasonTable,TuplesHash> negativeAggrReason["<<aggregateToStructure.size()<<"];\n";
-
-    // *out << ind << "std::unordered_map<std::vector<int>, int,TuplesHash> actualSum["<<aggregateToStructure.size()<<"];\n";
-    // *out << ind << "std::unordered_map<std::vector<int>, int,TuplesHash> possibleSum["<<aggregateToStructure.size()<<"];\n";
-    // *out << ind << "std::unordered_map<std::vector<int>, int,TuplesHash> actualNegativeSum["<<aggregateToStructure.size()<<"];\n";
-    // *out << ind << "std::unordered_map<std::vector<int>, int,TuplesHash> possibleNegativeSum["<<aggregateToStructure.size()<<"];\n";
-
-    // *out << ind << "std::unordered_map<std::vector<int>, int,TuplesHash> maxPossibleNegativeSum["<<aggregateToStructure.size()<<"];\n";
-    // *out << ind << "int currentReasonLevel=0;\n";
-    // *out << ind << "PostponedReasons reasonMapping;\n";
     *out << ind << "bool unRoll=false;\n";
 
     *out << ind++ << "Executor::~Executor() {\n";
@@ -1517,6 +960,85 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         // declareDataStructures(r, starter,aggregatePredicates);
         // }
 
+    }
+    for(const aspc::Rule& r : builder->getRuleWithoutComplition()){
+        std::vector<unsigned> orderedFormulas;
+        r.orderBodyFormulas(orderedFormulas);
+        std::unordered_set<std::string> boundVariables;
+        for(unsigned formulaIndex : orderedFormulas){
+            if(!r.getFormulas()[formulaIndex]->containsAggregate()){
+                if(r.getFormulas()[formulaIndex]->isLiteral()){
+                    const aspc::Literal* l = (aspc::Literal*)r.getFormulas()[formulaIndex];
+                    if(!l->isBoundedLiteral(boundVariables)){
+                        std::string mapName=l->getPredicateName()+"_";
+                        std::vector<unsigned> boundIndices;
+                        for(unsigned k=0;k<l->getAriety();k++){
+                            if(!l->isVariableTermAt(k) || boundVariables.count(l->getTermAt(k))!=0){
+                                boundIndices.push_back(k);
+                                mapName+=std::to_string(k)+"_";
+                            }
+                        }
+                        for(std::string c: {"p","u","f"}){
+                            std::cout<<c<<mapName<<std::endl;
+                            *out << ind << "AuxMap "<< c << mapName << "({";
+                            for (unsigned k = 0; k < boundIndices.size(); k++) {
+                                if (k > 0) {
+                                    *out << ",";
+                                }
+                                *out << boundIndices[k];
+                            }
+                            *out << "});\n";
+
+                        }
+                        l->addVariablesToSet(boundVariables);
+                        predicateToAuxiliaryMaps[l->getPredicateName()].insert(mapName);
+                        predicateToUndefAuxiliaryMaps[l->getPredicateName()].insert(mapName);
+                        predicateToFalseAuxiliaryMaps[l->getPredicateName()].insert(mapName);
+                        declaredMaps.insert(mapName);
+                    }
+                }
+            }else{
+                std::vector<aspc::Formula*> aggrFormulas;
+                std::unordered_set<std::string> localBoundVariables(boundVariables);
+                const aspc::ArithmeticRelationWithAggregate* aggrRelation=(aspc::ArithmeticRelationWithAggregate*)r.getFormulas()[formulaIndex];
+                aggrRelation->getOrderedAggregateBody(aggrFormulas,localBoundVariables);
+                for(const aspc::Formula* f : aggrFormulas){
+                    if(f->isLiteral()){
+                        const aspc::Literal* l = (aspc::Literal*)f;
+                        if(!l->isBoundedLiteral(localBoundVariables)){
+                            std::string mapName=l->getPredicateName()+"_";
+                            std::vector<unsigned> boundIndices;
+                            for(unsigned k=0;k<l->getAriety();k++){
+                                if(!l->isVariableTermAt(k) || localBoundVariables.count(l->getTermAt(k))!=0){
+                                    boundIndices.push_back(k);
+                                    mapName+=std::to_string(k)+"_";
+                                }
+                            }
+                            for(std::string c: {"p","u","f"}){
+                                std::cout<<c<<mapName<<std::endl;
+                                *out << ind << "AuxMap "<< c << mapName << "({";
+                                for (unsigned k = 0; k < boundIndices.size(); k++) {
+                                    if (k > 0) {
+                                        *out << ",";
+                                    }
+                                    *out << boundIndices[k];
+                                }
+                                *out << "});\n";
+
+                            }
+                            l->addVariablesToSet(localBoundVariables);
+                            predicateToAuxiliaryMaps[l->getPredicateName()].insert(mapName);
+                            predicateToUndefAuxiliaryMaps[l->getPredicateName()].insert(mapName);
+                            predicateToFalseAuxiliaryMaps[l->getPredicateName()].insert(mapName);
+                            declaredMaps.insert(mapName);
+                        }
+                    }
+                }
+                for(unsigned k=0; k<aggrFormulas.size();k++){
+                    delete aggrFormulas[k];
+                }
+            }
+        }
     }
 
     // std::vector< std::unordered_map<std::string, std::vector<unsigned>>> starterToExitRulesByComponent(sccsSize);
@@ -1894,7 +1416,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     // ---------------------- onLiteralUndef(int var) --------------------------------------//
     *out << ind++ << "inline void Executor::onLiteralUndef(int var) {\n";
     if (mode == EAGER_MODE) {
-        //*out << ind << "std::cout<<\"undef \"<<var<<std::endl;\n";
+        // *out << ind << "std::cout<<\"undef \"<<var<<std::endl;\n";
         *out << ind << "reasonForLiteral.erase(var);\n";
         *out << ind << "externalLiteralsLevel.erase(var);\n";
 
@@ -1907,6 +1429,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
         *out << ind << "std::unordered_map<const std::string*,int>::iterator sum_it;\n";
         *out << ind << "std::string minus = var < 0 ? \"-\" : \"\";\n";
+        // *out << ind << "std::cout<<\"print undef \"<<var<<std::endl;\n";
+
         // *out << ind << "std::cout<<\"Undef \"<<minus;tuple.print();std::cout<<std::endl;\n";
 
 #ifdef EAGER_DEBUG
@@ -3457,6 +2981,192 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 *out << ind << "std::cout<<std::endl;\n";
             *out << --ind << "}\n";
         }
+        for(const aspc::Rule& r: builder->getRuleWithoutComplition()){
+            if(!r.isConstraint()){
+                *out << ind << "std::set<std::vector<int>> trueHeads;\n";
+                std::vector<unsigned> orderedBodyFormulas;
+                r.orderBodyFormulas(orderedBodyFormulas);
+                std::unordered_set<std::string> boundVariables;
+                unsigned closingPars=0;
+                std::cout<<"Formulas size "<<orderedBodyFormulas.size()<<std::endl;
+                for(unsigned formulaIndex: orderedBodyFormulas){
+                    const aspc::Formula* f = r.getFormulas()[formulaIndex];
+                    if(!f->isLiteral() && !f->containsAggregate()){
+                        f->print();
+                        const aspc::ArithmeticRelation* ineq = (aspc::ArithmeticRelation*)f;
+                        if(ineq->isBoundedValueAssignment(boundVariables)){
+                            *out << ind << "int "<<ineq->getAssignmentStringRep(boundVariables)<<";\n";
+                            ineq->addVariablesToSet(boundVariables);
+                        }else{
+                            *out << ind++ << "if("<<ineq->getStringRep()<<"){\n";
+                            closingPars++;
+                        }
+                    }else if(f->isLiteral()){
+                        const aspc::Literal* l = (aspc::Literal*)f;
+                        if(f->isBoundedLiteral(boundVariables)){
+                            
+                            *out << ind << "Tuple boundTuple({";
+                            for(unsigned k = 0; k<l->getAriety(); k++){
+                                if(k>0)
+                                    *out << ",";
+                                *out << l->getTermAt(k);
+                            }
+                            *out << "},&_"<<l->getPredicateName()<<");\n";
+                            if(l->isNegated()){
+                                *out << ind++ << "if(w"<<l->getPredicateName()<<".find(boundTuple) == NULL && u"<<l->getPredicateName()<<".find(boundTuple) == NULL){\n";
+                                closingPars++;
+                            }else{
+                                *out << ind++ << "if(w"<<l->getPredicateName()<<".find(boundTuple) != NULL){\n";
+                                closingPars++;
+                            }
+                        }else{
+                            *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
+                            std::string boundTerms="";
+                            std::vector<unsigned> unBoundedIndices;
+                            for(unsigned k = 0; k<l->getAriety(); k++){
+                                if(!l->isVariableTermAt(k) || boundVariables.count(l->getTermAt(k))!=0){
+                                    *out << k << "_";
+                                    if(boundTerms!="")
+                                        boundTerms+=",";
+                                    boundTerms+=l->getTermAt(k);
+                                }else{
+                                    unBoundedIndices.push_back(k);
+                                }
+                            }
+                            *out << ".getValues({"<<boundTerms<<"});\n";
+                            *out << ind++ << "for(unsigned i=0; i<tuples->size();i++){\n";
+                            closingPars++;
+                                for(unsigned index:unBoundedIndices){
+                                    if(boundVariables.count(l->getTermAt(index))==0){
+                                        *out << ind << "int "<<l->getTermAt(index)<<" = tuples->at(i)->at("<<index<<");\n";
+                                        boundVariables.insert(l->getTermAt(index));
+                                    }else{
+                                        *out << ind++ << "if(tuples->at(i)->at("<<index<<") == "<<l->getTermAt(index)<<"){\n";
+                                        closingPars++;
+                                    }
+                                }
+                        }
+                    }else{
+                        std::vector<aspc::Formula*> aggrBodyFormulas;
+                        const aspc::ArithmeticRelationWithAggregate* aggrRelation =(aspc::ArithmeticRelationWithAggregate*)r.getFormulas()[formulaIndex];
+                        aggrRelation->getOrderedAggregateBody(aggrBodyFormulas,boundVariables);
+                        std::unordered_set<std::string> localBoundVariables(boundVariables);
+                        *out << ind << "std::set<std::vector<int>> aggrSetKey;\n";
+                        *out << ind << "int aggregateValue=0;\n";
+
+                        unsigned localPars=0;
+                        for(const aspc::Formula* fAggr:aggrBodyFormulas){
+                            if(!fAggr->isLiteral() && !fAggr->containsAggregate()){
+                                fAggr->print();
+                                const aspc::ArithmeticRelation* ineq = (aspc::ArithmeticRelation*)fAggr;
+                                if(ineq->isBoundedValueAssignment(localBoundVariables)){
+                                    *out << ind << "int "<<ineq->getAssignmentStringRep(localBoundVariables)<<";\n";
+                                    ineq->addVariablesToSet(localBoundVariables);
+                                }else{
+                                    *out << ind++ << "if("<<ineq->getStringRep()<<"){\n";
+                                    localPars++;
+                                }
+                            }else if(fAggr->isLiteral()){
+                                const aspc::Literal* l = (aspc::Literal*)fAggr;
+                                if(fAggr->isBoundedLiteral(localBoundVariables)){
+                                    
+                                    *out << ind << "Tuple boundTuple({";
+                                    for(unsigned k = 0; k<l->getAriety(); k++){
+                                        if(k>0)
+                                            *out << ",";
+                                        *out << l->getTermAt(k);
+                                    }
+                                    *out << "},&_"<<l->getPredicateName()<<");\n";
+                                    if(l->isNegated()){
+                                        *out << ind++ << "if(w"<<l->getPredicateName()<<".find(boundTuple) == NULL && u"<<l->getPredicateName()<<".find(boundTuple) == NULL){\n";
+                                        localPars++;
+                                    }else{
+                                        *out << ind++ << "if(w"<<l->getPredicateName()<<".find(boundTuple) != NULL){\n";
+                                        localPars++;
+                                    }
+                                }else{
+                                    *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
+                                    std::string boundTerms="";
+                                    std::vector<unsigned> unBoundedIndices;
+                                    for(unsigned k = 0; k<l->getAriety(); k++){
+                                        if(!l->isVariableTermAt(k) || localBoundVariables.count(l->getTermAt(k))!=0){
+                                            *out << k << "_";
+                                            if(boundTerms!="")
+                                                boundTerms+=",";
+                                            boundTerms+=l->getTermAt(k);
+                                        }else{
+                                            unBoundedIndices.push_back(k);
+                                        }
+                                    }
+                                    *out << ".getValues({"<<boundTerms<<"});\n";
+                                    *out << ind++ << "for(unsigned i=0; i<tuples->size();i++){\n";
+                                    localPars++;
+                                        for(unsigned index:unBoundedIndices){
+                                            if(localBoundVariables.count(l->getTermAt(index))==0){
+                                                *out << ind << "int "<<l->getTermAt(index)<<" = tuples->at(i)->at("<<index<<");\n";
+                                                localBoundVariables.insert(l->getTermAt(index));
+                                            }else{
+                                                *out << ind++ << "if(tuples->at(i)->at("<<index<<") == "<<l->getTermAt(index)<<"){\n";
+                                                localPars++;
+                                            }
+                                        }
+                                }
+                            }
+                        }
+                        *out << ind << "std::vector<int> aggrKey(";
+                        bool first=true;
+                        for(std::string v : aggrRelation->getAggregate().getAggregateVariables()){
+                            if(!first)
+                                *out << ",";
+                            *out << v;
+                            first=false;
+                        }
+                        *out << ");\n";
+                        *out << ind++ << "if(aggrSetKey.count(aggrKey)==0){\n";
+                            *out << ind << "aggrSetKey.insert(aggrKey);\n";
+                            if(aggrRelation->getAggregate().isSum())
+                                *out << ind << "aggregateValue+=aggrKey[0];\n";
+                            else
+                                *out << ind << "aggregateValue+=1;\n";
+                        *out << --ind << "}\n";
+                        while(localPars > 0){
+                            *out << --ind << "}\n";
+                            localPars--;
+                        }
+                        for(unsigned k=0;k<aggrBodyFormulas.size();k++){
+                            delete aggrBodyFormulas[k];
+                        }
+                        std::string plusOne = aggrRelation->isPlusOne() ? "+1":"";
+                        std::string negated = aggrRelation->isNegated() ? "!" :"";
+                        *out << ind++ << "if("<<negated<<"aggregateValue "<<aggrRelation->getCompareTypeAsString()<<" "<<aggrRelation->getGuard().getStringRep()<<plusOne<<"){\n";
+                        closingPars++;
+                    }
+                }
+                *out << ind << "std::vector<int> head({";
+                const aspc::Atom* head = &r.getHead()[0];
+                for(unsigned k=0;k<head->getAriety();k++){
+                    if(k>0)
+                        *out << ",";
+                    *out << head->getTermAt(k);
+                }
+                *out << "});\n";
+                *out << ind++ << "if(trueHeads.count(head)==0){\n";
+                    *out << ind << "std::cout<<\""<<head->getPredicateName()<<"(\"";
+                    for(unsigned k=0;k<head->getAriety();k++){
+                        if(k>0)
+                            *out << "<<\",\"";
+                        *out << "<<head["<<k<<"]";
+                    } 
+                    *out << "<<\")\"<<std::endl;\n";
+                *out << --ind << "}\n";
+                while (closingPars>0){
+                    *out << --ind << "}\n";
+                    closingPars--;
+                }
+                
+
+            }
+        }
     *out << --ind << "}\n";
     *out << ind++ << "void Executor::unRollToLevel(int decisionLevel){\n";
         // *out << ind << "std::cout<<\"Unrolling to level: \"<<decisionLevel << \" \" <<currentDecisionLevel<<std::endl;\n";
@@ -3690,6 +3400,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     } else {
         //mode == EAGER_MODE
         *out << ind << "if(decisionLevel>-1) {\n";
+            // *out << ind << "std::cout<<\"level > -1\"<<std::endl;\n";
             // *out << ind++ << "for(auto pair : actualSum){\n";
             //     *out << ind << "atomsTable[pair.first].print();\n";
             //     *out << ind << "std::cout<<\" ActualSum \"<<pair.second<<std::endl;\n";
@@ -3702,8 +3413,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             // *out << --ind <<"}\n";
         *out << ind << "}\n";
         *out << ind++ << "if(decisionLevel==-1) {\n";
+            // *out << ind << "std::cout<<\"level -1\"<<std::endl;\n";
             *out << ind++ << "if(!undefinedLoaded)\n";
                 *out << ind-- << "undefLiteralsReceived();\n";
+            
             std::unordered_set<unsigned> compiledRuleIndices;
             while(compiledRuleIndices.size()<program.getRulesSize()){
                 const aspc::Rule* rule = NULL;
@@ -3729,6 +3442,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 compiledRuleIndices.insert(rule->getRuleId());
                 compileEagerRule(*rule,false);
             }
+            // *out << ind << "std::cout<<\"end level -1\"<<std::endl;\n";
+
         *out << --ind << "}//close decision level == -1\n";
         // *out << ind << "std::cout<<\"outOfDecisionLevel\"<<std::endl;\n";
 

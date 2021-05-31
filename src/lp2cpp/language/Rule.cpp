@@ -25,8 +25,15 @@
 using namespace std;
 
 unsigned aspc::Rule::rulesCounter = 0;
+unsigned aspc::Rule::rulesCounterRewriting = 0;
 string aspc::Rule::inequalityStrings[] = {">=", "<=", ">", "<", "!=", "=="};
 
+aspc::Rule::Rule(const vector<aspc::Atom> & head, const vector<aspc::Literal> & body, const vector<aspc::ArithmeticRelation> & arithmeticRelations, const vector<aspc::ArithmeticRelationWithAggregate> & arithmeticRelationsWithAggregate,bool rewriting) : head(head), bodyLiterals(body), arithmeticRelations(arithmeticRelations),arithmeticRelationsWithAggregate(arithmeticRelationsWithAggregate) {
+    if(rewriting == 0)
+        ruleId = rulesCounterRewriting++;
+    else
+        ruleId = rulesCounter++;
+}
 aspc::Rule::Rule(const vector<aspc::Atom> & head, const vector<aspc::Literal> & body, const vector<aspc::ArithmeticRelation> & arithmeticRelations, const vector<aspc::ArithmeticRelationWithAggregate> & arithmeticRelationsWithAggregate) : head(head), bodyLiterals(body), ruleId(rulesCounter), arithmeticRelations(arithmeticRelations),arithmeticRelationsWithAggregate(arithmeticRelationsWithAggregate) {
     rulesCounter++;
 }
@@ -47,7 +54,7 @@ aspc::Rule::Rule(const vector<Atom>& head, const vector<Literal> & body, const v
 
 
 }
-aspc::Rule::Rule(const std::vector<aspc::Atom> & head, const std::vector<aspc::Literal> & body, const std::vector<ArithmeticRelation> & inequalities,const std::vector<ArithmeticRelationWithAggregate> & inequalitiesWithAggregate, bool): Rule(head, body, inequalities,inequalitiesWithAggregate){
+aspc::Rule::Rule(const std::vector<aspc::Atom> & head, const std::vector<aspc::Literal> & body, const std::vector<ArithmeticRelation> & inequalities,const std::vector<ArithmeticRelationWithAggregate> & inequalitiesWithAggregate, bool, bool rewriting): Rule(head, body, inequalities,inequalitiesWithAggregate,rewriting){
     
     
     
@@ -244,10 +251,55 @@ void aspc::Rule::bodyReordering() {
         }
     }
     //needed for eager
-    if (isConstraint()) {
+    // if (isConstraint()) {
         starters.push_back(formulas.size());
-    }
+    // }
     bodyReordering(starters);
+}
+void aspc::Rule::orderBodyFormulas(std::vector<unsigned>& orderedBodyFormulas)const{
+    std::unordered_set<std::string> boundVariables;
+    std::unordered_set<unsigned> selectedFormulas;
+    while(orderedBodyFormulas.size()<formulas.size()){
+        unsigned selectedIndex=-1;
+        bool isPositiveLiteralSelected=false;
+        bool isBoundedValueAssignmentSelected=false;
+        for(unsigned i=0; i<formulas.size();i++){
+            if(selectedFormulas.count(i)==0){
+                const aspc::Formula* f = formulas[i];
+                if(!f->containsAggregate()){
+                    if(f->isBoundedRelation(boundVariables) || f->isBoundedLiteral(boundVariables)){
+                        selectedIndex=i;
+                        break;
+                    }else if(f->isBoundedValueAssignment(boundVariables)){
+                        if(!isBoundedValueAssignmentSelected){
+                            isBoundedValueAssignmentSelected=true;
+                            selectedIndex=i;
+                        }
+                    }else if(f->isPositiveLiteral()){
+                        if(!isPositiveLiteralSelected && !isBoundedValueAssignmentSelected){
+                            selectedIndex=i;
+                            isPositiveLiteralSelected=true;
+                        }
+                    }
+                }
+                
+            }
+        }
+        if(selectedIndex==-1)
+            break;
+        selectedFormulas.insert(selectedIndex);
+        orderedBodyFormulas.push_back(selectedIndex);
+        formulas[selectedIndex]->addVariablesToSet(boundVariables);
+    }
+    for(unsigned i=0; i<formulas.size();i++){
+        if(formulas[i]->containsAggregate()){
+            if(selectedFormulas.count(i)==0){
+                selectedFormulas.insert(i);
+                orderedBodyFormulas.push_back(i);
+            }
+        }
+    }
+    
 }
 void aspc::Rule::addArithmeticRelationsWithAggregate(ArithmeticRelationWithAggregate r){
     arithmeticRelationsWithAggregate.push_back(r);

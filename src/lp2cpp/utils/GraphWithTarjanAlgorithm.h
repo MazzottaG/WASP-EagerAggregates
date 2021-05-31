@@ -47,6 +47,8 @@ public:
     GraphWithTarjanAlgorithm(){}
     void addEdge(unsigned int v, unsigned int w);   // function to add an edge to graph
     const std::vector< std::vector <int> > SCC() ;    // prints strongly connected components
+    unsigned getNodeSize(){adj.size();}
+    std::list<int> getAdjForNode(unsigned node){return adj[node];}
 };
 
 
