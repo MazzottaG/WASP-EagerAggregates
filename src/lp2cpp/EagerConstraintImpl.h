@@ -47,6 +47,7 @@ private:
     CompilationManager compilationManager;
     std::vector<unsigned> watchedAtoms;
     std::unordered_set<unsigned> watchedAtomsSet;
+    std::unordered_set<unsigned> watchedAtomsSetNotCompletion;
     std::vector<unsigned> idbWatchedAtoms;
     std::unordered_set<int> facts;
     std::string filepath;

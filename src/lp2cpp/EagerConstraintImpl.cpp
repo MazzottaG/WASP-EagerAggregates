@@ -18,6 +18,7 @@
 #include "language/Literal.h"
 #include "../util/WaspOptions.h"
 #include "utils/FilesManagement.h"
+#include "../util/VariableNames.h"
 
 #ifdef PRINT_EXEC_TIMES
 #include <chrono>
@@ -86,7 +87,14 @@ high_resolution_clock::time_point t2_e = high_resolution_clock::now();
 #endif
 
 void EagerConstraintImpl::onAnswerSet(const std::vector<int> answerSet){
-    executionManager.printInternalLiterals();
+
+    std::unordered_map<int,string> watchedLiterals;
+    for(unsigned i=0; i<answerSet.size();i++){
+        if(answerSet[i]>0 && watchedAtomsSetNotCompletion.count(answerSet[i])!=0){
+            watchedLiterals[answerSet[i]]=VariableNames::getName(Literal::createLiteralFromInt(answerSet[i]).getVariable());
+        }
+    }
+    executionManager.printInternalLiterals(watchedLiterals);
 }
 void EagerConstraintImpl::onLiteralTrue(int var, int decisionLevel, std::vector<int> & propagatedLiterals) {
 #ifdef PRINT_EXEC_TIMES
@@ -260,7 +268,10 @@ void EagerConstraintImpl::addedVarName(int var, const std::string & literalStrin
     if (compilationManager.getBodyPredicates().count(atom.getPredicateName())) {
         executionManager.addedVarName(var, literalString);
     }
-
+    if (compilationManager.getBodyPredicatesNotCompletion().count(atom.getPredicateName())) {
+        int uVar=var>0 ? var : -var; 
+        watchedAtomsSetNotCompletion.insert(uVar);
+    }
     compilationManager.insertModelGeneratorPredicate(atom.getPredicateName());
     
 

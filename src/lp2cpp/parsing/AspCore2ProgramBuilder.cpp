@@ -1023,16 +1023,12 @@ aspc::Program & AspCore2ProgramBuilder::getProgram() {
         std::vector<unsigned> visitingComponents;
         std::unordered_map<unsigned,unsigned> predicateToComponent;
         const std::vector<std::vector<int>> scc = graphWithTarjanAlgorithm.SCC();
-        std::cout<<"components count: "<<scc.size()<<std::endl;
         for(unsigned componentId = 0; componentId<scc.size(); componentId++){
-            std::cout<<"component "<<componentId<<std::endl;
             for(unsigned predicateId : scc[componentId]){
-                std::cout<<"predicate "<<vertexByID[predicateId].name<<std::endl;
                 predicateToComponent[predicateId]=componentId;
                 if(constraintPredicates.count(vertexByID[predicateId].name)!=0){
                     labeledComponents.insert(componentId);
                     visitingComponents.push_back(componentId);
-                    std::cout<<"Labeled "<<componentId<<std::endl;
                     break;
                 }
             }
@@ -1040,16 +1036,13 @@ aspc::Program & AspCore2ProgramBuilder::getProgram() {
         while(!visitingComponents.empty()){
             unsigned componentId = visitingComponents.back();
             visitingComponents.pop_back();
-            std::cout<<"Visiting Component "<<componentId<<" Name "<<vertexByID[scc[componentId][0]].name<<std::endl;
             for(unsigned ruleId : vertexByID[scc[componentId][0]].rules){
-                std::cout<<"rule id "<<ruleId<<std::endl;
                 const aspc::Rule* r = &program.getRule(ruleId);
                 if(!r->isConstraint() && r->getHead()[0].getPredicateName() == vertexByID[scc[componentId][0]].name){
                     for(const aspc::Literal& l : r->getBodyLiterals()){
                         if(labeledComponents.count(predicateToComponent[predicateIDs[l.getPredicateName()]])==0){
                             visitingComponents.push_back(predicateToComponent[predicateIDs[l.getPredicateName()]]);
                             labeledComponents.insert(predicateToComponent[predicateIDs[l.getPredicateName()]]);
-                            std::cout<<"Labeled "<<predicateToComponent[predicateIDs[l.getPredicateName()]]<<std::endl;
                         }
                     }
                     for(const aspc::ArithmeticRelationWithAggregate& aggrRelation : r->getArithmeticRelationsWithAggregate()){
@@ -1057,7 +1050,6 @@ aspc::Program & AspCore2ProgramBuilder::getProgram() {
                             if(labeledComponents.count(predicateToComponent[predicateIDs[l.getPredicateName()]])==0){
                                 visitingComponents.push_back(predicateToComponent[predicateIDs[l.getPredicateName()]]);
                                 labeledComponents.insert(predicateToComponent[predicateIDs[l.getPredicateName()]]);
-                                std::cout<<"Labeled "<<predicateToComponent[predicateIDs[l.getPredicateName()]]<<std::endl;
                             }
                         }
                     }
@@ -1066,22 +1058,20 @@ aspc::Program & AspCore2ProgramBuilder::getProgram() {
         }
 
         analyzeDependencyGraph=false;
-        std::cout<<"Components labeled"<<std::endl;
+        arietyMap.clear();
         std::unordered_set<unsigned> rewritedRules;
         std::unordered_set<unsigned> noRewritedRules;
         for(unsigned i=0; i<scc.size(); i++){
             if(labeledComponents.count(i)==0){
-                std::cout<<"Rule without complition "<<std::endl;
                 for(unsigned ruleId: vertexByID[scc[i][0]].rules){
                     if(noRewritedRules.count(ruleId)==0){
-                        ruleWithoutComplition.push_back(program.getRule(ruleId));
+                        ruleWithoutCompletion.push_back(program.getRule(ruleId));
                         noRewritedRules.insert(ruleId);
                     }
                 }
             }else{
                 for(unsigned ruleId: vertexByID[scc[i][0]].rules){
                     if(rewritedRules.count(ruleId)==0){
-                        std::cout<<"Rule with complition"<<std::endl;
                         buildingHead.clear();
                         buildingBody.clear();
                         inequalities.clear();
@@ -1102,7 +1092,7 @@ aspc::Program & AspCore2ProgramBuilder::getProgram() {
                         for(const aspc::ArithmeticRelationWithAggregate& aggr: r->getArithmeticRelationsWithAggregate()){
                             inequalitiesWithAggregate.push_back(aggr);
                         }
-                        rewriteRuleWithComplition();
+                        rewriteRuleWithCompletion();
                     }
                 }
             }
@@ -1125,25 +1115,30 @@ aspc::Program & AspCore2ProgramBuilder::getProgram() {
                 for(const aspc::ArithmeticRelationWithAggregate& aggr: r.getArithmeticRelationsWithAggregate()){
                     inequalitiesWithAggregate.push_back(aggr);
                 }
-                rewriteRuleWithComplition();
+                rewriteRuleWithCompletion();
             }
         }
-        std::cout<<"Program with complition"<<std::endl;
-        for(const aspc::Rule& r:original_program.getRules()){
-            std::cout<<"Rule "<<r.getRuleId()<<" ";
-            r.print();
-        }
-        std::cout<<"Program without complition"<<std::endl;
-        for(const aspc::Rule& r: ruleWithoutComplition){
-            for(const aspc::Literal& l : r.getBodyLiterals()){
-                original_program.addPredicate(l.getPredicateName(),l.getAriety());
-            }
-            for(const aspc::ArithmeticRelationWithAggregate& aggrRelation: r.getArithmeticRelationsWithAggregate()){
-                    for(const aspc::Literal& l : aggrRelation.getAggregate().getAggregateLiterals()){
-                    original_program.addPredicate(l.getPredicateName(),l.getAriety());
-                }
-            }
-        }
+        // std::cout<<"Program with completion"<<std::endl;
+        // for(const aspc::Rule& r:original_program.getRules()){
+        //     std::cout<<"Rule "<<r.getRuleId()<<" ";
+        //     r.print();
+        // }
+        // std::cout<<"Program without completion"<<std::endl;
+        // for(const aspc::Rule& r: ruleWithoutCompletion){
+        //     for(const aspc::Literal& l : r.getBodyLiterals()){
+        //         original_program.addPredicate(l.getPredicateName(),l.getAriety());
+        //     }
+        //     for(const aspc::ArithmeticRelationWithAggregate& aggrRelation: r.getArithmeticRelationsWithAggregate()){
+        //             for(const aspc::Literal& l : aggrRelation.getAggregate().getAggregateLiterals()){
+        //             original_program.addPredicate(l.getPredicateName(),l.getAriety());
+        //         }
+        //     }
+        // }
+    }
+    std::cout<<"Original Program"<<std::endl;
+    for(const aspc::Rule& r:original_program.getRules()){
+        std::cout<<"Rule "<<r.getRuleId()<<" ";
+        r.print();
     }
     return original_program;
 }
@@ -1438,7 +1433,7 @@ void AspCore2ProgramBuilder::rewriteConstraint(){
         return;
     }
 }
-void AspCore2ProgramBuilder::rewriteRuleWithComplition(){
+void AspCore2ProgramBuilder::rewriteRuleWithCompletion(){
     if(!buildingHead.empty()){
         rewriteRule();
     }else{
@@ -1507,15 +1502,21 @@ const map<string, unsigned> & AspCore2ProgramBuilder::getArietyMap() {
 }
 
 GraphWithTarjanAlgorithm& AspCore2ProgramBuilder::getGraphWithTarjanAlgorithm() {
-    return graphWithTarjanAlgorithm;
+    if(analyzeDependencyGraph)
+        return graphWithTarjanAlgorithm;
+    return original_graphWithTarjanAlgorithm;
 }
 
 const unordered_map<int, Vertex>& AspCore2ProgramBuilder::getVertexByIDMap() const {
-    return vertexByID;
+    if(analyzeDependencyGraph)
+        return vertexByID;
+    return originalVertexByID;
 }
 
 const unordered_map<string, int>& AspCore2ProgramBuilder::getPredicateIDsMap() const {
-    return predicateIDs;
+    if(analyzeDependencyGraph)
+        return predicateIDs;
+    return originalPredicateIDs;
 }
 
 

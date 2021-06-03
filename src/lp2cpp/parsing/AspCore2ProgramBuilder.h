@@ -43,7 +43,7 @@ private:
     aspc::Program program;
     aspc::Program original_program;
     bool analyzeDependencyGraph=true;
-    std::vector<aspc::Rule> ruleWithoutComplition;
+    std::vector<aspc::Rule> ruleWithoutCompletion;
     
     bool buildingAggregate = false;
     std::string aggregateFunction="None";
@@ -221,7 +221,7 @@ public:
     bool isBodyPredicate(std::string predicate){
         return bodyPredicates.count(predicate)!=0;
     }
-    const std::vector<aspc::Rule>& getRuleWithoutComplition()const{return ruleWithoutComplition;}
+    const std::vector<aspc::Rule>& getRuleWithoutCompletion()const{return ruleWithoutCompletion;}
     // const std::unordered_map<std::string,AggrSetPredicate>& getAggrSetPredicate(){
     //     return aggrSetPredicates;
     // }
@@ -231,7 +231,7 @@ public:
     void preprocessConstraint(bool& ,bool& );
     void rewriteRule();
     void rewriteRuleWithAggregate();
-    void rewriteRuleWithComplition();
+    void rewriteRuleWithCompletion();
     void rewriteConstraint();
     std::vector<aspc::Literal> rewriteAggregate(const aspc::Atom& ,const std::unordered_set<string>& ,const aspc::ArithmeticRelationWithAggregate& );
 

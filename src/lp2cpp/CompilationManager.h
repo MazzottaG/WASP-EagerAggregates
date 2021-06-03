@@ -37,6 +37,7 @@ public:
     void generateStratifiedCompilableProgram(aspc::Program & program, AspCore2ProgramBuilder* builder);
     void setOutStream(std::ostream* outputTarget);
     const std::set<std::string> & getBodyPredicates();
+    const std::set<std::string> & getBodyPredicatesNotCompletion();
     void insertModelGeneratorPredicate(const std::string & p) {
         modelGeneratorPredicates.insert(p);
     }
@@ -86,7 +87,7 @@ private:
     std::ostream* out;
     
     std::set<std::string> bodyPredicates;
-    
+    std::set<std::string> bodyPredicatesNotCompletion;
     std::set<std::string> headPredicates;
     
     std::map<std::string,const aspc::Rule*> headPreds;

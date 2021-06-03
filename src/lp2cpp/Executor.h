@@ -51,6 +51,7 @@ namespace aspc {
         virtual void executeProgramOnFacts(const std::vector<int> & facts);
         virtual void onLiteralTrue(const aspc::Literal* l);
         virtual void onLiteralTrue(int var);
+        virtual void onLiteralTrue(int var, const std::string&);
         virtual void onLiteralUndef(const aspc::Literal* l);
         virtual void onLiteralUndef(int var);
         virtual void addedVarName(int var, const std::string & atom);
@@ -62,7 +63,7 @@ namespace aspc {
         virtual int explainExternalLiteral(int,UnorderedSet<int>&,std::unordered_set<int>&);
         virtual void handleConflict(int);
         virtual void unRollToLevel(int);
-        virtual void printInternalLiterals();
+        virtual void printInternalLiterals(const std::unordered_map<int,string>&);
         virtual const std::vector<std::vector<aspc::Literal> > & getFailedConstraints() {
             return failedConstraints;
         }
