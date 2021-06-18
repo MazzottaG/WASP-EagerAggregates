@@ -79,7 +79,6 @@ public:
         if (canLookup(key)) {
             return lookup[valueToPos(key)] == NULL ? EMPTY_RESULT : *lookup[valueToPos(key)];
         }
-
         const auto it = tuples.find(key);
         if (it == tuples.end()) {
             return EMPTY_RESULT;

@@ -18,40 +18,42 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <iostream>
+#include <climits>
+
 struct TuplesHash;
 
 class TupleWithoutReasons : public std::vector<int> {
 public:
 
-    TupleWithoutReasons() : predicateName(NULL) {
+    TupleWithoutReasons() : predicateName(NULL),waspID(0),id(-INT_MAX) {
 
     }
 
-    TupleWithoutReasons(const std::string* predicateName, bool negated = false) : predicateName(predicateName), negated(negated) {
+    TupleWithoutReasons(const std::string* predicateName, bool negated = false, int waspID = 0) : predicateName(predicateName), negated(negated), waspID(waspID),id(-INT_MAX) {
     }
-    TupleWithoutReasons(const std::string* predicateName,std::vector<int> v, bool negated = false) : predicateName(predicateName),std::vector<int>(v), negated(negated) {
+    TupleWithoutReasons(const std::string* predicateName,std::vector<int> v, bool negated = false, int waspID = 0) : predicateName(predicateName),std::vector<int>(v), negated(negated), waspID(waspID),id(-INT_MAX) {
     }
     
-    TupleWithoutReasons(const TupleWithoutReasons& orig) : std::vector<int>(orig), predicateName(orig.predicateName), negated(orig.negated), id(orig.id) {
+    TupleWithoutReasons(const TupleWithoutReasons& orig) : std::vector<int>(orig), predicateName(orig.predicateName), negated(orig.negated), id(orig.id), waspID(orig.waspID) {
     }
 
     virtual ~TupleWithoutReasons() {
 
     }
 
-    TupleWithoutReasons(const std::initializer_list<int> & l, bool negated = false) :
-    std::vector<int>(l), predicateName(NULL), negated(negated) {
+    TupleWithoutReasons(const std::initializer_list<int> & l, bool negated = false, int waspID = 0) :
+    std::vector<int>(l), predicateName(NULL), negated(negated), waspID(waspID),id(-INT_MAX) {
     }
 
-    TupleWithoutReasons(const std::initializer_list<int> & l, const std::string * predicateName, bool negated = false) :
-    vector<int>(l), predicateName(predicateName), negated(negated) {
+    TupleWithoutReasons(const std::initializer_list<int> & l, const std::string * predicateName, bool negated = false, int waspID = 0) :
+    vector<int>(l), predicateName(predicateName), negated(negated), waspID(waspID),id(-INT_MAX) {
     }
     
-    TupleWithoutReasons(const std::vector<int> & l, const std::string * predicateName, bool negated = false) :
-    vector<int>(l), predicateName(predicateName), negated(negated) {
+    TupleWithoutReasons(const std::vector<int> & l, const std::string * predicateName, bool negated = false, int waspID = 0) :
+    vector<int>(l), predicateName(predicateName), negated(negated), waspID(waspID),id(-INT_MAX) {
     }
-    TupleWithoutReasons(const std::vector<int> & l, bool negated = false) :
-    vector<int>(l), negated(negated) {
+    TupleWithoutReasons(const std::vector<int> & l, bool negated = false, int waspID = 0) :
+    vector<int>(l), negated(negated), waspID(waspID),id(-INT_MAX) {
     }
 
     const std::string* getPredicateName() const {
@@ -83,11 +85,11 @@ public:
     //        return negativeReasons;
     //    }
 
-    unsigned getId() const {
+    int getId() const {
         return id;
     }
 
-    void setId(unsigned id) const {
+    void setId(int id) const {
         this->id = id;
     }
 
@@ -143,13 +145,19 @@ public:
         std::cout << ")";
     }
 
-
+    int getWaspID()const{
+        return waspID;
+    }
+    void setWaspID(int waspID){
+        this->waspID=waspID;
+    }
 
 
 private:
     const std::string * predicateName;
     bool negated;
-    mutable unsigned id;
+    int waspID;
+    mutable int id;
     mutable std::unordered_map<std::vector<const TupleWithoutReasons *>*, unsigned> collisionsLists;
     //    mutable vector<const Tuple*> positiveReasons;
     //    mutable vector<Tuple> negativeReasons;
@@ -165,7 +173,6 @@ struct TuplesHash {
         }
         return seed;
     }
-
 };
 
 

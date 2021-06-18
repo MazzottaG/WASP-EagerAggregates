@@ -22,13 +22,13 @@
 class TupleWithReasons : public TupleWithoutReasons {
 public:
 
-    TupleWithReasons() {
+    TupleWithReasons():TupleWithoutReasons(){
 
     }
 
-    TupleWithReasons(const std::string* predicateName, bool negated = false) : TupleWithoutReasons(predicateName, negated) {
+    TupleWithReasons(const std::string* predicateName, bool negated = false, int waspID=0) : TupleWithoutReasons(predicateName, negated,waspID) {
     }
-    TupleWithReasons(const std::string* predicateName,std::vector<int> v, bool negated = false) : TupleWithoutReasons(predicateName,v, negated) {
+    TupleWithReasons(const std::string* predicateName,std::vector<int> v, bool negated = false, int waspID=0) : TupleWithoutReasons(predicateName,v, negated,waspID) {
         
     }
     TupleWithReasons(const TupleWithReasons& orig) : TupleWithoutReasons(orig), positiveReasons(orig.positiveReasons),
@@ -39,18 +39,18 @@ public:
 
     }
 
-    TupleWithReasons(const std::initializer_list<int> & l, bool negated = false) : TupleWithoutReasons(l, negated) {
+    TupleWithReasons(const std::initializer_list<int> & l, bool negated = false, int waspID=0) : TupleWithoutReasons(l, negated,waspID) {
     }
 
-    TupleWithReasons(const std::initializer_list<int> & l, const std::string * predicateName, bool negated = false) :
-    TupleWithoutReasons(l, predicateName, negated) {
+    TupleWithReasons(const std::initializer_list<int> & l, const std::string * predicateName, bool negated = false, int waspID=0) :
+    TupleWithoutReasons(l, predicateName, negated,waspID) {
     }
 
-    TupleWithReasons(const std::vector<int> & l, const std::string * predicateName, bool negated = false) :
-    TupleWithoutReasons(l, predicateName, negated) {
+    TupleWithReasons(const std::vector<int> & l, const std::string * predicateName, bool negated = false, int waspID=0) :
+    TupleWithoutReasons(l, predicateName, negated,waspID) {
     }
-    TupleWithReasons(const std::vector<int> & l, bool negated = false) :
-    TupleWithoutReasons(l, negated) {
+    TupleWithReasons(const std::vector<int> & l, bool negated = false, int waspID=0) :
+    TupleWithoutReasons(l, negated,waspID) {
     }
 
     void addPositiveReason(const TupleWithReasons* r) const {
@@ -70,19 +70,40 @@ public:
     }
 
     void setCollisionListIndex(std::vector<const TupleWithReasons *>* collisionList, unsigned index) const {
+        // std::cout<<"Set Collision List Index";
+        // print();
+        // std::cout<<" "<<index<<" List size: "<<collisionList->size()<<std::endl;
         collisionsLists[collisionList] = index;
     }
-
     void removeFromCollisionsLists() const {
+        // std::cout<<"Removing from collisions list";
+        // print();   
+        // std::cout<<std::endl;     
+        
         for (auto & collisionListAndIndex : collisionsLists) {
             std::vector<const TupleWithReasons *> & collisionList = *(collisionListAndIndex.first);
-            unsigned index = collisionListAndIndex.second;
-            collisionList[index] = collisionList[collisionList.size() - 1];
-            collisionList[index]->setCollisionListIndex(&collisionList, index);
-            collisionList.pop_back();
-
+            // if(!collisionList.empty()){
+                unsigned index = collisionListAndIndex.second;
+                // std::cout<<"Collisions List at index: "<<index<<std::endl;
+                collisionList[index] = collisionList[collisionList.size() - 1];
+                collisionList[index]->setCollisionListIndex(&collisionList, index);
+                collisionList.pop_back();
+                // std::cout<<"Updated Collisions List Size: "<<collisionList.size()<<std::endl;
+                
+            // }
         }
+        collisionsLists.clear();
     }
+    // ORIGINAL VERSIO removeFromCollisionsLists METHOD
+    // void removeFromCollisionsLists() const {
+    //     for (auto & collisionListAndIndex : collisionsLists) {
+    //         std::vector<const TupleWithReasons *> & collisionList = *(collisionListAndIndex.first);
+    //         unsigned index = collisionListAndIndex.second;
+    //         collisionList[index] = collisionList[collisionList.size() - 1];
+    //         collisionList[index]->setCollisionListIndex(&collisionList, index);
+    //         collisionList.pop_back();
+    //     }
+    // }
 
     bool operator==(const TupleWithReasons& right) const {
         return TupleWithoutReasons::operator==(right);

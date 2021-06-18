@@ -672,7 +672,6 @@ ExternalPropagator::computeReason(
     Solver& solver,
     const vector< int >& output )
 {
-    // std::cout << "Compute Reason" << std::endl;
     if( output.empty() || ( output.size() == 1 && output[ 0 ] == 0 ) )
         return;
     
@@ -697,7 +696,6 @@ ExternalPropagator::computeReason(
             solver.assignLiteral( Literal::createLiteralFromInt( 1 ) );
         return;
     }
-
     Clause* reason = NULL;
     if( !check_getReasonForLiteral )
     { 
@@ -716,7 +714,6 @@ ExternalPropagator::computeReason(
         if( check_getReasonForLiteral )
         {
             if(check_postponed){
-                // std::cout<< "Prop with executor.cpp " <<lit<<std::endl;
                 solver.assignLiteral(lit,interpreter->computePostponedReason(Literal::null));
                 // solver.assignLiteral(lit,getPostponedReason());
             }else{

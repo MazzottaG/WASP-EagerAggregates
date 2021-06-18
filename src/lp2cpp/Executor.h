@@ -60,7 +60,7 @@ namespace aspc {
         virtual void clear();
         virtual void clearPropagations();
         virtual void explainAggrLiteral(int,UnorderedSet<int>&);
-        virtual int explainExternalLiteral(int,UnorderedSet<int>&,std::unordered_set<int>&);
+        virtual int explainExternalLiteral(int,UnorderedSet<int>&,std::unordered_set<int>&,bool=false);
         virtual void handleConflict(int);
         virtual void unRollToLevel(int);
         virtual void printInternalLiterals(const std::unordered_map<int,string>&);

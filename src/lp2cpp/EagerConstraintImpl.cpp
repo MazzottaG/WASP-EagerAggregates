@@ -155,7 +155,7 @@ void EagerConstraintImpl::onLiteralTrue(int var, int decisionLevel, std::vector<
     for (int i=0;i<propagatedLiteralsAndReasons.size();i++) {
         propagatedLiterals.push_back(-propagatedLiteralsAndReasons[i]);
     }
-    
+    // std::cout<<"OnLiteralTrue propagated size: "<<propagatedLiterals.size()<<std::endl;
     //const std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> & propagatedLiteralsAndReasons = executionManager.getPropagatedLiteralsAndReasons();
 
     //    for (auto& it : propagatedLiteralsAndReasons) {

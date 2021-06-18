@@ -96,6 +96,8 @@ public:
 
 
     //assuming its a copy   
+    // void erase(Tuple*  value)
+    // factory from int to tuple*
 
     void erase(const T & value) {
 
@@ -140,9 +142,9 @@ public:
 private:
 
     inline bool canLookup(const T & value) {
-//        std::count <<"Lookup size "<<lookup_size<<std::endl;
+        // std::count <<"Lookup size "<<lookup_size<<std::endl;
         for (unsigned i = 0; i < ariety; i++) {
-//            std::count <<" Value "<<value[i]<<" lookup_base "<<lookup_bases[i]<<std::endl;
+        // std::count <<" Value "<<value[i]<<" lookup_base "<<lookup_bases[i]<<std::endl;
             if ((value[i] - lookup_bases[i] >= lookup_size) || (value[i] - lookup_bases[i] < 0)) {
                 if (tuples.empty() && lookupReferences.empty() && lookup_size > 0) {
                     lookup_bases[i] = value[i];
@@ -152,8 +154,9 @@ private:
             }
         }
         
-//        std::count <<"True"<<std::endl;
+        // std::count <<"True"<<std::endl;
         return true;
+        // return false;
     }
 
     inline unsigned valueToPos(const T & value) const {
