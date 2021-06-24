@@ -697,7 +697,7 @@ void AspCore2ProgramBuilder::rewriteRule(){
             return;
         }
     }
-    std::cout<<"rewriting rule"<<std::endl;
+    //std::cout<<"rewriting rule"<<std::endl;
     // bool exitCase = buildingHead[0].getPredicateName()=="aggr_set0";
     std::vector<aspc::Atom> originalHead(buildingHead);
     std::vector<aspc::Literal> originalBody(buildingBody);
@@ -767,6 +767,30 @@ void AspCore2ProgramBuilder::rewriteRule(){
             inequalities.clear();
         }
     }
+    // {
+    //     int currentHeadId = originalPredicateIDs.size();
+    //     unordered_map<string, int>::iterator i = originalPredicateIDs.find(a.getPredicateName());
+    //     if (i != originalPredicateIDs.end())
+    //         currentHeadId = i->second;
+    //     else {
+    //         originalPredicateIDs[a.getPredicateName()] = currentHeadId;
+    //         originalVertexByID[currentHeadId] = Vertex(currentHeadId, a.getPredicateName());
+    //     }
+
+    //     for (const aspc::Literal& l : buildingBody) {
+            
+    //         int currentBodyId = originalPredicateIDs.size();
+    //         unordered_map<string, int>::iterator i = originalPredicateIDs.find(l.getPredicateName());
+    //         if (i != originalPredicateIDs.end())
+    //             currentBodyId = i->second;
+    //         else {
+    //             originalPredicateIDs[l.getPredicateName()] = currentBodyId;
+    //             originalVertexByID[currentBodyId] = Vertex(currentBodyId, l.getPredicateName());
+    //         }
+    //         originalVertexByID[currentBodyId].rules.push_back(rule.getRuleId());
+    //         original_graphWithTarjanAlgorithm.addEdge(currentBodyId, currentHeadId);
+    //     }
+    // }
     if(!iffCase){
         buildingBody.clear();
         buildingBody.push_back(aspc::Literal(false,aspc::Atom(auxPredicate,auxDistinctTerms)));
@@ -1005,6 +1029,11 @@ void AspCore2ProgramBuilder::onWeightAtLevels(int, int, int) {
 
 aspc::Program & AspCore2ProgramBuilder::getProgram() {
     if(analyzeDependencyGraph){
+        // std::cout<<"---------Program---------"<<std::endl;
+        // for(const aspc::Rule& r:program.getRules()){
+        //     std::cout<<"Rule "<<r.getRuleId()<<" ";
+        //     r.print();
+        // }
         std::unordered_set<std::string> constraintPredicates;
         for(const aspc::Rule& r: program.getRules()){
             if(r.isConstraint()){
@@ -1135,11 +1164,20 @@ aspc::Program & AspCore2ProgramBuilder::getProgram() {
         //     }
         // }
     }
-    std::cout<<"Original Program"<<std::endl;
-    for(const aspc::Rule& r:original_program.getRules()){
-        std::cout<<"Rule "<<r.getRuleId()<<" ";
-        r.print();
-    }
+    // std::cout<<"Original Program"<<std::endl;
+    // for(const aspc::Rule& r:original_program.getRules()){
+    //     std::cout<<"Rule "<<r.getRuleId()<<" ";
+    //     r.print();
+    // }
+    // std::vector<std::vector<int>> scc = original_graphWithTarjanAlgorithm.SCC();
+    // for(int component=scc.size()-1; component>=0 ; component--){
+    //     for(unsigned predId : scc[component]){
+    //         auto it = vertexByID.find(scc[component][0]);
+    //         if(it!=vertexByID.end()){
+    //             std::cout<<it->second.name<<std::endl;
+    //         }
+    //     }
+    // }
     return original_program;
 }
 void AspCore2ProgramBuilder::rewriteConstraint(){
@@ -1297,7 +1335,7 @@ void AspCore2ProgramBuilder::rewriteConstraint(){
                 }
             }
             for(auto& previousAggrSet : aggrSetPredicates){
-                std::cout<<previousAggrSet.first<<std::endl;
+                // std::cout<<previousAggrSet.first<<std::endl;
                 
                 if(previousAggrSet.second == aggrset){
                     aggrset_found=true;

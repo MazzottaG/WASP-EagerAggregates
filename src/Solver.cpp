@@ -386,11 +386,13 @@ Solver::solvePropagators(
         Var variableToPropagate;
         while( hasNextVariableToPropagate() )
         {
-
+            
             nextValueOfPropagation--;
             variableToPropagate = getNextVariableToPropagate();
+            
+            // std::cout<<"Variables to prop: "<<Literal(variableToPropagate)<<std::endl;
             propagateWithPropagators( variableToPropagate );
-
+            stopPropagation=false;
             conflict:;
             if( conflictDetected() )
             {
@@ -638,7 +640,8 @@ Solver::propagation(
     Vector< pair< Propagator*, PropagatorData > >& wl = getDataStructure( complement ).variablePropagators;
     for( unsigned i = 0; i < wl.size(); ++i )
     {
-        if( conflictDetected() )
+        // std::cout<<"Indice: "<<i<<std::endl;
+        if( conflictDetected() || stopPropagation)
             break;
         Propagator* propagator = wl[ i ].first;
         assert( "Post propagator is null." && propagator != NULL );
@@ -646,6 +649,7 @@ Solver::propagation(
         if( res ){
             addInPropagatorsForUnroll( propagator );
         }
+        
     }
 }
 
@@ -662,12 +666,16 @@ Solver::postPropagation(
     
     for( unsigned i = 0; i < wl.size(); ++i )
     {
+        if(stopPropagation){
+            break;
+        }
         PostPropagator* postPropagator = wl[ i ];
         assert( "Post propagator is null." && postPropagator != NULL );
         bool res = postPropagator->onLiteralFalse( complement );
         
         if( res )            
             addPostPropagator( postPropagator );
+            
     }    
 }
 
@@ -1332,7 +1340,7 @@ bool
 Solver::cleanAndAddLearnedClause(    
     Clause* clause )
 {
-    std::cout<<"Solver::cleanAndAddLearnedClause"<<std::endl;
+    // std::cout<<"Solver::cleanAndAddLearnedClause"<<std::endl;
 
     assert( clause != NULL );
     if( clause->removeDuplicatesAndFalseAndCheckIfTautological( *this ) )

@@ -536,7 +536,7 @@ class Solver
         }
         
         inline unsigned int nbRestarts() const { return numberOfRestarts; }        
-        
+        inline void setStopPropagation(){stopPropagation=true;}
     private:
         inline unsigned int solve_( vector< Literal >& assumptions );
         vector< Literal > choices;
@@ -557,6 +557,7 @@ class Solver
 //            dependencyGraph = new DependencyGraph( *this );
             assert( "The copy constructor has been disabled." && 0 );
         }
+        bool stopPropagation = false;
 
         inline void notifyAnswerSet();
         inline void notifyNewClause(Literal);
@@ -960,12 +961,21 @@ Solver::assignLiteral(
     Clause* implicant )
 {
     assert( implicant != NULL );
+    if(conflictDetected()){
+        std::cout<<"CONFLICT ASSIGNING"<<std::endl;
+        exit(0);
+    }
     assert( !conflictDetected() );
     if( !variables.assign( currentDecisionLevel, implicant ) )
     {
+
         conflictLiteral = implicant->getAt( 0 );
-        conflictClause = implicant;        
+        conflictClause = implicant;
+        // std::cout<< "conflict literal: "<<conflictLiteral<<std::endl;        
+        // std::cout<< "conflict implicant: "<<*conflictClause<<std::endl;
     }
+    // else
+    // std::cout<<"No conflict "<<*implicant<<std::endl;
 }
 
 void
@@ -1501,6 +1511,10 @@ Solver::analyzeConflict()
         assert( getDecisionLevel( secondLiteral ) == learnedClause->getMaxDecisionLevel( *this, 1, learnedClause->size() ) );        
         
         unsigned int unrollLevel = getDecisionLevel( secondLiteral );
+        if(unrollLevel == 0 ||unrollLevel >= currentDecisionLevel){
+            std::cout<<"UnRoll from "<<currentDecisionLevel<<" To "<< unrollLevel<<std::endl;
+            exit(-1);
+        } 
         assert_msg( unrollLevel != 0, "Trying to backjumping to level 0" );
         assert_msg( unrollLevel < currentDecisionLevel, "Trying to backjump from level " << unrollLevel << " to level " << currentDecisionLevel );
         trace_msg( solving, 2, "Learned clause and backjumping to level " << unrollLevel );
@@ -1767,7 +1781,7 @@ Solver::preprocessing()
     for( unsigned int i = 0; i < externalPropagators.size(); i++ )
     {
         externalPropagators[ i ]->simplifyAtLevelZero( *this );
-        std::cout<<"Out simplify"<<std::endl;
+        // std::cout<<"Out simplify"<<std::endl;
         if( conflictDetected() )
         {
             trace( solving, 1, "Conflict at level 0 detected by external propagators.\n" );

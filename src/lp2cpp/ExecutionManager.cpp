@@ -117,16 +117,21 @@ Reason* ExecutionManager::getPostponedeReason(Literal lit){
 
 }
 bool ExecutionManager::onNavigatingLiteralForAllMarked( const Solver& solver, Learning* strategy, Literal lit ) {
-    // std::cout << "onNavigatingLiteralForAllMarked" <<std::endl;
+    // std::cout << "onNavigatingLiteralForAllMarked Execution Manager" <<std::endl;
 
     UnorderedSet<int> reas ;
     std::unordered_set<int> visitedLiterals;
     // executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reas);
+
     executor->explainExternalLiteral(lit.getOppositeLiteral().getId(),reas,visitedLiterals);
-    
+    // for(int i=0;i<reas.size();i++){
+    //     Literal l = Literal::createLiteralFromInt(-reas[i]);
+    //     std::cout<<"Reas: "<<l<<" For lit: "<<lit<<std::endl;
+    // }
     for(int i=0;i<reas.size();i++){
     
         Literal l = Literal::createLiteralFromInt(-reas[i]);
+        // std::cout<<"Nav: "<<l<<" For lit: "<<lit<<std::endl;
         if( !strategy->onNavigatingLiteralForAllMarked( l ) )
             return false;
     }
