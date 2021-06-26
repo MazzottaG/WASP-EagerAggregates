@@ -48,6 +48,8 @@ public:
     void onLiteralTrue(const aspc::Literal* l);
     void onLiteralUndef(const aspc::Literal* l);
     void onLiteralTrue(int var);
+    void onLiteralTrue(int var,const std::string& literalString);
+
     void onLiteralUndef(int var);
     void notifyStartingSolver()const{executor->undefLiteralsReceived();}
     void addedVarName(int var, const std::string & literalString);
@@ -59,7 +61,7 @@ public:
     bool postponedReason()const{return true;}
     void unRollToLevel(int decisionLevel){executor->unRollToLevel(decisionLevel);}
     void undefReceived(){executor->undefLiteralsReceived();}
-    void printInternalLiterals(const std::unordered_map<int,string>& answerSet){executor->printInternalLiterals(answerSet);}
+    void printInternalLiterals(){executor->printInternalLiterals();}
     Reason* getPostponedeReason(Literal lit);
     virtual void onLearning( const Solver& solver, Learning* strategy, Literal lit );
     virtual bool onNavigatingLiteralForAllMarked( const Solver& solver, Learning* strategy, Literal lit );

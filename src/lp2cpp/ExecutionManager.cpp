@@ -233,6 +233,9 @@ void ExecutionManager::shuffleFailedConstraints() {
     executor-> shuffleFailedConstraints();
 
 }
+void ExecutionManager::onLiteralTrue(int var,const std::string& literalString) {
+    executor->onLiteralTrue(var,literalString);
+}
 
 void ExecutionManager::onLiteralTrue(int var) {
     executor->onLiteralTrue(var);

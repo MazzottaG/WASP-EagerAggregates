@@ -1513,6 +1513,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         // *out << ind << "if(tuple->getPredicateName()==&_lives && tuple->at(0)==4 && tuple->at(1)==3){std::cout<<\"WASP id: \"<<var<<\" Internal id: \"<<internalVar<<std::endl;}\n";
         // *out << ind << "std::cout<<\"Removing from reason \"<<internalVar<<\" \"<<reasonForLiteral[internalVar].size()<<std::endl;\n";
         *out << ind << "reasonForLiteral.erase(internalVar);\n";
+        // *out << ind << "reasonForLiteral.erase(-internalVar);\n";
         // *out << ind << "if(reasonForLiteral.count(internalVar)!=0)std::cout<<\"not removed \"<<internalVar<<\" \"<<reasonForLiteral[internalVar].size()<<std::endl;\n";
         
         // *out << ind << "reasonForLiteral.erase(-var);\n\n";
@@ -1522,7 +1523,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::string minus = var < 0 ? \"-\" : \"\";\n";
         // *out << ind << "std::cout<<\"print undef \"<<var<<std::endl;\n";
 
-        //*out << ind << "std::cout<<\"Undef \"<<minus;tuple->print();std::cout<<std::endl;\n";
+        // *out << ind << "std::cout<<\"Undef \"<<minus;tuple->print();std::cout<<std::endl;\n";
         // *out << ind << "if(reasonForLiteral.count(18)!=0)std::cout<<\"reason of 18 size: \"<<reasonForLiteral[18].size()<<std::endl;else std::cout<<\"reason of 18 not founded \"<<std::endl;\n";
 #ifdef EAGER_DEBUG
         *out << ind << "std::cout<<\"on literal undef \";\n";
@@ -2391,7 +2392,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "return false;\n";
     *out << --ind << "}\n";
 
-    *out << ind++ << "void Executor::printInternalLiterals(const std::unordered_map<int,string>& answerSet){\n";
+    *out << ind++ << "void Executor::printInternalLiterals(){\n";
         for(std::string pred : builder->getPrintingPredicates()){
             *out << ind++ << "for(const Tuple* t : w"<<pred<<".getTuples()){\n";
                 // *out << ind << "t->print();\n";
@@ -2399,8 +2400,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << --ind << "}\n";
         }
         // *out << ind << "std::cout<<\"AtomsTable size: \"<<atomsTable.size()<<std::endl;\n";
-        *out << ind << "for(const auto& pair : answerSet) onLiteralTrue(pair.first,pair.second);\n";
+        // *out << ind << "for(const auto& pair : answerSet) onLiteralTrue(pair.first,pair.second);\n";
         for(const aspc::Rule& r: builder->getRuleWithoutCompletion()){
+            std::cout<<"Rule: "<<r.getRuleId()<<" without completion"<<std::endl;
             if(!r.isConstraint()){
             *out << ind++ << "{\n";
                 *out << ind << "std::set<std::vector<int>> trueHeads;\n";
@@ -2710,6 +2712,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
         *out << --ind << "}\n";
         *out << ind << "clearConflictReason();\n";
+
         // *out << ind << "std::cout<<\"True aggr set\"<<std::endl;\n";
         // *out << ind++ << "for(int id : waggr_set0.getTuplesId())\n";
         //     *out << ind-- << "factory.getTupleFromInternalID(id)->print();\n";

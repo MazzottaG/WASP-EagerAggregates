@@ -681,6 +681,33 @@ void AspCore2ProgramBuilder::rewriteRule(){
         rewriteRuleWithAggregate();
         return;
     }
+    {
+        int currentHeadId = originalPredicateIDs.size();
+        unordered_map<string, int>::iterator i = originalPredicateIDs.find(buildingHead[0].getPredicateName());
+        if (i != originalPredicateIDs.end())
+            currentHeadId = i->second;
+        else {
+            originalPredicateIDs[buildingHead[0].getPredicateName()] = currentHeadId;
+            originalVertexByID[currentHeadId] = Vertex(currentHeadId, buildingHead[0].getPredicateName());
+            std::cout<<"Add Vertex for "<<buildingHead[0].getPredicateName()<<" with id: "<<currentHeadId<<std::endl;
+        }
+
+        for (const aspc::Literal& l : buildingBody) {
+            
+            int currentBodyId = originalPredicateIDs.size();
+            unordered_map<string, int>::iterator i = originalPredicateIDs.find(l.getPredicateName());
+            if (i != originalPredicateIDs.end())
+                currentBodyId = i->second;
+            else {
+                originalPredicateIDs[l.getPredicateName()] = currentBodyId;
+                originalVertexByID[currentBodyId] = Vertex(currentBodyId, l.getPredicateName());
+                std::cout<<"Add Vertex for "<<l.getPredicateName()<<" with id: "<<currentBodyId<<std::endl;
+            }
+            originalVertexByID[currentBodyId].rules.push_back(program.getRulesSize());
+            original_graphWithTarjanAlgorithm.addEdge(currentBodyId, currentHeadId);
+            std::cout<<"Add dependency from "<<l.getPredicateName()<<" to "<<buildingHead[0].getPredicateName()<<std::endl;
+        }
+    }
     if(buildingBody.size()==1){
         bool conditionOnLiteral = false;
         for(unsigned i=0; i<buildingBody[0].getAriety() && ! conditionOnLiteral; i++){
@@ -767,30 +794,7 @@ void AspCore2ProgramBuilder::rewriteRule(){
             inequalities.clear();
         }
     }
-    // {
-    //     int currentHeadId = originalPredicateIDs.size();
-    //     unordered_map<string, int>::iterator i = originalPredicateIDs.find(a.getPredicateName());
-    //     if (i != originalPredicateIDs.end())
-    //         currentHeadId = i->second;
-    //     else {
-    //         originalPredicateIDs[a.getPredicateName()] = currentHeadId;
-    //         originalVertexByID[currentHeadId] = Vertex(currentHeadId, a.getPredicateName());
-    //     }
-
-    //     for (const aspc::Literal& l : buildingBody) {
-            
-    //         int currentBodyId = originalPredicateIDs.size();
-    //         unordered_map<string, int>::iterator i = originalPredicateIDs.find(l.getPredicateName());
-    //         if (i != originalPredicateIDs.end())
-    //             currentBodyId = i->second;
-    //         else {
-    //             originalPredicateIDs[l.getPredicateName()] = currentBodyId;
-    //             originalVertexByID[currentBodyId] = Vertex(currentBodyId, l.getPredicateName());
-    //         }
-    //         originalVertexByID[currentBodyId].rules.push_back(rule.getRuleId());
-    //         original_graphWithTarjanAlgorithm.addEdge(currentBodyId, currentHeadId);
-    //     }
-    // }
+    
     if(!iffCase){
         buildingBody.clear();
         buildingBody.push_back(aspc::Literal(false,aspc::Atom(auxPredicate,auxDistinctTerms)));
@@ -1147,36 +1151,39 @@ aspc::Program & AspCore2ProgramBuilder::getProgram() {
                 rewriteRuleWithCompletion();
             }
         }
-        // std::cout<<"Program with completion"<<std::endl;
-        // for(const aspc::Rule& r:original_program.getRules()){
-        //     std::cout<<"Rule "<<r.getRuleId()<<" ";
-        //     r.print();
-        // }
-        // std::cout<<"Program without completion"<<std::endl;
-        // for(const aspc::Rule& r: ruleWithoutCompletion){
-        //     for(const aspc::Literal& l : r.getBodyLiterals()){
-        //         original_program.addPredicate(l.getPredicateName(),l.getAriety());
-        //     }
-        //     for(const aspc::ArithmeticRelationWithAggregate& aggrRelation: r.getArithmeticRelationsWithAggregate()){
-        //             for(const aspc::Literal& l : aggrRelation.getAggregate().getAggregateLiterals()){
-        //             original_program.addPredicate(l.getPredicateName(),l.getAriety());
-        //         }
-        //     }
-        // }
+        std::cout<<"Program with completion"<<std::endl;
+        for(const aspc::Rule& r:original_program.getRules()){
+            std::cout<<"Rule "<<r.getRuleId()<<" ";
+            r.print();
+        }
+        std::cout<<"Program without completion"<<std::endl;
+        for(const aspc::Rule& r: ruleWithoutCompletion){
+            for(const aspc::Literal& l : r.getBodyLiterals()){
+                original_program.addPredicate(l.getPredicateName(),l.getAriety());
+            }
+            for(const aspc::ArithmeticRelationWithAggregate& aggrRelation: r.getArithmeticRelationsWithAggregate()){
+                    for(const aspc::Literal& l : aggrRelation.getAggregate().getAggregateLiterals()){
+                    original_program.addPredicate(l.getPredicateName(),l.getAriety());
+                }
+            }
+            std::cout<<"Rule "<<r.getRuleId()<<" ";
+            r.print();
+        }
+        // exit(-1);
+        std::vector<std::vector<int>> sccc = original_graphWithTarjanAlgorithm.SCC();
+        for(int component=sccc.size()-1; component>=0 ; component--){
+            for(unsigned predId : sccc[component]){
+                auto it = originalVertexByID.find(sccc[component][0]);
+                if(it!=originalVertexByID.end()){
+                    std::cout<<it->second.name<<std::endl;
+                }
+            }
+        }
     }
     // std::cout<<"Original Program"<<std::endl;
     // for(const aspc::Rule& r:original_program.getRules()){
     //     std::cout<<"Rule "<<r.getRuleId()<<" ";
     //     r.print();
-    // }
-    // std::vector<std::vector<int>> scc = original_graphWithTarjanAlgorithm.SCC();
-    // for(int component=scc.size()-1; component>=0 ; component--){
-    //     for(unsigned predId : scc[component]){
-    //         auto it = vertexByID.find(scc[component][0]);
-    //         if(it!=vertexByID.end()){
-    //             std::cout<<it->second.name<<std::endl;
-    //         }
-    //     }
     // }
     return original_program;
 }

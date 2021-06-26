@@ -641,9 +641,12 @@ ExternalPropagator::handleConflict(
             solver.unroll( solver.getDecisionLevel( clause->getAt( 1 ) ) );
             reset( solver );            
         }
-        if(!solver.isUndefined( clause->getAt( 0 ) )){
-            std::cout<<"ERRORE----"<<std::endl;
-        }
+        // if(!solver.isUndefined( clause->getAt( 0 ) )){
+        //     for(unsigned i=0; i<clause->size();i++){
+        //         std::cout<<clause->getAt(i)<<" "<<solver.getDecisionLevel(clause->getAt(i))<<std::endl;
+        //     }
+        //     std::cout<<"ERRORE----"<<std::endl;
+        // }
         assert( !solver.isUndefined( clause->getAt( 1 ) ) );
     }
     else

@@ -961,10 +961,10 @@ Solver::assignLiteral(
     Clause* implicant )
 {
     assert( implicant != NULL );
-    if(conflictDetected()){
-        std::cout<<"CONFLICT ASSIGNING"<<std::endl;
-        exit(0);
-    }
+    // if(conflictDetected()){
+    //     std::cout<<"CONFLICT ASSIGNING"<<std::endl;
+    //     exit(0);
+    // }
     assert( !conflictDetected() );
     if( !variables.assign( currentDecisionLevel, implicant ) )
     {

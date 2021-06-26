@@ -34,7 +34,7 @@ public:
     virtual void getReasonForLiteral(int lit, std::vector<int> & reason);
     virtual void addedVarName(int var, const std::string & atomString);
     virtual void onFact(int var);
-    virtual void onAnswerSet(const std::vector<int> answerSet);
+    virtual void onAnswerSet(const std::vector<int>& answerSet);
     virtual void simplifyAtLevelZero(std::vector<int> & output);
     virtual const std::vector<unsigned int> & getVariablesToFreeze();
     virtual const std::string & getFilepath() const;

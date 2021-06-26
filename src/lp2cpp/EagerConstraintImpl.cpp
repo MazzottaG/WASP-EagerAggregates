@@ -86,15 +86,16 @@ high_resolution_clock::time_point t1_e;
 high_resolution_clock::time_point t2_e = high_resolution_clock::now();
 #endif
 
-void EagerConstraintImpl::onAnswerSet(const std::vector<int> answerSet){
+void EagerConstraintImpl::onAnswerSet(const std::vector<int>& answerSet){
 
     std::unordered_map<int,string> watchedLiterals;
     for(unsigned i=0; i<answerSet.size();i++){
         if(answerSet[i]>0 && watchedAtomsSetNotCompletion.count(answerSet[i])!=0){
-            watchedLiterals[answerSet[i]]=VariableNames::getName(Literal::createLiteralFromInt(answerSet[i]).getVariable());
+            executionManager.onLiteralTrue(answerSet[i],VariableNames::getName(Literal::createLiteralFromInt(answerSet[i]).getVariable()));
+            // watchedLiterals[answerSet[i]]=VariableNames::getName(Literal::createLiteralFromInt(answerSet[i]).getVariable());
         }
     }
-    executionManager.printInternalLiterals(watchedLiterals);
+    executionManager.printInternalLiterals();
 }
 void EagerConstraintImpl::onLiteralTrue(int var, int decisionLevel, std::vector<int> & propagatedLiterals) {
 #ifdef PRINT_EXEC_TIMES
