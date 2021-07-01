@@ -103,10 +103,10 @@ Learning::onConflict(
     trace_msg( learning, 3, "Clause after simplification: " << *learnedClause );
     
     learnedClause->addLiteralInLearnedClause( firstUIP );    
-    if(!sameDecisionLevelOfSolver( firstUIP )){
-        std::cout<<"Not same decision level"<<std::endl;
-        exit(-1);
-    }
+    // if(!sameDecisionLevelOfSolver( firstUIP )){
+    //     std::cout<<"Not same decision level"<<std::endl;
+    //     exit(-1);
+    // }
     assert_msg( sameDecisionLevelOfSolver( firstUIP ), "UIP " << firstUIP << " is not of the same level of the solver. UIP dl: " << solver.getDecisionLevel( firstUIP ) << " - solver dl: " << solver.getCurrentDecisionLevel() );    
     assert_msg( learnedClause->size() > 0, "Learned clause cannot be empty!" );
     

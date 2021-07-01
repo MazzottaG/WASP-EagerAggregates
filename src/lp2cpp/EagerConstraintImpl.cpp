@@ -88,7 +88,7 @@ high_resolution_clock::time_point t2_e = high_resolution_clock::now();
 
 void EagerConstraintImpl::onAnswerSet(const std::vector<int>& answerSet){
 
-    std::unordered_map<int,string> watchedLiterals;
+    // std::unordered_map<int,string> watchedLiterals;
     for(unsigned i=0; i<answerSet.size();i++){
         if(answerSet[i]>0 && watchedAtomsSetNotCompletion.count(answerSet[i])!=0){
             executionManager.onLiteralTrue(answerSet[i],VariableNames::getName(Literal::createLiteralFromInt(answerSet[i]).getVariable()));
@@ -262,6 +262,7 @@ void EagerConstraintImpl::addedVarName(int var, const std::string & literalStrin
 
         executionManager.initCompiled();
     }
+    int uVar=var>0 ? var : -var; 
 
     aspc::Literal atom = parseLiteral2(literalString);
     //this->literals[var] = atom;
@@ -270,8 +271,9 @@ void EagerConstraintImpl::addedVarName(int var, const std::string & literalStrin
         executionManager.addedVarName(var, literalString);
     }
     if (compilationManager.getBodyPredicatesNotCompletion().count(atom.getPredicateName())) {
-        int uVar=var>0 ? var : -var; 
         watchedAtomsSetNotCompletion.insert(uVar);
+        atomsToFreeze.push_back(uVar);
+        
     }
     compilationManager.insertModelGeneratorPredicate(atom.getPredicateName());
     
@@ -280,27 +282,27 @@ void EagerConstraintImpl::addedVarName(int var, const std::string & literalStrin
         if (facts.count(var)) {            
             executionManager.onLiteralTrue(var);
         } else {
-
-            watchedAtoms.push_back(var);
-            watchedAtoms.push_back(-var);            
+            atomsToFreeze.push_back(uVar);
+            watchedLiterals.push_back(var);
+            watchedLiterals.push_back(-var);            
             executionManager.onLiteralUndef(var);
         }
         //std::cout<<"Watch "<<var<<" ";
         //atom.print();
         //std::cout<<std::endl;
-        watchedAtomsSet.insert(var);
-        watchedAtomsSet.insert(-var);
+        watchedLiteralsSet.insert(var);
+        watchedLiteralsSet.insert(-var);
     }
 
 
-};
+}
 
 void EagerConstraintImpl::simplifyAtLevelZero(std::vector<int>& output) {
 
     std::vector<int> inputInterpretation;
     inputInterpretation.push_back(-1);
     for(int fact:facts) {
-        if(watchedAtomsSet.find(fact)!=watchedAtomsSet.end()) {            
+        if(watchedLiteralsSet.find(fact)!=watchedLiteralsSet.end()) {            
             inputInterpretation.push_back(fact);
         }
     }
@@ -321,8 +323,11 @@ void EagerConstraintImpl::onFact(int var) {
 };
 
 const std::vector<unsigned int> & EagerConstraintImpl::getVariablesToFreeze() {
-
-    return watchedAtoms;
+    
+    return atomsToFreeze;
+};
+const std::vector<int> & EagerConstraintImpl::getWatchedLiterals() {
+    return watchedLiterals;
 };
 
 const string& EagerConstraintImpl::getFilepath() const {

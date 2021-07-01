@@ -37,6 +37,7 @@ public:
     virtual void onAnswerSet(const std::vector<int>& answerSet);
     virtual void simplifyAtLevelZero(std::vector<int> & output);
     virtual const std::vector<unsigned int> & getVariablesToFreeze();
+    virtual const std::vector<int> & getWatchedLiterals();
     virtual const std::string & getFilepath() const;
     void notifyStartingSolver()const{ executionManager.notifyStartingSolver();}
     virtual Reason* getPostponedeReason(Literal lit){return executionManager.getPostponedeReason(lit);}
@@ -45,8 +46,10 @@ private:
     void performCompilation();
     ExecutionManager executionManager;
     CompilationManager compilationManager;
-    std::vector<unsigned> watchedAtoms;
-    std::unordered_set<unsigned> watchedAtomsSet;
+    std::vector<unsigned> atomsToFreeze;
+    std::vector<int> watchedLiterals;
+    std::vector<unsigned> watchedAtomsNotCompletion;
+    std::unordered_set<int> watchedLiteralsSet;
     std::unordered_set<unsigned> watchedAtomsSetNotCompletion;
     std::vector<unsigned> idbWatchedAtoms;
     std::unordered_set<int> facts;

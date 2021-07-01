@@ -71,11 +71,11 @@ Aggregate::onLiteralFalse(
     assert_msg( abs( position ) > 0 && abs( position ) < static_cast< int >( literals.size() ), abs( position ) << " >= " << literals.size() );
     assert_msg( currentLiteral == ( position < 0 ? literals[ -position ].getOppositeLiteral() : literals[ position ] ), currentLiteral << " != " << ( position < 0 ? literals[ -position ].getOppositeLiteral() : literals[ position ] ) );
     trace_msg( aggregates, 10, "Aggregate: " << *this << ". Literal: " << currentLiteral.getOppositeLiteral() << " is true. Position: " << position );
-    if(solver.isUndefined(currentLiteral))
-    {
-        std::cout<<"Unexpected error"<<std::endl;
-        // exit(0);
-    }
+    // if(solver.isUndefined(currentLiteral))
+    // {
+    //     std::cout<<"Unexpected error"<<std::endl;
+    //     exit(0);
+    // }
     int ac = ( position < 0 ? POS : NEG );
     Literal aggrLiteral = ( ac == POS ? literals[ 1 ].getOppositeLiteral() : literals[ 1 ] );
     

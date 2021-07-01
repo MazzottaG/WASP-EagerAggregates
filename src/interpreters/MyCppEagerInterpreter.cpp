@@ -57,7 +57,7 @@ void MyCppEagerInterpreter::callListMethod(const string& method_name, const vect
         for(unsigned i = 1; i<parameters.size(); i++){
             eagerConstraint.onFact(parameters[i]);
         }
-        output.insert(output.end(), eagerConstraint.getVariablesToFreeze().begin(), eagerConstraint.getVariablesToFreeze().end());
+        output.insert(output.end(), eagerConstraint.getWatchedLiterals().begin(), eagerConstraint.getWatchedLiterals().end());
         
     } else if (method_name == method_plugins_onLiteralsUndefined) {
         eagerConstraint.onLiteralsUndefined(parameters);
