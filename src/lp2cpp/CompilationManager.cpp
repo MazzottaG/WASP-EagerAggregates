@@ -1395,7 +1395,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::unordered_map<const std::string*,int>::iterator sum_it;\n";
         *out << ind << "std::string minus = var < 0 ? \"-\" : \"\";\n";
 
-        *out << ind << "std::cout<<\"True \"<<var<<std::endl;\n";
+        // *out << ind << "std::cout<<\"True \"<<var<<std::endl;\n";
         // *out << ind << "std::cout<<\"True \"<<minus;tuple->print();std::cout<<std::endl;\n";
         // *out << ind << "if(reasonForLiteral.count(18)!=0)std::cout<<\"reason of 18 size: \"<<reasonForLiteral[18].size()<<std::endl;else std::cout<<\"reason of 18 not founded \"<<std::endl;\n";
         *out << ind << "unRoll=false;\n";
@@ -1506,7 +1506,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     // ---------------------- onLiteralUndef(int var) --------------------------------------//
     *out << ind++ << "inline void Executor::onLiteralUndef(int var) {\n";
     if (mode == EAGER_MODE) {
-        *out << ind << "std::cout<<\"undef \"<<var<<std::endl;\n";
+        // *out << ind << "std::cout<<\"undef \"<<var<<std::endl;\n";
         *out << ind << "unsigned uVar = var > 0 ? var : -var;\n";
         *out << ind << "Tuple* tuple = factory.getTupleFromWASPID(uVar);\n";
         *out << ind << "int internalVar = var > 0 ? tuple->getId() : -tuple->getId();\n";
