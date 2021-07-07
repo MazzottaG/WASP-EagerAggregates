@@ -71,6 +71,7 @@ private:
     std::string predicateName;
     GraphWithTarjanAlgorithm graphWithTarjanAlgorithm;
     GraphWithTarjanAlgorithm original_graphWithTarjanAlgorithm;
+    GraphWithTarjanAlgorithm graphWithTarjanAlgorithmNoCompletion;
     std::set<int> internalPredicatesId;
 
     std::unordered_map<std::string, int> predicateIDs;
@@ -78,6 +79,10 @@ private:
     
     std::unordered_map<std::string, int> originalPredicateIDs;
     std::unordered_map<int, Vertex> originalVertexByID;
+
+    std::unordered_map<std::string, int> predicateIDsNoCompletion;
+    std::unordered_set<int> predicateBodyNoCompletion;
+    std::unordered_map<int, Vertex> vertexByIDNoCompletion;
     
     std::unordered_map<std::string,std::vector<std::string>> auxLiteralTerms;
     std::unordered_map<std::string,std::vector<aspc::Literal>> auxPredicateToBody;
@@ -188,6 +193,8 @@ public:
     virtual void onWeightAtLevels(int nWeight, int nLevel, int nTerm);
     
     aspc::Program & getProgram();
+    void buildGraphNoCompletion();
+    bool isPredicateBodyNoCompletion(int)const;
     void onRuleRewrited();
     const  std::map<std::string, unsigned> & getArietyMap();
     bool isInternalPredicateName(std::string predName) {
@@ -252,8 +259,10 @@ public:
 //    }
     void clearAggregateFields();
     GraphWithTarjanAlgorithm& getGraphWithTarjanAlgorithm();
+    GraphWithTarjanAlgorithm& getGraphWithTarjanAlgorithmNoCompletion(){return graphWithTarjanAlgorithmNoCompletion;}
     void normalizeArithmeticRelationsWithAggregate();
     const std::unordered_map<int, Vertex>& getVertexByIDMap() const;
+    const std::unordered_map<int, Vertex>& getVertexByIDMapNoCompletion() {return vertexByIDNoCompletion;}
     const std::unordered_map<std::string, int>& getPredicateIDsMap() const;
     void addRuleToOriginalProgram();
 

@@ -49,6 +49,18 @@ const std::string _bound = "bound";
 PredicateWSet wbound(1);
 PredicateWSet ubound(1);
 PredicateWSet fbound(1);
+const std::string _delete = "delete";
+PredicateWSet wdelete(2);
+PredicateWSet udelete(2);
+PredicateWSet fdelete(2);
+const std::string _edge = "edge";
+PredicateWSet wedge(2);
+PredicateWSet uedge(2);
+PredicateWSet fedge(2);
+const std::string _indeg = "indeg";
+PredicateWSet windeg(2);
+PredicateWSet uindeg(2);
+PredicateWSet findeg(2);
 const std::string _keep = "keep";
 PredicateWSet wkeep(2);
 PredicateWSet ukeep(2);
@@ -125,6 +137,9 @@ AuxMap fbound_({});
 AuxMap pkeep_1_({1});
 AuxMap ukeep_1_({1});
 AuxMap fkeep_1_({1});
+AuxMap pedge_({});
+AuxMap uedge_({});
+AuxMap fedge_({});
 void Executor::handleConflict(int literal){
     if(currentDecisionLevel == -1){
         propagatedLiterals.insert(-1);
@@ -233,7 +248,6 @@ inline void Executor::onLiteralTrue(int var) {
     Tuple* tuple = factory.getTupleFromWASPID(uVar);
     std::unordered_map<const std::string*,int>::iterator sum_it;
     std::string minus = var < 0 ? "-" : "";
-    std::cout<<"True "<<var<<std::endl;
     unRoll=false;
     std::unordered_map<const std::string*,PredicateWSet*>::iterator uSetIt = predicateUSetMap.find(tuple->getPredicateName());
     if(uSetIt!=predicateUSetMap.end()) {
@@ -265,7 +279,6 @@ inline void Executor::onLiteralTrue(int var) {
     }
 }
 inline void Executor::onLiteralUndef(int var) {
-    std::cout<<"undef "<<var<<std::endl;
     unsigned uVar = var > 0 ? var : -var;
     Tuple* tuple = factory.getTupleFromWASPID(uVar);
     int internalVar = var > 0 ? tuple->getId() : -tuple->getId();
@@ -319,6 +332,18 @@ void Executor::init() {
     predicateUSetMap[&_bound]=&ubound;
     predicateFSetMap[&_bound]=&fbound;
     stringToUniqueStringPointer["bound"] = &_bound;
+    predicateWSetMap[&_delete]=&wdelete;
+    predicateUSetMap[&_delete]=&udelete;
+    predicateFSetMap[&_delete]=&fdelete;
+    stringToUniqueStringPointer["delete"] = &_delete;
+    predicateWSetMap[&_edge]=&wedge;
+    predicateUSetMap[&_edge]=&uedge;
+    predicateFSetMap[&_edge]=&fedge;
+    stringToUniqueStringPointer["edge"] = &_edge;
+    predicateWSetMap[&_indeg]=&windeg;
+    predicateUSetMap[&_indeg]=&uindeg;
+    predicateFSetMap[&_indeg]=&findeg;
+    stringToUniqueStringPointer["indeg"] = &_indeg;
     predicateWSetMap[&_keep]=&wkeep;
     predicateUSetMap[&_keep]=&ukeep;
     predicateFSetMap[&_keep]=&fkeep;
@@ -327,12 +352,15 @@ void Executor::init() {
     predicateUSetMap[&_vertex]=&uvertex;
     predicateFSetMap[&_vertex]=&fvertex;
     stringToUniqueStringPointer["vertex"] = &_vertex;
+    predicateToAuxiliaryMaps[&_edge].push_back(&pedge_);
     predicateToAuxiliaryMaps[&_keep].push_back(&pkeep_1_);
     predicateToAuxiliaryMaps[&_bound].push_back(&pbound_);
     predicateToAuxiliaryMaps[&_vertex].push_back(&pvertex_);
+    predicateToUndefAuxiliaryMaps[&_edge].push_back(&uedge_);
     predicateToUndefAuxiliaryMaps[&_keep].push_back(&ukeep_1_);
     predicateToUndefAuxiliaryMaps[&_bound].push_back(&ubound_);
     predicateToUndefAuxiliaryMaps[&_vertex].push_back(&uvertex_);
+    predicateToFalseAuxiliaryMaps[&_edge].push_back(&fedge_);
     predicateToFalseAuxiliaryMaps[&_keep].push_back(&fkeep_1_);
     predicateToFalseAuxiliaryMaps[&_bound].push_back(&fbound_);
     predicateToFalseAuxiliaryMaps[&_vertex].push_back(&fvertex_);
@@ -395,103 +423,127 @@ bool propUndefined(const Tuple* tupleU,bool isNegated,std::vector<int>& stack,bo
 void Executor::printInternalLiterals(){
     {
         std::set<std::vector<int>> trueHeads;
-        const std::vector<const Tuple*>* tuples = &pvertex_.getValues({});
+        const std::vector<const Tuple*>* tuples = &pedge_.getValues({});
         for(unsigned i=0; i<tuples->size();i++){
-            int V = tuples->at(i)->at(0);
-            const std::vector<const Tuple*>* tuples = &pbound_.getValues({});
-            for(unsigned i=0; i<tuples->size();i++){
-                int K = tuples->at(i)->at(0);
-                std::set<std::vector<int>> aggrSetKey;
-                int aggregateValue=0;
-                const std::vector<const Tuple*>* tuples = &pkeep_1_.getValues({V});
-                for(unsigned i=0; i<tuples->size() && aggregateValue < K;i++){
-                    int X = tuples->at(i)->at(0);
-                    std::vector<int> aggrKey({X});
-                    if(aggrSetKey.count(aggrKey)==0){
-                        aggrSetKey.insert(aggrKey);
-                        aggregateValue+=1;
+            int X = tuples->at(i)->at(0);
+            int Y = tuples->at(i)->at(1);
+            Tuple* boundTuple = factory.addNewInternalTuple({X,Y},&_delete);
+            if(wdelete.find(*boundTuple) == NULL && udelete.find(*boundTuple) == NULL){
+                std::vector<int> head({X,Y});
+                std::cout<<"keep("<<head[0]<<","<<head[1]<<")"<<std::endl;
+                Tuple* tupleHead = factory.addNewInternalTuple(head,&_keep);
+                if(wkeep.find(*tupleHead) == NULL){
+                std::unordered_map<const std::string*, PredicateWSet*>::iterator it = predicateWSetMap.find(tupleHead->getPredicateName());
+                if (it == predicateWSetMap.end()) {
+                    } else {
+                    const auto& insertResult = it->second->insert(tupleHead);
+                    if (insertResult.second) {
+                        for (AuxMap* auxMap : predicateToAuxiliaryMaps[it->first]) {
+                            auxMap -> insert2(*insertResult.first);
+                        }
                     }
+                } // close undef insert 
+            } // close find predicateset 
+        }
+    }
+}
+{
+    std::set<std::vector<int>> trueHeads;
+    const std::vector<const Tuple*>* tuples = &pvertex_.getValues({});
+    for(unsigned i=0; i<tuples->size();i++){
+        int V = tuples->at(i)->at(0);
+        const std::vector<const Tuple*>* tuples = &pbound_.getValues({});
+        for(unsigned i=0; i<tuples->size();i++){
+            int K = tuples->at(i)->at(0);
+            std::set<std::vector<int>> aggrSetKey;
+            int aggregateValue=0;
+            const std::vector<const Tuple*>* tuples = &pkeep_1_.getValues({V});
+            for(unsigned i=0; i<tuples->size() && aggregateValue < K;i++){
+                int X = tuples->at(i)->at(0);
+                std::vector<int> aggrKey({X});
+                if(aggrSetKey.count(aggrKey)==0){
+                    aggrSetKey.insert(aggrKey);
+                    aggregateValue+=1;
                 }
-                if(aggregateValue >= K){
-                    std::vector<int> head({V,K});
-                    if(trueHeads.count(head)==0){
-                        std::cout<<"indeg("<<head[0]<<","<<head[1]<<")"<<std::endl;
-                    }
-                }
+            }
+            if(aggregateValue >= K){
+                std::vector<int> head({V,K});
+                std::cout<<"indeg("<<head[0]<<","<<head[1]<<")"<<std::endl;
             }
         }
     }
 }
+}
 void Executor::unRollToLevel(int decisionLevel){
-    for(unsigned i = 0; i<propagatedLiterals.size(); i++){
-        int var = propagatedLiterals[i] > 0 ? propagatedLiterals[i] : -propagatedLiterals[i];
-        int sign = propagatedLiterals[i] > 0 ? -1 : 1;
-        Tuple* literalNotPropagated = factory.getTupleFromWASPID(var);
-        if(literalNotPropagated!=NULL)
-            reasonForLiteral.erase(sign*literalNotPropagated->getId());
+for(unsigned i = 0; i<propagatedLiterals.size(); i++){
+    int var = propagatedLiterals[i] > 0 ? propagatedLiterals[i] : -propagatedLiterals[i];
+    int sign = propagatedLiterals[i] > 0 ? -1 : 1;
+    Tuple* literalNotPropagated = factory.getTupleFromWASPID(var);
+    if(literalNotPropagated!=NULL)
+        reasonForLiteral.erase(sign*literalNotPropagated->getId());
+}
+propagatedLiterals.clear();
+while(currentDecisionLevel > decisionLevel){
+    while(!levelToIntLiterals[currentDecisionLevel].empty()){
+        int var = levelToIntLiterals[currentDecisionLevel].back();
+        levelToIntLiterals[currentDecisionLevel].pop_back();
+        reasonForLiteral.erase(var);
+        int uVar = var>0 ? var : -var;
+        Tuple* tuple = factory.getTupleFromInternalID(uVar);
+        if (var > 0) {
+            std::unordered_map<const std::string*, PredicateWSet*>::iterator wSetIt = predicateWSetMap.find(tuple->getPredicateName());
+            if (wSetIt != predicateWSetMap.end()) {
+                wSetIt->second->erase(*tuple);
+            }
+        } //true removing
+        if (var < 0) {
+            std::unordered_map<const std::string*, PredicateWSet*>::iterator fSetIt = predicateFSetMap.find(tuple->getPredicateName());
+            if (fSetIt != predicateFSetMap.end()) {
+                fSetIt->second->erase(*tuple);
+            }
+        }//false removing
+        std::unordered_map<const std::string*, PredicateWSet*>::iterator it = predicateUSetMap.find(tuple->getPredicateName());
+        if (it == predicateUSetMap.end()) {
+            } else {
+            const auto& insertResult = it->second->insert(tuple);
+            if (insertResult.second) {
+                for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[it->first]) {
+                    auxMap -> insert2(*insertResult.first);
+                }
+            }
+        } // close undef insert 
     }
-    propagatedLiterals.clear();
-    while(currentDecisionLevel > decisionLevel){
-        while(!levelToIntLiterals[currentDecisionLevel].empty()){
-            int var = levelToIntLiterals[currentDecisionLevel].back();
-            levelToIntLiterals[currentDecisionLevel].pop_back();
-            reasonForLiteral.erase(var);
-            int uVar = var>0 ? var : -var;
-            Tuple* tuple = factory.getTupleFromInternalID(uVar);
-            if (var > 0) {
-                std::unordered_map<const std::string*, PredicateWSet*>::iterator wSetIt = predicateWSetMap.find(tuple->getPredicateName());
-                if (wSetIt != predicateWSetMap.end()) {
-                    wSetIt->second->erase(*tuple);
-                }
-            } //true removing
-            if (var < 0) {
-                std::unordered_map<const std::string*, PredicateWSet*>::iterator fSetIt = predicateFSetMap.find(tuple->getPredicateName());
-                if (fSetIt != predicateFSetMap.end()) {
-                    fSetIt->second->erase(*tuple);
-                }
-            }//false removing
-            std::unordered_map<const std::string*, PredicateWSet*>::iterator it = predicateUSetMap.find(tuple->getPredicateName());
-            if (it == predicateUSetMap.end()) {
-                } else {
-                const auto& insertResult = it->second->insert(tuple);
-                if (insertResult.second) {
-                    for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[it->first]) {
-                        auxMap -> insert2(*insertResult.first);
-                    }
-                }
-            } // close undef insert 
-        }
-        levelToIntLiterals.erase(currentDecisionLevel);
-        currentDecisionLevel--;
-    }
-    clearConflictReason();
+    levelToIntLiterals.erase(currentDecisionLevel);
+    currentDecisionLevel--;
+}
+clearConflictReason();
 }
 void Executor::executeProgramOnFacts(const std::vector<aspc::Literal*> & facts) {}
 void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
-    int decisionLevel = facts[0];
-    currentDecisionLevel=decisionLevel;
-    clearPropagations();
-    std::vector<int> propagationStack;
-    for(unsigned i=1;i<facts.size();i++) {
-        onLiteralTrue(facts[i]);
-        int factVar = facts[i]>0 ? facts[i] : -facts[i];
-        int minus = facts[i]<0 ? -1 : 1;
-        propagationStack.push_back(minus*(int)factory.getTupleFromWASPID(factVar)->getId());
-        if(propagatedLiterals.contains(-facts[i])) propagatedLiterals.erase(-facts[i]);
-    }
-    if(decisionLevel>-1) {
-    }
-    if(decisionLevel==-1) {
-        if(!undefinedLoaded)
-            undefLiteralsReceived();
-    }//close decision level == -1
-    while(!propagationStack.empty()){
-        int startVar = propagationStack.back();
-        int uStartVar = startVar<0 ? -startVar : startVar;
-        Tuple starter (*factory.getTupleFromInternalID(uStartVar));
-        starter.setNegated(startVar<0);
-        std::string minus = starter.isNegated() ? "not " : "";
-        propagationStack.pop_back();
-    }
+int decisionLevel = facts[0];
+currentDecisionLevel=decisionLevel;
+clearPropagations();
+std::vector<int> propagationStack;
+for(unsigned i=1;i<facts.size();i++) {
+    onLiteralTrue(facts[i]);
+    int factVar = facts[i]>0 ? facts[i] : -facts[i];
+    int minus = facts[i]<0 ? -1 : 1;
+    propagationStack.push_back(minus*(int)factory.getTupleFromWASPID(factVar)->getId());
+    if(propagatedLiterals.contains(-facts[i])) propagatedLiterals.erase(-facts[i]);
+}
+if(decisionLevel>-1) {
+}
+if(decisionLevel==-1) {
+    if(!undefinedLoaded)
+        undefLiteralsReceived();
+}//close decision level == -1
+while(!propagationStack.empty()){
+    int startVar = propagationStack.back();
+    int uStartVar = startVar<0 ? -startVar : startVar;
+    Tuple starter (*factory.getTupleFromInternalID(uStartVar));
+    starter.setNegated(startVar<0);
+    std::string minus = starter.isNegated() ? "not " : "";
+    propagationStack.pop_back();
+}
 }
 }

@@ -2401,199 +2401,231 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         }
         // *out << ind << "std::cout<<\"AtomsTable size: \"<<atomsTable.size()<<std::endl;\n";
         // *out << ind << "for(const auto& pair : answerSet) onLiteralTrue(pair.first,pair.second);\n";
-        for(const aspc::Rule& r: builder->getRuleWithoutCompletion()){
-            std::cout<<"Rule: "<<r.getRuleId()<<" without completion"<<std::endl;
-            if(!r.isConstraint()){
-            *out << ind++ << "{\n";
-                *out << ind << "std::set<std::vector<int>> trueHeads;\n";
-                std::vector<unsigned> orderedBodyFormulas;
-                r.orderBodyFormulas(orderedBodyFormulas);
-                std::unordered_set<std::string> boundVariables;
-                unsigned closingPars=0;
-                //std::cout<<"Formulas size "<<orderedBodyFormulas.size()<<std::endl;
-                for(unsigned formulaIndex: orderedBodyFormulas){
-                    const aspc::Formula* f = r.getFormulas()[formulaIndex];
-                    if(!f->isLiteral() && !f->containsAggregate()){
-                        f->print();
-                        const aspc::ArithmeticRelation* ineq = (aspc::ArithmeticRelation*)f;
-                        if(ineq->isBoundedValueAssignment(boundVariables)){
-                            *out << ind << "int "<<ineq->getAssignmentStringRep(boundVariables)<<";\n";
-                            ineq->addVariablesToSet(boundVariables);
-                        }else{
-                            *out << ind++ << "if("<<ineq->getStringRep()<<"){\n";
-                            closingPars++;
-                        }
-                    }else if(f->isLiteral()){
-                        const aspc::Literal* l = (aspc::Literal*)f;
-                        if(f->isBoundedLiteral(boundVariables)){
+        GraphWithTarjanAlgorithm* graphNoCompletion = &builder->getGraphWithTarjanAlgorithmNoCompletion();
+        std::vector<std::vector<int>> sccNoCompletion = graphNoCompletion->SCC();
+        const auto& vertexByIDNoCompletion=builder->getVertexByIDMapNoCompletion();
+        for(int component=sccNoCompletion.size()-1; component>=0 ; component--){
+            for(unsigned predId : sccNoCompletion[component]){
+                auto it = vertexByIDNoCompletion.find(sccNoCompletion[component][0]);
+                if(it!=vertexByIDNoCompletion.end()){
+                    if(!it->second.rules.empty()){
+                        for(unsigned ruleId: it->second.rules){
+                            for(const aspc::Rule& r: builder->getRuleWithoutCompletion()){
+                                if(ruleId == r.getRuleId()){
+                                    std::cout<<"Rule: "<<r.getRuleId()<<" without completion"<<std::endl;
+                                    if(!r.isConstraint()){
+                                    *out << ind++ << "{\n";
+                                        *out << ind << "std::set<std::vector<int>> trueHeads;\n";
+                                        std::vector<unsigned> orderedBodyFormulas;
+                                        r.orderBodyFormulas(orderedBodyFormulas);
+                                        std::unordered_set<std::string> boundVariables;
+                                        unsigned closingPars=0;
+                                        //std::cout<<"Formulas size "<<orderedBodyFormulas.size()<<std::endl;
+                                        for(unsigned formulaIndex: orderedBodyFormulas){
+                                            const aspc::Formula* f = r.getFormulas()[formulaIndex];
+                                            if(!f->isLiteral() && !f->containsAggregate()){
+                                                f->print();
+                                                const aspc::ArithmeticRelation* ineq = (aspc::ArithmeticRelation*)f;
+                                                if(ineq->isBoundedValueAssignment(boundVariables)){
+                                                    *out << ind << "int "<<ineq->getAssignmentStringRep(boundVariables)<<";\n";
+                                                    ineq->addVariablesToSet(boundVariables);
+                                                }else{
+                                                    *out << ind++ << "if("<<ineq->getStringRep()<<"){\n";
+                                                    closingPars++;
+                                                }
+                                            }else if(f->isLiteral()){
+                                                const aspc::Literal* l = (aspc::Literal*)f;
+                                                if(f->isBoundedLiteral(boundVariables)){
 
-                            *out << ind << "Tuple* boundTuple = factory.addNewInternalTuple({";
-                            for(unsigned k = 0; k<l->getAriety(); k++){
-                                if(k>0)
-                                    *out << ",";
-                                *out << l->getTermAt(k);
-                            }
-                            *out << "},&_"<<l->getPredicateName()<<");\n";
-                            if(l->isNegated()){
-                                *out << ind++ << "if(w"<<l->getPredicateName()<<".find(*boundTuple) == NULL && u"<<l->getPredicateName()<<".find(*boundTuple) == NULL){\n";
-                                closingPars++;
-                            }else{
-                                *out << ind++ << "if(w"<<l->getPredicateName()<<".find(*boundTuple) != NULL){\n";
-                                closingPars++;
-                            }
-                        }else{
-                            *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
-                            std::string boundTerms="";
-                            std::vector<unsigned> unBoundedIndices;
-                            for(unsigned k = 0; k<l->getAriety(); k++){
-                                if(!l->isVariableTermAt(k) || boundVariables.count(l->getTermAt(k))!=0){
-                                    *out << k << "_";
-                                    if(boundTerms!="")
-                                        boundTerms+=",";
-                                    boundTerms+=l->getTermAt(k);
-                                }else{
-                                    unBoundedIndices.push_back(k);
-                                }
-                            }
-                            *out << ".getValues({"<<boundTerms<<"});\n";
-                            *out << ind++ << "for(unsigned i=0; i<tuples->size();i++){\n";
-                            closingPars++;
-                                for(unsigned index:unBoundedIndices){
-                                    if(boundVariables.count(l->getTermAt(index))==0){
-                                        *out << ind << "int "<<l->getTermAt(index)<<" = tuples->at(i)->at("<<index<<");\n";
-                                        boundVariables.insert(l->getTermAt(index));
-                                    }else{
-                                        *out << ind++ << "if(tuples->at(i)->at("<<index<<") == "<<l->getTermAt(index)<<"){\n";
-                                        closingPars++;
-                                    }
-                                }
-                                // *out << ind << "tuples->at(i)->print();std::cout<<\" Joining\"<<std::endl;\n";
-                        }
-                    }else{
-                        std::vector<aspc::Formula*> aggrBodyFormulas;
-                        const aspc::ArithmeticRelationWithAggregate* aggrRelation =(aspc::ArithmeticRelationWithAggregate*)r.getFormulas()[formulaIndex];
-                        aggrRelation->getOrderedAggregateBody(aggrBodyFormulas,boundVariables);
-                        std::unordered_set<std::string> localBoundVariables(boundVariables);
-                        *out << ind << "std::set<std::vector<int>> aggrSetKey;\n";
-                        *out << ind << "int aggregateValue=0;\n";
-                        std::string exitCondition="";
-                        std::string plusOne = aggrRelation->isPlusOne() ? "+1":"";
-                        std::string negated = aggrRelation->isNegated() ? "!" :"";
-                        
-                        if(!aggrRelation->isNegated() && aggrRelation->getComparisonType()!=aspc::EQ){
-                            exitCondition = " && aggregateValue < "+aggrRelation->getGuard().getStringRep()+plusOne;
-                        }
-                        unsigned localPars=0;
-                        for(const aspc::Formula* fAggr:aggrBodyFormulas){
-                            if(!fAggr->isLiteral() && !fAggr->containsAggregate()){
-                                fAggr->print();
-                                const aspc::ArithmeticRelation* ineq = (aspc::ArithmeticRelation*)fAggr;
-                                if(ineq->isBoundedValueAssignment(localBoundVariables)){
-                                    *out << ind << "int "<<ineq->getAssignmentStringRep(localBoundVariables)<<";\n";
-                                    ineq->addVariablesToSet(localBoundVariables);
-                                }else{
-                                    *out << ind++ << "if("<<ineq->getStringRep()<<"){\n";
-                                    localPars++;
-                                }
-                            }else if(fAggr->isLiteral()){
-                                const aspc::Literal* l = (aspc::Literal*)fAggr;
-                                if(fAggr->isBoundedLiteral(localBoundVariables)){
-
-                                    *out << ind << "Tuple* boundTuple = factory.addNewInternalTuple({";
-                                    for(unsigned k = 0; k<l->getAriety(); k++){
-                                        if(k>0)
-                                            *out << ",";
-                                        *out << l->getTermAt(k);
-                                    }
-                                    *out << "},&_"<<l->getPredicateName()<<");\n";
-                                    if(l->isNegated()){
-                                        *out << ind++ << "if(w"<<l->getPredicateName()<<".find(*boundTuple) == NULL && u"<<l->getPredicateName()<<".find(*boundTuple) == NULL){\n";
-                                        localPars++;
-                                    }else{
-                                        *out << ind++ << "if(w"<<l->getPredicateName()<<".find(*boundTuple) != NULL){\n";
-                                        localPars++;
-                                    }
-                                }else{
-                                    *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
-                                    std::string boundTerms="";
-                                    std::vector<unsigned> unBoundedIndices;
-                                    for(unsigned k = 0; k<l->getAriety(); k++){
-                                        if(!l->isVariableTermAt(k) || localBoundVariables.count(l->getTermAt(k))!=0){
-                                            *out << k << "_";
-                                            if(boundTerms!="")
-                                                boundTerms+=",";
-                                            boundTerms+=l->getTermAt(k);
-                                        }else{
-                                            unBoundedIndices.push_back(k);
-                                        }
-                                    }
-                                    *out << ".getValues({"<<boundTerms<<"});\n";
-                                    *out << ind++ << "for(unsigned i=0; i<tuples->size()"<<exitCondition<<";i++){\n";
-                                    localPars++;
-                                        for(unsigned index:unBoundedIndices){
-                                            if(localBoundVariables.count(l->getTermAt(index))==0){
-                                                *out << ind << "int "<<l->getTermAt(index)<<" = tuples->at(i)->at("<<index<<");\n";
-                                                localBoundVariables.insert(l->getTermAt(index));
+                                                    *out << ind << "Tuple* boundTuple = factory.addNewInternalTuple({";
+                                                    for(unsigned k = 0; k<l->getAriety(); k++){
+                                                        if(k>0)
+                                                            *out << ",";
+                                                        *out << l->getTermAt(k);
+                                                    }
+                                                    *out << "},&_"<<l->getPredicateName()<<");\n";
+                                                    if(l->isNegated()){
+                                                        *out << ind++ << "if(w"<<l->getPredicateName()<<".find(*boundTuple) == NULL && u"<<l->getPredicateName()<<".find(*boundTuple) == NULL){\n";
+                                                        closingPars++;
+                                                    }else{
+                                                        *out << ind++ << "if(w"<<l->getPredicateName()<<".find(*boundTuple) != NULL){\n";
+                                                        closingPars++;
+                                                    }
+                                                }else{
+                                                    *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
+                                                    std::string boundTerms="";
+                                                    std::vector<unsigned> unBoundedIndices;
+                                                    for(unsigned k = 0; k<l->getAriety(); k++){
+                                                        if(!l->isVariableTermAt(k) || boundVariables.count(l->getTermAt(k))!=0){
+                                                            *out << k << "_";
+                                                            if(boundTerms!="")
+                                                                boundTerms+=",";
+                                                            boundTerms+=l->getTermAt(k);
+                                                        }else{
+                                                            unBoundedIndices.push_back(k);
+                                                        }
+                                                    }
+                                                    *out << ".getValues({"<<boundTerms<<"});\n";
+                                                    *out << ind++ << "for(unsigned i=0; i<tuples->size();i++){\n";
+                                                    closingPars++;
+                                                        for(unsigned index:unBoundedIndices){
+                                                            if(boundVariables.count(l->getTermAt(index))==0){
+                                                                *out << ind << "int "<<l->getTermAt(index)<<" = tuples->at(i)->at("<<index<<");\n";
+                                                                boundVariables.insert(l->getTermAt(index));
+                                                            }else{
+                                                                *out << ind++ << "if(tuples->at(i)->at("<<index<<") == "<<l->getTermAt(index)<<"){\n";
+                                                                closingPars++;
+                                                            }
+                                                        }
+                                                        // *out << ind << "tuples->at(i)->print();std::cout<<\" Joining\"<<std::endl;\n";
+                                                }
                                             }else{
-                                                *out << ind++ << "if(tuples->at(i)->at("<<index<<") == "<<l->getTermAt(index)<<"){\n";
-                                                localPars++;
+                                                std::vector<aspc::Formula*> aggrBodyFormulas;
+                                                const aspc::ArithmeticRelationWithAggregate* aggrRelation =(aspc::ArithmeticRelationWithAggregate*)r.getFormulas()[formulaIndex];
+                                                aggrRelation->getOrderedAggregateBody(aggrBodyFormulas,boundVariables);
+                                                std::unordered_set<std::string> localBoundVariables(boundVariables);
+                                                *out << ind << "std::set<std::vector<int>> aggrSetKey;\n";
+                                                *out << ind << "int aggregateValue=0;\n";
+                                                std::string exitCondition="";
+                                                std::string plusOne = aggrRelation->isPlusOne() ? "+1":"";
+                                                std::string negated = aggrRelation->isNegated() ? "!" :"";
+                                                
+                                                if(!aggrRelation->isNegated() && aggrRelation->getComparisonType()!=aspc::EQ){
+                                                    exitCondition = " && aggregateValue < "+aggrRelation->getGuard().getStringRep()+plusOne;
+                                                }
+                                                unsigned localPars=0;
+                                                for(const aspc::Formula* fAggr:aggrBodyFormulas){
+                                                    if(!fAggr->isLiteral() && !fAggr->containsAggregate()){
+                                                        fAggr->print();
+                                                        const aspc::ArithmeticRelation* ineq = (aspc::ArithmeticRelation*)fAggr;
+                                                        if(ineq->isBoundedValueAssignment(localBoundVariables)){
+                                                            *out << ind << "int "<<ineq->getAssignmentStringRep(localBoundVariables)<<";\n";
+                                                            ineq->addVariablesToSet(localBoundVariables);
+                                                        }else{
+                                                            *out << ind++ << "if("<<ineq->getStringRep()<<"){\n";
+                                                            localPars++;
+                                                        }
+                                                    }else if(fAggr->isLiteral()){
+                                                        const aspc::Literal* l = (aspc::Literal*)fAggr;
+                                                        if(fAggr->isBoundedLiteral(localBoundVariables)){
+
+                                                            *out << ind << "Tuple* boundTuple = factory.addNewInternalTuple({";
+                                                            for(unsigned k = 0; k<l->getAriety(); k++){
+                                                                if(k>0)
+                                                                    *out << ",";
+                                                                *out << l->getTermAt(k);
+                                                            }
+                                                            *out << "},&_"<<l->getPredicateName()<<");\n";
+                                                            if(l->isNegated()){
+                                                                *out << ind++ << "if(w"<<l->getPredicateName()<<".find(*boundTuple) == NULL && u"<<l->getPredicateName()<<".find(*boundTuple) == NULL){\n";
+                                                                localPars++;
+                                                            }else{
+                                                                *out << ind++ << "if(w"<<l->getPredicateName()<<".find(*boundTuple) != NULL){\n";
+                                                                localPars++;
+                                                            }
+                                                        }else{
+                                                            *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
+                                                            std::string boundTerms="";
+                                                            std::vector<unsigned> unBoundedIndices;
+                                                            for(unsigned k = 0; k<l->getAriety(); k++){
+                                                                if(!l->isVariableTermAt(k) || localBoundVariables.count(l->getTermAt(k))!=0){
+                                                                    *out << k << "_";
+                                                                    if(boundTerms!="")
+                                                                        boundTerms+=",";
+                                                                    boundTerms+=l->getTermAt(k);
+                                                                }else{
+                                                                    unBoundedIndices.push_back(k);
+                                                                }
+                                                            }
+                                                            *out << ".getValues({"<<boundTerms<<"});\n";
+                                                            *out << ind++ << "for(unsigned i=0; i<tuples->size()"<<exitCondition<<";i++){\n";
+                                                            localPars++;
+                                                                for(unsigned index:unBoundedIndices){
+                                                                    if(localBoundVariables.count(l->getTermAt(index))==0){
+                                                                        *out << ind << "int "<<l->getTermAt(index)<<" = tuples->at(i)->at("<<index<<");\n";
+                                                                        localBoundVariables.insert(l->getTermAt(index));
+                                                                    }else{
+                                                                        *out << ind++ << "if(tuples->at(i)->at("<<index<<") == "<<l->getTermAt(index)<<"){\n";
+                                                                        localPars++;
+                                                                    }
+                                                                }
+                                                                // *out << ind << "tuples->at(i)->print();std::cout<<\" Joining\"<<std::endl;\n";
+
+                                                        }
+                                                    }
+                                                }
+                                                *out << ind << "std::vector<int> aggrKey({";
+                                                bool first=true;
+                                                for(std::string v : aggrRelation->getAggregate().getAggregateVariables()){
+                                                    if(!first)
+                                                        *out << ",";
+                                                    *out << v;
+                                                    first=false;
+                                                }
+                                                *out << "});\n";
+                                                *out << ind++ << "if(aggrSetKey.count(aggrKey)==0){\n";
+                                                    *out << ind << "aggrSetKey.insert(aggrKey);\n";
+                                                    if(aggrRelation->getAggregate().isSum())
+                                                        *out << ind << "aggregateValue+=aggrKey[0];\n";
+                                                    else
+                                                        *out << ind << "aggregateValue+=1;\n";
+                                                *out << --ind << "}\n";
+                                                while(localPars > 0){
+                                                    *out << --ind << "}\n";
+                                                    localPars--;
+                                                }
+                                                for(unsigned k=0;k<aggrBodyFormulas.size();k++){
+                                                    delete aggrBodyFormulas[k];
+                                                }
+                                                *out << ind++ << "if("<<negated<<"aggregateValue "<<aggrRelation->getCompareTypeAsString()<<" "<<aggrRelation->getGuard().getStringRep()<<plusOne<<"){\n";
+                                                closingPars++;
                                             }
                                         }
-                                        // *out << ind << "tuples->at(i)->print();std::cout<<\" Joining\"<<std::endl;\n";
+                                        *out << ind << "std::vector<int> head({";
+                                        const aspc::Atom* head = &r.getHead()[0];
+                                        for(unsigned k=0;k<head->getAriety();k++){
+                                            if(k>0)
+                                                *out << ",";
+                                            *out << head->getTermAt(k);
+                                        }
+                                        *out << "});\n";
+                                        *out << ind << "std::cout<<\""<<head->getPredicateName()<<"(\"";
+                                        for(unsigned k=0;k<head->getAriety();k++){
+                                            if(k>0)
+                                                *out << "<<\",\"";
+                                            *out << "<<head["<<k<<"]";
+                                        }
+                                        *out << "<<\")\"<<std::endl;\n";
+                                        if(builder->isPredicateBodyNoCompletion(it->first)){
+                                            *out << ind << "Tuple* tupleHead = factory.addNewInternalTuple(head,&_"<<head->getPredicateName()<<");\n";
+                                            *out << ind << "if(w"<<head->getPredicateName()<<".find(*tupleHead) == NULL){\n";
+                                                *out << ind << "std::unordered_map<const std::string*, PredicateWSet*>::iterator it = predicateWSetMap.find(tupleHead->getPredicateName());\n";
+                                                *out << ind++ << "if (it == predicateWSetMap.end()) {\n";
+                                                *out << ind << "} else {\n";
+                                                    *out << ind << "const auto& insertResult = it->second->insert(tupleHead);\n";
+                                                    *out << ind++ << "if (insertResult.second) {\n";
+                                                    // *out << ind << "std::cout<<\"Saving undef literal\"<<std::endl;\n";
+                                                        *out << ind++ << "for (AuxMap* auxMap : predicateToAuxiliaryMaps[it->first]) {\n";
+                                                            *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                                                        *out << --ind << "}\n";
+                                                    *out << --ind << "}\n";
+                                                *out << --ind << "} // close undef insert \n";
+                                            *out << --ind << "} // close find predicateset \n";
 
+                                        }
+                                        
+                                        while (closingPars>0){
+                                            *out << --ind << "}\n";
+                                            closingPars--;
+                                        }
+
+                                    *out << --ind << "}\n";
+                                    }
                                 }
-                            }
+                            }                   
                         }
-                        *out << ind << "std::vector<int> aggrKey({";
-                        bool first=true;
-                        for(std::string v : aggrRelation->getAggregate().getAggregateVariables()){
-                            if(!first)
-                                *out << ",";
-                            *out << v;
-                            first=false;
-                        }
-                        *out << "});\n";
-                        *out << ind++ << "if(aggrSetKey.count(aggrKey)==0){\n";
-                            *out << ind << "aggrSetKey.insert(aggrKey);\n";
-                            if(aggrRelation->getAggregate().isSum())
-                                *out << ind << "aggregateValue+=aggrKey[0];\n";
-                            else
-                                *out << ind << "aggregateValue+=1;\n";
-                        *out << --ind << "}\n";
-                        while(localPars > 0){
-                            *out << --ind << "}\n";
-                            localPars--;
-                        }
-                        for(unsigned k=0;k<aggrBodyFormulas.size();k++){
-                            delete aggrBodyFormulas[k];
-                        }
-                        *out << ind++ << "if("<<negated<<"aggregateValue "<<aggrRelation->getCompareTypeAsString()<<" "<<aggrRelation->getGuard().getStringRep()<<plusOne<<"){\n";
-                        closingPars++;
                     }
                 }
-                *out << ind << "std::vector<int> head({";
-                const aspc::Atom* head = &r.getHead()[0];
-                for(unsigned k=0;k<head->getAriety();k++){
-                    if(k>0)
-                        *out << ",";
-                    *out << head->getTermAt(k);
-                }
-                *out << "});\n";
-                *out << ind++ << "if(trueHeads.count(head)==0){\n";
-                    *out << ind << "std::cout<<\""<<head->getPredicateName()<<"(\"";
-                    for(unsigned k=0;k<head->getAriety();k++){
-                        if(k>0)
-                            *out << "<<\",\"";
-                        *out << "<<head["<<k<<"]";
-                    }
-                    *out << "<<\")\"<<std::endl;\n";
-                *out << --ind << "}\n";
-                while (closingPars>0){
-                    *out << --ind << "}\n";
-                    closingPars--;
-                }
-
-            *out << --ind << "}\n";
             }
         }
     *out << --ind << "}\n";

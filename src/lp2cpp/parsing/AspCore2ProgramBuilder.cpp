@@ -1151,13 +1151,16 @@ aspc::Program & AspCore2ProgramBuilder::getProgram() {
                 rewriteRuleWithCompletion();
             }
         }
-        std::cout<<"Program with completion"<<std::endl;
-        for(const aspc::Rule& r:original_program.getRules()){
-            std::cout<<"Rule "<<r.getRuleId()<<" ";
-            r.print();
-        }
-        std::cout<<"Program without completion"<<std::endl;
+        // std::cout<<"Program with completion"<<std::endl;
+        // for(const aspc::Rule& r:original_program.getRules()){
+        //     std::cout<<"Rule "<<r.getRuleId()<<" ";
+        //     r.print();
+        // }
+        // std::cout<<"Program without completion"<<std::endl;
         for(const aspc::Rule& r: ruleWithoutCompletion){
+            for(const aspc::Atom& a : r.getHead()){
+                original_program.addPredicate(a.getPredicateName(),a.getAriety());
+            }
             for(const aspc::Literal& l : r.getBodyLiterals()){
                 original_program.addPredicate(l.getPredicateName(),l.getAriety());
             }
@@ -1166,19 +1169,20 @@ aspc::Program & AspCore2ProgramBuilder::getProgram() {
                     original_program.addPredicate(l.getPredicateName(),l.getAriety());
                 }
             }
-            std::cout<<"Rule "<<r.getRuleId()<<" ";
-            r.print();
+            // std::cout<<"Rule "<<r.getRuleId()<<" ";
+            // r.print();
         }
+        buildGraphNoCompletion();
         // exit(-1);
-        std::vector<std::vector<int>> sccc = original_graphWithTarjanAlgorithm.SCC();
-        for(int component=sccc.size()-1; component>=0 ; component--){
-            for(unsigned predId : sccc[component]){
-                auto it = originalVertexByID.find(sccc[component][0]);
-                if(it!=originalVertexByID.end()){
-                    std::cout<<it->second.name<<std::endl;
-                }
-            }
-        }
+        // std::vector<std::vector<int>> sccc = original_graphWithTarjanAlgorithm.SCC();
+        // for(int component=sccc.size()-1; component>=0 ; component--){
+        //     for(unsigned predId : sccc[component]){
+        //         auto it = originalVertexByID.find(sccc[component][0]);
+        //         if(it!=originalVertexByID.end()){
+        //             std::cout<<it->second.name<<std::endl;
+        //         }
+        //     }
+        // }
     }
     // std::cout<<"Original Program"<<std::endl;
     // for(const aspc::Rule& r:original_program.getRules()){
@@ -1186,6 +1190,57 @@ aspc::Program & AspCore2ProgramBuilder::getProgram() {
     //     r.print();
     // }
     return original_program;
+}
+bool AspCore2ProgramBuilder::isPredicateBodyNoCompletion(int predId)const{
+    return predicateBodyNoCompletion.count(predId)!=0;
+           
+}
+void AspCore2ProgramBuilder::buildGraphNoCompletion(){
+    // std::cout<<"buildGraphNoCompletion"<<std::endl;
+    for(const aspc::Rule& r: ruleWithoutCompletion){
+        // r.print();
+        for (const aspc::Atom& a : r.getHead()) {
+            int currentHeadId = predicateIDsNoCompletion.size();
+            unordered_map<string, int>::iterator i = predicateIDsNoCompletion.find(a.getPredicateName());
+            if (i != predicateIDsNoCompletion.end())
+                currentHeadId = i->second;
+            else {
+                predicateIDsNoCompletion[a.getPredicateName()] = currentHeadId;
+                vertexByIDNoCompletion[currentHeadId] = Vertex(currentHeadId, a.getPredicateName());
+            }
+            vertexByIDNoCompletion[currentHeadId].rules.push_back(r.getRuleId());
+            for (const aspc::Literal& l : r.getBodyLiterals()) {
+                int currentBodyId = predicateIDsNoCompletion.size();
+                unordered_map<string, int>::iterator i = predicateIDsNoCompletion.find(l.getPredicateName());
+                if (i != predicateIDsNoCompletion.end())
+                    currentBodyId = i->second;
+                else {
+                    predicateIDsNoCompletion[l.getPredicateName()] = currentBodyId;
+                    vertexByIDNoCompletion[currentBodyId] = Vertex(currentBodyId, l.getPredicateName());
+                }
+                predicateBodyNoCompletion.insert(currentBodyId);
+                // vertexByIDNoCompletion[currentBodyId].rules.push_back(r.getRuleId());
+                graphWithTarjanAlgorithmNoCompletion.addEdge(currentBodyId, currentHeadId);
+                // std::cout<<"Adding dependency"<<std::endl;
+            }
+            for(const aspc::ArithmeticRelationWithAggregate& aggrRelation: r.getArithmeticRelationsWithAggregate()){
+                for (const aspc::Literal& l : aggrRelation.getAggregate().getAggregateLiterals()) {
+                    int currentBodyId = predicateIDsNoCompletion.size();
+                    unordered_map<string, int>::iterator i = predicateIDsNoCompletion.find(l.getPredicateName());
+                    if (i != predicateIDsNoCompletion.end())
+                        currentBodyId = i->second;
+                    else {
+                        predicateIDsNoCompletion[l.getPredicateName()] = currentBodyId;
+                        vertexByIDNoCompletion[currentBodyId] = Vertex(currentBodyId, l.getPredicateName());
+                    }
+                    predicateBodyNoCompletion.insert(currentBodyId);
+                    // vertexByIDNoCompletion[currentBodyId].rules.push_back(r.getRuleId());
+                    graphWithTarjanAlgorithmNoCompletion.addEdge(currentBodyId, currentHeadId);
+                    // std::cout<<"Adding dependency"<<std::endl;
+                }
+            }
+        }
+    }
 }
 void AspCore2ProgramBuilder::rewriteConstraint(){
     if(inequalitiesWithAggregate.empty()){
