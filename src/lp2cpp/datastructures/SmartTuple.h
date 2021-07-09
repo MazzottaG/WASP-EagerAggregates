@@ -1,54 +1,38 @@
-#ifndef SMARTTUPLEWITHREASONS_H
-#define SMARTTUPLEWITHREASONS_H
+#ifndef SMARTTUPLE_H
+#define SMARTTUPLE_H
 #include <vector>
 #include <string>
 #include <unordered_set>
-#include "TupleWithReasons.h"
+#include "TupleLight.h"
 #include <iostream>
 using namespace std;
 
-class SmartTupleWithReasons {
+class SmartTuple {
     public:
-        SmartTupleWithReasons(const SmartTupleWithReasons& t):realTuple(t.realTuple){
+        SmartTuple(const SmartTuple& t):realTuple(t.realTuple){
 
         }
-        SmartTupleWithReasons(TupleWithReasons* t):realTuple(t){
+        SmartTuple(TupleLight* t):realTuple(t){
 
         }
-        SmartTupleWithReasons(){
+        SmartTuple(){
             realTuple=NULL;
         }
         bool isNull(){
             return realTuple==NULL;
         }
 
-        void addPositiveReason(const TupleWithReasons* r) const {
-            realTuple->addPositiveReason(r);
-        }
-
-        void addNegativeReason(const TupleWithReasons & r) const {
-            realTuple->addNegativeReason(r);
-        }
-
-        const vector<const TupleWithReasons*> & getPositiveReasons() const {
-            return realTuple->getPositiveReasons();
-        }
-
-        const vector<TupleWithReasons> & getNegativeReasons() const {
-            return realTuple->getNegativeReasons();
-        }
-
-        bool operator==(const TupleWithReasons& right) const {
+        bool operator==(const TupleLight& right) const {
             return realTuple->operator==(right);
         }
-        bool operator==(const SmartTupleWithReasons& right) const {
+        bool operator==(const SmartTuple& right) const {
             return realTuple->operator==(*right.realTuple);
         }
         
-        TupleWithReasons& operator=(const TupleWithReasons& right){
+        TupleLight& operator=(const TupleLight& right){
             return realTuple->operator=(right);
         }
-        SmartTupleWithReasons& operator=(const SmartTupleWithReasons& right){
+        SmartTuple& operator=(const SmartTuple& right){
             *realTuple=*right.realTuple;
             return *this;
         }
@@ -86,16 +70,16 @@ class SmartTupleWithReasons {
             return realTuple->size();
         }
 
-        TupleWithReasons* getReal()const {return realTuple;}
+        TupleLight* getReal()const {return realTuple;}
 
     private:
-        TupleWithReasons* realTuple;
+        TupleLight* realTuple;
 
 };
 
 struct SmartTuplesHash {
 
-    inline std::size_t operator()(const SmartTupleWithReasons & v) const {
+    inline std::size_t operator()(const SmartTuple & v) const {
         std::size_t seed = 0;
         for (int i=0; i<v.size(); i++) {
             seed ^= v[i] + 0x9e3779b9 + (seed << 6) + (seed >> 2);

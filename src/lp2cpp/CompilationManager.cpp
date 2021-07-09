@@ -578,7 +578,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "Executor::Executor() {}\n\n";
 
     //typedefs
-    *out << ind << "typedef TupleWithReasons Tuple;\n";
+    *out << ind << "typedef TupleLight Tuple;\n";
     // if (programHasConstraint) {
     //     *out << ind << "typedef TupleWithReasons Tuple;\n";
     // } else {
@@ -696,7 +696,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "const std::vector<const Tuple* > EMPTY_TUPLES;\n";
     *out << ind << "std::unordered_map<std::string, const std::string * > stringToUniqueStringPointer;\n";
 
-    *out << ind << "typedef void (*ExplainNegative)(const std::vector<int> & lit, std::unordered_set<std::string> & open_set, std::vector<const Tuple *> & output);\n\n";
+    // *out << ind << "typedef void (*ExplainNegative)(const std::vector<int> & lit, std::unordered_set<std::string> & open_set, std::vector<const Tuple *> & output);\n\n";
 
     // *out << ind << "std::vector<Tuple> atomsTable;\n\n";
     // *out << ind << "std::unordered_map<int,int> waspIDMapping;\n\n";
@@ -705,7 +705,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     // *out << ind << "std::unordered_map<Tuple, unsigned, TuplesHash> tupleToVar;\n\n";
 
-    *out << ind << "std::unordered_map<const std::string*, ExplainNegative> explainNegativeFunctionsMap;\n\n";
+    // *out << ind << "std::unordered_map<const std::string*, ExplainNegative> explainNegativeFunctionsMap;\n\n";
 
     *out << ind++ << "const std::string* parseTuple(const std::string & literalString,std::vector<int>& terms) {\n";
 
@@ -746,9 +746,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     *out << ind << "//only ground lit function calls are not known a priori\n";
 
-    *out << ind++ << "void explainNegativeLiteral(const Tuple * lit, std::unordered_set<std::string> & open_set, std::vector<const Tuple *> & output) {\n";
-    *out << ind << "explainNegativeFunctionsMap[lit->getPredicateName()](*lit, open_set, output);\n";
-    *out << --ind << "}\n\n";
+    // *out << ind++ << "void explainNegativeLiteral(const Tuple * lit, std::unordered_set<std::string> & open_set, std::vector<const Tuple *> & output) {\n";
+    // *out << ind << "explainNegativeFunctionsMap[lit->getPredicateName()](*lit, open_set, output);\n";
+    // *out << --ind << "}\n\n";
 
 
     //perform join functions
@@ -1214,36 +1214,36 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "return;\n";
     *out << --ind << "}\n";
 
-    if (programHasConstraint) {
-        *out << ind++ << "void explainPositiveLiteral(const Tuple * tuple, std::unordered_set<std::string> & open_set, std::vector<const Tuple*> & outputReasons) {\n";
-        //*out << ind << "const std::vector<const Tuple*> & tupleReasons = predicateReasonsMap.at(*tuple->getPredicateName())->at(tuple->getId());\n";
-        // *out << ind << "std::cout << \"explainPositiveLiteral\" <<std::endl;\n";
-        *out << ind << "const std::vector<const Tuple*> & tupleReasons = tuple->getPositiveReasons();\n";
-        *out << ind++ << " if (tupleReasons.empty()) {\n";
-        *out << ind << "outputReasons.push_back(tuple);\n";
-        *out << --ind << "}\n";
-        *out << ind++ << "else {\n";
-        *out << ind++ << "for (const Tuple * reason : tupleReasons) {\n";
-        *out << ind << "explainPositiveLiteral(reason, open_set, outputReasons);\n";
-        *out << --ind << "}\n";
+    // if (programHasConstraint) {
+    //     *out << ind++ << "void explainPositiveLiteral(const Tuple * tuple, std::unordered_set<std::string> & open_set, std::vector<const Tuple*> & outputReasons) {\n";
+    //     //*out << ind << "const std::vector<const Tuple*> & tupleReasons = predicateReasonsMap.at(*tuple->getPredicateName())->at(tuple->getId());\n";
+    //     // *out << ind << "std::cout << \"explainPositiveLiteral\" <<std::endl;\n";
+    //     *out << ind << "const std::vector<const Tuple*> & tupleReasons = tuple->getPositiveReasons();\n";
+    //     *out << ind++ << " if (tupleReasons.empty()) {\n";
+    //     *out << ind << "outputReasons.push_back(tuple);\n";
+    //     *out << --ind << "}\n";
+    //     *out << ind++ << "else {\n";
+    //     *out << ind++ << "for (const Tuple * reason : tupleReasons) {\n";
+    //     *out << ind << "explainPositiveLiteral(reason, open_set, outputReasons);\n";
+    //     *out << --ind << "}\n";
 
 
-        *out << --ind << "}\n";
-        *out << ind++ << "for (const Tuple & reason : tuple->getNegativeReasons()) {\n";
-        *out << ind << "explainNegativeLiteral(&reason, open_set, outputReasons);\n";
-        //*out << ind << "outputReasons.push_back(&reason);\n";
-        *out << --ind << "}\n";
-        *out << --ind << "}\n\n";
+    //     *out << --ind << "}\n";
+    //     *out << ind++ << "for (const Tuple & reason : tuple->getNegativeReasons()) {\n";
+    //     *out << ind << "explainNegativeLiteral(&reason, open_set, outputReasons);\n";
+    //     //*out << ind << "outputReasons.push_back(&reason);\n";
+    //     *out << --ind << "}\n";
+    //     *out << --ind << "}\n\n";
 
-        *out << ind++ << "aspc::Literal tupleToLiteral(const Tuple & tuple) {\n";
-        *out << ind << "aspc::Literal literal(*tuple.getPredicateName(), tuple.isNegated());\n";
-        *out << ind++ << "for (int v : tuple) {\n";
-        *out << ind << "literal.addTerm(ConstantsManager::getInstance().unmapConstant(v));\n";
-        *out << --ind << "}\n";
-        *out << ind << "return literal;\n";
-        *out << --ind << "}\n";
+    //     *out << ind++ << "aspc::Literal tupleToLiteral(const Tuple & tuple) {\n";
+    //     *out << ind << "aspc::Literal literal(*tuple.getPredicateName(), tuple.isNegated());\n";
+    //     *out << ind++ << "for (int i=0; i < tuple.size(); i++) {\n";
+    //     *out << ind << "literal.addTerm(ConstantsManager::getInstance().unmapConstant(tuple[i]));\n";
+    //     *out << --ind << "}\n";
+    //     *out << ind << "return literal;\n";
+    //     *out << --ind << "}\n";
 
-    }
+    // }
 
     // COMMENTED FOR INCOMPATIBILITIES
     // if (program.hasConstraint()) {
@@ -1255,18 +1255,18 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     //generateFindSharedValueInJoinTuple(program);
 
     //print tuples
-    *out << ind++ << "void printTuples(const std::string & predicateName, const Tuples & tuples) {\n";
-    *out << ind++ << "for (const std::vector<int> * tuple : tuples) {\n";
-    *out << ind << "std::cout <<predicateName<< \"(\";\n";
-    *out << ind++ << "for (unsigned i = 0; i < tuple->size(); i++) {\n";
-    *out << ind++ << "if (i > 0) {\n";
-    *out << ind << "std::cout << \",\";\n";
-    *out << --ind << "}\n";
-    *out << ind << "std::cout << ConstantsManager::getInstance().unmapConstant((*tuple)[i]);\n";
-    *out << --ind << "}\n";
-    *out << ind << "std::cout << \").\\n\";\n";
-    *out << --ind << "}\n";
-    *out << --ind << "}\n";
+    // *out << ind++ << "void printTuples(const std::string & predicateName, const Tuples & tuples) {\n";
+    // *out << ind++ << "for (const std::vector<int> * tuple : tuples) {\n";
+    // *out << ind << "std::cout <<predicateName<< \"(\";\n";
+    // *out << ind++ << "for (unsigned i = 0; i < tuple->size(); i++) {\n";
+    // *out << ind++ << "if (i > 0) {\n";
+    // *out << ind << "std::cout << \",\";\n";
+    // *out << --ind << "}\n";
+    // *out << ind << "std::cout << ConstantsManager::getInstance().unmapConstant((*tuple)[i]);\n";
+    // *out << --ind << "}\n";
+    // *out << ind << "std::cout << \").\\n\";\n";
+    // *out << --ind << "}\n";
+    // *out << --ind << "}\n";
     //handle arieties
     *out << ind++ << "void Executor::executeFromFile(const char* filename) {\n";
     *out << ind << "DLV2::InputDirector director;\n";
@@ -1290,7 +1290,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     unordered_map<std::string,std::pair<char,std::unordered_map<std::string,std::set<std::string>>>> auxInsertToPrefix={{"insertUndef",{'u',predicateToUndefAuxiliaryMaps}},{"insertTrue",{'p',predicateToUndefAuxiliaryMaps}},{"insertFalse",{'f',predicateToUndefAuxiliaryMaps}}};
     for(auto function_prefix: auxInsertToPrefix){
-        *out << ind++ << "inline void "<<function_prefix.first<<"(std::pair<const TupleWithReasons *, bool> insertResult){\n";
+        *out << ind++ << "inline void "<<function_prefix.first<<"(std::pair<const TupleLight *, bool> insertResult){\n";
             for(auto predicateToMaps : function_prefix.second.second){
                 *out << ind++ << "if(insertResult.first->getPredicateName() == &_"<<predicateToMaps.first<<"){\n";
                     for(auto mapName : predicateToMaps.second){
@@ -1649,7 +1649,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             }
         }
         *out << --ind << "}\n";
-        //*out << ind<< "std::cout<<\"Exit undef\"<<std::endl;\n";
+        // *out << ind<< "std::cout<<\"Exit undef\"<<std::endl;\n";
 
         // *out << ind << "std::cout<<\"ActualSum aggr_id0: \"<<actualSum[factory.addNewInternalTuple({},&_aggr_id0)->getId()]<<std::endl;\n";
         // *out << ind << "std::cout<<\"ActualSum aggr_id1: \"<<actualSum[factory.addNewInternalTuple({},&_aggr_id1)->getId()]<<std::endl;\n";
