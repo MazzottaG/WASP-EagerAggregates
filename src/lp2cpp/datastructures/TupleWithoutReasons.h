@@ -22,6 +22,7 @@
 
 struct TuplesHash;
 
+// class TupleWithoutReasons : public std::array<int> {
 class TupleWithoutReasons : public std::vector<int> {
 public:
 
@@ -155,7 +156,7 @@ public:
 
 private:
     const std::string * predicateName;
-    bool negated;
+    bool negated; //cadidate to remove
     int waspID;
     mutable int id;
     mutable std::unordered_map<std::vector<const TupleWithoutReasons *>*, unsigned> collisionsLists;

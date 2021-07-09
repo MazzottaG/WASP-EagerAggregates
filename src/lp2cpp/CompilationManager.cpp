@@ -478,7 +478,8 @@ bool CompilationManager::checkTupleFormat(const aspc::Literal& li,std::string tu
 }
 void CompilationManager::declareAuxMap(std::string mapVariableName,std::vector<unsigned> keyIndexes,std::string predicateName,bool createFalseAuxMap,bool aggrStruct){
     if(!declaredMaps.count(mapVariableName)){
-        *out << ind << "AuxMap p" << mapVariableName << "({";
+        int BITSETSIZE=keyIndexes.size()*CHAR_BIT*sizeof(int);
+        *out << ind << "AuxMap<"<<BITSETSIZE<<"> p" << mapVariableName << "({";
         for (unsigned k = 0; k < keyIndexes.size(); k++) {
             if (k > 0) {
                 *out << ",";
@@ -488,7 +489,7 @@ void CompilationManager::declareAuxMap(std::string mapVariableName,std::vector<u
         *out << "});\n";
 
         //TODO remove duplication
-        *out << ind << "AuxMap u" << mapVariableName << "({";
+        *out << ind << "AuxMap<"<<BITSETSIZE<<"> u" << mapVariableName << "({";
         for (unsigned k = 0; k < keyIndexes.size(); k++) {
             if (k > 0) {
                 *out << ",";
@@ -497,7 +498,7 @@ void CompilationManager::declareAuxMap(std::string mapVariableName,std::vector<u
         }
         *out << "});\n";
         if(aggrStruct){
-            *out << ind << "AuxMap np" << mapVariableName << "({";
+            *out << ind << "AuxMap<"<<BITSETSIZE<<"> np" << mapVariableName << "({";
             for (unsigned k = 0; k < keyIndexes.size(); k++) {
                 if (k > 0) {
                     *out << ",";
@@ -506,7 +507,7 @@ void CompilationManager::declareAuxMap(std::string mapVariableName,std::vector<u
             }
             *out << "});\n";
 
-            *out << ind << "AuxMap nu" << mapVariableName << "({";
+            *out << ind << "AuxMap<"<<BITSETSIZE<<"> nu" << mapVariableName << "({";
             for (unsigned k = 0; k < keyIndexes.size(); k++) {
                 if (k > 0) {
                     *out << ",";
@@ -516,7 +517,7 @@ void CompilationManager::declareAuxMap(std::string mapVariableName,std::vector<u
             *out << "});\n";
         }
         // if(createFalseAuxMap){
-            *out << ind << "AuxMap f" << mapVariableName << "({";
+            *out << ind << "AuxMap<"<<BITSETSIZE<<"> f" << mapVariableName << "({";
             for (unsigned k = 0; k < keyIndexes.size(); k++) {
                 if (k > 0) {
                     *out << ",";
@@ -558,7 +559,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "#include \"datastructures/VarsIndex.h\"\n\n";
     *out << ind << "#include \"datastructures/TupleFactory.h\"\n\n";
     *out << ind << "#include \"datastructures/SmartPredicateSet.h\"\n\n";
-
+    *out << ind << "#include \"datastructures/AuxiliaryMapSmart.h\"\n\n";
     *out << ind << "#include<ctime>\n\n";
     *out << ind << "#include<ctime>\n\n";
     *out << ind << "#include<map>\n\n";
@@ -583,7 +584,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     // } else {
     //     *out << ind << "typedef TupleWithoutReasons Tuple;\n";
     // }
-    *out << ind << "typedef AuxiliaryMap<Tuple> AuxMap;\n";
+    // *out << ind << "typedef AuxiliaryMap<Tuple> AuxMap;\n";
+    *out << ind << "template<size_t S>\n";
+    *out << ind << "using AuxMap = AuxiliaryMapSmart<Tuple,S> ;\n";
 
     *out << ind << "typedef std::vector<const Tuple* > Tuples;\n";
     *out << ind << "using PredicateWSet = SmartPredicateSet;\n\n";
@@ -738,7 +741,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << --ind << "}\n";
     // *out << ind << "return Tuple(terms, stringToUniqueStringPointer[predicateName]);\n";
     *out << ind << "return stringToUniqueStringPointer[predicateName];\n";
-    
+
     *out << --ind << "}\n";
 
     *out << ind << "//only ground lit function calls are not known a priori\n";
@@ -783,12 +786,12 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::unordered_map <std::string, std::vector <AuxMap*> > predicateToUndefAuxiliaryMaps;\n";
         *out << ind << "std::unordered_map <std::string, std::vector <AuxMap*> > predicateToFalseAuxiliaryMaps;\n";
     } else {
-        *out << ind << "std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToAuxiliaryMaps;\n";
-        *out << ind << "std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToUndefAuxiliaryMaps;\n";
-        *out << ind << "std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToNegativeAuxiliaryMaps;\n";
-        *out << ind << "std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToNegativeUndefAuxiliaryMaps;\n";
+        // *out << ind << "std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToAuxiliaryMaps;\n";
+        // *out << ind << "std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToUndefAuxiliaryMaps;\n";
+        // *out << ind << "std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToNegativeAuxiliaryMaps;\n";
+        // *out << ind << "std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToNegativeUndefAuxiliaryMaps;\n";
 
-        *out << ind << "std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToFalseAuxiliaryMaps;\n";
+        // *out << ind << "std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToFalseAuxiliaryMaps;\n";
     }
     unsigned sccsSize = sccs.size();
     if (programHasConstraint) {
@@ -832,7 +835,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 // std::cout<<"Declearing map "<<lit->getPredicateName()<<std::endl;
 
                 if (!declaredMaps.count(auxMapName)) {
-                    *out << ind << "AuxMap p" << auxMapName << "({";
+                    int BITSETSIZE=boundIndices.size()*CHAR_BIT*sizeof(int);
+                    *out << ind << "AuxMap<"<<BITSETSIZE<<"> p" << auxMapName << "({";
                     for (unsigned k = 0; k < boundIndices.size(); k++) {
                         if (k > 0) {
                             *out << ",";
@@ -842,7 +846,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     *out << "});\n";
 
                     //TODO remove duplication
-                    *out << ind << "AuxMap u" << auxMapName << "({";
+                    *out << ind << "AuxMap<"<<BITSETSIZE<<"> u" << auxMapName << "({";
                     for (unsigned k = 0; k < boundIndices.size(); k++) {
                         if (k > 0) {
                             *out << ",";
@@ -852,7 +856,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     *out << "});\n";
 
                     //TODO remove duplication
-                    *out << ind << "AuxMap f" << auxMapName << "({";
+                    *out << ind << "AuxMap<"<<BITSETSIZE<<"> f" << auxMapName << "({";
                     for (unsigned k = 0; k < boundIndices.size(); k++) {
                         if (k > 0) {
                             *out << ",";
@@ -1015,7 +1019,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         if(declaredMaps.count(mapName)==0){
                             for(std::string c: {"p","u","f"}){
                                 //std::cout<<c<<mapName<<std::endl;
-                                *out << ind << "AuxMap "<< c << mapName << "({";
+                                int BITSETSIZE=boundIndices.size()*CHAR_BIT*sizeof(int);
+                                *out << ind << "AuxMap<"<<BITSETSIZE<<"> "<< c << mapName << "({";
                                 for (unsigned k = 0; k < boundIndices.size(); k++) {
                                     if (k > 0) {
                                         *out << ",";
@@ -1053,7 +1058,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                             if(declaredMaps.count(mapName)==0){
                                 for(std::string c: {"p","u","f"}){
                                     //std::cout<<c<<mapName<<std::endl;
-                                    *out << ind << "AuxMap "<< c << mapName << "({";
+                                    int BITSETSIZE=boundIndices.size()*CHAR_BIT*sizeof(int);
+                                    *out << ind << "AuxMap<"<<BITSETSIZE<<"> "<< c << mapName << "({";
                                     for (unsigned k = 0; k < boundIndices.size(); k++) {
                                         if (k > 0) {
                                             *out << ",";
@@ -1113,11 +1119,11 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         //     *out << ind << "std::cout<<std::endl;\n";
         // *out << --ind << "}\n";
         //*out << ind << "std::cout<<\"Handle conflict end\"<<std::endl;\n";
-        
+
     *out << --ind << "}\n";
 
     *out << ind++ << "int Executor::explainExternalLiteral(int var,UnorderedSet<int>& reas,std::unordered_set<int>& visitedLiteral,bool propagatorCall){\n";
-        
+
         *out << ind++ << "if(!propagatorCall){\n";
             //*out << ind << "std::cout<<\"Explain from wasp \"<<var<<std::endl;\n";
             *out << ind << "int uVar = var>0 ? var : -var;\n";
@@ -1125,7 +1131,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind << "var = var>0 ? internalVar : -internalVar;\n";
             // *out << ind << "std::cout<<\"Explain from wasp mapped \"<<var<<std::endl;\n";
             // *out << ind << "factory.getTupleFromInternalID(internalVar)->print();\n";
-                
+
         *out << --ind << "}\n";
         *out << ind << "std::vector<int> stack;\n";
         *out << ind << "stack.push_back(var);\n";
@@ -1134,7 +1140,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind++ << "while(!stack.empty()){\n";
             *out << ind << "int lit = stack.back();\n";
             *out << ind << "stack.pop_back();\n";
-            
+
             *out << ind++ << "for(unsigned i = 0; i<reasonForLiteral[lit].size(); i++){\n";
                 *out << ind << "int reasonLiteral=reasonForLiteral[lit][i];\n";
 
@@ -1281,6 +1287,19 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     if (programHasConstraint) {
         tupleType = "WithReasons";
     }
+
+    unordered_map<std::string,std::pair<char,std::unordered_map<std::string,std::set<std::string>>>> auxInsertToPrefix={{"insertUndef",{'u',predicateToUndefAuxiliaryMaps}},{"insertTrue",{'p',predicateToUndefAuxiliaryMaps}},{"insertFalse",{'f',predicateToUndefAuxiliaryMaps}}};
+    for(auto function_prefix: auxInsertToPrefix){
+        *out << ind++ << "inline void "<<function_prefix.first<<"(std::pair<const TupleWithReasons *, bool> insertResult){\n";
+            for(auto predicateToMaps : function_prefix.second.second){
+                *out << ind++ << "if(insertResult.first->getPredicateName() == &_"<<predicateToMaps.first<<"){\n";
+                    for(auto mapName : predicateToMaps.second){
+                        *out << ind << function_prefix.second.first<<mapName<<".insert2(*insertResult.first);\n";
+                    }
+                *out << --ind << "}\n";
+            }
+        *out << --ind <<"}\n";
+    }
     // ---------------------- onLiteralTrue(const aspc::Literal* l) --------------------------------------//
     *out << ind++ << "inline void Executor::onLiteralTrue(const aspc::Literal* l) {\n";
     if (mode == LAZY_MODE) {
@@ -1365,9 +1384,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 *out << ind << "const auto& insertResult = it->second->insert(tuple);\n";
                 *out << ind++ << "if (insertResult.second) {\n";
                     // *out << ind << "std::cout<<\"added\"<<std::endl;\n";
-                    *out << ind++ << "for (AuxMap* auxMap : predicateToAuxiliaryMaps[it->first]) {\n";
-                        *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-                    *out << --ind << "}\n";
+                    // *out << ind++ << "for (AuxMap* auxMap : predicateToAuxiliaryMaps[it->first]) {\n";
+                    //     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                    // *out << --ind << "}\n";
+                    *out << ind << "insertTrue(insertResult);\n";
                 *out << --ind << "}\n";
             *out << --ind << "}\n";
         *out << --ind << "}\n";
@@ -1380,9 +1400,11 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 *out << ind << "const auto& insertResult = fSetIt->second->insert(tuple);\n";
                 *out << ind++ << "if (insertResult.second) {\n";
 
-                    *out << ind++ << "for (AuxMap* auxMap : predicateToFalseAuxiliaryMaps[fSetIt->first]) {\n";
-                        *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-                    *out << --ind << "}\n";
+                    // *out << ind++ << "for (AuxMap* auxMap : predicateToFalseAuxiliaryMaps[fSetIt->first]) {\n";
+                    //     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                    // *out << --ind << "}\n";
+                    *out << ind << "insertFalse(insertResult);\n";
+
                 *out << --ind << "}\n";
             *out << --ind << "}\n";
         *out << --ind << "}\n";
@@ -1412,9 +1434,11 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
                 *out << ind << "const auto& insertResult = it->second->insert(tuple);\n";
                 *out << ind++ << "if (insertResult.second) {\n";
-                    *out << ind++ << "for (AuxMap* auxMap : predicateToAuxiliaryMaps[it->first]) {\n";
-                        *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-                    *out << --ind << "}\n";
+                    // *out << ind++ << "for (AuxMap* auxMap : predicateToAuxiliaryMaps[it->first]) {\n";
+                    //     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                    // *out << --ind << "}\n";
+
+                    *out << ind << "insertTrue(insertResult);\n";
                 *out << --ind << "}\n";
             *out << --ind << "}\n";
         *out << --ind << "}\n";
@@ -1427,9 +1451,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 *out << ind << "const auto& insertResult = fSetIt->second->insert(tuple);\n";
                 *out << ind++ << "if (insertResult.second) {\n";
 
-                    *out << ind++ << "for (AuxMap* auxMap : predicateToFalseAuxiliaryMaps[fSetIt->first]) {\n";
-                        *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-                    *out << --ind << "}\n";
+                    // *out << ind++ << "for (AuxMap* auxMap : predicateToFalseAuxiliaryMaps[fSetIt->first]) {\n";
+                    //     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                    // *out << --ind << "}\n";
+                    *out << ind << "insertFalse(insertResult);\n";
                 *out << --ind << "}\n";
             *out << --ind << "}\n";
         *out << --ind << "}\n";
@@ -1515,7 +1540,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "reasonForLiteral.erase(internalVar);\n";
         // *out << ind << "reasonForLiteral.erase(-internalVar);\n";
         // *out << ind << "if(reasonForLiteral.count(internalVar)!=0)std::cout<<\"not removed \"<<internalVar<<\" \"<<reasonForLiteral[internalVar].size()<<std::endl;\n";
-        
+
         // *out << ind << "reasonForLiteral.erase(-var);\n\n";
         // *out << ind << "unRoll=true;\n";
 
@@ -1560,9 +1585,11 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind++ << "if (insertResult.second) {\n";
 
         // *out << ind << "std::cout<<\"Saved in undef\"<<std::endl;\n";
-        *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[it->first]) {\n";
-        *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-        *out << --ind << "}\n";
+        // *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[it->first]) {\n";
+        // *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+        // *out << --ind << "}\n";
+
+        *out << ind << "insertUndef(insertResult);\n";
         *out << --ind << "}\n";
         *out << --ind << "}\n";
 
@@ -1771,9 +1798,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         *out << ind++ << "if(u"<<aux.getPredicateName()<<".find(*aux) == NULL){\n";
                             *out << ind << "const auto& insertResult = u"<<aux.getPredicateName()<<".insert(aux);\n";
                             *out << ind++ << "if (insertResult.second) {\n";
-                                *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<aux.getPredicateName()<<"]) {\n";
-                                    *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-                                *out << --ind << "}\n";
+                                // *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<aux.getPredicateName()<<"]) {\n";
+                                //     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                                // *out << --ind << "}\n";
+                                *out << ind << "insertUndef(insertResult);\n";
                                 // *out << ind << "aux.print();std::cout<<\" \"<<tupleToVar[aux]<<std::endl;\n";
                                 for(const aspc::Rule& r : program.getRules()){
                                     if(!r.isConstraint() && !r.getBodyLiterals().empty() && r.getBodyLiterals()[0].getPredicateName()==it->second.name){
@@ -1790,9 +1818,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                             *out << ind++ << "if(u"<<head->getPredicateName()<<".find(*head)==NULL){\n";
                                                 *out << ind << "const auto& headInsertResult = u"<<head->getPredicateName()<<".insert(head);\n";
                                                 *out << ind++ << "if (headInsertResult.second) {\n";
-                                                    *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<head->getPredicateName()<<"]) {\n";
-                                                        *out << ind << "auxMap -> insert2(*headInsertResult.first);\n";
-                                                    *out << --ind << "}\n";
+                                                    // *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<head->getPredicateName()<<"]) {\n";
+                                                    //     *out << ind << "auxMap -> insert2(*headInsertResult.first);\n";
+                                                    // *out << --ind << "}\n";
+                                                    *out << ind << "insertUndef(headInsertResult);\n";
                                                 *out << --ind << "}\n";
                                             *out << --ind << "}\n";
                                             for(const aspc::Rule& aggr_r : program.getRules()){
@@ -1809,9 +1838,11 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                     *out << ind++ << "if(u"<<aggr_id->getPredicateName()<<".find(*aggr_id"<<aggr_r.getRuleId()<<")==NULL){\n";
                                                         *out << ind << "const auto& aggrIdInsertResult = u"<<aggr_id->getPredicateName()<<".insert(aggr_id"<<aggr_r.getRuleId()<<");\n";
                                                         *out << ind++ << "if (aggrIdInsertResult.second) {\n";
-                                                            *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<aggr_id->getPredicateName()<<"]) {\n";
-                                                                *out << ind << "auxMap -> insert2(*aggrIdInsertResult.first);\n";
-                                                            *out << --ind << "}\n";
+                                                            // *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<aggr_id->getPredicateName()<<"]) {\n";
+                                                            //     *out << ind << "auxMap -> insert2(*aggrIdInsertResult.first);\n";
+                                                            // *out << --ind << "}\n";
+
+                                                            *out << ind << "insertUndef(aggrIdInsertResult);\n";
                                                         *out << --ind << "}\n";
                                                     *out << --ind << "}\n";
                                                 }
@@ -1862,9 +1893,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                 *out << ind << "Tuple* head = factory.addNewInternalTuple({"<<terms<<"},&_"<<head->getPredicateName()<<");\n";
                                                 *out << ind << "const auto& insertResult = w"<<head->getPredicateName()<<".insert(head);\n";
                                                 *out << ind++ << "if (insertResult.second) {\n";
-                                                    *out << ind++ << "for (AuxMap* auxMap : predicateToAuxiliaryMaps[&_"<<head->getPredicateName()<<"]) {\n";
-                                                        *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-                                                    *out << --ind << "}\n";
+                                                    // *out << ind++ << "for (AuxMap* auxMap : predicateToAuxiliaryMaps[&_"<<head->getPredicateName()<<"]) {\n";
+                                                    //     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                                                    // *out << --ind << "}\n";
+                                                            *out << ind << "insertTrue(insertResult);\n";
                                                     // *out << ind << "aggrId.print();std::cout<<\" \"<<tupleToVar[aggrId]<<std::endl;\n";
                                                 *out << --ind << "}\n";
                                                 if(checkFormat)
@@ -1877,9 +1909,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                 *out << ind << "Tuple* head = factory.addNewInternalTuple({"<<terms<<"},&_"<<head->getPredicateName()<<");\n";
                                                 *out << ind << "const auto& insertResult = u"<<head->getPredicateName()<<".insert(head);\n";
                                                 *out << ind++ << "if (insertResult.second) {\n";
-                                                    *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<head->getPredicateName()<<"]) {\n";
-                                                        *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-                                                    *out << --ind << "}\n";
+                                                    // *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<head->getPredicateName()<<"]) {\n";
+                                                    //     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                                                    // *out << --ind << "}\n";
+                                                            *out << ind << "insertUndef(insertResult);\n";
                                                     // *out << ind << "aggrId.print();std::cout<<\" \"<<tupleToVar[aggrId]<<std::endl;\n";
                                                 *out << --ind << "}\n";
                                                 if(checkFormat)
@@ -1894,9 +1927,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                         *out << ind << "Tuple* aggrId = factory.addNewInternalTuple({"<<terms<<"},&_"<<aggr_id->getPredicateName()<<");\n";
                                                         *out << ind << "const auto& insertResult = u"<<aggr_id->getPredicateName()<<".insert(aggrId);\n";
                                                         *out << ind++ << "if (insertResult.second) {\n";
-                                                            *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<aggr_id->getPredicateName()<<"]) {\n";
-                                                                *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-                                                            *out << --ind << "}\n";
+                                                            // *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<aggr_id->getPredicateName()<<"]) {\n";
+                                                            //     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                                                            // *out << --ind << "}\n";
+                                                            *out << ind << "insertUndef(insertResult);\n";
                                                         *out << --ind << "}\n";
                                                     if(checkFormat)
                                                         *out << --ind << "}\n";
@@ -1919,9 +1953,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     *out << ind << "Tuple* aggrId = factory.addNewInternalTuple({},&_"<<aggrId.first<<");\n";
                     *out << ind << "const auto& insertResult = u"<<aggrId.first<<".insert(aggrId);\n";
                     *out << ind++ << "if (insertResult.second) {\n";
-                        *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<aggrId.first<<"]) {\n";
-                            *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-                        *out << --ind << "}\n";
+                        // *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<aggrId.first<<"]) {\n";
+                        //     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                        // *out << --ind << "}\n";
+                        *out << ind << "insertUndef(insertResult);\n";
                         // *out << ind << "aggrId.print();std::cout<<\" \"<<tupleToVar[aggrId]<<std::endl;\n";
                     *out << --ind << "}\n";
                 *out << --ind << "}\n";
@@ -1962,9 +1997,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                 *out << ind << "Tuple* head = factory.addNewInternalTuple({"<<terms<<"},&_"<<head->getPredicateName()<<");\n";
                                 *out << ind << "const auto& insertResult = u"<<head->getPredicateName()<<".insert(head);\n";
                                 *out << ind++ << "if (insertResult.second) {\n";
-                                    *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<head->getPredicateName()<<"]) {\n";
-                                        *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-                                    *out << --ind << "}\n";
+                                    // *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<head->getPredicateName()<<"]) {\n";
+                                    //     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                                    // *out << --ind << "}\n";
+                                    *out << ind << "insertUndef(insertResult);\n";
                                     // *out << ind << "head.print();std::cout<<\" \"<<tupleToVar[head]<<std::endl;\n";
                                 *out << --ind << "}\n";
 
@@ -2010,7 +2046,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                             *out << "});\n";
                             *out << ind++ << "for(unsigned j=0; j<aggrSetTuples->size(); j++)\n";
                                 *out << ind-- << "possibleSum[it]+=aggrSetTuples->at(j)->at("<<sumVar<<");\n";
-                        
+
                         *out << --ind << "}\n";
                     *out << --ind << "}\n";
 
@@ -2051,6 +2087,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::vector<int> terms;\n";
         *out << ind << "const std::string* predicate = parseTuple(atom,terms);\n";
         *out << ind << "factory.addNewTuple(terms,predicate,var);\n";
+        //  *out << ind << "factory.addNewTuple(std::array<int>(terms.data()),predicate,var);\n";
     *out << --ind << "}\n";
     // ---------------------- end addedVarName(int var, const std::string & atom) --------------------------------------//
 
@@ -2068,7 +2105,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     // ---------------------- clear() --------------------------------------//
     *out << ind++ << "void Executor::clear() {\n";
     *out << ind << "failedConstraints.clear();\n";
-    *out << ind << "predicateToAuxiliaryMaps.clear();\n";
+    // *out << ind << "predicateToAuxiliaryMaps.clear();\n";
 
     if (mode == LAZY_MODE) {
         *out << ind << "predicateToFalseAuxiliaryMaps.clear();\n";
@@ -2160,33 +2197,33 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "predicateFSetMap[_" << predicate << "] = &neg_w" << predicate << ";\n";
     }
 
-    for (const auto & entry : predicateToAuxiliaryMaps) {
-        for (const auto & auxSet : entry.second) {
-            *out << ind << "predicateToAuxiliaryMaps[" << reference << "_" << entry.first << "].push_back(&p" << auxSet << ");\n";
-        }
-    }
+    // for (const auto & entry : predicateToAuxiliaryMaps) {
+    //     for (const auto & auxSet : entry.second) {
+    //         *out << ind << "predicateToAuxiliaryMaps[" << reference << "_" << entry.first << "].push_back(&p" << auxSet << ");\n";
+    //     }
+    // }
     for (const auto & entry : predicateToNegativeAuxiliaryMaps) {
         for (const auto & auxSet : entry.second) {
             *out << ind << "predicateToNegativeAuxiliaryMaps[" << reference << "_" << entry.first << "].push_back(&np" << auxSet << ");\n";
         }
     }
 
-    for (const auto & entry : predicateToUndefAuxiliaryMaps) {
-        for (const auto & auxSet : entry.second) {
-            *out << ind << "predicateToUndefAuxiliaryMaps[" << reference << "_" << entry.first << "].push_back(&u" << auxSet << ");\n";
-        }
-    }
+    // for (const auto & entry : predicateToUndefAuxiliaryMaps) {
+    //     for (const auto & auxSet : entry.second) {
+    //         *out << ind << "predicateToUndefAuxiliaryMaps[" << reference << "_" << entry.first << "].push_back(&u" << auxSet << ");\n";
+    //     }
+    // }
     for (const auto & entry : predicateToNegativeUndefAuxiliaryMaps) {
         for (const auto & auxSet : entry.second) {
             *out << ind << "predicateToNegativeUndefAuxiliaryMaps[" << reference << "_" << entry.first << "].push_back(&nu" << auxSet << ");\n";
         }
     }
 
-    for (const auto & entry : predicateToFalseAuxiliaryMaps) {
-        for (const auto & auxSet : entry.second) {
-            *out << ind << "predicateToFalseAuxiliaryMaps[" << reference << "_" << entry.first << "].push_back(&f" << auxSet << ");\n";
-        }
-    }
+    // for (const auto & entry : predicateToFalseAuxiliaryMaps) {
+    //     for (const auto & auxSet : entry.second) {
+    //         *out << ind << "predicateToFalseAuxiliaryMaps[" << reference << "_" << entry.first << "].push_back(&f" << auxSet << ");\n";
+    //     }
+    // }
     // for(std::string aggrSetPred : sumAggrSetPredicate){
     //     // *out << ind << "aggr_setPredicate.insert(&_"<<aggrSetPred<<");\n";
     //     for(auto mapName : sumAggrSetPredicateToAggrId[aggrSetPred]){
@@ -2205,7 +2242,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     // ---------------------- end init() --------------------------------------//
     *out << ind++ << "bool propUndefined(const Tuple* tupleU,bool isNegated,std::vector<int>& stack,bool asNegative,UnorderedSet<int> & propagatedLiterals){\n";
-        
+
         *out << ind++ << "if(tupleU->getWaspID() == 0){\n";
             *out << ind << "bool propagated=false;\n";
             *out << ind << "std::unordered_map<const std::string*,PredicateWSet*>::iterator falseSet = predicateFSetMap.find(tupleU->getPredicateName());\n";
@@ -2235,9 +2272,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     *out << ind << "undefSet->second->erase(*tupleU);\n";
                     *out << ind << "const auto& insertResult = trueSet->second->insert(factory.getTupleFromInternalID(tupleU->getId()));\n";
                     *out << ind++ << "if (insertResult.second) {\n";
-                        *out << ind++ << "for (AuxMap* auxMap : predicateToAuxiliaryMaps[trueSet->first]) {\n";
-                            *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-                        *out << --ind << "}\n";
+                        // *out << ind++ << "for (AuxMap* auxMap : predicateToAuxiliaryMaps[trueSet->first]) {\n";
+                        //     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                        // *out << --ind << "}\n";
+                        *out << ind << "insertTrue(insertResult);\n";
 
                         for(const auto& aggrSetPred : aggrSetToRule){
                             for(unsigned ruleId : aggrSetPred.second){
@@ -2307,10 +2345,12 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     *out << ind << "const auto& insertResult = falseSet->second->insert(factory.getTupleFromInternalID(tupleU->getId()));\n";
                     *out << ind++ << "if (insertResult.second) {\n";
                         // *out << ind << "std::cout<<\"Saved in false pred set\"<<std::endl;\n";
-                        *out << ind++ << "for (AuxMap* auxMap : predicateToFalseAuxiliaryMaps[falseSet->first]) {\n";
-                            *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                        // *out << ind++ << "for (AuxMap* auxMap : predicateToFalseAuxiliaryMaps[falseSet->first]) {\n";
+                        //     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
                             // *out << ind << "std::cout<<\"Saved in false auxMap\"<<std::endl;\n";
-                        *out << --ind << "}\n";
+                        // *out << --ind << "}\n";
+                        *out << ind << "insertFalse(insertResult);\n";
+
                         for(const auto& aggrSetPred : aggrSetToRule){
                             for(unsigned ruleId : aggrSetPred.second){
                                 const aspc::Rule* rule = &program.getRules()[ruleId];
@@ -2385,7 +2425,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 // *out << ind << "std::cout <<\" \"<<sign*it<<std::endl;\n";
                 *out << ind << "propagatedLiterals.insert(it*sign);\n";
                 // *out << ind << "for(int id : wtd.getTuplesId()){factory.getTupleFromInternalID(id)->print();std::cout<<std::endl;}\n";
-                
+
             // *out << --ind << "}\n";
 
         *out << --ind << "}\n";
@@ -2489,7 +2529,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                 std::string exitCondition="";
                                                 std::string plusOne = aggrRelation->isPlusOne() ? "+1":"";
                                                 std::string negated = aggrRelation->isNegated() ? "!" :"";
-                                                
+
                                                 if(!aggrRelation->isNegated() && aggrRelation->getComparisonType()!=aspc::EQ){
                                                     exitCondition = " && aggregateValue < "+aggrRelation->getGuard().getStringRep()+plusOne;
                                                 }
@@ -2605,15 +2645,16 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                     *out << ind << "const auto& insertResult = it->second->insert(tupleHead);\n";
                                                     *out << ind++ << "if (insertResult.second) {\n";
                                                     // *out << ind << "std::cout<<\"Saving undef literal\"<<std::endl;\n";
-                                                        *out << ind++ << "for (AuxMap* auxMap : predicateToAuxiliaryMaps[it->first]) {\n";
-                                                            *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-                                                        *out << --ind << "}\n";
+                                                        // *out << ind++ << "for (AuxMap* auxMap : predicateToAuxiliaryMaps[it->first]) {\n";
+                                                        //     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                                                        // *out << --ind << "}\n";
+                                                        *out << ind << "insertTrue(insertResult);\n";
                                                     *out << --ind << "}\n";
                                                 *out << --ind << "} // close undef insert \n";
                                             *out << --ind << "} // close find predicateset \n";
 
                                         }
-                                        
+
                                         while (closingPars>0){
                                             *out << --ind << "}\n";
                                             closingPars--;
@@ -2622,7 +2663,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                     *out << --ind << "}\n";
                                     }
                                 }
-                            }                   
+                            }
                         }
                     }
                 }
@@ -2679,9 +2720,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     *out << ind << "const auto& insertResult = it->second->insert(tuple);\n";
                     *out << ind++ << "if (insertResult.second) {\n";
                     // *out << ind << "std::cout<<\"Saving undef literal\"<<std::endl;\n";
-                        *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[it->first]) {\n";
-                            *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-                        *out << --ind << "}\n";
+                        // *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[it->first]) {\n";
+                        //     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                        // *out << --ind << "}\n";
+                        *out << ind << "insertUndef(insertResult);\n";
                     *out << --ind << "}\n";
                 *out << --ind << "} // close undef insert \n";
                 for(const auto& aggrSetPred : aggrSetToRule){
@@ -2976,7 +3018,8 @@ void CompilationManager::declareDataStructures(const aspc::Rule& r, unsigned sta
         std::string mapVariableName=li->getPredicateName()+"_";
         std::vector<unsigned> keyIndexes;
         if (!declaredMaps.count(mapVariableName)) {
-            *out << ind << "AuxMap p" << mapVariableName << "({";
+            int BITSETSIZE=keyIndexes.size()*CHAR_BIT*sizeof(int);
+            *out << ind << "AuxMap<"<<BITSETSIZE<<"> p" << mapVariableName << "({";
             for (unsigned k = 0; k < keyIndexes.size(); k++) {
                 if (k > 0) {
                     *out << ",";
@@ -2986,7 +3029,7 @@ void CompilationManager::declareDataStructures(const aspc::Rule& r, unsigned sta
             *out << "});\n";
 
             //TODO remove duplication
-            *out << ind << "AuxMap u" << mapVariableName << "({";
+            *out << ind << "AuxMap<"<<BITSETSIZE<<"> u" << mapVariableName << "({";
             for (unsigned k = 0; k < keyIndexes.size(); k++) {
                 if (k > 0) {
                     *out << ",";
@@ -2996,7 +3039,7 @@ void CompilationManager::declareDataStructures(const aspc::Rule& r, unsigned sta
             *out << "});\n";
 
 
-            *out << ind << "AuxMap f" << mapVariableName << "({";
+            *out << ind << "AuxMap<"<<BITSETSIZE<<"> f" << mapVariableName << "({";
             for (unsigned k = 0; k < keyIndexes.size(); k++) {
                 if (k > 0) {
                     *out << ",";
@@ -3032,7 +3075,8 @@ void CompilationManager::declareDataStructures(const aspc::Rule& r, unsigned sta
                 }
 
                 if (!declaredMaps.count(mapVariableName)) {
-                    *out << ind << "AuxMap p" << mapVariableName << "({";
+                    int BITSETSIZE=keyIndexes.size()*CHAR_BIT*sizeof(int);
+                    *out << ind << "AuxMap<"<<BITSETSIZE<<"> p" << mapVariableName << "({";
                     for (unsigned k = 0; k < keyIndexes.size(); k++) {
                         if (k > 0) {
                             *out << ",";
@@ -3042,7 +3086,7 @@ void CompilationManager::declareDataStructures(const aspc::Rule& r, unsigned sta
                     *out << "});\n";
 
                     //TODO remove duplication
-                    *out << ind << "AuxMap u" << mapVariableName << "({";
+                    *out << ind << "AuxMap<"<<BITSETSIZE<<"> u" << mapVariableName << "({";
                     for (unsigned k = 0; k < keyIndexes.size(); k++) {
                         if (k > 0) {
                             *out << ",";
@@ -3052,7 +3096,7 @@ void CompilationManager::declareDataStructures(const aspc::Rule& r, unsigned sta
                     *out << "});\n";
 
 
-                    *out << ind << "AuxMap f" << mapVariableName << "({";
+                    *out << ind << "AuxMap<"<<BITSETSIZE<<"> f" << mapVariableName << "({";
                     for (unsigned k = 0; k < keyIndexes.size(); k++) {
                         if (k > 0) {
                             *out << ",";
@@ -3125,9 +3169,10 @@ void CompilationManager::declareRuleEagerStructures(const aspc::Rule& r){
                 }
                 std::string mapName = aggrId->getPredicateName()+"_";
                 if (!declaredMaps.count(mapName)){
-                    *out << ind << "AuxMap p" << mapName << "({});\n";
-                    *out << ind << "AuxMap u" << mapName << "({});\n";
-                    *out << ind << "AuxMap f" << mapName << "({});\n";
+                    int BITSETSIZE=1;
+                    *out << ind << "AuxMap<"<<BITSETSIZE<<"> p" << mapName << "({});\n";
+                    *out << ind << "AuxMap<"<<BITSETSIZE<<"> u" << mapName << "({});\n";
+                    *out << ind << "AuxMap<"<<BITSETSIZE<<"> f" << mapName << "({});\n";
                     predicateToAuxiliaryMaps[aggrId->getPredicateName()].insert(mapName);
                     predicateToUndefAuxiliaryMaps[aggrId->getPredicateName()].insert(mapName);
                     predicateToFalseAuxiliaryMaps[aggrId->getPredicateName()].insert(mapName);
@@ -3136,6 +3181,7 @@ void CompilationManager::declareRuleEagerStructures(const aspc::Rule& r){
                 // if(domBody!=NULL && domBody->getAriety() != sharedVarAggrIDToBodyIndices[aggrId->getPredicateName()].size()){
                 if(domBody!=NULL){
                     std::string indices="";
+                    int lenKey=0;
                     for(unsigned k = 0; k<aggrId->getAriety(); k++){
                         bool found=false;
                         for(unsigned v: sharedVarAggrIDToAggrSetIndices[aggrId->getPredicateName()]){
@@ -3148,14 +3194,16 @@ void CompilationManager::declareRuleEagerStructures(const aspc::Rule& r){
                             mapName+=std::to_string(k)+"_";
                             if(indices!="")
                                 indices+=",";
+                            lenKey++;
                             indices+=std::to_string(k);
                         }
                     }
                     sumAggrSetPredicateToAggrId[aggregate->getPredicateName()].insert({mapName,aggrId->getPredicateName()});
                     if (!declaredMaps.count(mapName)){
-                        *out << ind << "AuxMap p" << mapName << "({"<<indices<<"});\n";
-                        *out << ind << "AuxMap u" << mapName << "({"<<indices<<"});\n";
-                        *out << ind << "AuxMap f" << mapName << "({"<<indices<<"});\n";
+                        int BITSETSIZE=lenKey*CHAR_BIT*sizeof(int);
+                        *out << ind << "AuxMap<"<<BITSETSIZE<<"> p" << mapName << "({"<<indices<<"});\n";
+                        *out << ind << "AuxMap<"<<BITSETSIZE<<"> u" << mapName << "({"<<indices<<"});\n";
+                        *out << ind << "AuxMap<"<<BITSETSIZE<<"> f" << mapName << "({"<<indices<<"});\n";
                         predicateToAuxiliaryMaps[aggrId->getPredicateName()].insert(mapName);
                         predicateToUndefAuxiliaryMaps[aggrId->getPredicateName()].insert(mapName);
                         predicateToFalseAuxiliaryMaps[aggrId->getPredicateName()].insert(mapName);
@@ -3170,16 +3218,19 @@ void CompilationManager::declareRuleEagerStructures(const aspc::Rule& r){
                 //declare map for aggr_set on shared variables
                 mapName = aggregate->getPredicateName()+"_";
                 std::string indices="";
+                int lenKey=0;
                 for(unsigned index : sharedVarAggrIDToAggrSetIndices[aggrId->getPredicateName()]){
                     mapName+=std::to_string(index)+"_";
                     if(indices!="")
                         indices+=",";
                     indices+=std::to_string(index);
+                    lenKey++;
                 }
                 if (!declaredMaps.count(mapName)){
-                    *out << ind << "AuxMap p" << mapName << "({"<<indices<<"});\n";
-                    *out << ind << "AuxMap u" << mapName << "({"<<indices<<"});\n";
-                    *out << ind << "AuxMap f" << mapName << "({"<<indices<<"});\n";
+                    int BITSETSIZE=lenKey*CHAR_BIT*sizeof(int);
+                    *out << ind << "AuxMap<"<<BITSETSIZE<<"> p" << mapName << "({"<<indices<<"});\n";
+                    *out << ind << "AuxMap<"<<BITSETSIZE<<"> u" << mapName << "({"<<indices<<"});\n";
+                    *out << ind << "AuxMap<"<<BITSETSIZE<<"> f" << mapName << "({"<<indices<<"});\n";
                     predicateToAuxiliaryMaps[aggregate->getPredicateName()].insert(mapName);
                     predicateToUndefAuxiliaryMaps[aggregate->getPredicateName()].insert(mapName);
                     predicateToFalseAuxiliaryMaps[aggregate->getPredicateName()].insert(mapName);
@@ -3241,7 +3292,8 @@ void CompilationManager::declareRuleEagerStructures(const aspc::Rule& r){
         for(auto declareMap : declaringMaps){
             // std::cout<<declareMap.first<<std::endl;
             if (!declaredMaps.count(declareMap.first) && (declareMap.second.first.size()<declareMap.second.second ||declareMap.second.first.size()==0)) {
-                *out << ind << "AuxMap p" << declareMap.first << "({";
+                int BITSETSIZE=declareMap.second.first.size()*CHAR_BIT*sizeof(int);
+                *out << ind << "AuxMap<"<<BITSETSIZE<<"> p" << declareMap.first << "({";
                 for (unsigned k = 0; k < declareMap.second.first.size(); k++) {
                     if (k > 0) {
                         *out << ",";
@@ -3251,7 +3303,7 @@ void CompilationManager::declareRuleEagerStructures(const aspc::Rule& r){
                 *out << "});\n";
 
                 //TODO remove duplication
-                *out << ind << "AuxMap u" << declareMap.first << "({";
+                *out << ind << "AuxMap<"<<BITSETSIZE<<"> u" << declareMap.first << "({";
                 for (unsigned k = 0; k < declareMap.second.first.size(); k++) {
                     if (k > 0) {
                         *out << ",";
@@ -3262,7 +3314,7 @@ void CompilationManager::declareRuleEagerStructures(const aspc::Rule& r){
 
 
                 //TODO remove duplication
-                *out << ind << "AuxMap f" << declareMap.first << "({";
+                *out << ind << "AuxMap<"<<BITSETSIZE<<"> f" << declareMap.first << "({";
                 for (unsigned k = 0; k < declareMap.second.first.size(); k++) {
                     if (k > 0) {
                         *out << ",";
@@ -3838,7 +3890,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
             // *out << ind << "std::cout<<\"AggrId true size: \"<<tuples->size()<<std::endl;\n";
             // *out << ind << "std::cout<<\"AggrId undef size: \"<<tuplesU->size()<<std::endl;\n";
             // *out << ind << "std::cout<<\"AggrId false size: \"<<tuplesF->size()<<std::endl;\n";
-        
+
             *out << ind++ << "for(unsigned i = 0; i<tuples->size(); i++){\n";
             {
                 std::unordered_set<std::string> boundVariables;
@@ -4814,14 +4866,14 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                         //*out << ind << "std::cout<<\"Reason of \"<<var<<\"already computed \"<<reasonForLiteral[var].size()<<\" \"<<std::endl;\n";
                         // *out << ind << "if(reasonForLiteral[var].size()>0){std::cout<<reasonForLiteral[var][0]<<std::endl;}else{std::cout<<\"Found empty reason\"<<std::endl;}\n";
                         // *out << ind << "UnorderedSet<int> rrrrrr;\n";
-                        // *out << ind << "std::unordered_set<int> visitedLiteralssssssss;\n"; 
+                        // *out << ind << "std::unordered_set<int> visitedLiteralssssssss;\n";
                         // *out << ind << "explainExternalLiteral(tupleU->getId(),rrrrrr,visitedLiteralssssssss,true);\n";
                     *out << --ind << "}\n";
                 }
                 //*out << ind << "std::cout<<\"Constraint propagation "<<r.getRuleId()<<"\"<<std::endl;\n";
                 *out << ind << "bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals);\n";
                 // *out << ind << "UnorderedSet<int> rrrrrr;\n";
-                // *out << ind << "std::unordered_set<int> visitedLiteralssssssss;\n"; 
+                // *out << ind << "std::unordered_set<int> visitedLiteralssssssss;\n";
                 // *out << ind << "int it = tupleU->getId();\n";
                 // *out << ind << "int sign = tupleUNegated == true ? 1 : -1;\n";
                 // *out << ind << "explainExternalLiteral(it*sign,rrrrrr,visitedLiteralssssssss,true);\n";
@@ -5369,7 +5421,8 @@ void CompilationManager::declareDataStructuresForReasonsOfNegative(const aspc::P
                                     mapVariableName += std::to_string(index) + "_";
                                 }
                                 if (!declaredMaps.count(mapVariableName)) {
-                                    *out << ind << "AuxMap p" << mapVariableName << "({";
+                                    int BITSETSIZE = coveredVariableIndexes.size()*CHAR_BIT*sizeof(int);
+                                    *out << ind << "AuxMap<"<<BITSETSIZE<<"> p" << mapVariableName << "({";
                                     for (unsigned k = 0; k < coveredVariableIndexes.size(); k++) {
                                         if (k > 0) {
                                             *out << ",";
@@ -5384,7 +5437,8 @@ void CompilationManager::declareDataStructuresForReasonsOfNegative(const aspc::P
                                 }
                                 mapVariableName = "false_p" + mapVariableName;
                                 if (!declaredMaps.count(mapVariableName) && modelGeneratorPredicates.count(bodyLit -> getPredicateName())) {
-                                    *out << ind << "AuxMap " << mapVariableName << "({";
+                                    int BITSETSIZE = coveredVariableIndexes.size()*CHAR_BIT*sizeof(int);
+                                    *out << ind << "AuxMap<"<<BITSETSIZE<<"> " << mapVariableName << "({";
                                     for (unsigned k = 0; k < coveredVariableIndexes.size(); k++) {
                                         if (k > 0) {
                                             *out << ",";

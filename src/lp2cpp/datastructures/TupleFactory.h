@@ -26,7 +26,7 @@ class TupleFactory{
             SmartTupleWithReasons smart(&tuple);
             auto it = tupleToInternalVar.find(smart);
             if(it==tupleToInternalVar.end()){
-                
+                tuple.shrink_to_fit();
                 storage.push_back(tuple);
                 SmartTupleWithReasons trueReference(&storage.back());
                 tupleToInternalVar.insert({trueReference,internalIDToTuple.size()});
