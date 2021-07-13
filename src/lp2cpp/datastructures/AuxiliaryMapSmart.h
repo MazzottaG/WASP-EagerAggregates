@@ -31,7 +31,7 @@
 #include <cmath>
 #include "TupleWithoutReasons.h"
 #include <bitset>
-
+const long SHIFT = sizeof(int)*CHAR_BIT;
 template<class T, size_t S>
 class AuxiliaryMapSmart {
 public:
@@ -88,7 +88,8 @@ protected:
     inline void valueToPos(const std::vector<int> & key, std::bitset<S>& keyCode) const {
         for (unsigned i = 0; i < keySize; i++) {
             keyCode = keyCode << 32;
-            keyCode |= std::bitset<S>(key[i]);
+            long val = key[i] < 0 ? SHIFT+key[i] : key[i];
+            keyCode |= std::bitset<S>(val);
         }
     }
     

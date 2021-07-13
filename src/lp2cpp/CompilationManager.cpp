@@ -1570,7 +1570,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind++ << "if (var < 0) {\n";
             *out << ind << "std::unordered_map<const std::string*, PredicateWSet*>::iterator fSetIt = predicateFSetMap.find(tuple->getPredicateName());\n";
             *out << ind++ << "if (fSetIt != predicateWSetMap.end()) {\n";
-                // *out << ind << "std::cout<<\"Erase from true\"<<std::endl;\n";
+                // *out << ind << "std::cout<<\"Erase from false\"<<std::endl;\n";
                 *out << ind << "fSetIt->second->erase(*tuple);\n";
                 // *out << ind << "if(wSetIt->second->find(tuple)!=NULL) std::cout<<\"Tuple not erased from true for \"<<tuple.getPredicateName()<<std::endl;\n";
             *out << --ind << "}\n";
