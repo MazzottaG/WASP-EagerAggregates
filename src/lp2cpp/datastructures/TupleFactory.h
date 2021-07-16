@@ -55,13 +55,33 @@ class TupleFactory{
             // assert(it->second == -1);
             return it->first.getReal();
         }
-
+        TupleLight* find(std::vector<int> terms,const std::string* predName){
+            TupleLight tuple (terms,predName);
+            SmartTuple smart(&tuple);
+            auto it = tupleToInternalVar.find(smart);
+            if(it==tupleToInternalVar.end()){
+                return NULL;
+            }
+            // assert(it->second == -1);
+            return it->first.getReal();
+        }
+        TupleLight* find(const TupleLight& t){
+            TupleLight tuple (t);
+            SmartTuple smart(&tuple);
+            auto it = tupleToInternalVar.find(smart);
+            if(it==tupleToInternalVar.end()){
+                return NULL;
+            }
+            // assert(it->second == -1);
+            return it->first.getReal();
+        }
         TupleLight* getTupleFromWASPID(int id){
             if(waspIDToTuple.count(id)!=0)
                 return waspIDToTuple[id].getReal();
             return NULL;
 
         }
+
         TupleLight* getTupleFromInternalID(int id){
             if(id<=internalIDToTuple.size())
                 return internalIDToTuple[id-1].getReal();

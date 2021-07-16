@@ -70,7 +70,15 @@ public:
         value.setCollisionListIndex(&collisionList, collisionList.size());
         collisionList.push_back(&value);
     }
-   
+    void print(){
+        for(const auto& pair:tuples){
+            std::cout<<"KEY: "<<pair.first<<std::endl;
+            for(auto& t :tuples[pair.first]){
+                t->print();
+            }
+            std::cout<<std::endl;
+        }
+    }
     void clear() {
         tuples.clear();
     }

@@ -59,8 +59,9 @@ using std::stringstream;
         #define traceIf( type, level, condition, msg, ... ) \
             if( condition ) \
                 trace( type, level, msg, ##__VA_ARGS__ )
-        #define setTraceLevel( type, level ) \
-            wasp::Options::traceLevels.types[ wasp::Options::traceLevels.type() ].second = level
+        #define setTraceLevel( type, level ){ \
+            wasp::Options::traceLevels.types[ wasp::Options::traceLevels.type() ].second = level; \
+        }
         #define trace_msg( type, level, msg ) {\
             if( wasp::Options::traceLevels.types[ wasp::Options::traceLevels.type() ].second >= level ) \
             { \
@@ -100,6 +101,7 @@ class TraceLevels
         unsigned disjunction() { return 10; }
         unsigned multiaggregates() { return 11; }
         unsigned predmin() { return 12; }
+        unsigned eagerprop() { return 13; }
 
     private:
         inline TraceLevels();
@@ -120,6 +122,7 @@ TraceLevels::TraceLevels()
     types.push_back( pair< string, unsigned >( "disjunction", 0 ) );
     types.push_back( pair< string, unsigned >( "multiaggregates", 0 ) );
     types.push_back( pair< string, unsigned >( "predmin", 0 ) );
+    types.push_back( pair< string, unsigned >( "eagerprop", 0 ) );
 }
 
 };

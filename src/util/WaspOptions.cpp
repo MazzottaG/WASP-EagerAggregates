@@ -51,6 +51,7 @@ namespace wasp
 #define OPTIONID_trace_disjunction ( 'z' + 11 )
 #define OPTIONID_trace_multiaggregates ( 'z' + 12 )
 #define OPTIONID_trace_predmin ( 'z' + 13 )
+#define OPTIONID_trace_eagerprop ( 'z' + 14 )
 
 /* OUTPUT OPTIONS */
 #define OPTIONID_silent ( 'z' + 20 )
@@ -312,7 +313,8 @@ Options::parse(
                 { "trace-disjunction", required_argument, NULL, OPTIONID_trace_disjunction },
                 { "trace-multiaggregates", required_argument, NULL, OPTIONID_trace_multiaggregates },
                 { "trace-predmin", required_argument, NULL, OPTIONID_trace_predmin },
-
+                { "trace-eagerprop", required_argument, NULL, OPTIONID_trace_eagerprop },
+                
                 /* OUTPUT OPTIONS */
                 { "competition-output", no_argument, NULL, OPTIONID_competition_output },
                 { "silent", optional_argument, NULL, OPTIONID_silent },                
@@ -448,6 +450,9 @@ Options::parse(
 
             case OPTIONID_trace_solving:
                 setTraceLevel( solving, atoi( optarg ) );
+                break;
+            case OPTIONID_trace_eagerprop:
+                setTraceLevel( eagerprop, atoi( optarg ) );
                 break;
 
             case OPTIONID_trace_us:
