@@ -71,7 +71,7 @@ public:
             return;
         }
         realValue = &value;
-        realValue->removeFromCollisionsLists();
+        // realValue->removeFromCollisionsLists();
         std::unordered_set<int>::erase(findResult);
     }
 

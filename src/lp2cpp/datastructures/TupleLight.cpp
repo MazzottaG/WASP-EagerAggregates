@@ -12,3 +12,15 @@
  */
 
 #include "TupleLight.h"
+#include "TupleFactory.h"
+
+void TupleLight::removeFromCollisionsLists(const TupleFactory& factory) const {
+    for (auto & collisionListAndIndex : collisionsLists) {
+        std::vector<unsigned> & collisionList = *(collisionListAndIndex.first);
+        unsigned index = collisionListAndIndex.second;
+        collisionList[index] = collisionList[collisionList.size() - 1];
+        factory.getTupleFromInternalID(collisionList[index])->setCollisionListIndex(&collisionList, index);
+        collisionList.pop_back();
+    }
+    collisionsLists.clear();
+}

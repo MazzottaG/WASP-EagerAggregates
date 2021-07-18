@@ -564,7 +564,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "#include<ctime>\n\n";
     *out << ind << "#include<ctime>\n\n";
     *out << ind << "#include<map>\n\n";
+    #ifdef TRACE_ON
     *out << ind << "extern wasp::TraceLevels wasp::Options::traceLevels;\n\n";
+    #endif
     *out << ind << "namespace aspc {\n";
     *out << ind++ << "extern \"C\" Executor* create_object() {\n";
 
@@ -577,7 +579,11 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     
 
-    *out << ind << "Executor::Executor() {/*setTraceLevel(eagerprop,10);*/}\n\n";
+    *out << ind++ << "Executor::Executor() {\n";
+        #ifdef TRACE_ON
+        *out << ind << "setTraceLevel(eagerprop,10);\n";
+        #endif
+    *out << --ind << "}\n";
 
     //typedefs
     *out << ind << "typedef TupleLight Tuple;\n";
@@ -588,7 +594,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     // }
     // *out << ind << "typedef AuxiliaryMap<Tuple> AuxMap;\n";
     *out << ind << "template<size_t S>\n";
-    *out << ind << "using AuxMap = AuxiliaryMapSmart<Tuple,S> ;\n";
+    *out << ind << "using AuxMap = AuxiliaryMapSmart<S> ;\n";
 
     *out << ind << "typedef std::vector<const Tuple* > Tuples;\n";
     // *out << ind << "using PredicateWSet = SmartPredicateSet;\n\n";
@@ -695,7 +701,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << --ind << "}\n\n";
 
     *out << ind << "\n";
-    *out << ind << "const std::vector<const Tuple* > EMPTY_TUPLES;\n";
+    *out << ind << "const std::vector<unsigned> EMPTY_TUPLES;\n";
     *out << ind << "std::unordered_map<std::string, const std::string * > stringToUniqueStringPointer;\n";
 
     // *out << ind << "typedef void (*ExplainNegative)(const std::vector<int> & lit, std::unordered_set<std::string> & open_set, std::vector<const Tuple *> & output);\n\n";
@@ -1376,7 +1382,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "const std::string* predicate = parseTuple(literalString,terms);\n";
         *out << ind << "Tuple* tuple = factory.addNewTuple(terms,predicate,var);\n";
         *out << ind << "TruthStatus truth = var>0 ? True : False;\n";
-        *out << ind << "const auto& insertResult = tuple->setStatus(truth);\n";
+        *out << ind << "const auto& insertResult = tuple->setStatus(truth,factory);\n";
         *out << ind++ << "if (var > 0) {\n";
             *out << ind << "insertTrue(insertResult);\n";
         *out << --ind << "}else{\n";
@@ -1393,7 +1399,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
         *out << ind << "std::unordered_map<const std::string*,int>::iterator sum_it;\n";
         *out << ind << "TruthStatus truth = var>0 ? True : False;\n";
-        *out << ind << "const auto& insertResult = tuple->setStatus(truth);\n";
+        *out << ind << "const auto& insertResult = tuple->setStatus(truth,factory);\n";
         *out << ind++ << "if (var > 0) {\n";
             *out << ind << "insertTrue(insertResult);\n";
         *out << --ind << "}else{\n";
@@ -1441,9 +1447,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         }
                         for(std::string sign : {"p","u","f"}){
                             *out << ind++ << "{\n";
-                                *out << ind << "const std::vector<const Tuple*>* aggrIds = &"<<sign<<mapName<<".getValues({"<<terms<<"});\n";
+                                *out << ind << "const std::vector<unsigned>* aggrIds = &"<<sign<<mapName<<".getValues({"<<terms<<"});\n";
                                 *out << ind++ << "for(unsigned i=0;i<aggrIds->size();i++){\n";
-                                    *out << ind << "int itAggrId = aggrIds->at(i)->getId();\n";
+                                    *out << ind << "int itAggrId = aggrIds->at(i);\n";
                                     *out << ind++ << "if(var>0)\n";
                                         *out << ind-- << "actualSum[itAggrId]+=tuple->at("<<sumVar<<");\n";
                                     *out << ind << "possibleSum[itAggrId]-=tuple->at("<<sumVar<<");\n";
@@ -1492,7 +1498,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 #endif
         *out << ind << "trace_msg(eagerprop, 2, \"Literal undef received \" << minus << tuple->toString());\n";
 
-        *out << ind << "const auto& insertResult = tuple->setStatus(Undef);\n";
+        *out << ind << "const auto& insertResult = tuple->setStatus(Undef,factory);\n";
         *out << ind++ << "if (insertResult.second) {\n";
             *out << ind << "insertUndef(insertResult);\n";
         *out << --ind << "}\n";
@@ -1539,9 +1545,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         }
                         for(std::string sign : {"p","u","f"}){
                             *out << ind++ << "{\n";
-                                *out << ind << "const std::vector<const Tuple*>* aggrIds = &"<<sign<<mapName<<".getValues({"<<terms<<"});\n";
+                                *out << ind << "const std::vector<unsigned>* aggrIds = &"<<sign<<mapName<<".getValues({"<<terms<<"});\n";
                                 *out << ind++ << "for(unsigned i=0;i<aggrIds->size();i++){\n";
-                                    *out << ind << "int itAggrId = aggrIds->at(i)->getId();\n";
+                                    *out << ind << "int itAggrId = aggrIds->at(i);\n";
                                     *out << ind++ << "if(var>0)\n";
                                         *out << ind-- << "actualSum[itAggrId]-=tuple->at("<<sumVar<<");\n";
                                     *out << ind << "possibleSum[itAggrId]+=tuple->at("<<sumVar<<");\n";
@@ -1649,7 +1655,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         }
                                         closingPars++;
                                     }else{
-                                        *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<selectedLit->getPredicateName()<<"_";
+                                        *out << ind << "const std::vector<unsigned>* tuples = &p"<<selectedLit->getPredicateName()<<"_";
                                         std::string boundTerms="";
                                         std::vector<unsigned> boundTermsIndices;
                                         for(unsigned i=0;i<selectedLit->getAriety();i++){
@@ -1662,7 +1668,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                             }
                                         }
                                         *out << ".getValues({"<<boundTerms<<"});\n";
-                                        *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<selectedLit->getPredicateName()<<"_";
+                                        *out << ind << "const std::vector<unsigned>* tuplesU = &u"<<selectedLit->getPredicateName()<<"_";
                                         for(unsigned index: boundTermsIndices){
                                             *out << index << "_";
                                         }
@@ -1671,9 +1677,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         closingPars++;
                                             *out << ind << "const Tuple* tuple = NULL;\n";
                                             *out << ind++ << "if(i<tuples->size())\n";
-                                                *out << ind-- << "tuple=tuples->at(i);\n";
+                                                *out << ind-- << "tuple=factory.getTupleFromInternalID(tuples->at(i));\n";
                                             *out << ind++ << "else\n";
-                                                *out << ind-- << "tuple=tuplesU->at(i-tuples->size());\n";
+                                                *out << ind-- << "tuple=factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));\n";
 
                                             for(unsigned i=0;i<selectedLit->getAriety();i++){
                                                 if(selectedLit->isVariableTermAt(i)){
@@ -1700,7 +1706,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                             auxTerms += aux.getTermAt(k);
                         }
                         *out << ind << "Tuple* aux = factory.addNewInternalTuple({"<<auxTerms<< "}, &_"<<aux.getPredicateName()<<");\n";
-                        *out << ind << "const auto& insertResult = aux->setStatus(Undef);\n";
+                        *out << ind << "const auto& insertResult = aux->setStatus(Undef,factory);\n";
                         *out << ind++ << "if (insertResult.second) {\n";
                             *out << ind << "insertUndef(insertResult);\n";
                             // *out << ind << "aux.print();std::cout<<\" \"<<tupleToVar[aux]<<std::endl;\n";
@@ -1716,7 +1722,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                     }
                                     *out << ind++ << "{\n";
                                         *out << ind << "Tuple* head = factory.addNewInternalTuple({"<<headTerms<<"},&_"<<head->getPredicateName()<<");\n";
-                                        *out << ind << "const auto& headInsertResult = head->setStatus(Undef);\n";
+                                        *out << ind << "const auto& headInsertResult = head->setStatus(Undef,factory);\n";
                                         *out << ind++ << "if (headInsertResult.second) {\n";
                                             *out << ind << "insertUndef(headInsertResult);\n";
                                         *out << --ind << "}\n";
@@ -1731,7 +1737,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                 }
 
                                                 *out << ind << "Tuple* aggr_id"<<aggr_r.getRuleId()<<" = factory.addNewInternalTuple({"<<aggrIdTerms<<"},&_"<<aggr_id->getPredicateName()<<");\n";
-                                                *out << ind << "const auto& aggrIdInsertResult"<<aggr_r.getRuleId()<<" = aggr_id"<<aggr_r.getRuleId()<<"->setStatus(Undef);\n";
+                                                *out << ind << "const auto& aggrIdInsertResult"<<aggr_r.getRuleId()<<" = aggr_id"<<aggr_r.getRuleId()<<"->setStatus(Undef,factory);\n";
                                                 *out << ind++ << "if (aggrIdInsertResult"<<aggr_r.getRuleId()<<".second) {\n";
                                                     *out << ind << "insertUndef(aggrIdInsertResult"<<aggr_r.getRuleId()<<");\n";
                                                 *out << --ind << "}\n";
@@ -1773,15 +1779,15 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         }
                                     }
                                     *out << ind++ << "{\n";
-                                        *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<bodyLit->getPredicateName()<<"_.getValues({});\n";
-                                        *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<bodyLit->getPredicateName()<<"_.getValues({});\n";
+                                        *out << ind << "const std::vector<unsigned>* tuples = &p"<<bodyLit->getPredicateName()<<"_.getValues({});\n";
+                                        *out << ind << "const std::vector<unsigned>* tuplesU = &u"<<bodyLit->getPredicateName()<<"_.getValues({});\n";
                                         *out << ind++ << "for(unsigned i=0; i<tuples->size()+tuplesU->size(); i++){\n";
                                             *out << ind << "const Tuple* tuple = NULL;\n";
                                             *out << ind++ << "if(i<tuples->size()){\n";
-                                                *out << ind << "tuple=tuples->at(i);\n";
+                                                *out << ind << "tuple=factory.getTupleFromInternalID(tuples->at(i));\n";
                                                 bool checkFormat = checkTupleFormat(*bodyLit,"tuple",true);
                                                 *out << ind << "Tuple* head = factory.addNewInternalTuple({"<<terms<<"},&_"<<head->getPredicateName()<<");\n";
-                                                *out << ind << "const auto& insertResult = head->setStatus(True);\n";
+                                                *out << ind << "const auto& insertResult = head->setStatus(True,factory);\n";
                                                 *out << ind++ << "if (insertResult.second) {\n";
                                                     *out << ind << "insertTrue(insertResult);\n";
                                                     // *out << ind << "aggrId.print();std::cout<<\" \"<<tupleToVar[aggrId]<<std::endl;\n";
@@ -1790,11 +1796,11 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                     *out << --ind << "}\n";
                                             *out << --ind << "}else{\n";
                                             ind++;
-                                                *out << ind << "tuple=tuplesU->at(i-tuples->size());\n";
+                                                *out << ind << "tuple=factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));\n";
                                                 checkFormat = checkTupleFormat(*bodyLit,"tuple",true);
 
                                                 *out << ind << "Tuple* head = factory.addNewInternalTuple({"<<terms<<"},&_"<<head->getPredicateName()<<");\n";
-                                                *out << ind << "const auto& insertResult = head->setStatus(Undef);\n";
+                                                *out << ind << "const auto& insertResult = head->setStatus(Undef,factory);\n";
                                                 *out << ind++ << "if (insertResult.second) {\n";
                                                     *out << ind << "insertUndef(insertResult);\n";
                                                     *out << ind << "trace_msg(eagerprop,3,\"Saved new undef head for "<<head->getPredicateName()<<": \" << head->toString());\n";
@@ -1809,7 +1815,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                     *out << ind++ << "{\n";
                                                     checkFormat = checkTupleFormat(*bodyLit,"tuple",true);
                                                         *out << ind << "Tuple* aggrId = factory.addNewInternalTuple({"<<terms<<"},&_"<<aggr_id->getPredicateName()<<");\n";
-                                                        *out << ind << "const auto& insertResult = aggrId->setStatus(Undef);\n";
+                                                        *out << ind << "const auto& insertResult = aggrId->setStatus(Undef,factory);\n";
                                                         *out << ind++ << "if (insertResult.second) {\n";
                                                             // *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<aggr_id->getPredicateName()<<"]) {\n";
                                                             //     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
@@ -1837,7 +1843,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             if(program.getRule(aggrId.second).getBodyLiterals().empty()){
                 *out << ind++ << "{\n";
                     *out << ind << "Tuple* aggrId = factory.addNewInternalTuple({},&_"<<aggrId.first<<");\n";
-                    *out << ind << "const auto& insertResult = aggrId->setStatus(Undef);\n";
+                    *out << ind << "const auto& insertResult = aggrId->setStatus(Undef,factory);\n";
                     *out << ind++ << "if (insertResult.second) {\n";
                         *out << ind << "insertUndef(insertResult);\n";
                         // *out << ind << "aggrId.print();std::cout<<\" \"<<tupleToVar[aggrId]<<std::endl;\n";
@@ -1866,19 +1872,19 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
                 if(!builder->isBodyPredicate(bodyLit->getPredicateName())){
                     *out << ind++ << "{\n";
-                        *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<bodyLit->getPredicateName()<<"_.getValues({});\n";
-                        *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<bodyLit->getPredicateName()<<"_.getValues({});\n";
+                        *out << ind << "const std::vector<unsigned>* tuples = &p"<<bodyLit->getPredicateName()<<"_.getValues({});\n";
+                        *out << ind << "const std::vector<unsigned>* tuplesU = &u"<<bodyLit->getPredicateName()<<"_.getValues({});\n";
                         *out << ind++ << "for(unsigned i=0; i<tuples->size()+tuplesU->size(); i++){\n";
                             *out << ind << "const Tuple* tuple = NULL;\n";
                             *out << ind++ << "if(i<tuples->size()){\n";
-                                *out << ind << "tuple=tuples->at(i);\n";
+                                *out << ind << "tuple=factory.getTupleFromInternalID(tuples->at(i));\n";
                             *out << --ind << "}else{\n";
                             ind++;
-                                *out << ind << "tuple=tuplesU->at(i-tuples->size());\n";
+                                *out << ind << "tuple=factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));\n";
                             *out << --ind << "}\n";
                             bool checkFormat = checkTupleFormat(*bodyLit,"tuple",true);
                                 *out << ind << "Tuple* head = factory.addNewInternalTuple({"<<terms<<"},&_"<<head->getPredicateName()<<");\n";
-                                *out << ind << "const auto& insertResult = head->setStatus(Undef);\n";
+                                *out << ind << "const auto& insertResult = head->setStatus(Undef,factory);\n";
                                 *out << ind++ << "if (insertResult.second) {\n";
                                     *out << ind << "insertUndef(insertResult);\n";
                                     // *out << ind << "head.print();std::cout<<\" \"<<tupleToVar[head]<<std::endl;\n";
@@ -1911,23 +1917,24 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         }
                     }
                     *out << ind++ << "{\n";
-                        *out << ind << "const std::vector<const Tuple*>* aggregateIds = &u"<<aggrId->getPredicateName()<<"_.getValues({});\n";
+                        *out << ind << "const std::vector<unsigned>* aggregateIds = &u"<<aggrId->getPredicateName()<<"_.getValues({});\n";
                         *out << ind++ << "for(unsigned i=0;i<aggregateIds->size();i++){\n";
-                            *out << ind << "int it = aggregateIds->at(i)->getId();\n";
-                            *out << ind << "const std::vector<const Tuple*>* aggrSetTuples = &u"<<aggrSetPred.first<<"_";
+                            *out << ind << "int it = aggregateIds->at(i);\n";
+                            *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(aggregateIds->at(i));\n";
+                            *out << ind << "const std::vector<unsigned>* aggrSetTuples = &u"<<aggrSetPred.first<<"_";
                             for(unsigned k : sharedVarAggrIDToAggrSetIndices[aggrId->getPredicateName()]){
                                 *out << k << "_";
                             }
                             *out << ".getValues({";
                             for(unsigned k : sharedVarAggrIdAggrSet[aggrId->getPredicateName()]){
-                                *out << "aggregateIds->at(i)->at("<<k<<")";
+                                *out << "currentTuple->at("<<k<<")";
                                 if(k != sharedVarAggrIdAggrSet[aggrId->getPredicateName()].back()){
                                     *out << ",";
                                 }
                             }
                             *out << "});\n";
                             *out << ind++ << "for(unsigned j=0; j<aggrSetTuples->size(); j++)\n";
-                                *out << ind-- << "possibleSum[it]+=aggrSetTuples->at(j)->at("<<sumVar<<");\n";
+                                *out << ind-- << "possibleSum[it]+=factory.getTupleFromInternalID(aggrSetTuples->at(j))->at("<<sumVar<<");\n";
 
                         *out << --ind << "}\n";
                     *out << --ind << "}\n";
@@ -2154,7 +2161,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     *out << ind << "return true;\n";
                 *out << --ind << "}else if(realTupleU->isUndef()){\n";
                 ind++;
-                    *out << ind << "const auto& insertResult = realTupleU->setStatus(True);\n";
+                    *out << ind << "const auto& insertResult = realTupleU->setStatus(True,factory);\n";
                     *out << ind++ << "if (insertResult.second) {\n";
                         *out << ind << "insertTrue(insertResult);\n";
                         for(const auto& aggrSetPred : aggrSetToRule){
@@ -2196,9 +2203,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         }
                                         for(std::string sign : {"p","u","f"}){
                                             *out << ind++ << "{\n";
-                                                *out << ind << "const std::vector<const Tuple*>* aggrIds = &"<<sign<<mapName<<".getValues({"<<terms<<"});\n";
+                                                *out << ind << "const std::vector<unsigned>* aggrIds = &"<<sign<<mapName<<".getValues({"<<terms<<"});\n";
                                                 *out << ind++ << "for(unsigned i=0;i<aggrIds->size();i++){\n";
-                                                    *out << ind << "int itAggrId = aggrIds->at(i)->getId();\n";
+                                                    *out << ind << "int itAggrId = aggrIds->at(i);\n";
                                                     *out << ind << "actualSum[itAggrId]+=tupleU->at("<<sumVar<<");\n";
                                                     *out << ind << "possibleSum[itAggrId]-=tupleU->at("<<sumVar<<");\n";
                                                 *out << --ind << "}\n";
@@ -2221,7 +2228,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     *out << ind << "return true;\n";
                 *out << --ind << "}else if(realTupleU->isUndef()){\n";
                 ind++;
-                    *out << ind << "const auto& insertResult = realTupleU->setStatus(False);\n";
+                    *out << ind << "const auto& insertResult = realTupleU->setStatus(False,factory);\n";
                     *out << ind++ << "if (insertResult.second) {\n";
                         *out << ind << "insertFalse(insertResult);\n";
 
@@ -2264,9 +2271,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         }
                                         for(std::string sign : {"p","u","f"}){
                                             *out << ind++ << "{\n";
-                                                *out << ind << "const std::vector<const Tuple*>* aggrIds = &"<<sign<<mapName<<".getValues({"<<terms<<"});\n";
+                                                *out << ind << "const std::vector<unsigned>* aggrIds = &"<<sign<<mapName<<".getValues({"<<terms<<"});\n";
                                                 *out << ind++ << "for(unsigned i=0;i<aggrIds->size();i++){\n";
-                                                    *out << ind << "int itAggrId = aggrIds->at(i)->getId();\n";
+                                                    *out << ind << "int itAggrId = aggrIds->at(i);\n";
                                                     *out << ind << "possibleSum[itAggrId]-=tupleU->at("<<sumVar<<");\n";
                                                 *out << --ind << "}\n";
                                             *out << --ind << "}\n";
@@ -2366,7 +2373,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                         closingPars++;
                                                     }
                                                 }else{
-                                                    *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
+                                                    *out << ind << "const std::vector<unsigned>* tuples = &p"<<l->getPredicateName()<<"_";
                                                     std::string boundTerms="";
                                                     std::vector<unsigned> unBoundedIndices;
                                                     for(unsigned k = 0; k<l->getAriety(); k++){
@@ -2382,12 +2389,13 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                     *out << ".getValues({"<<boundTerms<<"});\n";
                                                     *out << ind++ << "for(unsigned i=0; i<tuples->size();i++){\n";
                                                     closingPars++;
+                                                        *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(tuples->at(i));\n";
                                                         for(unsigned index:unBoundedIndices){
                                                             if(boundVariables.count(l->getTermAt(index))==0){
-                                                                *out << ind << "int "<<l->getTermAt(index)<<" = tuples->at(i)->at("<<index<<");\n";
+                                                                *out << ind << "int "<<l->getTermAt(index)<<" = currentTuple->at("<<index<<");\n";
                                                                 boundVariables.insert(l->getTermAt(index));
                                                             }else{
-                                                                *out << ind++ << "if(tuples->at(i)->at("<<index<<") == "<<l->getTermAt(index)<<"){\n";
+                                                                *out << ind++ << "if(currentTuple->at("<<index<<") == "<<l->getTermAt(index)<<"){\n";
                                                                 closingPars++;
                                                             }
                                                         }
@@ -2438,7 +2446,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                                 localPars++;
                                                             }
                                                         }else{
-                                                            *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
+                                                            *out << ind << "const std::vector<unsigned>* tuples = &p"<<l->getPredicateName()<<"_";
                                                             std::string boundTerms="";
                                                             std::vector<unsigned> unBoundedIndices;
                                                             for(unsigned k = 0; k<l->getAriety(); k++){
@@ -2454,12 +2462,13 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                             *out << ".getValues({"<<boundTerms<<"});\n";
                                                             *out << ind++ << "for(unsigned i=0; i<tuples->size()"<<exitCondition<<";i++){\n";
                                                             localPars++;
+                                                                *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(tuples->at(i));\n";
                                                                 for(unsigned index:unBoundedIndices){
                                                                     if(localBoundVariables.count(l->getTermAt(index))==0){
-                                                                        *out << ind << "int "<<l->getTermAt(index)<<" = tuples->at(i)->at("<<index<<");\n";
+                                                                        *out << ind << "int "<<l->getTermAt(index)<<" = currentTuple->at("<<index<<");\n";
                                                                         localBoundVariables.insert(l->getTermAt(index));
                                                                     }else{
-                                                                        *out << ind++ << "if(tuples->at(i)->at("<<index<<") == "<<l->getTermAt(index)<<"){\n";
+                                                                        *out << ind++ << "if(currentTuple->at("<<index<<") == "<<l->getTermAt(index)<<"){\n";
                                                                         localPars++;
                                                                     }
                                                                 }
@@ -2512,7 +2521,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         *out << "<<\")\"<<std::endl;\n";
                                         if(builder->isPredicateBodyNoCompletion(it->first)){
                                             *out << ind << "Tuple* tupleHead = factory.addNewInternalTuple(head,&_"<<head->getPredicateName()<<");\n";
-                                            *out << ind << "const auto& insertResult = tupleHead->setStatus(True);\n";
+                                            *out << ind << "const auto& insertResult = tupleHead->setStatus(True,factory);\n";
                                             *out << ind++ << "if (insertResult.second) {\n";
                                                 *out << ind << "insertTrue(insertResult);\n";
                                             *out << --ind << "}\n";
@@ -2562,7 +2571,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 *out << ind << "int uVar = var>0 ? var : -var;\n";
                 *out << ind << "Tuple* tuple = factory.getTupleFromInternalID(uVar);\n";
 
-                *out << ind << "const auto& insertResult = tuple->setStatus(Undef);\n";
+                *out << ind << "const auto& insertResult = tuple->setStatus(Undef,factory);\n";
                 *out << ind++ << "if (insertResult.second) {\n";
                     *out << ind << "insertUndef(insertResult);\n";
                 *out << --ind << "}\n";
@@ -2607,9 +2616,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                 }
                                 for(std::string sign : {"p","u","f"}){
                                     *out << ind++ << "{\n";
-                                        *out << ind << "const std::vector<const Tuple*>* aggrIds = &"<<sign<<mapName<<".getValues({"<<terms<<"});\n";
+                                        *out << ind << "const std::vector<unsigned>* aggrIds = &"<<sign<<mapName<<".getValues({"<<terms<<"});\n";
                                         *out << ind++ << "for(unsigned i=0;i<aggrIds->size();i++){\n";
-                                            *out << ind << "int itAggrId = aggrIds->at(i)->getId();\n";
+                                            *out << ind << "int itAggrId = aggrIds->at(i);\n";
                                                 *out << ind++ << "if(var>0)\n";
                                                     *out << ind-- << "actualSum[itAggrId]-=tuple->at("<<sumVar<<");\n";
                                                 *out << ind << "possibleSum[itAggrId]+=tuple->at("<<sumVar<<");\n";
@@ -2818,8 +2827,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind << "int startVar = propagationStack.back();\n";
             *out << ind << "int uStartVar = startVar<0 ? -startVar : startVar;\n";
             *out << ind << "Tuple starter (*factory.getTupleFromInternalID(uStartVar));\n";
-            *out << ind << "starter.setNegated(startVar<0);\n";
-            *out << ind << "std::string minus = starter.isNegated() ? \"not \" : \"\";\n";
+            // *out << ind << "starter.setNegated(startVar<0);\n";
+            *out << ind << "std::string minus = startVar < 0 ? \"not \" : \"\";\n";
             //*out << ind << "std::cout<<minus;starter.print();std::cout<<\" Starter\"<<std::endl;\n";
             *out << ind << "trace_msg(eagerprop,5,minus << starter.toString() << \" as Starter\");\n";
             *out << ind << "propagationStack.pop_back();\n";
@@ -3263,7 +3272,7 @@ unsigned CompilationManager::compileRuleBody(const std::vector<unsigned> body,un
                     }
                 }
 
-                *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<lit->getPredicateName()<<"_";
+                *out << ind << "const std::vector<unsigned>* tuples = &p"<<lit->getPredicateName()<<"_";
                 for(unsigned term: boundTerms){
                     *out << term << "_";
                 }
@@ -3280,7 +3289,7 @@ unsigned CompilationManager::compileRuleBody(const std::vector<unsigned> body,un
                     }
                 }
                 *out << "});\n";
-                *out << ind << "const std::vector<const Tuple*>* tuplesU = &EMPTY_TUPLES;\n";
+                *out << ind << "const std::vector<unsigned>* tuplesU = &EMPTY_TUPLES;\n";
                 if(searchOneUndef)
                     *out << ind++ << "if(tupleU==NULL)\n";
                     *out << ind << "tuplesU = &u"<<lit->getPredicateName()<<"_";
@@ -3388,12 +3397,12 @@ unsigned CompilationManager::exploreLiteral(const aspc::Literal* lit,std::unorde
         *out << ind++ << "if(tuple"<<currentLitIndex<<"!=NULL){\n";
         pars++;
     }else{
-        *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<lit->getPredicateName()<<"_";
+        *out << ind << "const std::vector<unsigned>* tuples = &p"<<lit->getPredicateName()<<"_";
         for(unsigned k: boundIndices){
             *out << k << "_";
         }
         *out << ".getValues({"<<boundTerms<<"});\n";
-        *out << ind << "const std::vector<const Tuple*>* tuplesU = &EMPTY_TUPLES;\n";
+        *out << ind << "const std::vector<unsigned>* tuplesU = &EMPTY_TUPLES;\n";
         *out << ind << "std::vector<const Tuple*> undeRepeated;\n";
         *out << ind++ << "if(tupleU == NULL)\n";
             *out << ind-- << "tuplesU = &u"<<lit->getPredicateName()<<"_";
@@ -3419,9 +3428,9 @@ unsigned CompilationManager::exploreLiteral(const aspc::Literal* lit,std::unorde
                 *out << ind-- << "tupleU = NULL;\n";
             *out << ind << "const Tuple* tuple"<<currentLitIndex<<" = NULL;\n";
             *out << ind++ << "if(i<tuples->size())\n";
-                *out << ind-- << "tuple"<<currentLitIndex<<" = tuples->at(i);\n";
+                *out << ind-- << "tuple"<<currentLitIndex<<" = factory.getTupleFromInternalID(tuples->at(i));\n";
             *out << ind++ << "else if(i<tuples->size()+tuplesU->size()){\n";
-                *out << ind << "tupleU = tuple"<<currentLitIndex<<" = tuplesU->at(i-tuples->size());\n";
+                *out << ind << "tupleU = tuple"<<currentLitIndex<<" = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));\n";
                 *out << ind << "tupleUNegated=false;\n";
             *out << --ind << "}else if(!undeRepeated.empty()){\n";
             ind++;
@@ -3491,8 +3500,8 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                 }
                 std::string plusOne = r.getArithmeticRelationsWithAggregate()[0].isPlusOne() ? "+1":"";
                 std::string guard = r.getArithmeticRelationsWithAggregate()[0].getGuard().getStringRep()+plusOne;
-                *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<mapName<<".getValues(sharedVar);\n";
-                *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<mapName<<".getValues(sharedVar);\n";
+                *out << ind << "const std::vector<unsigned>* tuples = &p"<<mapName<<".getValues(sharedVar);\n";
+                *out << ind << "const std::vector<unsigned>* tuplesU = &u"<<mapName<<".getValues(sharedVar);\n";
                 string bodyTerms = "";
                 if(bodyPred!=NULL){
                     for(unsigned i = 0; i<bodyPred->getAriety();i++){
@@ -3503,7 +3512,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                 }
                 // *out << ind << "std::cout<<\"Actual Sum: \"<<actualSum[uStartVar]<<std::endl;\n";
 
-                *out << ind++ << "if(starter.isNegated()){\n";
+                *out << ind++ << "if(startVar < 0){\n";
                     if(aggregateRelation->getAggregate().isSum())
                         *out << ind++ << "if(actualSum[uStartVar]>="<<guard<<"){\n";
                     else
@@ -3511,7 +3520,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
 
                         //*out << ind << "std::cout<<\"Conflitct on aggregate start from aggrId false "<<r.getRuleId()<<"\"<<std::endl;\n";
                         *out << ind++ << "for(unsigned i =0; i< tuples->size(); i++){\n";
-                            *out << ind << "int it = tuples->at(i)->getId();\n";
+                            *out << ind << "int it = tuples->at(i);\n";
                             *out << ind << "reasonForLiteral[-startVar].insert(it);\n";
                         *out << --ind << "}\n";
                         *out << ind << "handleConflict(-startVar);\n";
@@ -3522,12 +3531,13 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                         *out << ind << "std::vector<int> reason;\n";
                         if(builder->isAggrSetPredicate(aggrSetPred->getPredicateName())){
                             *out << ind++ << "for(int index=0; index<tuplesU->size();){\n";
-                                *out << ind++ << "if(actualSum[uStartVar]+tuplesU->at(index)->at(0) >= "<<guard<<"){\n";
-                                    *out << ind << "int itProp =tuplesU->at(index)->getId();\n";
+                                *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesU->at(index));\n";
+                                *out << ind++ << "if(actualSum[uStartVar]+currentTuple->at(0) >= "<<guard<<"){\n";
+                                    *out << ind << "int itProp =currentTuple->getId();\n";
                                     *out << ind++ << "if(reasonForLiteral.count(-itProp)==0){\n";
                                         *out << ind++ << "if(reason.empty()){\n";
                                             *out << ind++ << "for(unsigned i =0; i< tuples->size(); i++){\n";
-                                                *out << ind << "int it = tuples->at(i)->getId();\n";
+                                                *out << ind << "int it = tuples->at(i);\n";
                                                 *out << ind << "reason.push_back(it);\n";
                                                 *out << ind << "reasonForLiteral[-itProp].insert(it);\n";
                                             *out << --ind << "}\n";
@@ -3540,7 +3550,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                         *out << --ind << "}\n";
                                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
-                                    *out << ind << "propUndefined(tuplesU->at(index),false,propagationStack,true,propagatedLiterals);\n";
+                                    *out << ind << "propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals);\n";
                                 *out << --ind << "}else index++;\n";
                             *out << --ind << "}\n";
                         }else{
@@ -3553,12 +3563,13 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                 }
                             }
                             *out << ind++ << "for(unsigned index =0; index<tuplesU->size(); index++){\n";
-                                *out << ind++ << "if(actualSum[uStartVar]+tuplesU->at(index)->at("<<varIndex<<") >= "<<guard<<"){\n";
-                                    *out << ind << "int itProp = tuplesU->at(index)->getId();\n";
+                                *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesU->at(index));\n";
+                                *out << ind++ << "if(actualSum[uStartVar]+currentTuple->at("<<varIndex<<") >= "<<guard<<"){\n";
+                                    *out << ind << "int itProp = currentTuple->getId();\n";
                                         *out << ind++ << "if(reasonForLiteral.count(-itProp)==0){\n";
                                         *out << ind++ << "if(reason.empty()){\n";
                                             *out << ind++ << "for(unsigned i =0; i< tuples->size(); i++){\n";
-                                                *out << ind << "int it = tuples->at(i)->getId();\n";
+                                                *out << ind << "int it = tuples->at(i);\n";
                                                 *out << ind << "reason.push_back(it);\n";
                                                 *out << ind << "reasonForLiteral[-itProp].insert(it);\n";
                                             *out << --ind << "}\n";
@@ -3571,7 +3582,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                         *out << --ind << "}\n";
                                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
-                                    *out << ind << "propUndefined(tuplesU->at(index),false,propagationStack,true,propagatedLiterals);\n";
+                                    *out << ind << "propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals);\n";
                                 *out << --ind << "}\n";
                             *out << --ind << "}\n";
                         }
@@ -3581,29 +3592,29 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                         ind++;
                             *out << ind << "std::vector<int> reason;\n";
                             *out << ind++ << "for(unsigned i =0; i< tuples->size(); i++){\n";
-                                *out << ind << "int it = tuples->at(i)->getId();\n";
+                                *out << ind << "int it = tuples->at(i);\n";
                                 *out << ind << "reason.push_back(it);\n";
                             *out << --ind << "}\n";
                             *out << ind << "reason.push_back(startVar);\n";
                             if(builder->isAggrSetPredicate(aggrSetPred->getPredicateName())){
                                 *out << ind++ << "while(!tuplesU->empty()){\n";
-                                    *out << ind << "int itProp = tuplesU->at(0)->getId();\n";
+                                    *out << ind << "int itProp = tuplesU->at(0);\n";
                                     *out << ind++ << "if(reasonForLiteral.count(-itProp)==0){\n";
                                         *out << ind++ << "for(int reasonLit : reason)\n";
                                             *out << ind-- << "reasonForLiteral[-itProp].insert(reasonLit);\n";
                                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
-                                    *out << ind << "propUndefined(tuplesU->at(0),false,propagationStack,true,propagatedLiterals);\n";
+                                    *out << ind << "propUndefined(factory.getTupleFromInternalID(tuplesU->at(0)),false,propagationStack,true,propagatedLiterals);\n";
                                 *out << --ind << "}\n";
                             }else{
                                 *out << ind++ << "for(unsigned i =0; i<tuplesU->size(); i++){\n";
-                                    *out << ind << "int itProp = tuplesU->at(i)->getId();\n";
+                                    *out << ind << "int itProp = tuplesU->at(i);\n";
                                     *out << ind++ << "if(reasonForLiteral.count(-itProp)==0){\n";
                                         *out << ind++ << "for(int reasonLit : reason)\n";
                                             *out << ind-- << "reasonForLiteral[-itProp].insert(reasonLit);\n";
                                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
-                                    *out << ind << "propUndefined(tuplesU->at(i),false,propagationStack,true,propagatedLiterals);\n";
+                                    *out << ind << "propUndefined(factory.getTupleFromInternalID(tuplesU->at(i)),false,propagationStack,true,propagatedLiterals);\n";
                                 *out << --ind << "}\n";
                             }
 
@@ -3617,9 +3628,9 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     else
                         *out << ind++ << "if(tuples->size()+tuplesU->size() < "<<guard<<"){\n";
                         //*out << ind << "std::cout<<\"Conflitct on aggregate starting from aggrId true "<<r.getRuleId()<<"\"<<std::endl;\n";
-                        *out << ind << "const std::vector<const Tuple*>* tuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                        *out << ind << "const std::vector<unsigned>* tuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
                         *out << ind++ << "for(unsigned i = 0; i < tuplesF->size(); i++){\n";
-                            *out << ind << "int it = tuplesF->at(i)->getId();\n";
+                            *out << ind << "int it = tuplesF->at(i);\n";
                             *out << ind << "reasonForLiteral[-startVar].insert(-it);\n";
                         *out << --ind << "}\n";
                         *out << ind << "handleConflict(-startVar);\n";
@@ -3629,19 +3640,20 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     ind++;
                         if(builder->isAggrSetPredicate(aggrSetPred->getPredicateName())){
                             *out << ind++ << "for(unsigned index=0;index<tuplesU->size();){\n";
-                                *out << ind++ << "if(actualSum[uStartVar]+possibleSum[uStartVar]-tuplesU->at(index)->at(0) < "<<guard<<"){\n";
-                                    *out << ind << "int itProp = tuplesU->at(index)->getId();\n";
+                                *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesU->at(index));\n";
+                                *out << ind++ << "if(actualSum[uStartVar]+possibleSum[uStartVar]-currentTuple->at(0) < "<<guard<<"){\n";
+                                    *out << ind << "int itProp = tuplesU->at(index);\n";
                                     *out << ind++ << "if(reasonForLiteral.count(itProp) == 0){\n";
-                                        *out << ind << "const std::vector<const Tuple*>* tuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                                        *out << ind << "const std::vector<unsigned>* tuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
                                         *out << ind++ << "for(unsigned i = 0; i < tuplesF->size(); i++){\n";
-                                            *out << ind << "int it = tuplesF->at(i)->getId();\n";
+                                            *out << ind << "int it = tuplesF->at(i);\n";
                                             *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
                                         *out << --ind << "}\n";
                                         *out << ind << "reasonForLiteral[itProp].insert(startVar);\n";
                                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     // reason contains aggr_id and all aggr_set false
-                                    *out << ind << "propUndefined(tuplesU->at(index),false,propagationStack,false,propagatedLiterals);\n";
+                                    *out << ind << "propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals);\n";
                                 *out << --ind << "}else index++;\n";
                             *out << --ind << "}\n";
                         }else{
@@ -3654,19 +3666,20 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                 }
                             }
                             *out << ind++ << "for(unsigned index=0;index<tuplesU->size();index++){\n";
-                                *out << ind++ << "if(actualSum[uStartVar]+possibleSum[uStartVar]-tuplesU->at(index)->at("<<varIndex<<") < "<<guard<<"){\n";
-                                    *out << ind << "int itProp = tuplesU->at(index)->getId();\n";
+                                *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesU->at(index));\n";
+                                *out << ind++ << "if(actualSum[uStartVar]+possibleSum[uStartVar]-currentTuple->at("<<varIndex<<") < "<<guard<<"){\n";
+                                    *out << ind << "int itProp = tuplesU->at(index);\n";
                                     *out << ind++ << "if(reasonForLiteral.count(itProp) == 0){\n";
-                                        *out << ind << "const std::vector<const Tuple*>* tuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                                        *out << ind << "const std::vector<unsigned>* tuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
                                         *out << ind++ << "for(unsigned i = 0; i < tuplesF->size(); i++){\n";
-                                            *out << ind << "int it = tuplesF->at(i)->getId();\n";
+                                            *out << ind << "int it = tuplesF->at(i);\n";
                                             *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
                                         *out << --ind << "}\n";
                                         *out << ind << "reasonForLiteral[itProp].insert(startVar);\n";
                                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     // reason contains aggr_id and all aggr_set false
-                                    *out << ind << "propUndefined(tuplesU->at(index),false,propagationStack,false,propagatedLiterals);\n";
+                                    *out << ind << "propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals);\n";
                                 *out << --ind << "}\n";
                             *out << --ind << "}\n";
                         }
@@ -3676,33 +3689,33 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                         ind++;
                         if(builder->isAggrSetPredicate(aggrSetPred->getPredicateName())){
                             *out << ind++ << "while(tuplesU->size()>0){\n";
-                                *out << ind << "int itProp = tuplesU->at(0)->getId();\n";
+                                *out << ind << "int itProp = tuplesU->at(0);\n";
                                 *out << ind++ << "if(reasonForLiteral.count(itProp) == 0){\n";
-                                    *out << ind << "const std::vector<const Tuple*>* tuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                                    *out << ind << "const std::vector<unsigned>* tuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
                                     *out << ind++ << "for(unsigned i = 0; i < tuplesF->size(); i++){\n";
-                                        *out << ind << "int it = tuplesF->at(i)->getId();\n";
+                                        *out << ind << "int it = tuplesF->at(i);\n";
                                         *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
                                     *out << --ind << "}\n";
                                     *out << ind << "reasonForLiteral[itProp].insert(startVar);\n";
                                 *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                 // reason contains aggr_id and all aggr_set false
-                                *out << ind << "propUndefined(tuplesU->at(0),false,propagationStack,false,propagatedLiterals);\n";
+                                *out << ind << "propUndefined(factory.getTupleFromInternalID(tuplesU->at(0)),false,propagationStack,false,propagatedLiterals);\n";
                             *out << --ind << "}\n";
                         }else{
                             *out << ind++ << "for(unsigned index=0;index<tuplesU->size();index++){\n";
-                                *out << ind << "int itProp = tuplesU->at(index)->getId();\n";
+                                *out << ind << "int itProp = tuplesU->at(index);\n";
                                 *out << ind++ << "if(reasonForLiteral.count(itProp) == 0){\n";
-                                    *out << ind << "const std::vector<const Tuple*>* tuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                                    *out << ind << "const std::vector<unsigned>* tuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
                                     *out << ind++ << "for(unsigned i = 0; i < tuplesF->size(); i++){\n";
-                                        *out << ind << "int it = tuplesF->at(i)->getId();\n";
+                                        *out << ind << "int it = tuplesF->at(i);\n";
                                         *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
                                     *out << --ind << "}\n";
                                     *out << ind << "reasonForLiteral[itProp].insert(startVar);\n";
                                 *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                 // reason contains aggr_id and all aggr_set false
-                                *out << ind << "propUndefined(tuplesU->at(index),false,propagationStack,false,propagatedLiterals);\n";
+                                *out << ind << "propUndefined(factory.getTupleFromInternalID(tuplesU->at(index)),false,propagationStack,false,propagatedLiterals);\n";
                             *out << --ind << "}\n";
                         }
                         *out << --ind << "}\n";
@@ -3734,9 +3747,9 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
             }
         }
 
-            *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<aggrIdAtom->getPredicateName()<<"_.getValues({});\n";
-            *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<aggrIdAtom->getPredicateName()<<"_.getValues({});\n";
-            *out << ind << "const std::vector<const Tuple*>* tuplesF = &f"<<aggrIdAtom->getPredicateName()<<"_.getValues({});\n";
+            *out << ind << "const std::vector<unsigned>* tuples = &p"<<aggrIdAtom->getPredicateName()<<"_.getValues({});\n";
+            *out << ind << "const std::vector<unsigned>* tuplesU = &u"<<aggrIdAtom->getPredicateName()<<"_.getValues({});\n";
+            *out << ind << "const std::vector<unsigned>* tuplesF = &f"<<aggrIdAtom->getPredicateName()<<"_.getValues({});\n";
             //OPTIMIZATION Add if starter.isNegated
             // *out << ind << "std::cout<<\"Prop for true head\"<<std::endl;\n";
             // *out << ind << "std::cout<<\"AggrId true size: \"<<tuples->size()<<std::endl;\n";
@@ -3745,10 +3758,11 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
 
             *out << ind++ << "for(unsigned i = 0; i<tuples->size(); i++){\n";
             {
+                *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(tuples->at(i));\n";
                 std::unordered_set<std::string> boundVariables;
                 for(unsigned i = 0; i<aggrIdAtom->getAriety(); i++){
                     if(aggrIdAtom->isVariableTermAt(i) && boundVariables.count(aggrIdAtom->getTermAt(i))==0){
-                        *out << ind << "int "<<aggrIdAtom->getTermAt(i)<<" = tuples->at(i)->at("<<i<<");\n";
+                        *out << ind << "int "<<aggrIdAtom->getTermAt(i)<<" = currentTuple->at("<<i<<");\n";
                         boundVariables.insert(aggrIdAtom->getTermAt(i));
                     }
                 }
@@ -3760,14 +3774,14 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             first=false;
                         else *out <<",";
 
-                        *out << "tuples->at(i)->at("<<i<<")";
+                        *out << "currentTuple->at("<<i<<")";
                     }
                 }
                 *out << "});\n";
 
-                *out << ind << "const std::vector<const Tuple*>* joinTuples = &p"<<mapName<<".getValues(sharedVar);\n";
-                *out << ind << "const std::vector<const Tuple*>* joinTuplesU = &u"<<mapName<<".getValues(sharedVar);\n";
-                *out << ind << "int aggrIdIt=tuples->at(i)->getId();\n";
+                *out << ind << "const std::vector<unsigned>* joinTuples = &p"<<mapName<<".getValues(sharedVar);\n";
+                *out << ind << "const std::vector<unsigned>* joinTuplesU = &u"<<mapName<<".getValues(sharedVar);\n";
+                *out << ind << "int aggrIdIt=tuples->at(i);\n";
                 // *out << ind << "if(aggrIdIt == tupleToVar.end()) {std::cout<<\"Unable to find aggr id\"<<std::endl; continue;}\n";
                 if(aggregateRelation->getAggregate().isSum())
                     *out << ind++ << "if(actualSum[aggrIdIt]+possibleSum[aggrIdIt] < "<<guard<<"){\n";
@@ -3775,10 +3789,10 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     *out << ind++ << "if(joinTuples->size() + joinTuplesU->size() < "<<guard<<"){\n";
                     //*out << ind << "std::cout<<\"Conflitct on aggregate starting from true aggr id "<<r.getRuleId()<<"\"<<std::endl;\n";
                     if(fromStarter){
-                        *out << ind << "int itProp = tuples->at(i)->getId();\n";
-                        *out << ind << "const std::vector<const Tuple*>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                        *out << ind << "int itProp = tuples->at(i);\n";
+                        *out << ind << "const std::vector<unsigned>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
                         *out << ind++ << "for(unsigned j = 0; j < joinTuplesF->size(); j++){\n";
-                            *out << ind << "int it = joinTuplesF->at(j)->getId();\n";
+                            *out << ind << "int it = joinTuplesF->at(j);\n";
                             *out << ind << "reasonForLiteral[-itProp].insert(-it);\n";
                         *out << --ind << "}\n";
                         *out << ind << "handleConflict(-itProp);\n";
@@ -3792,20 +3806,21 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     ind++;
                     if(builder->isAggrSetPredicate(aggrSetPred->getPredicateName())){
                         *out << ind++ << "for(unsigned index=0; index<joinTuplesU->size();){\n";
-                            *out << ind << "if(actualSum[aggrIdIt]+possibleSum[aggrIdIt]-joinTuplesU->at(index)->at(0) >= "<<guard<<") {index++; continue;}\n";
-                            *out << ind << "int itProp = joinTuplesU->at(index)->getId();\n";
+                            *out << ind << "const Tuple* currentJoinTuple = factory.getTupleFromInternalID(joinTuplesU->at(index));\n";
+                            *out << ind << "if(actualSum[aggrIdIt]+possibleSum[aggrIdIt]-currentJoinTuple->at(0) >= "<<guard<<") {index++; continue;}\n";
+                            *out << ind << "int itProp = joinTuplesU->at(index);\n";
                             *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 ){\n";
-                                *out << ind << "const std::vector<const Tuple*>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                                *out << ind << "const std::vector<unsigned>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
                                 *out << ind++ << "for(unsigned i = 0; i < joinTuplesF->size(); i++){\n";
-                                    *out << ind << "int it =joinTuplesF->at(i)->getId();\n";
+                                    *out << ind << "int it =joinTuplesF->at(i);\n";
                                     *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
                                 *out << --ind << "}\n";
-                                *out << ind << "int itAggrId = tuples->at(i)->getId();\n";
+                                *out << ind << "int itAggrId = tuples->at(i);\n";
                                 *out << ind << "reasonForLiteral[itProp].insert(itAggrId);\n";
                             *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                             // reason contains aggr_id and all aggr_set false
-                            *out << ind << "propUndefined(joinTuplesU->at(index),false,propagationStack,false,propagatedLiterals);\n";
+                            *out << ind << "propUndefined(currentJoinTuple,false,propagationStack,false,propagatedLiterals);\n";
                         *out << --ind << "}\n";
                     }else{
                         std::string firstAggrVar = aggregateRelation->getAggregate().getAggregateVariables()[0];
@@ -3817,20 +3832,21 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             }
                         }
                         *out << ind++ << "for(unsigned index=0; index<joinTuplesU->size(); index++){\n";
-                            *out << ind << "if(actualSum[aggrIdIt]+possibleSum[aggrIdIt]-joinTuplesU->at(index)->at("<<varIndex<<") >= "<<guard<<") {index++; continue;}\n";
-                            *out << ind << "int itProp = joinTuplesU->at(index)->getId();\n";
+                            *out << ind << "const Tuple* currentJoinTuple = factory.getTupleFromInternalID(joinTuplesU->at(index));\n";
+                            *out << ind << "if(actualSum[aggrIdIt]+possibleSum[aggrIdIt]-currentJoinTuple->at("<<varIndex<<") >= "<<guard<<") {index++; continue;}\n";
+                            *out << ind << "int itProp = joinTuplesU->at(index);\n";
                             *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 ){\n";
-                                *out << ind << "const std::vector<const Tuple*>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                                *out << ind << "const std::vector<unsigned>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
                                 *out << ind++ << "for(unsigned i = 0; i < joinTuplesF->size(); i++){\n";
-                                    *out << ind << "int it = joinTuplesF->at(i)->getId();\n";
+                                    *out << ind << "int it = joinTuplesF->at(i);\n";
                                     *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
                                 *out << --ind << "}\n";
-                                *out << ind << "int itAggrId = tuples->at(i)->getId();\n";
+                                *out << ind << "int itAggrId = tuples->at(i);\n";
                                 *out << ind << "reasonForLiteral[itProp].insert(itAggrId);\n";
                             *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                             // reason contains body, aggr_id and all aggr_set false
-                            *out << ind << "propUndefined(joinTuplesU->at(index),false,propagationStack,false,propagatedLiterals);\n";
+                            *out << ind << "propUndefined(currentJoinTuple,false,propagationStack,false,propagatedLiterals);\n";
                         *out << --ind << "}\n";
                     }
                     *out << --ind << "}\n";
@@ -3840,35 +3856,35 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     ind++;
                     if(builder->isAggrSetPredicate(aggrSetPred->getPredicateName())){
                         *out << ind++ << "while(joinTuplesU->size()>0){\n";
-                            *out << ind << "int itProp = joinTuplesU->at(0)->getId();\n";
+                            *out << ind << "int itProp = joinTuplesU->at(0);\n";
                             *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 ){\n";
-                                *out << ind << "const std::vector<const Tuple*>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                                *out << ind << "const std::vector<unsigned>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
                                 *out << ind++ << "for(unsigned i = 0; i < joinTuplesF->size(); i++){\n";
-                                    *out << ind << "int it = joinTuplesF->at(i)->getId();\n";
+                                    *out << ind << "int it = joinTuplesF->at(i);\n";
                                     *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
                                 *out << --ind << "}\n";
-                                *out << ind << "int itAggrId = tuples->at(i)->getId();\n";
+                                *out << ind << "int itAggrId = tuples->at(i);\n";
                                 *out << ind << "reasonForLiteral[itProp].insert(itAggrId);\n";
                             *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                             // reason contains body, aggr_id and all aggr_set false
-                            *out << ind << "propUndefined(joinTuplesU->at(0),false,propagationStack,false,propagatedLiterals);\n";
+                            *out << ind << "propUndefined(factory.getTupleFromInternalID(joinTuplesU->at(0)),false,propagationStack,false,propagatedLiterals);\n";
                         *out << --ind << "}\n";
                     }else{
                         *out << ind++ << "for(unsigned index=0; index<joinTuplesU->size(); index++){\n";
-                            *out << ind << "int itProp = joinTuplesU->at(index)->getId();\n";
+                            *out << ind << "int itProp = joinTuplesU->at(index);\n";
                             *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 ){\n";
-                                *out << ind << "const std::vector<const Tuple*>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                                *out << ind << "const std::vector<unsigned>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
                                 *out << ind++ << "for(unsigned i = 0; i < joinTuplesF->size(); i++){\n";
-                                    *out << ind << "int it = joinTuplesF->at(i)->getId();\n";
+                                    *out << ind << "int it = joinTuplesF->at(i);\n";
                                     *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
                                 *out << --ind << "}\n";
-                                *out << ind << "int itAggrId = tuples->at(i)->getId();\n";
+                                *out << ind << "int itAggrId = tuples->at(i);\n";
                                 *out << ind << "reasonForLiteral[itProp].insert(itAggrId);\n";
                             *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                             // reason contains body, aggr_id and all aggr_set false
-                            *out << ind << "propUndefined(joinTuplesU->at(index),false,propagationStack,false,propagatedLiterals);\n";
+                            *out << ind << "propUndefined(factory.getTupleFromInternalID(joinTuplesU->at(index)),false,propagationStack,false,propagatedLiterals);\n";
                         *out << --ind << "}\n";
                     }
 
@@ -3881,10 +3897,11 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
             // *out << ind << "std::cout<<\"Prop for false head\"<<std::endl;\n";
             *out << ind++ << "for(unsigned i = 0; i<tuplesF->size(); i++){\n";
             {
+                *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesF->at(i));\n";
                 std::unordered_set<std::string> boundVariables;
                 for(unsigned i = 0; i<aggrIdAtom->getAriety(); i++){
                     if(aggrIdAtom->isVariableTermAt(i) && boundVariables.count(aggrIdAtom->getTermAt(i))==0){
-                        *out << ind << "int "<<aggrIdAtom->getTermAt(i)<<" = tuplesF->at(i)->at("<<i<<");\n";
+                        *out << ind << "int "<<aggrIdAtom->getTermAt(i)<<" = currentTuple->at("<<i<<");\n";
                         boundVariables.insert(aggrIdAtom->getTermAt(i));
                     }
                 }
@@ -3896,14 +3913,14 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             first=false;
                         else *out <<",";
 
-                        *out << "tuplesF->at(i)->at("<<i<<")";
+                        *out << "currentTuple->at("<<i<<")";
                     }
                 }
                 *out << "});\n";
 
-                *out << ind << "const std::vector<const Tuple*>* joinTuples = &p"<<mapName<<".getValues(sharedVar);\n";
-                *out << ind << "const std::vector<const Tuple*>* joinTuplesU = &u"<<mapName<<".getValues(sharedVar);\n";
-                *out << ind << "int aggrIdIt=tuplesF->at(i)->getId();\n";
+                *out << ind << "const std::vector<unsigned>* joinTuples = &p"<<mapName<<".getValues(sharedVar);\n";
+                *out << ind << "const std::vector<unsigned>* joinTuplesU = &u"<<mapName<<".getValues(sharedVar);\n";
+                *out << ind << "int aggrIdIt=tuplesF->at(i);\n";
                 // *out << ind << "std::cout<<\"ActualSum: \"<<actualSum[aggrIdIt]<<std::endl;\n";
                 // *out << ind << "if(aggrIdIt == tupleToVar.end()) {std::cout<<\"Unable to find aggr id\"<<std::endl; continue;}\n";
                 if(aggregateRelation->getAggregate().isSum())
@@ -3912,9 +3929,9 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     *out << ind++ << "if(joinTuples->size() >= "<<guard<<"){\n";
                     //*out << ind << "std::cout<<\"Conflitct on aggregate starting from false aggr id "<<r.getRuleId()<<"\"<<actualSum[aggrIdIt]<<std::endl;\n";
                     if(fromStarter){
-                        *out << ind << "int itProp = tuplesF->at(i)->getId();\n";
+                        *out << ind << "int itProp = tuplesF->at(i);\n";
                         *out << ind++ << "for(unsigned j =0; j< joinTuples->size(); j++){\n";
-                            *out << ind << "int it = joinTuples->at(j)->getId();\n";
+                            *out << ind << "int it = joinTuples->at(j);\n";
                             *out << ind << "reasonForLiteral[itProp].insert(it);\n";
                         *out << --ind << "}\n";
                         *out << ind << "handleConflict(itProp);\n";
@@ -3934,22 +3951,25 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     if(builder->isAggrSetPredicate(aggrSetPred->getPredicateName())){
                         if(aggregateRelation->getAggregate().isSum()){
                             *out << ind++ << "for(unsigned index=0;index<joinTuplesU->size();){\n";
-                                *out << ind << "int itProp = joinTuplesU->at(index)->getId();\n";
-                                *out << ind++ << "if(actualSum[aggrIdIt]+joinTuplesU->at(index)->at(0) >= "<<guard<<"){\n";
+                                *out << ind << "int itProp = joinTuplesU->at(index);\n";
+                                *out << ind << "const Tuple* currentJoinTuple = factory.getTupleFromInternalID(joinTuplesU->at(index));\n";
+                                *out << ind++ << "if(actualSum[aggrIdIt]+currentJoinTuple->at(0) >= "<<guard<<"){\n";
 
                         }else{
                             *out << ind++ << "while(!joinTuplesU->empty()){\n";
-                                *out << ind << "int itProp = joinTuplesU->at(0)->getId();\n";
+                                *out << ind << "int itProp = joinTuplesU->at(0);\n";
+                                *out << ind << "const Tuple* currentJoinTuple = factory.getTupleFromInternalID(joinTuplesU->at(0));\n";
+                                
                         }
 
                             *out << ind++ << "if(reasonForLiteral.count(-itProp) == 0 ){\n";
                                 *out << ind++ << "if(reason.empty()){\n";
                                     *out << ind++ << "for(unsigned i =0; i< joinTuples->size(); i++){\n";
-                                        *out << ind << "int it = joinTuples->at(i)->getId();\n";
+                                        *out << ind << "int it = joinTuples->at(i);\n";
                                         *out << ind << "reason.push_back(it);\n";
                                         *out << ind << "reasonForLiteral[-itProp].insert(it);\n";
                                     *out << --ind << "}\n";
-                                    *out << ind << "int it = tuplesF->at(i)->getId();\n";
+                                    *out << ind << "int it = tuplesF->at(i);\n";
                                     *out << ind << "reason.push_back(-it);\n";
                                     *out << ind << "reasonForLiteral[-itProp].insert(-it);\n";
                                 *out << --ind << "}else{\n";
@@ -3960,14 +3980,16 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                             if(aggregateRelation->getAggregate().isSum()){
-                                *out << ind << "propUndefined(joinTuplesU->at(index),false,propagationStack,true,propagatedLiterals);\n";
+                                *out << ind << "propUndefined(currentJoinTuple,false,propagationStack,true,propagatedLiterals);\n";
                                 *out << --ind << "}else index++;\n";
                             }
                             else
-                                *out << ind << "propUndefined(joinTuplesU->at(0),false,propagationStack,true,propagatedLiterals);\n";
+                                *out << ind << "propUndefined(factory.getTupleFromInternalID(joinTuplesU->at(0)),false,propagationStack,true,propagatedLiterals);\n";
                         *out << --ind << "}\n";
                     }else{
                         *out << ind++ << "for(unsigned index=0; index<joinTuplesU->size(); index++){\n";
+                            *out << ind << "const Tuple* currentJoinTuple = factory.getTupleFromInternalID(joinTuplesU->at(index));\n";
+
                         if(aggregateRelation->getAggregate().isSum()){
                             std::string firstAggrVar = aggregateRelation->getAggregate().getAggregateVariables()[0];
                             unsigned varIndex = 0;
@@ -3977,17 +3999,17 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                     break;
                                 }
                             }
-                            *out << ind++ << "if(actualSum[aggrIdIt]+joinTuplesU->at(index)->at("<<varIndex<<") >= "<<guard<<"){\n";
+                            *out << ind++ << "if(actualSum[aggrIdIt]+currentJoinTuple->at("<<varIndex<<") >= "<<guard<<"){\n";
                         }
-                            *out << ind << "int itProp = joinTuplesU->at(index)->getId();\n";
+                            *out << ind << "int itProp = joinTuplesU->at(index);\n";
                             *out << ind++ << "if(reasonForLiteral.count(-itProp) == 0 ){\n";
                                 *out << ind++ << "if(reason.empty()){\n";
                                     *out << ind++ << "for(unsigned i =0; i< joinTuples->size(); i++){\n";
-                                        *out << ind << "int it = joinTuples->at(i)->getId();\n";
+                                        *out << ind << "int it = joinTuples->at(i);\n";
                                         *out << ind << "reason.push_back(it);\n";
                                         *out << ind << "reasonForLiteral[-itProp].insert(it);\n";
                                     *out << --ind << "}\n";
-                                    *out << ind << "int it = tuplesF->at(i)->getId();\n";
+                                    *out << ind << "int it = tuplesF->at(i);\n";
                                     *out << ind << "reason.push_back(-it);\n";
                                     *out << ind << "reasonForLiteral[-itProp].insert(-it);\n";
                                 *out << --ind << "}else{\n";
@@ -3997,7 +4019,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                 *out << --ind << "}\n";
                             *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
-                            *out << ind << "propUndefined(joinTuplesU->at(index),false,propagationStack,true,propagatedLiterals);\n";
+                            *out << ind << "propUndefined(currentJoinTuple,false,propagationStack,true,propagatedLiterals);\n";
                         *out << --ind << "}\n";
                         if(aggregateRelation->getAggregate().isSum()){
                             *out << --ind << "}\n";
@@ -4010,10 +4032,11 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
 
             *out << ind++ << "for(unsigned i = 0; i<tuplesU->size();){\n";
             {
+                *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesU->at(i));\n";
                 std::unordered_set<std::string> boundVariables;
                 for(unsigned i = 0; i<aggrIdAtom->getAriety(); i++){
                     if(aggrIdAtom->isVariableTermAt(i) && boundVariables.count(aggrIdAtom->getTermAt(i))==0){
-                        *out << ind << "int "<<aggrIdAtom->getTermAt(i)<<" = tuplesU->at(i)->at("<<i<<");\n";
+                        *out << ind << "int "<<aggrIdAtom->getTermAt(i)<<" = currentTuple->at("<<i<<");\n";
                         boundVariables.insert(aggrIdAtom->getTermAt(i));
                     }
                 }
@@ -4024,44 +4047,44 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                         if(first)
                             first=false;
                         else *out <<",";
-                        *out << "tuplesU->at(i)->at("<<i<<")";
+                        *out << "currentTuple->at("<<i<<")";
                     }
                 }
                 *out << "});\n";
 
-                *out << ind << "const std::vector<const Tuple*>* joinTuples = &p"<<mapName<<".getValues(sharedVar);\n";
-                *out << ind << "const std::vector<const Tuple*>* joinTuplesU = &u"<<mapName<<".getValues(sharedVar);\n";
-                *out << ind << "int aggrIdIt=tuplesU->at(i)->getId();\n";
+                *out << ind << "const std::vector<unsigned>* joinTuples = &p"<<mapName<<".getValues(sharedVar);\n";
+                *out << ind << "const std::vector<unsigned>* joinTuplesU = &u"<<mapName<<".getValues(sharedVar);\n";
+                *out << ind << "int aggrIdIt=tuplesU->at(i);\n";
                 // *out << ind << "if(aggrIdIt == tupleToVar.end()) {std::cout<<\"Unable to find aggr id\"<<std::endl; continue;}\n";
                 if(aggregateRelation->getAggregate().isSum())
                     *out << ind++ << "if(actualSum[aggrIdIt] >= "<<guard<<"){\n";
                 else
                     *out << ind++ << "if(joinTuples->size() >= "<<guard<<"){\n";
 
-                    *out << ind << "int itProp = tuplesU->at(i)->getId();\n";
+                    *out << ind << "int itProp = tuplesU->at(i);\n";
                     *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 ){\n";
                         *out << ind++ << "for(unsigned j = 0; j < joinTuples->size(); j++){\n";
-                            *out << ind << "int it = joinTuples->at(j)->getId();\n";
+                            *out << ind << "int it = joinTuples->at(j);\n";
                             *out << ind << "reasonForLiteral[itProp].insert(it);\n";
                         *out << --ind << "}\n";
                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
-                    *out << ind << "propUndefined(tuplesU->at(i),false,propagationStack,false,propagatedLiterals);\n";
+                    *out << ind << "propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals);\n";
                 if(aggregateRelation->getAggregate().isSum())
                     *out << --ind << "}else if(actualSum[aggrIdIt] + possibleSum[aggrIdIt] < "<<guard<<"){\n";
                 else
                     *out << --ind << "}else if(joinTuples->size() + joinTuplesU->size() < "<<guard<<"){\n";
                 ind++;
-                    *out << ind << "int itProp = tuplesU->at(i)->getId();\n";
+                    *out << ind << "int itProp = tuplesU->at(i);\n";
                     *out << ind++ << "if(reasonForLiteral.count(-itProp) == 0 ){\n";
-                        *out << ind << "const std::vector<const Tuple*>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                        *out << ind << "const std::vector<unsigned>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
                         *out << ind++ << "for(unsigned j = 0; j < joinTuplesF->size(); j++){\n";
-                            *out << ind << "int it = joinTuplesF->at(j)->getId();\n";
+                            *out << ind << "int it = joinTuplesF->at(j);\n";
                             *out << ind << "reasonForLiteral[-itProp].insert(-it);\n";
                         *out << --ind << "}\n";
                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
-                    *out << ind << "propUndefined(tuplesU->at(i),false,propagationStack,true,propagatedLiterals);\n";
+                    *out << ind << "propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals);\n";
                 *out << --ind << "}else{\n";
                 ind++;
                     *out << ind << "i++;\n";
@@ -4162,12 +4185,12 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                     *out << --ind << "}\n";
                                 *out << --ind << "}\n";
                             }else{
-                                *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
+                                *out << ind << "const std::vector<unsigned>* tuples = &p"<<l->getPredicateName()<<"_";
                                 for(unsigned k : boundIndices){
                                     *out << k << "_";
                                 }
                                 *out << ".getValues({"<<boundTerms<<"});\n";
-                                *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<l->getPredicateName()<<"_";
+                                *out << ind << "const std::vector<unsigned>* tuplesU = &u"<<l->getPredicateName()<<"_";
                                 for(unsigned k : boundIndices){
                                     *out << k << "_";
                                 }
@@ -4176,48 +4199,48 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                     *out << ind++ << "if(tuples->size()==0 && tuplesU->size()==0){\n";
                                         //*out << ind << "std::cout<<\"Conflict: unable to find support for true head "<<r.getRuleId()<<"\"<<std::endl;\n";
                                         *out << ind << "int itHead = head->getId();\n";
-                                        *out << ind << "const std::vector<const Tuple*>* tuplesF = &f"<<l->getPredicateName()<<"_";
+                                        *out << ind << "const std::vector<unsigned>* tuplesF = &f"<<l->getPredicateName()<<"_";
                                         for(unsigned k : boundIndices){
                                             *out << k << "_";
                                         }
                                         *out << ".getValues({"<<boundTerms<<"});\n";
                                         *out << ind++ << "for(unsigned i=0;i<tuplesF->size();i++){\n";
-                                            *out << ind << "int it = tuplesF->at(i)->getId();\n";
+                                            *out << ind << "int it = tuplesF->at(i);\n";
                                             *out << ind << "reasonForLiteral[-itHead].insert(-it);\n";
                                         *out << --ind << "}\n";
                                         *out << ind << "handleConflict(-itHead);\n";
                                         *out << ind << "return;\n";
                                     *out << --ind << "}else if(tuples->size() == 0 && tuplesU->size() == 1){\n";
                                     ind++;
-                                        *out << ind << "int itProp = tuplesU->at(0)->getId();\n";
+                                        *out << ind << "int itProp = tuplesU->at(0);\n";
                                         *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 ){\n";
-                                            *out << ind << "const std::vector<const Tuple*>* tuplesF = &f"<<l->getPredicateName()<<"_";
+                                            *out << ind << "const std::vector<unsigned>* tuplesF = &f"<<l->getPredicateName()<<"_";
                                             for(unsigned k : boundIndices){
                                                 *out << k << "_";
                                             }
                                             *out << ".getValues({"<<boundTerms<<"});\n";
                                             *out << ind++ << "for(unsigned i=0;i<tuplesF->size();i++){\n";
-                                                *out << ind << "int it = tuplesF->at(i)->getId();\n";
+                                                *out << ind << "int it = tuplesF->at(i);\n";
                                                 *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
                                             *out << --ind << "}\n";
                                             *out << ind << "int it = head->getId();\n";
                                             *out << ind << "reasonForLiteral[itProp].insert(it);\n";
                                         *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
-                                        *out << ind << "propUndefined(tuplesU->at(0),false,propagationStack,false,propagatedLiterals);\n";
+                                        *out << ind << "propUndefined(factory.getTupleFromInternalID(tuplesU->at(0)),false,propagationStack,false,propagatedLiterals);\n";
                                     *out << --ind << "}\n";
                                 *out << --ind << "}else{\n";
                                 ind++;
                                     *out << ind++ << "if(head != NULL && head->isUndef() && tuples->size() == 0 && tuplesU->size() == 0){\n";
                                         *out << ind << "int itHead = head->getId();\n";
                                         *out << ind++ << "if(reasonForLiteral.count(-itHead) == 0 ){\n";
-                                            *out << ind << "const std::vector<const Tuple*>* tuplesF = &f"<<l->getPredicateName()<<"_";
+                                            *out << ind << "const std::vector<unsigned>* tuplesF = &f"<<l->getPredicateName()<<"_";
                                             for(unsigned k : boundIndices){
                                                 *out << k << "_";
                                             }
                                             *out << ".getValues({"<<boundTerms<<"});\n";
                                             *out << ind++ << "for(unsigned i=0;i<tuplesF->size();i++){\n";
-                                                *out << ind << "int it = tuplesF->at(i)->getId();\n";
+                                                *out << ind << "int it = tuplesF->at(i);\n";
                                                 *out << ind << "reasonForLiteral[-itHead].insert(-it);\n";
                                             *out << --ind << "}\n";
                                         *out << --ind << "}\n";
@@ -4293,25 +4316,25 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                 *out << --ind << "}\n";
                             *out << --ind << "}\n";
                         }else{
-                            *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
+                            *out << ind << "const std::vector<unsigned>* tuples = &p"<<l->getPredicateName()<<"_";
                             for(unsigned k : boundIndices){
                                 *out << k << "_";
                             }
                             *out << ".getValues({"<<boundTerms<<"});\n";
-                            *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<l->getPredicateName()<<"_";
+                            *out << ind << "const std::vector<unsigned>* tuplesU = &u"<<l->getPredicateName()<<"_";
                             for(unsigned k : boundIndices){
                                 *out << k << "_";
                             }
                             *out << ".getValues({"<<boundTerms<<"});\n";
                             *out << ind++ << "if(startVar > 0){\n";
                                 *out << ind++ << "if(tuples->size() == 0 && tuplesU->size() == 0){\n";
-                                    *out << ind << "const std::vector<const Tuple*>* tuplesF = &f"<<l->getPredicateName()<<"_";
+                                    *out << ind << "const std::vector<unsigned>* tuplesF = &f"<<l->getPredicateName()<<"_";
                                     for(unsigned k : boundIndices){
                                         *out << k << "_";
                                     }
                                     *out << ".getValues({"<<boundTerms<<"});\n";
                                     *out << ind++ << "for(unsigned i=0; i<tuplesF->size(); i++){\n";
-                                        *out << ind << "int it = tuplesF->at(i)->getId();\n";
+                                        *out << ind << "int it = tuplesF->at(i);\n";
                                         *out << ind << "reasonForLiteral[-startVar].insert(-it);\n";
                                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"conflict on rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -4319,22 +4342,23 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                     *out << ind << "return;\n";
                                 *out << --ind << "}else if(tuples->size() == 0 && tuplesU->size()==1){\n";
                                 ind++;
-                                    bool checkFormat=checkTupleFormat(*l,"tuplesU->at(0)",true);
-                                    *out << ind << "int itProp = tuplesU->at(0)->getId();\n";
+                                    *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesU->at(0));\n";
+                                    bool checkFormat=checkTupleFormat(*l,"currentTuple",true);
+                                    *out << ind << "int itProp = tuplesU->at(0);\n";
                                     *out << ind++ << "if(reasonForLiteral.count(itProp) == 0){\n";
-                                        *out << ind << "const std::vector<const Tuple*>* tuplesF = &f"<<l->getPredicateName()<<"_";
+                                        *out << ind << "const std::vector<unsigned>* tuplesF = &f"<<l->getPredicateName()<<"_";
                                         for(unsigned k : boundIndices){
                                             *out << k << "_";
                                         }
                                         *out << ".getValues({"<<boundTerms<<"});\n";
                                         *out << ind++ << "for(unsigned i=0; i<tuplesF->size(); i++){\n";
-                                            *out << ind << "int it = tuplesF->at(i)->getId();\n";
+                                            *out << ind << "int it = tuplesF->at(i);\n";
                                             *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
                                         *out << --ind << "}\n";
                                         *out << ind << "reasonForLiteral[itProp].insert(startVar);\n";
                                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
-                                    *out << ind << "propUndefined(tuplesU->at(0),false,propagationStack,false,propagatedLiterals);\n";
+                                    *out << ind << "propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals);\n";
                                     if(checkFormat)
                                     *out << --ind << "}\n";
                                 *out << --ind << "}\n";
@@ -4342,7 +4366,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                             ind++;
                                 *out << ind++ << "if(tuples->size()>0){\n";
                                     //*out << ind << "std::cout<<\"Conflict: support found for negative head "<<r.getRuleId()<<"\"<<std::endl;\n";
-                                    *out << ind << "int it = tuples->at(0)->getId();\n";
+                                    *out << ind << "int it = tuples->at(0);\n";
                                     *out << ind << "reasonForLiteral[-it].insert(startVar);\n";
                                     *out << ind << "handleConflict(-it);\n";
                                     *out << ind << "return;\n";
@@ -4351,7 +4375,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                     //NOTICE WORKS ONLY IF LITERALS WILL BE REMOVED FROM UNDEF IN PROP FUNCTION
                                     if(builder->isAuxPredicate(l->getPredicateName())){
                                         *out << ind++ << "while(!tuplesU->empty()){\n";
-                                            *out << ind << "int it = tuplesU->back()->getId();\n";
+                                            *out << ind << "int it = tuplesU->back();\n";
 
                                             //ONLY FOR DEBUG
                                             // *out << ind << "unsigned size = tuplesU->size();\n";
@@ -4360,7 +4384,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                                 *out << ind-- << "reasonForLiteral[-it].insert(startVar);\n";
                                             // *out << ind << "unsigned previousSize = tuplesU->size();\n";
                                 //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
-                                            *out << ind << "propUndefined(tuplesU->back(),false,propagationStack,true,propagatedLiterals);\n";
+                                            *out << ind << "propUndefined(factory.getTupleFromInternalID(tuplesU->back()),false,propagationStack,true,propagatedLiterals);\n";
                                             // *out << ind << "if(presiousSize-propIndex==0) break;\n";
                                             // *out << ind++ << "if(previousSize==tupleU->size())\n";
                                             //     *out << ind-- << "propIndex++;\n";
@@ -4370,11 +4394,11 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                         *out << --ind << "}\n";
                                     }else{
                                         *out << ind++ << "for(unsigned i =0; i<tuplesU->size(); i++){\n";
-                                            *out << ind << "int it = tuplesU->at(i)->getId();\n";
+                                            *out << ind << "int it = tuplesU->at(i);\n";
                                             *out << ind++ << "if(reasonForLiteral.count(-it) == 0 )\n";
                                                 *out << ind-- << "reasonForLiteral[-it].insert(startVar);\n";
                                 //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
-                                            *out << ind << "propUndefined(tuplesU->at(i),false,propagationStack,true,propagatedLiterals);\n";
+                                            *out << ind << "propUndefined(factory.getTupleFromInternalID(tuplesU->at(i)),false,propagationStack,true,propagatedLiterals);\n";
                                         *out << --ind << "}\n";
                                     }
 
@@ -4398,9 +4422,9 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
             {
                 //print support propagation
                 std::unordered_set<std::string> boundVariables;
-                *out << ind << "const std::vector<const Tuple*>* trueHeads = &p"<<head->getPredicateName()<<"_.getValues({});\n";
+                *out << ind << "const std::vector<unsigned>* trueHeads = &p"<<head->getPredicateName()<<"_.getValues({});\n";
                 *out << ind++ << "for(unsigned i = 0; i < trueHeads->size(); i++){\n";
-                    *out << ind << "const Tuple* head = trueHeads->at(i);\n";
+                    *out << ind << "const Tuple* head = factory.getTupleFromInternalID(trueHeads->at(i));\n";
                     for(unsigned k = 0; k<head->getAriety(); k++){
                         if(head->isVariableTermAt(k) && boundVariables.count(head->getTermAt(k))==0){
                             *out << ind << "int "<<head->getTermAt(k)<<" = head->at("<<k<<");\n";
@@ -4442,13 +4466,13 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
 
                     }else{
 
-                        *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
+                        *out << ind << "const std::vector<unsigned>* tuples = &p"<<l->getPredicateName()<<"_";
                         for(unsigned k: boundIndices){
                             *out << k << "_";
                         }
                         *out << ".getValues({"<<boundTerms<<"});\n";
 
-                        *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<l->getPredicateName()<<"_";
+                        *out << ind << "const std::vector<unsigned>* tuplesU = &u"<<l->getPredicateName()<<"_";
                         for(unsigned k: boundIndices){
                             *out << k << "_";
                         }
@@ -4461,7 +4485,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                             *out << --ind << "}else if(tuplesU->size() == 1){\n";
                             ind++;
                                 //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
-                                *out << ind << "propUndefined(tuplesU->at(0),false,propagationStack,false,propagatedLiterals);\n";
+                                *out << ind << "propUndefined(factory.getTupleFromInternalID(tuplesU->at(0)),false,propagationStack,false,propagatedLiterals);\n";
                                 // *out << ind << "const auto & it = tupleToVar.find(*head);\n";
                                 // *out << ind++ << "if(it != tupleToVar.end()){\n";
                                 //     // *out << ind << "supportedLiterals[it->second]=currentDecisionLevel;\n";
@@ -4482,9 +4506,9 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
             {
                 //print false head propagation
                 std::unordered_set<std::string> boundVariables;
-                *out << ind << "const std::vector<const Tuple*>* undefHeads = &u"<<head->getPredicateName()<<"_.getValues({});\n";
+                *out << ind << "const std::vector<unsigned>* undefHeads = &u"<<head->getPredicateName()<<"_.getValues({});\n";
                 *out << ind++ << "for(unsigned i = 0; i < undefHeads->size(); i++){\n";
-                    *out << ind << "const Tuple* head = undefHeads->at(i);\n";
+                    *out << ind << "const Tuple* head = factory.getTupleFromInternalID(undefHeads->at(i));\n";
                     for(unsigned k = 0; k<head->getAriety(); k++){
                         if(head->isVariableTermAt(k) && boundVariables.count(head->getTermAt(k))==0){
                             *out << ind << "int "<<head->getTermAt(k)<<" = head->at("<<k<<");\n";
@@ -4520,7 +4544,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
 
 
                     }else{
-                        *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
+                        *out << ind << "const std::vector<unsigned>* tuples = &p"<<l->getPredicateName()<<"_";
                         for(unsigned k: boundIndices){
                             *out << k << "_";
                         }
@@ -4528,7 +4552,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
 
                         *out << ind++ << "if(tuples->size() == 0){\n";
 
-                            *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<l->getPredicateName()<<"_";
+                            *out << ind << "const std::vector<unsigned>* tuplesU = &u"<<l->getPredicateName()<<"_";
                             for(unsigned k: boundIndices){
                                 *out << k << "_";
                             }
@@ -4555,9 +4579,9 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
             {
                 //print false head propagation
                 std::unordered_set<std::string> boundVariables;
-                *out << ind << "const std::vector<const Tuple*>* falseHeads = &f"<<head->getPredicateName()<<"_.getValues({});\n";
+                *out << ind << "const std::vector<unsigned>* falseHeads = &f"<<head->getPredicateName()<<"_.getValues({});\n";
                 *out << ind++ << "for(unsigned i = 0; i < falseHeads->size(); i++){\n";
-                    *out << ind << "const Tuple* head = falseHeads->at(i);\n";
+                    *out << ind << "const Tuple* head = factory.getTupleFromInternalID(falseHeads->at(i));\n";
                     for(unsigned k = 0; k<head->getAriety(); k++){
                         if(head->isVariableTermAt(k) && boundVariables.count(head->getTermAt(k))==0){
                             *out << ind << "int "<<head->getTermAt(k)<<" = head->at("<<k<<");\n";
@@ -4587,7 +4611,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                             *out << ind << "propagatedLiterals.insert(-1);\n";
                         *out << --ind << "}\n";
                     }else{
-                        *out << ind << "const std::vector<const Tuple*>* tuples = &p"<<l->getPredicateName()<<"_";
+                        *out << ind << "const std::vector<unsigned>* tuples = &p"<<l->getPredicateName()<<"_";
                         for(unsigned k: boundIndices){
                             *out << k << "_";
                         }
@@ -4595,7 +4619,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
 
                         *out << ind++ << "if(tuples->size() == 0){\n";
 
-                            *out << ind << "const std::vector<const Tuple*>* tuplesU = &u"<<l->getPredicateName()<<"_";
+                            *out << ind << "const std::vector<unsigned>* tuplesU = &u"<<l->getPredicateName()<<"_";
                             for(unsigned k: boundIndices){
                                 *out << k << "_";
                             }
@@ -4603,7 +4627,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                             //NOTICE WORKS ONLY IF PROP UNDEF REMOVES TUPLES FROM UNDEF
                             *out << ind++ << "for(unsigned j = 0; j < tuplesU->size();){\n";
                             //*out << ind << "std::cout<<\"propagation from rule "<<r.getRuleId()<<"\"<<std::endl;\n";
-                                *out << ind << "propUndefined(tuplesU->at(j),false,propagationStack,true,propagatedLiterals);\n";
+                                *out << ind << "propUndefined(factory.getTupleFromInternalID(tuplesU->at(j)),false,propagationStack,true,propagatedLiterals);\n";
                             *out << --ind << "}\n";
 
                         *out << --ind << "}else{\n";

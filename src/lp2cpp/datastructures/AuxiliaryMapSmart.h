@@ -29,10 +29,10 @@
 #include <vector>
 #include <unordered_map>
 #include <cmath>
-#include "TupleWithoutReasons.h"
+#include "TupleLight.h"
 #include <bitset>
 const long SHIFT = sizeof(int)*CHAR_BIT;
-template<class T, size_t S>
+template<size_t S>
 class AuxiliaryMapSmart {
 public:
 
@@ -42,16 +42,8 @@ public:
 
     virtual ~AuxiliaryMapSmart() {
     }
-    
-    // inline int keySetSize(){
-    //     int size = lookupReferences.size();
-    //     for(auto it = lookupReferences.begin(); it!=lookupReferences.end();it++){
-    //         if(it->empty())
-    //             size--;
-    //     }
-    //     return size;
-    // }
-    inline const std::vector< const T* >& getValues(const std::vector<int>& key) const {
+
+    inline const std::vector< unsigned >& getValues(const std::vector<int>& key) const {
         std::bitset<S> keyCode;
         valueToPos(key,keyCode);
         const auto it = tuples.find(keyCode);
@@ -61,14 +53,14 @@ public:
         return it->second;
     }
 
-    inline void insert2(const T & value) {
+    inline void insert2(const TupleLight & value) {
         
         std::bitset<S> keyCode;
         std::vector<int> key = getKey(value);
         valueToPos(key,keyCode);
         auto & collisionList = tuples[keyCode];
         value.setCollisionListIndex(&collisionList, collisionList.size());
-        collisionList.push_back(&value);
+        collisionList.push_back(value.getId());
     }
     void print(){
         for(const auto& pair:tuples){
@@ -101,7 +93,7 @@ protected:
         }
     }
     
-    std::vector<int> getKey(const T& value){
+    std::vector<int> getKey(const TupleLight& value){
         std::vector<int> key(keySize);
         for (unsigned i = 0; i < keySize; i++) {
             key[i] = value[keyIndices[i]];
@@ -109,16 +101,16 @@ protected:
         return key;
     }
     
-    std::unordered_map<std::bitset<S>, std::vector< const T* > > tuples;
+    std::unordered_map<std::bitset<S>, std::vector< unsigned > > tuples;
     unsigned keySize;
     std::vector<unsigned> keyIndices;
-    static const std::vector< const T* > EMPTY_RESULT;
+    static const std::vector< unsigned > EMPTY_RESULT;
 
 
 };
 
-template<class T,size_t S>
-const std::vector< const T* > AuxiliaryMapSmart<T,S>::EMPTY_RESULT;
+template<size_t S>
+const std::vector< unsigned > AuxiliaryMapSmart<S>::EMPTY_RESULT;
 
 
 #endif /* AUXILIARYMAPSMART_H */

@@ -5,8 +5,8 @@
 #include <unordered_set>
 #include "TupleLight.h"
 #include <iostream>
-using namespace std;
 
+using namespace std;
 class SmartTuple {
     public:
         SmartTuple(const SmartTuple& t):realTuple(t.realTuple){
@@ -44,14 +44,6 @@ class SmartTuple {
         }
         const std::string* getPredicateName() const {
             return realTuple->getPredicateName();
-        }
-
-        bool isNegated() const {
-            return realTuple->isNegated();
-        }
-
-        void setNegated(bool negated) {
-            realTuple->setNegated(negated);
         }
 
         unsigned getId() const {

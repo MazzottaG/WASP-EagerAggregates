@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include "SmartTuple.h"
 #include <list>
+#include <cassert>
 
 class TupleFactory{
     private:
@@ -82,11 +83,8 @@ class TupleFactory{
 
         }
 
-        TupleLight* getTupleFromInternalID(int id){
-            if(id<=internalIDToTuple.size())
-                return internalIDToTuple[id-1].getReal();
-            return NULL;
-        }
+        TupleLight* getTupleFromInternalID(int id)const;
+
         void print()const {
             for(auto pair : waspIDToTuple){
                 std::cout<<"Wasp id: "<<pair.first<<" ";
