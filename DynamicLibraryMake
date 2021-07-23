@@ -5,8 +5,11 @@ all: executor
 
 executor: Executor.so
 
-Executor.so: $(SRC_FOLDER)Executor.cpp Literal.o ConstantsManager.o Atom.o SharedFunctions.o InputDirector.o AspCore2InstanceBuilder.o
+Executor.so: $(SRC_FOLDER)Executor.cpp TupleFactory.o Literal.o ConstantsManager.o Atom.o SharedFunctions.o InputDirector.o AspCore2InstanceBuilder.o
 	g++ $(COMMON_FLAGS) -shared $(SRC_FOLDER)Executor.cpp Literal.o ConstantsManager.o Atom.o SharedFunctions.o InputDirector.o  AspCore2InstanceBuilder.o -o Executor.so 
+
+TupleFactory.o: $(SRC_FOLDER)datastructures/TupleFactory.cpp $(SRC_FOLDER)datastructures/TupleFactory.h
+	g++ $(COMMON_FLAGS) -c $(SRC_FOLDER)language/Literal.cpp
 
 Literal.o: $(SRC_FOLDER)language/Literal.cpp $(SRC_FOLDER)language/Literal.h
 	g++ $(COMMON_FLAGS) -c $(SRC_FOLDER)language/Literal.cpp
