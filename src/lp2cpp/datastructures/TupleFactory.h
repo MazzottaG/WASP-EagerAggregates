@@ -155,6 +155,6 @@ class TupleFactory{
             std::cout<<storage.size()<<std::endl;
         }
 };
-TupleLight TupleFactory::bufferTuple;
+
 
 #endif

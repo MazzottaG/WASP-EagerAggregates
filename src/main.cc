@@ -134,7 +134,7 @@ int main( int argc, char** argv )
         execManager.launchExecutorOnFile(argv[3]);
         return 0;
     }
-    bool readFromFile = true;
+    bool readFromFile = false;
     
 #ifdef EAGER_DEBUG 
     readFromFile = true;
