@@ -134,10 +134,17 @@ int main( int argc, char** argv )
         execManager.launchExecutorOnFile(argv[3]);
         return 0;
     }
-    bool readFromFile = false;
+    bool readFromFile = true;
+    
 #ifdef EAGER_DEBUG 
     readFromFile = true;
 #endif
+
+#ifdef STATIC_COMPILE 
+    readFromFile = true;
+#endif
+    if(readFromFile)
+    std::cout<<"Reading from file"<<std::endl;
 
     std::filebuf fb;
     if (readFromFile) {

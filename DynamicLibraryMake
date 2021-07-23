@@ -5,21 +5,9 @@ all: executor
 
 executor: Executor.so
 
-Executor.so: $(SRC_FOLDER)Executor.cpp TupleWithReasons.o TupleWithoutReasons.o AuxiliaryMap.o PredicateSet.o Literal.o ConstantsManager.o Atom.o SharedFunctions.o InputDirector.o AspCore2InstanceBuilder.o TupleLight.o TupleFactory.o
-	g++ $(COMMON_FLAGS) -shared $(SRC_FOLDER)Executor.cpp TupleWithReasons.o TupleWithoutReasons.o AuxiliaryMap.o PredicateSet.o Literal.o ConstantsManager.o Atom.o SharedFunctions.o InputDirector.o  AspCore2InstanceBuilder.o TupleLight.o TupleFactory.o -o Executor.so 
+Executor.so: $(SRC_FOLDER)Executor.cpp Literal.o ConstantsManager.o Atom.o SharedFunctions.o InputDirector.o AspCore2InstanceBuilder.o
+	g++ $(COMMON_FLAGS) -shared $(SRC_FOLDER)Executor.cpp Literal.o ConstantsManager.o Atom.o SharedFunctions.o InputDirector.o  AspCore2InstanceBuilder.o -o Executor.so 
 
-TupleLight.o: $(SRC_FOLDER)datastructures/TupleLight.cpp $(SRC_FOLDER)datastructures/TupleLight.h
-	g++ $(COMMON_FLAGS) -c $(SRC_FOLDER)datastructures/TupleLight.cpp
-TupleFactory.o: $(SRC_FOLDER)datastructures/TupleFactory.cpp $(SRC_FOLDER)datastructures/TupleFactory.h
-	g++ $(COMMON_FLAGS) -c $(SRC_FOLDER)datastructures/TupleFactory.cpp
-TupleWithoutReasons.o: $(SRC_FOLDER)datastructures/TupleWithoutReasons.cpp $(SRC_FOLDER)datastructures/TupleWithoutReasons.h
-	g++ $(COMMON_FLAGS) -c $(SRC_FOLDER)datastructures/TupleWithoutReasons.cpp
-TupleWithReasons.o: $(SRC_FOLDER)datastructures/TupleWithReasons.cpp $(SRC_FOLDER)datastructures/TupleWithReasons.h
-	g++ $(COMMON_FLAGS) -c $(SRC_FOLDER)datastructures/TupleWithReasons.cpp
-AuxiliaryMap.o: $(SRC_FOLDER)datastructures/AuxiliaryMap.cpp $(SRC_FOLDER)datastructures/AuxiliaryMap.h
-	g++ $(COMMON_FLAGS) -c $(SRC_FOLDER)datastructures/AuxiliaryMap.cpp
-PredicateSet.o: $(SRC_FOLDER)datastructures/PredicateSet.cpp $(SRC_FOLDER)datastructures/PredicateSet.h
-	g++ $(COMMON_FLAGS) -c $(SRC_FOLDER)datastructures/PredicateSet.cpp
 Literal.o: $(SRC_FOLDER)language/Literal.cpp $(SRC_FOLDER)language/Literal.h
 	g++ $(COMMON_FLAGS) -c $(SRC_FOLDER)language/Literal.cpp
 ConstantsManager.o: $(SRC_FOLDER)utils/ConstantsManager.cpp $(SRC_FOLDER)utils/ConstantsManager.h

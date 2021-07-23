@@ -32,6 +32,7 @@
 #include "TupleLight.h"
 #include <bitset>
 const long SHIFT = sizeof(int)*CHAR_BIT;
+const long POW = std::pow(2,sizeof(int)*CHAR_BIT);
 template<size_t S>
 class AuxiliaryMapSmart {
 public:
@@ -62,15 +63,7 @@ public:
         value.setCollisionListIndex(&collisionList, collisionList.size());
         collisionList.push_back(value.getId());
     }
-    void print(){
-        for(const auto& pair:tuples){
-            std::cout<<"KEY: "<<pair.first<<std::endl;
-            for(auto& t :tuples[pair.first]){
-                t->print();
-            }
-            std::cout<<std::endl;
-        }
-    }
+    
     void clear() {
         tuples.clear();
     }
@@ -86,10 +79,11 @@ public:
 protected:
 
     inline void valueToPos(const std::vector<int> & key, std::bitset<S>& keyCode) const {
-        for (unsigned i = 0; i < keySize; i++) {
-            keyCode = keyCode << 32;
-            long val = key[i] < 0 ? SHIFT+key[i] : key[i];
-            keyCode |= std::bitset<S>(val);
+        std::bitset<S> bit_set_val=0;
+        for (unsigned i = 0; i < key.size(); i++) {
+            keyCode = keyCode << SHIFT;
+            long val = key[i] < 0 ? POW+key[i] : key[i];
+            keyCode |= (bit_set_val = val);
         }
     }
     

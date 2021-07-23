@@ -43,10 +43,16 @@ ExecutionManager::ExecutionManager() {
 }
 
 ExecutionManager::~ExecutionManager() {
-#ifndef LP2CPP_DEBUG
+// #ifndef LP2CPP_DEBUG
+//     if (executor)
+//         destroy(executor);
+//     // delete executor;
+// #else 
+//     delete executor;
+// #endif
+#ifndef STATIC_COMPILE
     if (executor)
         destroy(executor);
-    // delete executor;
 #else 
     delete executor;
 #endif
@@ -189,17 +195,18 @@ void ExecutionManager::compileDynamicLibrary(const string & executablePath, bool
         fprintf(stderr, "%s\n", dlerror());
         exit(EXIT_FAILURE);
     }
+    #ifndef STATIC_COMPILE
+        aspc::Executor * (*create)();
 
-    aspc::Executor * (*create)();
 
+        create = (aspc::Executor * (*)())dlsym(handle, "create_object");
 
-    create = (aspc::Executor * (*)())dlsym(handle, "create_object");
+        destroy = (void (*)(aspc::Executor*))dlsym(handle, "destroy_object");
 
-    destroy = (void (*)(aspc::Executor*))dlsym(handle, "destroy_object");
-
-    executor = (aspc::Executor*) create();
-    // executor = new aspc::Executor();
-    
+        executor = (aspc::Executor*) create();
+    #else
+        executor = new aspc::Executor();
+    #endif
 }
 #else 
 

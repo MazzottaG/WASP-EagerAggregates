@@ -1382,12 +1382,15 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "const std::string* predicate = parseTuple(literalString,terms);\n";
         *out << ind << "Tuple* tuple = factory.addNewTuple(terms,predicate,var);\n";
         *out << ind << "TruthStatus truth = var>0 ? True : False;\n";
-        *out << ind << "const auto& insertResult = tuple->setStatus(truth,factory);\n";
-        *out << ind++ << "if (var > 0) {\n";
-            *out << ind << "insertTrue(insertResult);\n";
-        *out << --ind << "}else{\n";
-        ind++;
-            *out << ind << "insertFalse(insertResult);\n";
+        *out << ind << "const auto& insertResult = tuple->setStatus(truth);\n";
+        *out << ind++ << "if(insertResult.second){\n";
+            *out << ind << "factory.removeFromCollisionsList(tuple->getId());\n";
+            *out << ind++ << "if (var > 0) {\n";
+                *out << ind << "insertTrue(insertResult);\n";
+            *out << --ind << "}else{\n";
+            ind++;
+                *out << ind << "insertFalse(insertResult);\n";
+            *out << --ind << "}\n";
         *out << --ind << "}\n";
     *out << --ind << "}\n";
     *out << ind++ << "inline void Executor::onLiteralTrue(int var) {\n";
@@ -1396,15 +1399,19 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "Tuple* tuple = factory.getTupleFromWASPID(uVar);\n";
         *out << ind << "std::string minus = var < 0 ? \"-\" : \"\";\n";
         *out << ind << "trace_msg(eagerprop, 2, \"Literal true received \" << minus << tuple->toString());\n";
-
+        // *out << ind << "std::cout<<\"Literal true received \" << minus << tuple->toString()<<std::endl;\n";
         *out << ind << "std::unordered_map<const std::string*,int>::iterator sum_it;\n";
         *out << ind << "TruthStatus truth = var>0 ? True : False;\n";
-        *out << ind << "const auto& insertResult = tuple->setStatus(truth,factory);\n";
-        *out << ind++ << "if (var > 0) {\n";
-            *out << ind << "insertTrue(insertResult);\n";
-        *out << --ind << "}else{\n";
-        ind++;
-            *out << ind << "insertFalse(insertResult);\n";
+        *out << ind << "const auto& insertResult = tuple->setStatus(truth);\n";
+        *out << ind << "if(insertResult.second){\n";
+
+            *out << ind << "factory.removeFromCollisionsList(tuple->getId());\n";
+            *out << ind++ << "if (var > 0) {\n";
+                *out << ind << "insertTrue(insertResult);\n";
+            *out << --ind << "}else{\n";
+            ind++;
+                *out << ind << "insertFalse(insertResult);\n";
+            *out << --ind << "}\n";
         *out << --ind << "}\n";
 
         for(const auto& aggrSetPred : aggrSetToRule){
@@ -1497,9 +1504,11 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::cout<<\"\\n\";\n";
 #endif
         *out << ind << "trace_msg(eagerprop, 2, \"Literal undef received \" << minus << tuple->toString());\n";
+        // *out << ind << "std::cout<<\"Literal undef received \" << minus << tuple->toString()<<std::endl;\n";
 
-        *out << ind << "const auto& insertResult = tuple->setStatus(Undef,factory);\n";
+        *out << ind << "const auto& insertResult = tuple->setStatus(Undef);\n";
         *out << ind++ << "if (insertResult.second) {\n";
+            *out << ind << "factory.removeFromCollisionsList(tuple->getId());\n";
             *out << ind << "insertUndef(insertResult);\n";
         *out << --ind << "}\n";
 
@@ -1576,6 +1585,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     *out << ind++ << "void Executor::undefLiteralsReceived()const{\n";
         // *out << ind << "std::cout<<\"Undef received\"<<std::endl;\n";
+        // *out << ind << "exit(180);\n";
         *out << ind++ << "if(undefinedLoaded)\n";
             *out << ind-- << "return;\n";
         *out << ind << "trace_msg(eagerprop,2,\"Computing internalUndefined\");\n";
@@ -1706,8 +1716,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                             auxTerms += aux.getTermAt(k);
                         }
                         *out << ind << "Tuple* aux = factory.addNewInternalTuple({"<<auxTerms<< "}, &_"<<aux.getPredicateName()<<");\n";
-                        *out << ind << "const auto& insertResult = aux->setStatus(Undef,factory);\n";
+                        *out << ind << "const auto& insertResult = aux->setStatus(Undef);\n";
                         *out << ind++ << "if (insertResult.second) {\n";
+                            *out << ind << "factory.removeFromCollisionsList(aux->getId());\n";
                             *out << ind << "insertUndef(insertResult);\n";
                             // *out << ind << "aux.print();std::cout<<\" \"<<tupleToVar[aux]<<std::endl;\n";
                             for(const aspc::Rule& r : program.getRules()){
@@ -1722,8 +1733,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                     }
                                     *out << ind++ << "{\n";
                                         *out << ind << "Tuple* head = factory.addNewInternalTuple({"<<headTerms<<"},&_"<<head->getPredicateName()<<");\n";
-                                        *out << ind << "const auto& headInsertResult = head->setStatus(Undef,factory);\n";
+                                        *out << ind << "const auto& headInsertResult = head->setStatus(Undef);\n";
                                         *out << ind++ << "if (headInsertResult.second) {\n";
+                                            *out << ind << "factory.removeFromCollisionsList(head->getId());\n";
                                             *out << ind << "insertUndef(headInsertResult);\n";
                                         *out << --ind << "}\n";
                                         for(const aspc::Rule& aggr_r : program.getRules()){
@@ -1737,8 +1749,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                 }
 
                                                 *out << ind << "Tuple* aggr_id"<<aggr_r.getRuleId()<<" = factory.addNewInternalTuple({"<<aggrIdTerms<<"},&_"<<aggr_id->getPredicateName()<<");\n";
-                                                *out << ind << "const auto& aggrIdInsertResult"<<aggr_r.getRuleId()<<" = aggr_id"<<aggr_r.getRuleId()<<"->setStatus(Undef,factory);\n";
+                                                *out << ind << "const auto& aggrIdInsertResult"<<aggr_r.getRuleId()<<" = aggr_id"<<aggr_r.getRuleId()<<"->setStatus(Undef);\n";
                                                 *out << ind++ << "if (aggrIdInsertResult"<<aggr_r.getRuleId()<<".second) {\n";
+                                                    *out << ind << "factory.removeFromCollisionsList(aggr_id"<<aggr_r.getRuleId()<<"->getId());\n";
                                                     *out << ind << "insertUndef(aggrIdInsertResult"<<aggr_r.getRuleId()<<");\n";
                                                 *out << --ind << "}\n";
                                             
@@ -1787,8 +1800,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                 *out << ind << "tuple=factory.getTupleFromInternalID(tuples->at(i));\n";
                                                 bool checkFormat = checkTupleFormat(*bodyLit,"tuple",true);
                                                 *out << ind << "Tuple* head = factory.addNewInternalTuple({"<<terms<<"},&_"<<head->getPredicateName()<<");\n";
-                                                *out << ind << "const auto& insertResult = head->setStatus(True,factory);\n";
+                                                *out << ind << "const auto& insertResult = head->setStatus(True);\n";
                                                 *out << ind++ << "if (insertResult.second) {\n";
+                                                    *out << ind << "factory.removeFromCollisionsList(head->getId());\n";
                                                     *out << ind << "insertTrue(insertResult);\n";
                                                     // *out << ind << "aggrId.print();std::cout<<\" \"<<tupleToVar[aggrId]<<std::endl;\n";
                                                 *out << --ind << "}\n";
@@ -1800,8 +1814,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                 checkFormat = checkTupleFormat(*bodyLit,"tuple",true);
 
                                                 *out << ind << "Tuple* head = factory.addNewInternalTuple({"<<terms<<"},&_"<<head->getPredicateName()<<");\n";
-                                                *out << ind << "const auto& insertResult = head->setStatus(Undef,factory);\n";
+                                                *out << ind << "const auto& insertResult = head->setStatus(Undef);\n";
                                                 *out << ind++ << "if (insertResult.second) {\n";
+                                                    *out << ind << "factory.removeFromCollisionsList(head->getId());\n";
                                                     *out << ind << "insertUndef(insertResult);\n";
                                                     *out << ind << "trace_msg(eagerprop,3,\"Saved new undef head for "<<head->getPredicateName()<<": \" << head->toString());\n";
                                                 *out << --ind << "}\n";
@@ -1815,8 +1830,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                     *out << ind++ << "{\n";
                                                     checkFormat = checkTupleFormat(*bodyLit,"tuple",true);
                                                         *out << ind << "Tuple* aggrId = factory.addNewInternalTuple({"<<terms<<"},&_"<<aggr_id->getPredicateName()<<");\n";
-                                                        *out << ind << "const auto& insertResult = aggrId->setStatus(Undef,factory);\n";
+                                                        *out << ind << "const auto& insertResult = aggrId->setStatus(Undef);\n";
                                                         *out << ind++ << "if (insertResult.second) {\n";
+                                                            *out << ind << "factory.removeFromCollisionsList(aggrId->getId());\n";
+
                                                             // *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<aggr_id->getPredicateName()<<"]) {\n";
                                                             //     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
                                                             // *out << --ind << "}\n";
@@ -1843,8 +1860,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             if(program.getRule(aggrId.second).getBodyLiterals().empty()){
                 *out << ind++ << "{\n";
                     *out << ind << "Tuple* aggrId = factory.addNewInternalTuple({},&_"<<aggrId.first<<");\n";
-                    *out << ind << "const auto& insertResult = aggrId->setStatus(Undef,factory);\n";
+                    *out << ind << "const auto& insertResult = aggrId->setStatus(Undef);\n";
                     *out << ind++ << "if (insertResult.second) {\n";
+                        *out << ind << "factory.removeFromCollisionsList(aggrId->getId());\n";
                         *out << ind << "insertUndef(insertResult);\n";
                         // *out << ind << "aggrId.print();std::cout<<\" \"<<tupleToVar[aggrId]<<std::endl;\n";
                     *out << --ind << "}\n";
@@ -1884,8 +1902,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                             *out << --ind << "}\n";
                             bool checkFormat = checkTupleFormat(*bodyLit,"tuple",true);
                                 *out << ind << "Tuple* head = factory.addNewInternalTuple({"<<terms<<"},&_"<<head->getPredicateName()<<");\n";
-                                *out << ind << "const auto& insertResult = head->setStatus(Undef,factory);\n";
+                                *out << ind << "const auto& insertResult = head->setStatus(Undef);\n";
                                 *out << ind++ << "if (insertResult.second) {\n";
+                                    *out << ind << "factory.removeFromCollisionsList(head->getId());\n";
+
                                     *out << ind << "insertUndef(insertResult);\n";
                                     // *out << ind << "head.print();std::cout<<\" \"<<tupleToVar[head]<<std::endl;\n";
                                 *out << --ind << "}\n";
@@ -2137,6 +2157,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind++ << "if(tupleU->getWaspID() == 0){\n";
             *out << ind << "bool propagated=false;\n";
             *out << ind << "Tuple* realTupleU=factory.find(*tupleU);\n";
+            // *out << ind << "std::cout<<\"propUndefined\"<<std::endl;\n";
+            // *out << ind << "realTupleU->print();std::cout<<std::endl;\n";
             // *out << ind << "std::unordered_map<const std::string*,PredicateWSet*>::iterator falseSet = predicateFSetMap.find(tupleU->getPredicateName());\n";
             // *out << ind << "std::unordered_map<const std::string*,PredicateWSet*>::iterator undefSet = predicateUSetMap.find(tupleU->getPredicateName());\n";
             // *out << ind << "std::unordered_map<const std::string*,PredicateWSet*>::iterator trueSet = predicateWSetMap.find(tupleU->getPredicateName());\n";
@@ -2161,8 +2183,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     *out << ind << "return true;\n";
                 *out << --ind << "}else if(realTupleU->isUndef()){\n";
                 ind++;
-                    *out << ind << "const auto& insertResult = realTupleU->setStatus(True,factory);\n";
+                    *out << ind << "const auto& insertResult = realTupleU->setStatus(True);\n";
                     *out << ind++ << "if (insertResult.second) {\n";
+                        *out << ind << "factory.removeFromCollisionsList(realTupleU->getId());\n";
+
                         *out << ind << "insertTrue(insertResult);\n";
                         for(const auto& aggrSetPred : aggrSetToRule){
                             for(unsigned ruleId : aggrSetPred.second){
@@ -2228,8 +2252,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     *out << ind << "return true;\n";
                 *out << --ind << "}else if(realTupleU->isUndef()){\n";
                 ind++;
-                    *out << ind << "const auto& insertResult = realTupleU->setStatus(False,factory);\n";
+                    *out << ind << "const auto& insertResult = realTupleU->setStatus(False);\n";
                     *out << ind++ << "if (insertResult.second) {\n";
+                        *out << ind << "factory.removeFromCollisionsList(realTupleU->getId());\n";
+
                         *out << ind << "insertFalse(insertResult);\n";
 
                         for(const auto& aggrSetPred : aggrSetToRule){
@@ -2314,6 +2340,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << --ind << "}\n";
 
     *out << ind++ << "void Executor::printInternalLiterals(){\n";
+        *out << ind << "factory.printSize();\n";
+        *out << ind << "std::cout<<\"On answerset:\"<<reasonForLiteral.size()<<std::endl;\n";
         for(std::string pred : builder->getPrintingPredicates()){
             // *out << ind++ << "for(const Tuple* t : w"<<pred<<".getTuples()){\n";
                 // *out << ind << "t->print();\n";
@@ -2521,8 +2549,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         *out << "<<\")\"<<std::endl;\n";
                                         if(builder->isPredicateBodyNoCompletion(it->first)){
                                             *out << ind << "Tuple* tupleHead = factory.addNewInternalTuple(head,&_"<<head->getPredicateName()<<");\n";
-                                            *out << ind << "const auto& insertResult = tupleHead->setStatus(True,factory);\n";
+                                            *out << ind << "const auto& insertResult = tupleHead->setStatus(True);\n";
                                             *out << ind++ << "if (insertResult.second) {\n";
+                                                *out << ind << "factory.removeFromCollisionsList(tupleHead->getId());\n";
+
                                                 *out << ind << "insertTrue(insertResult);\n";
                                             *out << --ind << "}\n";
                                         }
@@ -2571,8 +2601,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 *out << ind << "int uVar = var>0 ? var : -var;\n";
                 *out << ind << "Tuple* tuple = factory.getTupleFromInternalID(uVar);\n";
 
-                *out << ind << "const auto& insertResult = tuple->setStatus(Undef,factory);\n";
+                *out << ind << "const auto& insertResult = tuple->setStatus(Undef);\n";
                 *out << ind++ << "if (insertResult.second) {\n";
+                    *out << ind << "factory.removeFromCollisionsList(tuple->getId());\n";
                     *out << ind << "insertUndef(insertResult);\n";
                 *out << --ind << "}\n";
                 for(const auto& aggrSetPred : aggrSetToRule){

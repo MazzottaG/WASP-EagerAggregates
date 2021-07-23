@@ -85,14 +85,13 @@ namespace aspc {
         }
         const UnorderedSet<int>& getConflictReason()const {return conflictReason;}
         void clearConflictReason(){conflictReason.clear();}
-       
-
     private:
         std::vector<std::vector<aspc::Literal> > failedConstraints;
         std::unordered_map<int, std::vector<int> > propagatedLiteralsAndReasons;
         UnorderedSet<int> propagatedLiterals;
         PostponedReasons reasonMapping;
         UnorderedSet<int> conflictReason;
+        
         //std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> propagatedLiteralsAndReasons;
         std::vector<std::string> bodyLiterals;
         
