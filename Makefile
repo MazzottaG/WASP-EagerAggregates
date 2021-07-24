@@ -9,8 +9,10 @@ cxxflags.trace = -Wall -Wextra -std=c++11 -DTRACE_ON
 linkflags.trace = -lm -ldl
 cxxflags.tracerelease = -Wall -Wextra -std=c++11 -DTRACE_ON -DNDEBUG -O3
 linkflags.tracerelease = -lm -ldl
-cxxflags.release = -Wall -Wextra -std=c++11 -DNDEBUG -O3
+cxxflags.release = -Wall -Wextra -std=c++11 -DNDEBUG -O3   
 linkflags.release = -lm -ldl
+cxxflags.perf = -Wall -Wextra -std=c++11 -DNDEBUG -O3 -g -ggdb -fomit-frame-pointer  
+linkflags.perf = -lm -ldl
 cxxflags.gprof = -Wall -Wextra -std=c++11 -DNDEBUG -O3 -g -pg
 linkflags.gprof = -lm -g -pg -ldl
 cxxflags.estats = -Wall -Wextra -std=c++11 -DNDEBUG -DSTATS_ON -DESTATS_ON -O3
