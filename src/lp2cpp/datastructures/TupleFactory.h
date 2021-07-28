@@ -144,11 +144,23 @@ class TupleFactory{
             return NULL;
         }
 
-
+        void printModelAsConstraint()const {
+            std::cout<<"Tuple factory"<<std::endl;
+            for(auto tuple : storage){
+                if(tuple.getWaspID()!=0){
+                    tuple.printAsConstraint();
+                }
+                
+            }
+        }
         void print()const {
-            for(auto pair : waspIDToTuple){
-                std::cout<<"Wasp id: "<<pair.first<<" ";
-                pair.second->print();
+            std::cout<<"Tuple factory"<<std::endl;
+            bool first=true;
+            for(auto tuple : storage){
+                if(!first)
+                    tuple.print();
+                else
+                    first=false;
             }
         }
         void printSize(){

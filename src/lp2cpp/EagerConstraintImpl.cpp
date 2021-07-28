@@ -151,11 +151,12 @@ void EagerConstraintImpl::onLiteralTrue(int var, int decisionLevel, std::vector<
     // }
 
 
-    const UnorderedSet<int> & propagatedLiteralsAndReasons = executionManager.getPropagatedLiterals();
-
+    std::vector<int> & propagatedLiteralsAndReasons = executionManager.getPropagatedLiteralsAndClear();
+    propagatedLiterals.reserve(propagatedLiteralsAndReasons.size());
     for (int i=0;i<propagatedLiteralsAndReasons.size();i++) {
-        propagatedLiterals.push_back(-propagatedLiteralsAndReasons[i]);
+        propagatedLiterals.push_back(-propagatedLiteralsAndReasons[i]);    
     }
+    propagatedLiteralsAndReasons.clear();
     // std::cout<<"OnLiteralTrue propagated size: "<<propagatedLiterals.size()<<std::endl;
     //const std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> & propagatedLiteralsAndReasons = executionManager.getPropagatedLiteralsAndReasons();
 
@@ -267,9 +268,11 @@ void EagerConstraintImpl::addedVarName(int var, const std::string & literalStrin
     aspc::Literal atom = parseLiteral2(literalString);
     //this->literals[var] = atom;
     //literalsMap[*atom] = var;
+    
     if (compilationManager.getBodyPredicates().count(atom.getPredicateName())) {
         executionManager.addedVarName(var, literalString);
     }
+    
     if (compilationManager.getBodyPredicatesNotCompletion().count(atom.getPredicateName())) {
         watchedAtomsSetNotCompletion.insert(uVar);
         atomsToFreeze.push_back(uVar);

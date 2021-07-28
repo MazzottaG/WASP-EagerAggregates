@@ -190,9 +190,19 @@ public:
             }
             std::cout << operator[](i);
         }
-        std::cout << ")";
+        std::cout << ")" <<std::endl;
     }
-
+    void printAsConstraint() const {
+        std::string sign = status == True ? "not" : "";
+        std::cout << ":-" << sign << " " <<*predicateName << "(";
+        for (unsigned i = 0; i < size_; i++) {
+            if (i > 0) {
+                std::cout << ",";
+            }
+            std::cout << operator[](i);
+        }
+        std::cout << ")." <<std::endl;
+    }
     int getWaspID()const{
         return waspID;
     }

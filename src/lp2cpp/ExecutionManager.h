@@ -55,7 +55,9 @@ public:
     void notifyStartingSolver()const{executor->undefLiteralsReceived();}
     void addedVarName(int var, const std::string & literalString);
     const std::unordered_map<int, std::vector<int> > & getPropagatedLiteralsAndReasons() const;
-    const UnorderedSet<int> & getPropagatedLiterals() const;
+    const std::vector<int> & getPropagatedLiterals() const;
+    std::vector<int> & getPropagatedLiteralsAndClear();
+    std::unordered_set<int> & getRemainingLiterals();
     void initCompiled();
     void simplifyAtLevelZero(std::vector<int>& output);
     void clearPropagations();

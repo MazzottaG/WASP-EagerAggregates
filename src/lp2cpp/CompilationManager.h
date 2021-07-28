@@ -53,6 +53,7 @@ public:
 
     
 private:
+    void storePossibleSum(const std::string& auxValPred,std::string tupleName,std::vector<int> sharedVarIndex,int sumVarIndex);
     unsigned exploreLiteral(const aspc::Literal*,std::unordered_set<std::string>&,unsigned);
     unsigned compileRuleBody(const std::vector<unsigned>,unsigned ,const aspc::Rule& ,std::unordered_set<std::string>,bool);
     void compileEagerRule(const aspc::Rule&,bool);

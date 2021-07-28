@@ -13,6 +13,8 @@ cxxflags.release = -Wall -Wextra -std=c++11 -DNDEBUG -O3
 linkflags.release = -lm -ldl
 cxxflags.perf = -Wall -Wextra -std=c++11 -DNDEBUG -O3 -g -ggdb -fomit-frame-pointer  
 linkflags.perf = -lm -ldl
+cxxflags.parsing = -Wall -Wextra -std=c++11 -DNDEBUG -O3 -DTRACE_PARSING 
+linkflags.parsing = -lm -ldl
 cxxflags.gprof = -Wall -Wextra -std=c++11 -DNDEBUG -O3 -g -pg
 linkflags.gprof = -lm -g -pg -ldl
 cxxflags.estats = -Wall -Wextra -std=c++11 -DNDEBUG -DSTATS_ON -DESTATS_ON -O3

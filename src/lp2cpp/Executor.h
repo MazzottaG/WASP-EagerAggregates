@@ -75,20 +75,28 @@ namespace aspc {
         virtual void shuffleFailedConstraints() {
             std::random_shuffle(failedConstraints.begin(), failedConstraints.end());
         }
-
+        virtual std::vector<int> & getPropagatedLiteralsAndClear(){   
+            return propagatedLiterals;
+        }
+        virtual std::unordered_set<int> & getRemainingLiterals(){
+            
+            return remainingPropagatingLiterals;
+        }
         virtual const std::unordered_map<int, std::vector<int> > & getPropagatedLiteralsAndReasons() const {
             return propagatedLiteralsAndReasons;
         }
 
-        virtual const UnorderedSet<int> & getPropagatedLiterals() const {
+        virtual const std::vector<int> & getPropagatedLiterals() const {
             return propagatedLiterals;
         }
         const UnorderedSet<int>& getConflictReason()const {return conflictReason;}
         void clearConflictReason(){conflictReason.clear();}
+        
     private:
         std::vector<std::vector<aspc::Literal> > failedConstraints;
         std::unordered_map<int, std::vector<int> > propagatedLiteralsAndReasons;
-        UnorderedSet<int> propagatedLiterals;
+        std::vector<int> propagatedLiterals;
+        std::unordered_set<int> remainingPropagatingLiterals;
         PostponedReasons reasonMapping;
         UnorderedSet<int> conflictReason;
         

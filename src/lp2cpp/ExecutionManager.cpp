@@ -266,17 +266,24 @@ const std::unordered_map<int, std::vector<int> > & ExecutionManager::getPropagat
     return executor->getPropagatedLiteralsAndReasons();
 }
 
-const UnorderedSet<int> & ExecutionManager::getPropagatedLiterals() const {
+const std::vector<int> & ExecutionManager::getPropagatedLiterals() const {
 
     return executor->getPropagatedLiterals();
 }
+std::vector<int> & ExecutionManager::getPropagatedLiteralsAndClear() {
 
+    return executor->getPropagatedLiteralsAndClear();
+}
+
+std::unordered_set<int> & ExecutionManager::getRemainingLiterals() {
+
+    return executor->getRemainingLiterals();
+}
 void ExecutionManager::initCompiled() {
     executor->init();
 }
 
 void ExecutionManager::addedVarName(int var, const std::string& literalString) {
-    
     executor->addedVarName(var, literalString);
 }
 

@@ -78,5 +78,19 @@ class AggrSetPredicate {
             return true;
 
         }
+        void print(){
+            std::cout<<"Terms:";
+            for(std::string t : terms){
+                std::cout<<" "<<t;
+            }
+            std::cout<<std::endl<<"Literals:"<<std::endl;
+            for(const aspc::Literal& l : literals){
+                l.print();
+            }
+            std::cout<<"Inequalities:"<<std::endl;
+            for(const aspc::ArithmeticRelation& l : inequalities){
+                l.print();
+            }
+        }
 };
 #endif

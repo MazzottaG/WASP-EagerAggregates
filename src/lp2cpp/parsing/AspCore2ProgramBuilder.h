@@ -96,6 +96,8 @@ private:
     std::unordered_map<std::string, std::unordered_set<unsigned>> aggrSetToRule;
     std::unordered_set<std::string> printingPredicate;
     
+    std::unordered_map<std::string, std::string> auxPossibleSumToAggrSet;
+    std::unordered_map<std::string, std::string> aggrSetToAuxVal;
 
     void buildExpression();
     bool negatedTerm=false;
@@ -212,6 +214,9 @@ public:
     const std::unordered_map<std::string,std::vector<aspc::ArithmeticRelation>>& getAuxPredicateInequalities() const{
         return auxPredicateToInequality;
     }
+    const std::unordered_map<std::string,std::string>& getAggrSetToAuxVal() const{
+        return aggrSetToAuxVal;
+    }
     const std::vector<aspc::Literal>& getBodyForAuxiliary(std::string aux){
         std::vector<aspc::Literal> ordered_body;
         if(auxPredicateToBody.find(aux)==auxPredicateToBody.end())
@@ -224,7 +229,9 @@ public:
     bool isAuxPredicate(std::string predicate){
         return auxPredicateToBody.count(predicate)!=0;
     }
-
+    bool isAuxValPred(std::string predicate){
+        return auxPossibleSumToAggrSet.count(predicate)!=0;
+    }
     bool isBodyPredicate(std::string predicate){
         return bodyPredicates.count(predicate)!=0;
     }
@@ -235,12 +242,13 @@ public:
     bool isAggrSetPredicate(std::string predicate){
         return aggrSetPredicates.count(predicate)!=0;
     }
-    void preprocessConstraint(bool& ,bool& );
-    void rewriteRule();
-    void rewriteRuleWithAggregate();
-    void rewriteRuleWithCompletion();
+    void preprocess(bool& ,bool&, bool=true );
+    void rewriteRule(bool = false);
+    void rewriteRuleWithAggregate(bool = false);
+    void rewriteRuleWithAggregateNotBound();
+    void rewriteRuleWithCompletion(bool = false);
     void rewriteConstraint();
-    std::vector<aspc::Literal> rewriteAggregate(const aspc::Atom& ,const std::unordered_set<string>& ,const aspc::ArithmeticRelationWithAggregate& );
+    std::vector<aspc::Literal> rewriteAggregate(std::vector<aspc::Literal>& ,const std::unordered_set<string>& ,const aspc::ArithmeticRelationWithAggregate&,bool=false);
 
 //    const void printSCC(){
 //        std::vector<std::vector<int> > SCC = graphWithTarjanAlgorithm.SCC();
