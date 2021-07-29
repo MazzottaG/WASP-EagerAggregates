@@ -1149,7 +1149,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     // *out << ind++ << "void explainAggrLiteral(int var){\n";
     *out << ind++ << "void Executor::handleConflict(int literal){\n";
-        *out << ind << "std::cout<<\"Handle conflict\"<<std::endl;\n";
+        // *out << ind << "std::cout<<\"Handle conflict\"<<std::endl;\n";
         *out << ind++ << "if(currentDecisionLevel == -1){\n";
             // *out << ind << "std::cout<<\"Inserting -1\"<<std::endl;\n";
             *out << ind << "propagatedLiterals.push_back(-1);\n";
@@ -1176,7 +1176,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << --ind << "}\n";
 
     *out << ind++ << "int Executor::explainExternalLiteral(int var,UnorderedSet<int>& reas,std::unordered_set<int>& visitedLiteral,bool propagatorCall){\n";
-        *out << ind << "std::cout<<\"Explain \"<<var<<std::endl;\n";
+        // *out << ind << "std::cout<<\"Explain \"<<var<<std::endl;\n";
 
         *out << ind++ << "if(!propagatorCall){\n";
             // *out << ind << "std::cout<<\"Explain from wasp \"<<var<<std::endl;\n";
@@ -1196,27 +1196,27 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind << "std::cout<<\"Reason Literal \"<<lit<<\" \"<<std::endl;\n";
             *out << ind << "stack.pop_back();\n";
             *out << ind << "unsigned currentReasonSize=reasonForLiteral[lit].size();\n";
-            *out << ind << "std::cout<<\"Reason size: \"<<currentReasonSize<<std::endl;\n";
+            // *out << ind << "std::cout<<\"Reason size: \"<<currentReasonSize<<std::endl;\n";
             *out << ind++ << "for(unsigned i = 0; i<currentReasonSize; i++){\n";
                 *out << ind << "int reasonLiteral=reasonForLiteral[lit][i];\n";
-                *out << ind << "std::cout<<\"Reason for Literal \"<<reasonLiteral<<\" \"<<std::endl;\n";
+                // *out << ind << "std::cout<<\"Reason for Literal \"<<reasonLiteral<<\" \"<<std::endl;\n";
             
                 *out << ind++ << "if(visitedLiteral.count(reasonLiteral) == 0){\n";
                     *out << ind << "Tuple* literal = reasonLiteral>0 ? factory.getTupleFromInternalID(reasonLiteral):factory.getTupleFromInternalID(-reasonLiteral);\n";
                     *out << ind << "visitedLiteral.insert(reasonLiteral);\n";
                     *out << ind++ << "if(literal->getWaspID()==0){\n";
                         *out << ind << "stack.push_back(reasonLiteral);\n";
-                        *out << ind << "std::cout<<\"Internal lit\"<<std::endl;\n";
+                        // *out << ind << "std::cout<<\"Internal lit\"<<std::endl;\n";
                     *out << --ind << "}else{\n";
                     ind++;
                         *out << ind << "int sign = reasonLiteral>0 ? 1 : -1;\n";
-                        *out << ind << "std::cout<<\"External literal \"<<sign * literal->getWaspID()<<std::endl;\n";
+                        // *out << ind << "std::cout<<\"External literal \"<<sign * literal->getWaspID()<<std::endl;\n";
                         *out << ind << "reas.insert(sign * literal->getWaspID());\n";
                     *out << --ind << "}\n";
 
                 *out << --ind << "}\n";
             *out << --ind << "}\n";
-            *out << ind << "std::cout<<\"Next\"<<std::endl;\n";
+            // *out << ind << "std::cout<<\"Next\"<<std::endl;\n";
         *out << --ind << "}\n";
         //*out << ind << "std::cout<<\"Reason for: \"<<var<<std::endl;\n";
         // *out << ind++ << "for(unsigned i=0; i<reas.size(); i++){\n";
@@ -1904,7 +1904,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         #ifdef TRACE_PROP_GEN
                             std::cout<<"    Predicate not aggrset but with auxval assigned"<<std::endl;
                         #endif
-                        
+
                         *out << ind++ << "{\n";
                             *out << ind << "const std::vector<int>* tuplesU = &u"<<it->second.name<<"_.getValues({});\n";
                             *out << ind++ << "for(unsigned i = 0; i < tuplesU->size(); i++){\n";
