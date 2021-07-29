@@ -44,9 +44,9 @@ class TupleFactory{
             if(id < internalIDToTuple.size()){
                 TupleLight* tupleToRemove = internalIDToTuple[id];
                 // std::cout<<"Removing from collisionsList ";tupleToRemove->print();std::cout<<std::endl;
-                std::vector<std::pair<std::vector<unsigned>*,unsigned>>* collisionsLists = &tupleToRemove->getCollisionsLists();
+                std::vector<std::pair<std::vector<int>*,unsigned>>* collisionsLists = &tupleToRemove->getCollisionsLists();
                 for (unsigned i=0; i<collisionsLists->size(); i++) {
-                    std::vector<unsigned> & collisionList = *(collisionsLists->at(i).first);
+                    std::vector<int> & collisionList = *(collisionsLists->at(i).first);
                     // std::cout<<"Original collisions list: "<<std::endl;
                     // for(unsigned id : collisionList){
                     //     internalIDToTuple[id]->print();

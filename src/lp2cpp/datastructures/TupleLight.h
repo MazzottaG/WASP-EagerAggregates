@@ -105,7 +105,7 @@ public:
         this->id = id;
     }
     
-    void setCollisionListIndex(std::vector<unsigned>* collisionList, unsigned index,int internalIndex=-1)const {
+    void setCollisionListIndex(std::vector<int>* collisionList, unsigned index,int internalIndex=-1)const {
         if(internalIndex>=0){
             if(collisionsLists[internalIndex].first!=collisionList){
                 std::cout<<"Error in swaping position in collision list"<<std::endl;
@@ -115,16 +115,16 @@ public:
             return;
         }
         if(collisionsListsSize>=collisionsLists.size()){
-            collisionsLists.push_back(std::pair<std::vector<unsigned>*,unsigned>(collisionList,index));
+            collisionsLists.push_back(std::pair<std::vector<int>*,unsigned>(collisionList,index));
             collisionsListsSize++;
             return;
         }
-        collisionsLists[collisionsListsSize]=std::pair<std::vector<unsigned>*,unsigned>(collisionList,index);
+        collisionsLists[collisionsListsSize]=std::pair<std::vector<int>*,unsigned>(collisionList,index);
         collisionsListsSize++;
     }
 
     // void removeFromCollisionsLists(const TupleFactory& factory) const ;
-    std::vector<std::pair<std::vector<unsigned>*,unsigned>>& getCollisionsLists()const{return collisionsLists;}
+    std::vector<std::pair<std::vector<int>*,unsigned>>& getCollisionsLists()const{return collisionsLists;}
     void clearCollisionsList(){
         collisionsListsSize=0;
     }
@@ -235,7 +235,7 @@ private:
     int* content;
     int size_;
     mutable unsigned collisionsListsSize;
-    mutable std::vector<std::pair<std::vector<unsigned>*,unsigned>> collisionsLists;
+    mutable std::vector<std::pair<std::vector<int>*,unsigned>> collisionsLists;
     // mutable std::unordered_map<std::vector<unsigned>*, unsigned> collisionsLists;
 };
 

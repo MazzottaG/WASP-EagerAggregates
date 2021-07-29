@@ -44,7 +44,7 @@ public:
     virtual ~AuxiliaryMapSmart() {
     }
 
-    inline const std::vector< unsigned >& getValues(const std::vector<int>& key) const {
+    inline const std::vector< int >& getValues(const std::vector<int>& key) const {
         std::bitset<S> keyCode;
         valueToPos(key,keyCode);
         const auto it = tuples.find(keyCode);
@@ -95,16 +95,16 @@ protected:
         return key;
     }
     
-    std::unordered_map<std::bitset<S>, std::vector< unsigned > > tuples;
+    std::unordered_map<std::bitset<S>, std::vector< int > > tuples;
     unsigned keySize;
     std::vector<unsigned> keyIndices;
-    static const std::vector< unsigned > EMPTY_RESULT;
+    static const std::vector< int > EMPTY_RESULT;
 
 
 };
 
 template<size_t S>
-const std::vector< unsigned > AuxiliaryMapSmart<S>::EMPTY_RESULT;
+const std::vector< int > AuxiliaryMapSmart<S>::EMPTY_RESULT;
 
 
 #endif /* AUXILIARYMAPSMART_H */

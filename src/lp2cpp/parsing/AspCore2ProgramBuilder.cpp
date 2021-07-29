@@ -207,7 +207,7 @@ void AspCore2ProgramBuilder::preprocess(bool& writeBodyRule,bool& writeAggrSetRu
     for(const aspc::ArithmeticRelation& l : inequalities){
         l.addVariablesToSet(bodyVars);
     }
-    writeBodyRule = buildingBody.size()>1;
+    writeBodyRule = buildingBody.size()>1 || inequalities.size()>0;
     if(!writeBodyRule){
         if(buildingBody.size()>0){
             for(std::string var: bodyVars){
@@ -283,6 +283,7 @@ void AspCore2ProgramBuilder::preprocess(bool& writeBodyRule,bool& writeAggrSetRu
                 }
             }
         }
+
         if(!writeAggrSetRule){
             for(unsigned k=0; k<literal->getAriety() && !writeAggrSetRule;k++){
                 if(literal->isVariableTermAt(k)){
@@ -744,12 +745,12 @@ void AspCore2ProgramBuilder::rewriteRuleWithAggregate(bool aggregateRelationNotB
         std::unordered_set<std::string> bodyVars;
         for(const aspc::Literal& l : originalBody){
             l.addVariablesToSet(bodyVars);
-            aggrset.addLiteral(l);
+            
         }
         for(const aspc::ArithmeticRelation& ineq: originalBodyInequalities){
             ineq.addVariablesToSet(bodyVars);
-            aggrset.addInequality(ineq);
         }
+
         for(std::string var: originalAggrRelation[0].getAggregate().getAggregateVariables()){
             aggrSetPredicateTerms.push_back(var);
             aggrset.addTerm(var);
@@ -792,6 +793,11 @@ void AspCore2ProgramBuilder::rewriteRuleWithAggregate(bool aggregateRelationNotB
                 aggrset.addTerm(var);
             }
         }
+        for(const aspc::Literal& l : originalAggrRelation[0].getAggregate().getAggregateLiterals())
+            aggrset.addLiteral(l);
+        for(const aspc::ArithmeticRelation& ineq : originalAggrRelation[0].getAggregate().getAggregateInequalities())
+            aggrset.addInequality(ineq);
+
         #ifdef TRACE_PARSING
             std::cout<<"Aggregate Set Built"<<std::endl;
             aggrset.print();
@@ -826,6 +832,8 @@ void AspCore2ProgramBuilder::rewriteRuleWithAggregate(bool aggregateRelationNotB
             auxPossibleSumToAggrSet[auxValPred]=aggrSetPredicate;
             if(!originalAggrRelation[0].isBoundedRelation(bodyVars) && originalAggrRelation[0].getComparisonType()==aspc::EQ){
                 originalBody.push_back(aspc::Literal(false,aspc::Atom(auxValPred,{originalAggrRelation[0].getGuard().getTerm1()})));
+                if(!writeBodyRule && (originalBody.size()>1 || originalBodyInequalities.size()>0))
+                    writeBodyRule=true;
                 #ifdef TRACE_PARSING
                     std::cout<<"Adding aux_val predicate"<<std::endl;
                     aspc::Literal(false,aspc::Atom(auxValPred,{originalAggrRelation[0].getGuard().getTerm1()})).print();
@@ -839,6 +847,8 @@ void AspCore2ProgramBuilder::rewriteRuleWithAggregate(bool aggregateRelationNotB
             std::string auxValPred = aggrSetToAuxVal[aggrSetPredicate];
             if(!originalAggrRelation[0].isBoundedRelation(bodyVars) && inequalitiesWithAggregate[0].getComparisonType()==aspc::EQ){
                 originalBody.push_back(aspc::Literal(false,aspc::Atom(auxValPred,{inequalitiesWithAggregate[0].getGuard().getTerm1()})));
+                if(!writeBodyRule && (originalBody.size()>1 || originalBodyInequalities.size()>0))
+                    writeBodyRule=true;
                 #ifdef TRACE_PARSING
                     std::cout<<"Adding aux_val predicate"<<std::endl;
                     aspc::Literal(false,aspc::Atom(auxValPred,{inequalitiesWithAggregate[0].getGuard().getTerm1()})).print();
@@ -884,6 +894,8 @@ void AspCore2ProgramBuilder::rewriteRuleWithAggregate(bool aggregateRelationNotB
                 }
                 std::string auxValPred = aggrSetToAuxVal[aggrSetPredicate];
                 originalBody.push_back(aspc::Literal(false,aspc::Atom(auxValPred,{originalAggrRelation[0].getGuard().getTerm1()})));
+                if(!writeBodyRule && (originalBody.size()>1 || originalBodyInequalities.size()>0))
+                    writeBodyRule=true;
                 #ifdef TRACE_PARSING
                     std::cout<<"Adding aux_val predicate"<<std::endl;
                     aspc::Literal(false,aspc::Atom(auxValPred,{originalAggrRelation[0].getGuard().getTerm1()})).print();
@@ -900,7 +912,8 @@ void AspCore2ProgramBuilder::rewriteRuleWithAggregate(bool aggregateRelationNotB
     buildingHead.clear();
     inequalities.clear();
     inequalitiesWithAggregate.clear();
-    
+
+
     std::string bodyPredicate="";
     std::vector<std::string> bodyPredicateTerms;
 
@@ -1144,6 +1157,7 @@ void AspCore2ProgramBuilder::rewriteRuleWithAggregate(bool aggregateRelationNotB
             buildingBody.push_back(aspc::Literal(false,aspc::Atom(aggrIdPredicate,bodyPredicateTerms)));
             buildingBody.push_back(aspc::Literal(true,aspc::Atom(aggrIdPredicate2,bodyPredicateTerms)));
             buildingHead.push_back(originalHead[0]);
+
             #ifdef TRACE_PARSING
                 std::cout<<"Head:"<<std::endl;
                 for(const aspc::Atom& l : buildingHead){
@@ -1690,9 +1704,7 @@ aspc::Program & AspCore2ProgramBuilder::getProgram() {
             #endif
         }
         buildGraphNoCompletion();
-        #ifdef TRACE_PARSING
-            exit(180);
-        #endif
+        
         // std::vector<std::vector<int>> sccc = original_graphWithTarjanAlgorithm.SCC();
         // for(int component=sccc.size()-1; component>=0 ; component--){
         //     for(unsigned predId : sccc[component]){
@@ -1747,11 +1759,14 @@ aspc::Program & AspCore2ProgramBuilder::getProgram() {
         }
         
     }
-    // std::cout<<"Original Program"<<std::endl;
-    // for(const aspc::Rule& r:original_program.getRules()){
-    //     std::cout<<"Rule "<<r.getRuleId()<<" ";
-    //     r.print();
-    // }
+    #ifdef TRACE_PARSING
+        std::cout<<"Original Program"<<std::endl;
+        for(const aspc::Rule& r:original_program.getRules()){
+            std::cout<<"Rule "<<r.getRuleId()<<" ";
+            r.print();
+        }
+        exit(180);
+    #endif
     return original_program;
 }
 bool AspCore2ProgramBuilder::isPredicateBodyNoCompletion(int predId)const{
