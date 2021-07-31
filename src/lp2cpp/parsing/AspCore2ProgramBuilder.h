@@ -98,7 +98,6 @@ private:
     
     std::unordered_map<std::string, std::string> auxPossibleSumToAggrSet;
     std::unordered_map<std::string, std::string> aggrSetToAuxVal;
-
     void buildExpression();
     bool negatedTerm=false;
 public:
@@ -195,6 +194,8 @@ public:
     virtual void onWeightAtLevels(int nWeight, int nLevel, int nTerm);
     
     aspc::Program & getProgram();
+    void analyzeInputProgram();
+    void labelComponents(std::unordered_set<unsigned>& labeledComponent,const std::vector<std::vector<int>>& scc);
     void buildGraphNoCompletion();
     bool isPredicateBodyNoCompletion(int)const;
     void onRuleRewrited();
@@ -248,8 +249,17 @@ public:
     void rewriteRuleWithAggregateNotBound();
     void rewriteRuleWithCompletion(bool = false);
     void rewriteConstraint();
-    std::vector<aspc::Literal> rewriteAggregate(std::vector<aspc::Literal>& ,const std::unordered_set<string>& ,const aspc::ArithmeticRelationWithAggregate&,bool=false);
 
+    void rewriteConstraint(const aspc::Rule& r);
+    void rewriteRuleWithAggregate(const aspc::Rule& r);
+    void rewriteRuleWithCompletion(const aspc::Rule& r);
+    void rewriteRule(const aspc::Rule& r);
+    std::pair<bool,std::pair<std::string,AggrSetPredicate>> buildAggregateSet(std::unordered_set<std::string> bodyVariables,const aspc::ArithmeticRelationWithAggregate& aggregareRelation);
+    std::pair<bool,std::pair<std::string,AggrSetPredicate>> buildBody(std::unordered_set<std::string> aggregateBodyVariables,const aspc::Rule& r,std::string auxValPred,std::vector<std::string> auxValTerm);
+    std::vector<std::string> writeAggrIdRule(std::pair<bool,std::pair<std::string,AggrSetPredicate>> body,std::pair<bool,std::pair<std::string,AggrSetPredicate>> aggrSet,const aspc::Rule& r);
+    void clearData();
+    std::vector<aspc::Literal> rewriteAggregate(std::vector<aspc::Literal>& ,const std::unordered_set<string>& ,const aspc::ArithmeticRelationWithAggregate&,bool=false);
+    void addManualDependecy();
 //    const void printSCC(){
 //        std::vector<std::vector<int> > SCC = graphWithTarjanAlgorithm.SCC();
 //        for(int i = 0;i< SCC.size();i++)

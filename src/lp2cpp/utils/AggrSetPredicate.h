@@ -14,6 +14,18 @@ class AggrSetPredicate {
         std::vector<aspc::Literal> literals;
         std::vector<aspc::ArithmeticRelation> inequalities;
     public:
+        AggrSetPredicate(const AggrSetPredicate& p){
+            for(std::string t : p.terms)
+                this->terms.push_back(t);
+
+            for(aspc::Literal l : p.literals){
+                this->literals.push_back(l);
+            }
+            for(aspc::ArithmeticRelation ineq : p.inequalities){
+                this->inequalities.push_back(ineq);
+            }
+        }
+        AggrSetPredicate(){}
         void addTerm(std::string t){terms.push_back(t);}
         void addLiteral(aspc::Literal l){literals.push_back(l);}
         void addInequality(aspc::ArithmeticRelation r){inequalities.push_back(r);}

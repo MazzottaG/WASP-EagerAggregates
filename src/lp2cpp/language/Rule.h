@@ -70,6 +70,7 @@ namespace aspc {
         void bodyReordering();
         void bodyReordering(const std::vector<unsigned> & starters);
         void printOrderedBodies() const;
+        void addBodyLiteral(aspc::Literal);
 
         const std::vector<unsigned> & getOrderedBodyIndexesByStarter(unsigned start) const;
         const std::vector<const aspc::Formula*>& getOrderedBodyByStarter(unsigned start) const;

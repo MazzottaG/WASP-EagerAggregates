@@ -604,7 +604,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "#include<ctime>\n\n";
     *out << ind << "#include<map>\n\n";
     #ifdef TRACE_ON
-    *out << ind << "extern wasp::TraceLevels wasp::Options::traceLevels;\n\n";
+    // *out << ind << "extern wasp::TraceLevels wasp::Options::traceLevels;\n\n";
     #endif
     *out << ind << "namespace aspc {\n";
     *out << ind++ << "extern \"C\" Executor* create_object() {\n";
@@ -620,7 +620,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     *out << ind++ << "Executor::Executor() {\n";
         #ifdef TRACE_ON
-        *out << ind << "setTraceLevel(eagerprop,10);\n";
+        // *out << ind << "setTraceLevel(eagerprop,10);\n";
         #endif
     *out << --ind << "}\n";
 
@@ -1193,7 +1193,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
         *out << ind++ << "while(!stack.empty()){\n";
             *out << ind << "int lit = stack.back();\n";
-            *out << ind << "std::cout<<\"Reason Literal \"<<lit<<\" \"<<std::endl;\n";
+            // *out << ind << "std::cout<<\"Reason Literal \"<<lit<<\" \"<<std::endl;\n";
             *out << ind << "stack.pop_back();\n";
             *out << ind << "unsigned currentReasonSize=reasonForLiteral[lit].size();\n";
             // *out << ind << "std::cout<<\"Reason size: \"<<currentReasonSize<<std::endl;\n";
@@ -1223,7 +1223,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         //     *out << ind << "Tuple* t = reas[i]>0 ? factory.getTupleFromWASPID(reas[i]) : factory.getTupleFromWASPID(-reas[i]);\n";
         //     *out << ind << "std::cout<<reas[i]<<\" \";t->print();std::cout<<std::endl;\n";
         // *out << --ind << "}\n";
-        *out << ind << "std::cout<<\"End explaining\"<<std::endl;\n";
+        // *out << ind << "std::cout<<\"End explaining\"<<std::endl;\n";
         // *out << ind++ << "if(!propagatorCall) std::cout<<reas.size()<<std::endl;\n";
         *out << ind << "return 0;\n";
     *out << --ind << "}\n";
@@ -1447,7 +1447,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "unsigned uVar = var > 0 ? var : -var;\n";
         *out << ind << "Tuple* tuple = factory.getTupleFromWASPID(uVar);\n";
         *out << ind << "std::string minus = var < 0 ? \"-\" : \"\";\n";
-        *out << ind << "trace_msg(eagerprop, 2, \"Literal true received \" << minus << tuple->toString());\n";
+        // *out << ind << "trace_msg(eagerprop, 2, \"Literal true received \" << minus << tuple->toString());\n";
         #ifdef TRACE_PROP_GEN
         *out << ind << "std::cout<<\"Literal true received \" << minus << tuple->toString()<<std::endl;\n";
         #endif
@@ -1524,7 +1524,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "tuple.print();\n";
         *out << ind << "std::cout<<\"\\n\";\n";
 #endif
-        *out << ind << "trace_msg(eagerprop, 2, \"Literal True saved\");\n";
+        //*out << ind << "trace_msg(eagerprop, 2, \"Literal True saved\");\n";
 
     #ifdef TRACE_PROP_GEN
         *out << ind << "std::cout<<\"Exit onLiteralTrue\"<<std::endl;\n";
@@ -1558,7 +1558,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "tuple.print();\n";
         *out << ind << "std::cout<<\"\\n\";\n";
 #endif
-        *out << ind << "trace_msg(eagerprop, 2, \"Literal undef received \" << minus << tuple->toString());\n";
+        //*out << ind << "trace_msg(eagerprop, 2, \"Literal undef received \" << minus << tuple->toString());\n";
         // *out << ind << "std::cout<<\"Literal undef received \" << minus << tuple->toString()<<std::endl;\n";
 
         *out << ind << "const auto& insertResult = tuple->setStatus(Undef);\n";
@@ -1624,7 +1624,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         }
         *out << --ind << "}\n";
         // *out << ind<< "std::cout<<\"Exit undef\"<<std::endl;\n";
-        *out << ind << "trace_msg(eagerprop, 2, \"Exit undef\");\n";
+        //*out << ind << "trace_msg(eagerprop, 2, \"Exit undef\");\n";
 
         // *out << ind << "std::cout<<\"ActualSum aggr_id0: \"<<actualSum[factory.addNewInternalTuple({},&_aggr_id0)->getId()]<<std::endl;\n";
         // *out << ind << "std::cout<<\"ActualSum aggr_id1: \"<<actualSum[factory.addNewInternalTuple({},&_aggr_id1)->getId()]<<std::endl;\n";
@@ -1643,7 +1643,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         // *out << ind << "exit(180);\n";
         *out << ind++ << "if(undefinedLoaded)\n";
             *out << ind-- << "return;\n";
-        *out << ind << "trace_msg(eagerprop,2,\"Computing internalUndefined\");\n";
+        //*out << ind << "trace_msg(eagerprop,2,\"Computing internalUndefined\");\n";
         *out << ind << "undefinedLoaded=true;\n";
         // *out << ind << "std::cout<<\"Undef generation\"<<std::endl;\n";
         GraphWithTarjanAlgorithm graph = builder->getGraphWithTarjanAlgorithm();
@@ -2057,7 +2057,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                     }
                                                     *out << ind << "factory.removeFromCollisionsList(head->getId());\n";
                                                     *out << ind << "insertUndef(insertResult);\n";
-                                                    *out << ind << "trace_msg(eagerprop,3,\"Saved new undef head for "<<head->getPredicateName()<<": \" << head->toString());\n";
+                                                    //*out << ind << "trace_msg(eagerprop,3,\"Saved new undef head for "<<head->getPredicateName()<<": \" << head->toString());\n";
                                                 *out << --ind << "}\n";
                                                 if(checkFormat)
                                                     *out << --ind << "}\n";
@@ -2088,7 +2088,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                 }
                             }
                         }
-                        *out << ind << "trace_msg(eagerprop,2,\"Computing aggr id no shared variables\");\n";
+                        //*out << ind << "trace_msg(eagerprop,2,\"Computing aggr id no shared variables\");\n";
 
                         if(aggrIdToRule.count(it->second.name)!=0){
                             const auto& aggrId = *aggrIdToRule.find(it->second.name);
@@ -2157,7 +2157,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         }
         //std::cout<<"End scc iteration"<<std::endl;
         
-        *out << ind << "trace_msg(eagerprop,2,\"Computing sums\");\n";
+        //*out << ind << "trace_msg(eagerprop,2,\"Computing sums\");\n";
 
         for(const auto& aggrSetPred : aggrSetToRule){
             for(unsigned ruleId : aggrSetPred.second){
@@ -2220,7 +2220,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         // *out << ind << "std::cout<<\"Generated\"<<std::endl;\n";
         // *out << --ind <<"}\n";
         // *out << ind << "exit(180);\n";
-        *out << ind << "trace_msg(eagerprop,2,\"Interna lUndefined Computed\");\n";
+        //*out << ind << "trace_msg(eagerprop,2,\"Interna lUndefined Computed\");\n";
 
     *out << --ind << "}\n";
 
@@ -2593,6 +2593,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 // *out << ind << "std::cout<<std::endl;\n";
             // *out << --ind << "}\n";
         }
+
         // *out << ind << "std::cout<<\"AtomsTable size: \"<<atomsTable.size()<<std::endl;\n";
         // *out << ind << "for(const auto& pair : answerSet) onLiteralTrue(pair.first,pair.second);\n";
         GraphWithTarjanAlgorithm* graphNoCompletion = &builder->getGraphWithTarjanAlgorithmNoCompletion();
@@ -2773,7 +2774,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                 for(unsigned k=0;k<aggrBodyFormulas.size();k++){
                                                     delete aggrBodyFormulas[k];
                                                 }
-                                                *out << ind++ << "if("<<negated<<"aggregateValue "<<aggrRelation->getCompareTypeAsString()<<" "<<aggrRelation->getGuard().getStringRep()<<plusOne<<"){\n";
+                                                if(aggrRelation->isBoundedRelation(boundVariables)){
+                                                    *out << ind++ << "if("<<negated<<"aggregateValue "<<aggrRelation->getCompareTypeAsString()<<" "<<aggrRelation->getGuard().getStringRep()<<plusOne<<"){\n";
+                                                }
                                                 closingPars++;
                                             }
                                         }
@@ -2817,9 +2820,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             }
         }
     *out << --ind << "}\n";
-
     *out << ind++ << "void Executor::unRollToLevel(int decisionLevel){\n";
-        *out << ind << "trace_msg(eagerprop,2,\"Unrolling to level: \"<<decisionLevel << \" \" <<currentDecisionLevel);\n";
+        //*out << ind << "trace_msg(eagerprop,2,\"Unrolling to level: \"<<decisionLevel << \" \" <<currentDecisionLevel);\n";
         // *out << ind << "std::cout<<\"Unrolling to level: \"<<decisionLevel << \" \" <<currentDecisionLevel<<std::endl;\n";
         // *out << ind << "std::cout<<\"Literals not propagated: \"<<propagatedLiterals.size()<<std::endl;\n";
 
@@ -2924,7 +2926,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         // *out << ind << "for(const Tuple* t :waux0.getTuples()){std::cout<<\"True aux: \";t->print();std::cout<<std::endl;}\n";
         // *out << ind << "for(const Tuple* t :faux0.getTuples()){std::cout<<\"False aux: \";t->print();std::cout<<std::endl;}\n";
         // *out << ind << "for(const Tuple* t :uaux0.getTuples()){std::cout<<\"Undef aux: \";t->print();std::cout<<std::endl;}\n";
-        *out << ind << "trace_msg(eagerprop,2,\"Unrolling ended\");\n";
+        //*out << ind << "trace_msg(eagerprop,2,\"Unrolling ended\");\n";
 
     *out << --ind << "}\n";
     // ---------------------- executeProgramOnFacts() --------------------------------------//
@@ -2936,7 +2938,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind++ << "void Executor::executeProgramOnFacts(const std::vector<int> & facts) {\n";
     }
     //data structure init
-    *out << ind << "trace_msg(eagerprop,2,\"Computing propagation\");\n";
+    //*out << ind << "trace_msg(eagerprop,2,\"Computing propagation\");\n";
 
     if (mode == LAZY_MODE) {
         *out << ind << "init();\n";
@@ -3110,14 +3112,14 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             #ifdef TRACE_PROP_GEN
             *out << ind << "std::cout<<minus;starter.print();std::cout<<\" Starter\"<<std::endl;\n";
             #endif
-            *out << ind << "trace_msg(eagerprop,5,minus << starter.toString() << \" as Starter\");\n";
+            //*out << ind << "trace_msg(eagerprop,5,minus << starter.toString() << \" as Starter\");\n";
             *out << ind << "propagationStack.pop_back();\n";
             for(const aspc::Rule& r: program.getRules()){
                 compileEagerRule(r,true);
             }
         *out << --ind << "}\n";
     }
-    *out << ind << "trace_msg(eagerprop,2,\"Propagations computed\");\n";
+    //*out << ind << "trace_msg(eagerprop,2,\"Propagations computed\");\n";
 #ifdef TRACE_PROP_GEN
     *out << ind << "std::cout<<\"Out execute program on facts\"<<std::endl;\n";
 #endif
@@ -4393,7 +4395,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                 if(starterIndex < r.getBodySize()){
                     const aspc::Literal* l = &r.getBodyLiterals()[0];
                     *out << ind++ << "if(starter.getPredicateName() == &_"<<l->getPredicateName()<<"){\n";
-                        *out << ind << "trace_msg(eagerprop,5,\"Evaluating rule: "<<r.getRuleId()<<"\");\n";
+                        //*out << ind << "trace_msg(eagerprop,5,\"Evaluating rule: "<<r.getRuleId()<<"\");\n";
                         std::unordered_set<std::string> boundVariables;
                         for(unsigned k=0; k<l->getAriety(); k++){
                             if(l->isVariableTermAt(k) && boundVariables.count(l->getTermAt(k))==0){
@@ -4411,7 +4413,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                 *out << head->getTermAt(k);
                             }
                             *out << "}, &_"<<head->getPredicateName()<<");\n";
-                            *out << ind << "if(head == NULL) trace_msg(eagerprop,6,\"WARNING: head not in storage\");\n";
+                            //*out << ind << "if(head == NULL) trace_msg(eagerprop,6,\"WARNING: head not in storage\");\n";
                             *out << ind++ << "if(!head->isTrue() && !head->isUndef()){\n";
                                 //*out << ind << "std::cout<<\"Conflict: exists support for false head "<<r.getRuleId()<<"\"<<std::endl;\n";
                                 *out << ind << "int it = head->getId();\n";
@@ -4541,7 +4543,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                     std::unordered_set<std::string> boundVariables;
                     const aspc::Atom* head = &r.getHead()[0];
                     *out << ind++ << "if(starter.getPredicateName() == &_"<<head->getPredicateName()<<"){\n";
-                    *out << ind << "trace_msg(eagerprop,5,\"Evaluating rule: "<<r.getRuleId()<<"\");\n";
+                    //*out << ind << "trace_msg(eagerprop,5,\"Evaluating rule: "<<r.getRuleId()<<"\");\n";
 
                         bool checkFormat = checkTupleFormat(aspc::Literal(false,*head),"starter",false);
                         for(unsigned k=0;k<head->getAriety();k++){
@@ -4960,7 +4962,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                 }
 
                 *out << ind++ << "if(starter.getPredicateName() == &_"<<start->getPredicateName()<<" && "<<sign<<"){\n";
-                *out << ind << "trace_msg(eagerprop,5,\"Evaluating constraint: "<<r.getRuleId()<<"\");\n";
+                //*out << ind << "trace_msg(eagerprop,5,\"Evaluating constraint: "<<r.getRuleId()<<"\");\n";
 
                 closingPars++;
                 if(checkTupleFormat(aspc::Literal(sign=="",*start),"starter",false))
@@ -5038,14 +5040,14 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                 // *out << ind << "explainExternalLiteral(it*sign,rrrrrr,visitedLiteralssssssss,true);\n";
             *out << --ind << "}else{\n";
             ind++;
-                *out << ind << "std::cout<<\"Conflict On Constraint "<<r.getRuleId()<<"\"<<std::endl;\n";
+                // *out << ind << "std::cout<<\"Conflict On Constraint "<<r.getRuleId()<<"\"<<std::endl;\n";
                 if(fromStarter){
                     for(unsigned index = 1; index<oredered_body.size();index++){
                         if(oredered_body[index]->isLiteral()){
                             const aspc::Literal* l =  (aspc::Literal*)oredered_body[index];
                             *out << ind++ << "if(tuple"<<index<<"!=NULL){\n";
                                 *out << ind << "int it = tuple"<<index<<"->getId();\n";
-                                *out << ind << "std::cout<<it<<\" \";tuple"<<index<<"->print();\n";
+                                // *out << ind << "std::cout<<it<<\" \";tuple"<<index<<"->print();\n";
                                 std::string sign = l->isNegated() ? "-1" : "1";
                                 *out << ind << "reasonForLiteral[-startVar].insert(it*"<<sign<<");\n";
                             *out << --ind << "}\n";

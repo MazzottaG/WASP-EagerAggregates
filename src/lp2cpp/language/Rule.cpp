@@ -132,7 +132,9 @@ unsigned aspc::Rule::getRuleId() const {
 unsigned aspc::Rule::getBodySize() const {
     return formulas.size();
 }
-
+void aspc::Rule::addBodyLiteral(aspc::Literal l){
+    bodyLiterals.push_back(aspc::Literal(l));
+}
 vector<map<unsigned, pair<unsigned, unsigned> > > aspc::Rule::getJoinIndicesWithJoinOrder(const vector<unsigned>& order) const {
     vector<map<unsigned, pair<unsigned, unsigned> > > result(order.size() - 1);
     unsigned orderSize = order.size();

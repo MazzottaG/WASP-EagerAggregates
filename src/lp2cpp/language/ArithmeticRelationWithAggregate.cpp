@@ -39,6 +39,7 @@ aspc::ArithmeticRelationWithAggregate::ArithmeticRelationWithAggregate(bool isLo
         comparisonType = compare;
     }
     if(comparisonType == aspc::GT){
+        std::cout<<"GT operator"<<std::endl;
         comparisonType = aspc::GTE;
         plusOne=true;
     }else if(comparisonType == aspc::LT){
