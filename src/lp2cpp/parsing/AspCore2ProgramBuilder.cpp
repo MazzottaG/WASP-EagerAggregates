@@ -1566,7 +1566,6 @@ void AspCore2ProgramBuilder::labelComponents(std::unordered_set<unsigned>& label
 
         }
     }
-    //per ogni componente etichetta presente in un corpo etichetto la testa
     
     while (!visitingComponents.empty()){
         unsigned currentComponent = visitingComponents.back();

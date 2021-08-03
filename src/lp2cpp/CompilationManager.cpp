@@ -4539,7 +4539,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                         if(checkFormat)
                             *out << --ind << "}\n";
                     *out << --ind << "}\n";
-                }else{
+                }else if(starterIndex != r.getBodySize()){
                     std::unordered_set<std::string> boundVariables;
                     const aspc::Atom* head = &r.getHead()[0];
                     *out << ind++ << "if(starter.getPredicateName() == &_"<<head->getPredicateName()<<"){\n";
