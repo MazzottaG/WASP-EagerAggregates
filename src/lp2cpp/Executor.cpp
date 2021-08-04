@@ -62,6 +62,7 @@ bool undefinedLoaded=false;
 std::unordered_map<int,int> actualSum;
 std::unordered_map<int,int> possibleSum;
 bool unRoll=false;
+unsigned conflictualSize=5;
 Executor::~Executor() {
 }
 
@@ -159,7 +160,9 @@ void Executor::handleConflict(int literal){
 int Executor::explainExternalLiteral(int var,UnorderedSet<int>& reas,std::unordered_set<int>& visitedLiteral,bool propagatorCall){
     if(!propagatorCall){
         int uVar = var>0 ? var : -var;
-        int internalVar = factory.getTupleFromWASPID(uVar)->getId();
+        Tuple* tuple = factory.getTupleFromWASPID(uVar);
+        tuple->occursInConflict();
+        int internalVar = tuple->getId();
         var = var>0 ? internalVar : -internalVar;
     }
     std::vector<int> stack;
@@ -537,6 +540,20 @@ bool propUndefined(const Tuple* tupleU,bool isNegated,std::vector<int>& stack,bo
         if(remainingPropagatingLiterals.count(it*sign)==0){
             remainingPropagatingLiterals.insert(it*sign);
             propagatedLiterals.push_back(it*sign);
+            int val = tupleU->getConflictOccurences();
+            int pos = propagatedLiterals.size()-1;
+            if(conflictualSize < propagatedLiterals.size()){
+                for(int i=conflictualSize-1; i >= 0; i--){
+                    int localId = propagatedLiterals[i] > 0 ? propagatedLiterals[i] : -propagatedLiterals[i];
+                    unsigned occurs = factory.getTupleFromWASPID(localId)->getConflictOccurences();
+                    if(val > occurs){
+                        int tmp = propagatedLiterals[i];
+                        propagatedLiterals[i] = propagatedLiterals[pos];
+                        propagatedLiterals[pos] = tmp;
+                        pos=i;
+                        }else break;
+                }
+            }
         }
     }
     return false;

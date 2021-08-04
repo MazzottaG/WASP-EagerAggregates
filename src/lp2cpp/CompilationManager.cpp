@@ -724,7 +724,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "std::unordered_map<int,int> actualSum;\n";
     *out << ind << "std::unordered_map<int,int> possibleSum;\n";
     *out << ind << "bool unRoll=false;\n";
-
+    *out << ind << "unsigned conflictualSize=5;\n";
     *out << ind++ << "Executor::~Executor() {\n";
     // for(const aspc::Rule & r : program.getRules()){
     //     if(r.isConstraint() && r.containsAggregate()){
@@ -1181,7 +1181,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind++ << "if(!propagatorCall){\n";
             // *out << ind << "std::cout<<\"Explain from wasp \"<<var<<std::endl;\n";
             *out << ind << "int uVar = var>0 ? var : -var;\n";
-            *out << ind << "int internalVar = factory.getTupleFromWASPID(uVar)->getId();\n";
+            *out << ind << "Tuple* tuple = factory.getTupleFromWASPID(uVar);\n";
+            *out << ind << "tuple->occursInConflict();\n";
+            *out << ind << "int internalVar = tuple->getId();\n";
             *out << ind << "var = var>0 ? internalVar : -internalVar;\n";
             // *out << ind << "std::cout<<\"Explain from wasp mapped \"<<var<<std::endl;\n";
             // *out << ind << "factory.getTupleFromInternalID(internalVar)->print();\n";
@@ -2202,6 +2204,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 }
             }
         }
+        // *out << ind << "std::cout<<uaggr_set0_.getValues({}).size()<<std::endl;exit(0);\n";
+
         // *out << ind++ << "for(int id :uroomTOcabinetSize.getTuplesId()){\n";
         //     *out << ind << "factory.getTupleFromInternalID(id)->print();\n";
         //     *out << ind << "std::cout<<std::endl;\n";
@@ -2568,13 +2572,27 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind << "int it = tupleU->getWaspID();\n";
             *out << ind << "int sign = isNegated == asNegative ? -1 : 1;\n";
             *out << ind++ << "if(remainingPropagatingLiterals.count(it*sign)==0){\n";
-
                 // *out << ind << "std::cout<<\"Propagating external literal: \";\n";
                 // *out << ind << "tupleU->print();\n";
                 // *out << ind << "std::cout <<\" \"<<sign*it<<std::endl;\n";
                 *out << ind << "remainingPropagatingLiterals.insert(it*sign);\n";
                 *out << ind << "propagatedLiterals.push_back(it*sign);\n";
-                // *out << ind << "for(int id : wtd.getTuplesId()){factory.getTupleFromInternalID(id)->print();std::cout<<std::endl;}\n";
+                *out << ind << "int val = tupleU->getConflictOccurences();\n";
+                *out << ind << "int pos = propagatedLiterals.size()-1;\n";
+                *out << ind++ << "if(conflictualSize < propagatedLiterals.size()){\n";
+                    *out << ind++ << "for(int i=conflictualSize-1; i >= 0; i--){\n";
+                        *out << ind << "int localId = propagatedLiterals[i] > 0 ? propagatedLiterals[i] : -propagatedLiterals[i];\n";
+                        *out << ind << "unsigned occurs = factory.getTupleFromWASPID(localId)->getConflictOccurences();\n";
+                        *out << ind++ << "if(val > occurs){\n";
+                            *out << ind << "int tmp = propagatedLiterals[i];\n";
+                            *out << ind << "propagatedLiterals[i] = propagatedLiterals[pos];\n";
+                            *out << ind << "propagatedLiterals[pos] = tmp;\n";
+                            *out << ind << "pos=i;\n";
+                        *out << ind-- << "}else break;\n";
+                    *out << --ind << "}\n";
+                *out << --ind << "}\n";
+                // *out << ind << "std::cout<<\"Saved\"<<std::endl;\n";
+            // *out << ind << "for(int id : wtd.getTuplesId()){factory.getTupleFromInternalID(id)->print();std::cout<<std::endl;}\n";
 
             *out << --ind << "}\n";
 
