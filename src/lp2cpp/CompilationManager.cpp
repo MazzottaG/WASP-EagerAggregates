@@ -724,7 +724,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "std::unordered_map<int,int> actualSum;\n";
     *out << ind << "std::unordered_map<int,int> possibleSum;\n";
     *out << ind << "bool unRoll=false;\n";
-    *out << ind << "unsigned conflictualSize=5;\n";
+    *out << ind << "unsigned maxConflictualSize=10;\n";
+    *out << ind << "unsigned conflictualSize=0;\n";
     *out << ind++ << "Executor::~Executor() {\n";
     // for(const aspc::Rule & r : program.getRules()){
     //     if(r.isConstraint() && r.containsAggregate()){
@@ -1186,7 +1187,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind << "int internalVar = tuple->getId();\n";
             *out << ind << "var = var>0 ? internalVar : -internalVar;\n";
             // *out << ind << "std::cout<<\"Explain from wasp mapped \"<<var<<std::endl;\n";
-            // *out << ind << "factory.getTupleFromInternalID(internalVar)->print();\n";
+            // *out << ind << "tuple->print();\n";
 
         *out << --ind << "}\n";
         *out << ind << "std::vector<int> stack;\n";
@@ -2838,11 +2839,12 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             }
         }
     *out << --ind << "}\n";
+
     *out << ind++ << "void Executor::unRollToLevel(int decisionLevel){\n";
         //*out << ind << "trace_msg(eagerprop,2,\"Unrolling to level: \"<<decisionLevel << \" \" <<currentDecisionLevel);\n";
         // *out << ind << "std::cout<<\"Unrolling to level: \"<<decisionLevel << \" \" <<currentDecisionLevel<<std::endl;\n";
         // *out << ind << "std::cout<<\"Literals not propagated: \"<<propagatedLiterals.size()<<std::endl;\n";
-
+        *out << ind << "if(conflictualSize < maxConflictualSize) conflictualSize++;\n";
         *out << ind++ << "for(int literealToProp : remainingPropagatingLiterals){\n";
             // *out << ind << "std::cout<<\"Literal not propagated: \"<<propagatedLiterals[i] <<std::endl;\n";
             *out << ind << "int var = literealToProp > 0 ? literealToProp : -literealToProp;\n";

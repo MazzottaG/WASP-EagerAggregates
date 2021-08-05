@@ -62,7 +62,8 @@ bool undefinedLoaded=false;
 std::unordered_map<int,int> actualSum;
 std::unordered_map<int,int> possibleSum;
 bool unRoll=false;
-unsigned conflictualSize=5;
+unsigned maxConflictualSize=10;
+unsigned conflictualSize=0;
 Executor::~Executor() {
 }
 
@@ -159,11 +160,13 @@ void Executor::handleConflict(int literal){
 }
 int Executor::explainExternalLiteral(int var,UnorderedSet<int>& reas,std::unordered_set<int>& visitedLiteral,bool propagatorCall){
     if(!propagatorCall){
+        std::cout<<"Explain from wasp "<<var<<std::endl;
         int uVar = var>0 ? var : -var;
         Tuple* tuple = factory.getTupleFromWASPID(uVar);
         tuple->occursInConflict();
         int internalVar = tuple->getId();
         var = var>0 ? internalVar : -internalVar;
+        tuple->print();
     }
     std::vector<int> stack;
     stack.push_back(var);
@@ -326,6 +329,7 @@ inline void Executor::onLiteralTrue(int var) {
     unsigned uVar = var > 0 ? var : -var;
     Tuple* tuple = factory.getTupleFromWASPID(uVar);
     std::string minus = var < 0 ? "-" : "";
+    std::cout<<"Literal true received " << minus << tuple->toString()<<std::endl;
     std::unordered_map<const std::string*,int>::iterator sum_it;
     TruthStatus truth = var>0 ? True : False;
     const auto& insertResult = tuple->setStatus(truth);
@@ -538,22 +542,11 @@ bool propUndefined(const Tuple* tupleU,bool isNegated,std::vector<int>& stack,bo
         int it = tupleU->getWaspID();
         int sign = isNegated == asNegative ? -1 : 1;
         if(remainingPropagatingLiterals.count(it*sign)==0){
+            std::cout<<"Propagating external literal: ";
+            tupleU->print();
+            std::cout <<" "<<sign*it<<std::endl;
             remainingPropagatingLiterals.insert(it*sign);
             propagatedLiterals.push_back(it*sign);
-            int val = tupleU->getConflictOccurences();
-            int pos = propagatedLiterals.size()-1;
-            if(conflictualSize < propagatedLiterals.size()){
-                for(int i=conflictualSize-1; i >= 0; i--){
-                    int localId = propagatedLiterals[i] > 0 ? propagatedLiterals[i] : -propagatedLiterals[i];
-                    unsigned occurs = factory.getTupleFromWASPID(localId)->getConflictOccurences();
-                    if(val > occurs){
-                        int tmp = propagatedLiterals[i];
-                        propagatedLiterals[i] = propagatedLiterals[pos];
-                        propagatedLiterals[pos] = tmp;
-                        pos=i;
-                        }else break;
-                }
-            }
         }
     }
     return false;
@@ -618,6 +611,7 @@ void Executor::printInternalLiterals(){
     }
 }
 void Executor::unRollToLevel(int decisionLevel){
+    if(conflictualSize < maxConflictualSize) conflictualSize++;
     for(int literealToProp : remainingPropagatingLiterals){
         int var = literealToProp > 0 ? literealToProp : -literealToProp;
         int sign = literealToProp > 0 ? -1 : 1;
