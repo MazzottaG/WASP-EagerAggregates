@@ -125,7 +125,7 @@ Reason* ExecutionManager::getPostponedeReason(Literal lit){
 bool ExecutionManager::onNavigatingLiteralForAllMarked( const Solver& solver, Learning* strategy, Literal lit ) {
     // std::cout << "onNavigatingLiteralForAllMarked Execution Manager" <<std::endl;
 
-    UnorderedSet<int> reas ;
+    UnorderedSet<int> reas ;void setSolver(const Solver& solver);
     std::unordered_set<int> visitedLiterals;
     // executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reas);
 
@@ -214,7 +214,12 @@ void ExecutionManager::compileDynamicLibrary(const string &, bool) {
     executor = new aspc::Executor();
 }
 #endif
-
+void ExecutionManager::setSolver(const Solver* solver){
+    std::cout<<"Setting solver to executor"<<std::endl;
+    if(executor) {
+        executor->setSolver(solver);
+    }
+}
 void ExecutionManager::executeProgramOnFacts(const std::vector<aspc::Literal*> & facts) {
     executor->executeProgramOnFacts(facts);
 

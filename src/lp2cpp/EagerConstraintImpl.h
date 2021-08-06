@@ -22,7 +22,7 @@
 #include "datastructures/DenseMap.h"
 #include <unordered_map>
 #include "../Literal.h"
-
+class Solver;
 class EagerConstraintImpl : public EagerConstraint {
 public:
     EagerConstraintImpl();
@@ -41,9 +41,11 @@ public:
     virtual const std::string & getFilepath() const;
     void notifyStartingSolver()const{ executionManager.notifyStartingSolver();}
     virtual Reason* getPostponedeReason(Literal lit){return executionManager.getPostponedeReason(lit);}
+    virtual void addSolver(const Solver& solver){this->solver = &solver;}
 private:
     
     void performCompilation();
+    
     ExecutionManager executionManager;
     CompilationManager compilationManager;
     std::vector<unsigned> atomsToFreeze;
@@ -57,6 +59,7 @@ private:
     bool compilationDone = false;
     std::string fileDirectory;
     std::string filename;
+    const Solver* solver;
 };
 
 #endif /* EAGERCONSTRAINIMPL_H */

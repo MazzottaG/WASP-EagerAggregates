@@ -27,10 +27,26 @@
 #include "datastructures/AuxiliaryMap.h"
 #include "datastructures/PostponedReasons.h"
 #include "../stl/UnorderedSet.h"
+#include "../Solver.h"
 #include <iostream>
 #include <algorithm>
+
+
 namespace aspc {
 
+    struct PropComparator{
+        const Solver* solver_;
+        bool cmp(int &a, int &b){
+            if(solver_->getActivityForLiteral(a)>solver_->getActivityForLiteral(b)){
+                return true;
+            }
+            return false;
+        }
+        bool operator()(int& a,int& b){
+            return cmp(a,b);
+        }
+        
+    };
     struct LiteralHash {
 
         size_t operator()(const aspc::Literal & v) const {
@@ -91,6 +107,10 @@ namespace aspc {
         }
         const UnorderedSet<int>& getConflictReason()const {return conflictReason;}
         void clearConflictReason(){conflictReason.clear();}
+        void setSolver(const Solver* solver){
+            this->solver = solver;
+            propComparison.solver_=solver;
+        }
         
     private:
         std::vector<std::vector<aspc::Literal> > failedConstraints;
@@ -99,7 +119,8 @@ namespace aspc {
         std::unordered_set<int> remainingPropagatingLiterals;
         PostponedReasons reasonMapping;
         UnorderedSet<int> conflictReason;
-        
+        const Solver* solver;
+        PropComparator propComparison;
         //std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> propagatedLiteralsAndReasons;
         std::vector<std::string> bodyLiterals;
         

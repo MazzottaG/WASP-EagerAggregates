@@ -38,6 +38,7 @@ using namespace std;
 #define method_plugins_onLitsTrue "onLiteralsTrue"
 #define method_plugins_onLiteralsUndefined "onLiteralsUndefined"
 #define method_plugins_getReason "getReason"
+#define method_plugins_addSolver "addSolver"
 #define method_plugins_getReasonForLiteral "getReasonForLiteral"
 #define method_plugins_simplifyAtLevelZero "simplifyAtLevelZero"
 #define method_plugins_onAnswerSet "onAnswerSet"
@@ -122,6 +123,7 @@ class ExternalPropagator : public Propagator
         bool check_addWeakConstraints;
         bool check_addWeightsForWeakConstraints;
         
+        bool check_addSolver;
         bool check_attribute_atomNames;
         
         vector< int > weakConstraints;

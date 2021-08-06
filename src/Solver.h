@@ -132,6 +132,9 @@ class Solver
         
         inline void setChoiceHeuristic( MinisatHeuristic* strategy ){ assert( strategy != NULL ); delete choiceHeuristic; choiceHeuristic = strategy; }
         
+        // ------------------------------ Sharing Activity value with eager prop ------------------------------ 
+        inline Activity getActivityForLiteral(int lit)const{ return choiceHeuristic->getLiteralActivity(Literal::createLiteralFromInt(lit).getVariable());}
+
         inline Literal getLiteral( int lit );
 //        inline Var getVariable( unsigned int var );
         

@@ -8,6 +8,7 @@
 using namespace std;
 class Reason;
 class Literal;
+class Solver;
 class Interpreter
 {
     public:
@@ -38,7 +39,9 @@ class Interpreter
         virtual void addElementInMap( const string&, const string&, unsigned int ) {}
         virtual bool checkAttribute( const string& ) const { return false; }
 
+        //Method supported only by cpp_eager
         virtual Reason* computePostponedReason(Literal){assert(0); return nullptr;}
+        virtual void addSolver(const Solver&){}
 };
 
 #endif

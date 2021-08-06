@@ -119,6 +119,10 @@ ExternalPropagator::ExternalPropagator(
     if( check_checkPartialInterpretation )
         solver.addPropagatorAttachedToPartialChecks( this );
     
+    if(interpreter->checkMethod( method_plugins_addSolver)){
+        std::cout<<"found method addSolver"<<std::endl;
+        interpreter->addSolver(solver);
+    }
     check_attribute_atomNames = interpreter->checkAttribute( attribute_plugins_atomNames );
 }
 

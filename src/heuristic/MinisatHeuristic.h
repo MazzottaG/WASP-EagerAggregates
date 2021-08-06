@@ -101,6 +101,9 @@ class MinisatHeuristic
         
         inline void addPreferredChoice( Literal lit );
         inline void removePrefChoices();
+
+        // ------------------------------ Sharing Activity value with eager prop  ------------------------------ 
+        inline Activity getLiteralActivity(Var v)const{assert(v<act.size());return act[v];}
         
         Literal makeAChoice();
 

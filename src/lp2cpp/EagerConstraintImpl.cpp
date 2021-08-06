@@ -61,6 +61,7 @@ void EagerConstraintImpl::performCompilation() {
     }else{
         executionManager.compileDynamicLibrary(executablePath, false);
     }
+    executionManager.setSolver(solver);
     compilationDone = true;
 
 }
@@ -261,7 +262,6 @@ void EagerConstraintImpl::addedVarName(int var, const std::string & literalStrin
 #endif
     if (!compilationDone) {
         performCompilation();
-
         executionManager.initCompiled();
     }
     int uVar=var>0 ? var : -var; 

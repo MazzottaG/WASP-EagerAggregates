@@ -160,13 +160,11 @@ void Executor::handleConflict(int literal){
 }
 int Executor::explainExternalLiteral(int var,UnorderedSet<int>& reas,std::unordered_set<int>& visitedLiteral,bool propagatorCall){
     if(!propagatorCall){
-        std::cout<<"Explain from wasp "<<var<<std::endl;
         int uVar = var>0 ? var : -var;
         Tuple* tuple = factory.getTupleFromWASPID(uVar);
         tuple->occursInConflict();
         int internalVar = tuple->getId();
         var = var>0 ? internalVar : -internalVar;
-        tuple->print();
     }
     std::vector<int> stack;
     stack.push_back(var);
@@ -329,7 +327,6 @@ inline void Executor::onLiteralTrue(int var) {
     unsigned uVar = var > 0 ? var : -var;
     Tuple* tuple = factory.getTupleFromWASPID(uVar);
     std::string minus = var < 0 ? "-" : "";
-    std::cout<<"Literal true received " << minus << tuple->toString()<<std::endl;
     std::unordered_map<const std::string*,int>::iterator sum_it;
     TruthStatus truth = var>0 ? True : False;
     const auto& insertResult = tuple->setStatus(truth);
@@ -456,7 +453,7 @@ void Executor::init() {
     stringToUniqueStringPointer["td"] = &_td;
     stringToUniqueStringPointer["tot_penalty"] = &_tot_penalty;
 }
-bool propUndefined(const Tuple* tupleU,bool isNegated,std::vector<int>& stack,bool asNegative,std::vector<int> & propagatedLiterals,std::unordered_set<int> & remainingPropagatingLiterals){
+bool propUndefined(const Tuple* tupleU,bool isNegated,std::vector<int>& stack,bool asNegative,std::vector<int> & propagatedLiterals,std::unordered_set<int> & remainingPropagatingLiterals,const Solver* solver){
     if(tupleU->getWaspID() == 0){
         bool propagated=false;
         Tuple* realTupleU=factory.find(*tupleU);
@@ -542,11 +539,21 @@ bool propUndefined(const Tuple* tupleU,bool isNegated,std::vector<int>& stack,bo
         int it = tupleU->getWaspID();
         int sign = isNegated == asNegative ? -1 : 1;
         if(remainingPropagatingLiterals.count(it*sign)==0){
-            std::cout<<"Propagating external literal: ";
-            tupleU->print();
-            std::cout <<" "<<sign*it<<std::endl;
             remainingPropagatingLiterals.insert(it*sign);
             propagatedLiterals.push_back(it*sign);
+            Activity val = solver->getActivityForLiteral(propagatedLiterals.back());
+            int pos = propagatedLiterals.size()-1;
+            if(conflictualSize < propagatedLiterals.size()){
+                for(int i=conflictualSize-1; i >= 0; i--){
+                    Activity occurs = solver->getActivityForLiteral(propagatedLiterals[i]);
+                    if(val > occurs){
+                        int tmp = propagatedLiterals[i];
+                        propagatedLiterals[i] = propagatedLiterals[pos];
+                        propagatedLiterals[pos] = tmp;
+                        pos=i;
+                        }else break;
+                }
+            }
         }
     }
     return false;
@@ -712,7 +719,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                             int itAggrId = tuples->at(i);
                             reasonForLiteral[itProp].insert(itAggrId);
                         }
-                        propUndefined(currentJoinTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals);
+                        propUndefined(currentJoinTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver);
                     }
                 }
             }//close true for
@@ -746,7 +753,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                         reasonForLiteral[-itProp].insert(reasonLit);
                                 }
                             }
-                            propUndefined(currentJoinTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                            propUndefined(currentJoinTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                         }else index++;
                     }
                 }
@@ -766,7 +773,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                             reasonForLiteral[itProp].insert(it);
                         }
                     }
-                    propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals);
+                    propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver);
                 }else if(actualSum[aggrIdIt] + possibleSum[aggrIdIt] < P+1){
                     int itProp = tuplesU->at(i);
                     if(reasonForLiteral.count(-itProp) == 0 || reasonForLiteral[-itProp].empty()){
@@ -776,7 +783,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                             reasonForLiteral[-itProp].insert(-it);
                         }
                     }
-                    propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                    propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                 }else{
                     i++;
                 }
@@ -829,7 +836,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                         }
                         if(tuple1!=NULL){
                             if(tupleU != NULL){
-                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                             }else{
                                 propagatedLiterals.push_back(-1);
                             }
@@ -918,7 +925,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                 }
                                 if(tuple2!=NULL){
                                     if(tupleU != NULL){
-                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                                     }else{
                                         propagatedLiterals.push_back(-1);
                                     }
@@ -982,7 +989,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                         }
                         if(tuple1!=NULL){
                             if(tupleU != NULL){
-                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                             }else{
                                 propagatedLiterals.push_back(-1);
                             }
@@ -1044,7 +1051,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                         }
                         if(tuple1!=NULL){
                             if(tupleU != NULL){
-                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                             }else{
                                 propagatedLiterals.push_back(-1);
                             }
@@ -1066,7 +1073,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                     if(tuplesU->size() == 0){
                         propagatedLiterals.push_back(-1);
                     }else if(tuplesU->size() == 1){
-                        propUndefined(factory.getTupleFromInternalID(tuplesU->at(0)),false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals);
+                        propUndefined(factory.getTupleFromInternalID(tuplesU->at(0)),false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver);
                     }
                 }else{
                 }
@@ -1081,10 +1088,10 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                 if(tuples->size() == 0){
                     const std::vector<int>* tuplesU = &uaux0_0_1_2_.getValues({I,J,N});
                     if(tuplesU->size() == 0){
-                        propUndefined(head,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                        propUndefined(head,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                     }
                 }else{
-                    propUndefined(head,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals);
+                    propUndefined(head,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver);
                 }
             }
             const std::vector<int>* falseHeads = &faggr_set0_.getValues({});
@@ -1097,7 +1104,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                 if(tuples->size() == 0){
                     const std::vector<int>* tuplesU = &uaux0_0_1_2_.getValues({I,J,N});
                     for(unsigned j = 0; j < tuplesU->size();){
-                        propUndefined(factory.getTupleFromInternalID(tuplesU->at(j)),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                        propUndefined(factory.getTupleFromInternalID(tuplesU->at(j)),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                     }
                 }else{
                     propagatedLiterals.push_back(-1);
@@ -1137,7 +1144,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                         }
                         reasonForLiteral[itProp].insert(startVar);
                     }
-                    propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals);
+                    propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver);
                 }
             }else{
                 if(tuples->size()>0){
@@ -1150,7 +1157,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                         int it = tuplesU->back();
                         if(reasonForLiteral.count(-it) == 0 || reasonForLiteral[-it].empty())
                             reasonForLiteral[-it].insert(startVar);
-                        propUndefined(factory.getTupleFromInternalID(tuplesU->back()),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                        propUndefined(factory.getTupleFromInternalID(tuplesU->back()),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                     }
                 }
             }
@@ -1171,7 +1178,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                     int it = head->getId();
                     if(reasonForLiteral.count(it) == 0  || reasonForLiteral[it].empty())
                         reasonForLiteral[it].insert(startVar);
-                    propUndefined(head,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals);
+                    propUndefined(head,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver);
                 }
             }else{
                 Tuple* head = factory.find({I,J,N}, &_aggr_set0);
@@ -1198,7 +1205,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                             int it = head->getId();
                             reasonForLiteral[itProp].insert(it);
                         }
-                        propUndefined(factory.getTupleFromInternalID(tuplesU->at(0)),false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals);
+                        propUndefined(factory.getTupleFromInternalID(tuplesU->at(0)),false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver);
                     }
                 }else{
                     if(head != NULL && head->isUndef() && tuples->size() == 0 && tuplesU->size() == 0){
@@ -1210,7 +1217,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                 reasonForLiteral[-itHead].insert(-it);
                             }
                         }
-                        propUndefined(head,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                        propUndefined(head,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                     }
                 }
             }
@@ -1265,7 +1272,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                 }
                             }else{
                             }
-                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                         }else{
                             if(tuple1!=NULL){
                                 int it = tuple1->getId();
@@ -1317,7 +1324,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                             }
                         }else{
                         }
-                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                     }else{
                         if(tuple1!=NULL){
                             int it = tuple1->getId();
@@ -1379,7 +1386,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                 }
                             }else{
                             }
-                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                         }else{
                             if(tuple1!=NULL){
                                 int it = tuple1->getId();
@@ -1431,7 +1438,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                             }
                         }else{
                         }
-                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                     }else{
                         if(tuple1!=NULL){
                             int it = tuple1->getId();
@@ -1500,7 +1507,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                 }
                             }else{
                             }
-                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                         }else{
                             if(tuple1!=NULL){
                                 int it = tuple1->getId();
@@ -1587,7 +1594,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                     }
                                 }else{
                                 }
-                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                             }else{
                                 if(tuple1!=NULL){
                                     int it = tuple1->getId();
@@ -1675,7 +1682,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                     }
                                 }else{
                                 }
-                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                             }else{
                                 if(tuple1!=NULL){
                                     int it = tuple1->getId();
@@ -1726,7 +1733,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                         reasonForLiteral[-itProp].insert(reasonLit);
                                 }
                             }
-                            propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                            propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                         }else index++;
                     }
                 }
@@ -1752,7 +1759,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                 }
                                 reasonForLiteral[itProp].insert(startVar);
                             }
-                            propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals);
+                            propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver);
                         }else index++;
                     }
                 }
@@ -1792,7 +1799,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                             int itAggrId = tuples->at(i);
                             reasonForLiteral[itProp].insert(itAggrId);
                         }
-                        propUndefined(currentJoinTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals);
+                        propUndefined(currentJoinTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver);
                     }
                 }
             }//close true for
@@ -1832,7 +1839,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                                         reasonForLiteral[-itProp].insert(reasonLit);
                                 }
                             }
-                            propUndefined(currentJoinTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                            propUndefined(currentJoinTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                         }else index++;
                     }
                 }
@@ -1852,7 +1859,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                             reasonForLiteral[itProp].insert(it);
                         }
                     }
-                    propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals);
+                    propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver);
                 }else if(actualSum[aggrIdIt] + possibleSum[aggrIdIt] < P+1){
                     int itProp = tuplesU->at(i);
                     if(reasonForLiteral.count(-itProp) == 0 || reasonForLiteral[-itProp].empty()){
@@ -1862,7 +1869,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                             reasonForLiteral[-itProp].insert(-it);
                         }
                     }
-                    propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                    propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                 }else{
                     i++;
                 }
@@ -1903,7 +1910,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                             }
                         }else{
                         }
-                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                     }else{
                         if(tuple1!=NULL){
                             int it = tuple1->getId();
@@ -1948,7 +1955,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts) {
                             }
                         }else{
                         }
-                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals);
+                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver);
                     }else{
                         if(tuple1!=NULL){
                             int it = tuple1->getId();

@@ -39,6 +39,7 @@ public:
     ExecutionManager();
     ~ExecutionManager();
     void compileDynamicLibrary(const std::string & executablePath, bool fileHasChanged);
+    void setSolver(const Solver* solver);
     void parseFactsAndExecute(const char *filename);
     void launchExecutorOnFile(const char *filename);
     const std::vector<std::vector<aspc::Literal> > & getFailedConstraints();
