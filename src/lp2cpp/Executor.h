@@ -48,7 +48,7 @@ namespace aspc {
         virtual ~Executor();
         virtual void undefLiteralsReceived()const;
         virtual void executeProgramOnFacts(const std::vector<aspc::Literal*> & facts);
-        virtual void executeProgramOnFacts(const std::vector<int> & facts);
+        virtual void executeProgramOnFacts(const std::vector<int> & facts,std::vector<int>& propagatedLiterals);
         virtual void onLiteralTrue(const aspc::Literal* l);
         virtual void onLiteralTrue(int var);
         virtual void onLiteralTrue(int var, const std::string&);
@@ -61,7 +61,7 @@ namespace aspc {
         virtual void clearPropagations();
         virtual void explainAggrLiteral(int,UnorderedSet<int>&);
         virtual int explainExternalLiteral(int,UnorderedSet<int>&,std::unordered_set<int>&,bool=false);
-        virtual void handleConflict(int);
+        virtual void handleConflict(int,std::vector<int>&);
         virtual void unRollToLevel(int);
         virtual void printInternalLiterals();
         virtual const std::vector<std::vector<aspc::Literal> > & getFailedConstraints() {
@@ -75,9 +75,6 @@ namespace aspc {
         virtual void shuffleFailedConstraints() {
             std::random_shuffle(failedConstraints.begin(), failedConstraints.end());
         }
-        virtual std::vector<int> & getPropagatedLiteralsAndClear(){   
-            return propagatedLiterals;
-        }
         virtual std::unordered_set<int> & getRemainingLiterals(){
             
             return remainingPropagatingLiterals;
@@ -86,16 +83,12 @@ namespace aspc {
             return propagatedLiteralsAndReasons;
         }
 
-        virtual const std::vector<int> & getPropagatedLiterals() const {
-            return propagatedLiterals;
-        }
         const UnorderedSet<int>& getConflictReason()const {return conflictReason;}
         void clearConflictReason(){conflictReason.clear();}
         
     private:
         std::vector<std::vector<aspc::Literal> > failedConstraints;
         std::unordered_map<int, std::vector<int> > propagatedLiteralsAndReasons;
-        std::vector<int> propagatedLiterals;
         std::unordered_set<int> remainingPropagatingLiterals;
         PostponedReasons reasonMapping;
         UnorderedSet<int> conflictReason;

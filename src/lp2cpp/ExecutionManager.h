@@ -43,7 +43,7 @@ public:
     void launchExecutorOnFile(const char *filename);
     const std::vector<std::vector<aspc::Literal> > & getFailedConstraints();
     void executeProgramOnFacts(const std::vector<aspc::Literal*> & facts);
-    void executeProgramOnFacts(const std::vector<int> & facts);
+    void executeProgramOnFacts(const std::vector<int> & facts,std::vector<int>& propagatedLiterals);
     const aspc::Executor & getExecutor();
     void shuffleFailedConstraints();
     void onLiteralTrue(const aspc::Literal* l);
@@ -55,8 +55,8 @@ public:
     void notifyStartingSolver()const{executor->undefLiteralsReceived();}
     void addedVarName(int var, const std::string & literalString);
     const std::unordered_map<int, std::vector<int> > & getPropagatedLiteralsAndReasons() const;
-    const std::vector<int> & getPropagatedLiterals() const;
-    std::vector<int> & getPropagatedLiteralsAndClear();
+    // const std::vector<int> & getPropagatedLiterals() const;
+    // std::vector<int> & getPropagatedLiteralsAndClear();
     std::unordered_set<int> & getRemainingLiterals();
     void initCompiled();
     void simplifyAtLevelZero(std::vector<int>& output);

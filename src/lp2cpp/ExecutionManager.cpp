@@ -220,10 +220,10 @@ void ExecutionManager::executeProgramOnFacts(const std::vector<aspc::Literal*> &
 
 }
 
-void ExecutionManager::executeProgramOnFacts(const std::vector<int> & facts) {
+void ExecutionManager::executeProgramOnFacts(const std::vector<int> & facts,std::vector<int>& propagatedLiterals) {
     
     if(executor) {
-        executor->executeProgramOnFacts(facts);
+        executor->executeProgramOnFacts(facts,propagatedLiterals);
     }
 
 }
@@ -266,14 +266,14 @@ const std::unordered_map<int, std::vector<int> > & ExecutionManager::getPropagat
     return executor->getPropagatedLiteralsAndReasons();
 }
 
-const std::vector<int> & ExecutionManager::getPropagatedLiterals() const {
+// const std::vector<int> & ExecutionManager::getPropagatedLiterals() const {
 
-    return executor->getPropagatedLiterals();
-}
-std::vector<int> & ExecutionManager::getPropagatedLiteralsAndClear() {
+//     return executor->getPropagatedLiterals();
+// }
+// std::vector<int> & ExecutionManager::getPropagatedLiteralsAndClear() {
 
-    return executor->getPropagatedLiteralsAndClear();
-}
+//     return executor->getPropagatedLiteralsAndClear();
+// }
 
 std::unordered_set<int> & ExecutionManager::getRemainingLiterals() {
 
@@ -289,25 +289,25 @@ void ExecutionManager::addedVarName(int var, const std::string& literalString) {
 
 
 void ExecutionManager::simplifyAtLevelZero(std::vector<int>& output) {
-#ifdef EAGER_DEBUG
-    std::cout<<"simplifyAtLevelZero"<<endl;
-#endif
-    if(!executor) {
-        //no constraints and no variables
-        return;
-    }
-    for(auto & e: executor->getPropagatedLiteralsAndReasons()) {
-#ifdef EAGER_DEBUG
-        std::cout<<"derived at level 0 "<<-e.first<<endl;
-#endif
-        output.push_back(-e.first);
-    }
-    for(unsigned int i=0;i<executor->getPropagatedLiterals().size();i++) {
-#ifdef EAGER_DEBUG
-        std::cout<<"derived at level 0 "<<-e.first<<endl;
-#endif
-        output.push_back(-executor->getPropagatedLiterals()[i]);
-    }
+// #ifdef EAGER_DEBUG
+//     std::cout<<"simplifyAtLevelZero"<<endl;
+// #endif
+//     if(!executor) {
+//         //no constraints and no variables
+//         return;
+//     }
+//     for(auto & e: executor->getPropagatedLiteralsAndReasons()) {
+// #ifdef EAGER_DEBUG
+//         std::cout<<"derived at level 0 "<<-e.first<<endl;
+// #endif
+//         output.push_back(-e.first);
+//     }
+//     for(unsigned int i=0;i<executor->getPropagatedLiterals().size();i++) {
+// #ifdef EAGER_DEBUG
+//         std::cout<<"derived at level 0 "<<-e.first<<endl;
+// #endif
+//         output.push_back(-executor->getPropagatedLiterals()[i]);
+//     }
     
 }
 

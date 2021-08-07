@@ -1148,11 +1148,11 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     }
 
     // *out << ind++ << "void explainAggrLiteral(int var){\n";
-    *out << ind++ << "void Executor::handleConflict(int literal){\n";
+    *out << ind++ << "void Executor::handleConflict(int literal,std::vector<int>& propagatedLiterals){\n";
         // *out << ind << "std::cout<<\"Handle conflict\"<<std::endl;\n";
         *out << ind++ << "if(currentDecisionLevel == -1){\n";
             // *out << ind << "std::cout<<\"Inserting -1\"<<std::endl;\n";
-            *out << ind << "propagatedLiterals.push_back(-1);\n";
+            *out << ind << "propagatedLiterals.push_back(1);\n";
             *out << ind << "return;\n";
         *out << --ind << "}\n\n";
         *out << ind << "std::unordered_set<int> visitedLiterals;\n";
@@ -1162,7 +1162,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         // *out << ind << "std::cout<<\"Explain \"<<-literal<<\" \";l->print();std::cout<<std::endl;\n";
         *out << ind << "explainExternalLiteral(-literal,conflictReason,visitedLiterals,true);\n";
                         // *out << ind << "std::cout<<\"Inserting -1\"<<std::endl;\n";
-        *out << ind << "propagatedLiterals.push_back(-1);\n";
+        *out << ind << "propagatedLiterals.push_back(1);\n";
         *out << ind << "reasonForLiteral[literal].clear();\n";
         // *out << ind++ << "for(unsigned i =0; i<conflictReason.size();i++){\n";
         //     *out << ind << "Tuple var = conflictReason[i] > 0 ?atomsTable[conflictReason[i]] : atomsTable[-conflictReason[i]];\n";
@@ -2566,7 +2566,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << --ind << "}else{\n";
         ind++;
             *out << ind << "int it = tupleU->getWaspID();\n";
-            *out << ind << "int sign = isNegated == asNegative ? -1 : 1;\n";
+            *out << ind << "int sign = isNegated == asNegative ? 1 : -1;\n";
             *out << ind++ << "if(remainingPropagatingLiterals.count(it*sign)==0){\n";
 
                 // *out << ind << "std::cout<<\"Propagating external literal: \";\n";
@@ -2828,12 +2828,12 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind++ << "for(int literealToProp : remainingPropagatingLiterals){\n";
             // *out << ind << "std::cout<<\"Literal not propagated: \"<<propagatedLiterals[i] <<std::endl;\n";
             *out << ind << "int var = literealToProp > 0 ? literealToProp : -literealToProp;\n";
-            *out << ind << "int sign = literealToProp > 0 ? -1 : 1;\n";
+            // *out << ind << "int sign = literealToProp > 0 ? -1 : 1;\n";
             // *out << ind << "std::cout<<\"VAR: \"<<var <<std::endl;\n";
             *out << ind << "Tuple* literalNotPropagated = factory.getTupleFromWASPID(var);\n";
             // *out << ind << "std::cout<<\"Internal \"<<sign*literalNotPropagated->getId()<<std::endl;\n";
             *out << ind++ << "if(literalNotPropagated!=NULL)\n";
-                *out << ind-- << "reasonForLiteral[sign*literalNotPropagated->getId()].clear();\n";
+                *out << ind-- << "reasonForLiteral[literalNotPropagated->getId()].clear();\n";
         *out << --ind << "}\n";
         *out << ind << "remainingPropagatingLiterals.clear();\n";
         *out << ind++ << "while(currentDecisionLevel > decisionLevel){\n";
@@ -2935,7 +2935,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind++ << "void Executor::executeProgramOnFacts(const std::vector<aspc::Literal*> & facts) {\n";
     } else {
         *out << ind << "void Executor::executeProgramOnFacts(const std::vector<aspc::Literal*> & facts) {}\n";
-        *out << ind++ << "void Executor::executeProgramOnFacts(const std::vector<int> & facts) {\n";
+        *out << ind++ << "void Executor::executeProgramOnFacts(const std::vector<int> & facts,std::vector<int>& propagatedLiterals) {\n";
     }
     //data structure init
     //*out << ind << "trace_msg(eagerprop,2,\"Computing propagation\");\n";
@@ -2982,7 +2982,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind << "int factVar = facts[i]>0 ? facts[i] : -facts[i];\n";
             *out << ind << "int minus = facts[i]<0 ? -1 : 1;\n";
             *out << ind << "propagationStack.push_back(minus*(int)factory.getTupleFromWASPID(factVar)->getId());\n";
-            *out << ind << "remainingPropagatingLiterals.erase(-facts[i]);\n";
+            *out << ind << "remainingPropagatingLiterals.erase(facts[i]);\n";
             // *out << ind << "std::cout<<\"current level size \"<<levelToExtLiterals[currentDecisionLevel].size()<<std::endl;\n";
             // *out << ind << "levelToExtLiterals[currentDecisionLevel].push_back(facts[i]);\n";
 
@@ -3808,7 +3808,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             *out << ind << "int it = tuples->at(i);\n";
                             *out << ind << "reasonForLiteral[-startVar].insert(it);\n";
                         *out << --ind << "}\n";
-                        *out << ind << "handleConflict(-startVar);\n";
+                        *out << ind << "handleConflict(-startVar, propagatedLiterals);\n";
                         *out << ind << "return;\n";
                     if(aggregateRelation->getAggregate().isSum()){
                     *out << --ind << "}else{\n";
@@ -3918,7 +3918,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             *out << ind << "int it = tuplesF->at(i);\n";
                             *out << ind << "reasonForLiteral[-startVar].insert(-it);\n";
                         *out << --ind << "}\n";
-                        *out << ind << "handleConflict(-startVar);\n";
+                        *out << ind << "handleConflict(-startVar, propagatedLiterals);\n";
                         *out << ind << "return;\n";
                     if(aggregateRelation->getAggregate().isSum()){
                     *out << --ind << "}else{\n";
@@ -4080,11 +4080,11 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             *out << ind << "int it = joinTuplesF->at(j);\n";
                             *out << ind << "reasonForLiteral[-itProp].insert(-it);\n";
                         *out << --ind << "}\n";
-                        *out << ind << "handleConflict(-itProp);\n";
+                        *out << ind << "handleConflict(-itProp, propagatedLiterals);\n";
                         *out << ind << "return;\n";
                     }else{
                         // *out << ind << "std::cout<<\"Inserting -1\"<<std::endl;\n";
-                        *out << ind << "propagatedLiterals.push_back(-1);\n";
+                        *out << ind << "propagatedLiterals.push_back(1);\n";
                     }
                 if(aggregateRelation->getAggregate().isSum()){
                     *out << --ind << "}else{\n";
@@ -4219,11 +4219,11 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             *out << ind << "int it = joinTuples->at(j);\n";
                             *out << ind << "reasonForLiteral[itProp].insert(it);\n";
                         *out << --ind << "}\n";
-                        *out << ind << "handleConflict(itProp);\n";
+                        *out << ind << "handleConflict(itProp, propagatedLiterals);\n";
                         *out << ind << "return;\n";
                     }else{
                         // *out << ind << "std::cout<<\"Inserting -1\"<<std::endl;\n";
-                        *out << ind << "propagatedLiterals.push_back(-1);\n";
+                        *out << ind << "propagatedLiterals.push_back(1);\n";
                     }
                 if(aggregateRelation->getAggregate().isSum())
                     *out << --ind << "}else{\n";
@@ -4418,7 +4418,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                 //*out << ind << "std::cout<<\"Conflict: exists support for false head "<<r.getRuleId()<<"\"<<std::endl;\n";
                                 *out << ind << "int it = head->getId();\n";
                                 *out << ind << "reasonForLiteral[it].insert(startVar);\n";
-                                *out << ind << "handleConflict(it);\n";
+                                *out << ind << "handleConflict(it, propagatedLiterals);\n";
                                 *out << ind << "return;\n";
                             *out << --ind << "}else if(head->isUndef()){\n";
                             ind++;
@@ -4458,7 +4458,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                     //*out << ind << "std::cout<<\"Conflict: unsupported head atom "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     *out << ind << "int it = head->getId();\n";
                                     *out << ind << "reasonForLiteral[-it].insert(startVar);\n";
-                                    *out << ind << "handleConflict(-it);\n";
+                                    *out << ind << "handleConflict(-it, propagatedLiterals);\n";
                                     *out << ind << "return;\n";
                                 *out << --ind << "}else{\n";
                                 ind++;
@@ -4494,7 +4494,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                             *out << ind << "int it = tuplesF->at(i);\n";
                                             *out << ind << "reasonForLiteral[-itHead].insert(-it);\n";
                                         *out << --ind << "}\n";
-                                        *out << ind << "handleConflict(-itHead);\n";
+                                        *out << ind << "handleConflict(-itHead, propagatedLiterals);\n";
                                         *out << ind << "return;\n";
                                     *out << --ind << "}else if(tuples->size() == 0 && tuplesU->size() == 1){\n";
                                     ind++;
@@ -4570,7 +4570,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                     //*out << ind << "std::cout<<\"Conflict: unable to find support for true head "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     *out << ind << "int it = tuple->getId();\n";
                                     *out << ind << "reasonForLiteral[it].insert(startVar);\n";
-                                    *out << ind << "handleConflict(it);\n";
+                                    *out << ind << "handleConflict(it, propagatedLiterals);\n";
                                     *out << ind << "return;\n";
                                 *out << --ind << "}else{\n";
                                 ind++;
@@ -4588,7 +4588,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                     //*out << ind << "std::cout<<\"Conflict: support found for false head "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     *out << ind << "int it = tuple->getId();\n";
                                     *out << ind << "reasonForLiteral[-it].insert(startVar);\n";
-                                    *out << ind << "handleConflict(-it);\n";
+                                    *out << ind << "handleConflict(-it, propagatedLiterals);\n";
                                     *out << ind << "return;\n";
                                 *out << --ind << "}else{\n";
                                 ind++;
@@ -4624,7 +4624,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                         *out << ind << "reasonForLiteral[-startVar].insert(-it);\n";
                                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"conflict on rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
-                                    *out << ind << "handleConflict(-startVar);\n";
+                                    *out << ind << "handleConflict(-startVar, propagatedLiterals);\n";
                                     *out << ind << "return;\n";
                                 *out << --ind << "}else if(tuples->size() == 0 && tuplesU->size()==1){\n";
                                 ind++;
@@ -4654,7 +4654,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                     //*out << ind << "std::cout<<\"Conflict: support found for negative head "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     *out << ind << "int it = tuples->at(0);\n";
                                     *out << ind << "reasonForLiteral[-it].insert(startVar);\n";
-                                    *out << ind << "handleConflict(-it);\n";
+                                    *out << ind << "handleConflict(-it, propagatedLiterals);\n";
                                     *out << ind << "return;\n";
                                 *out << --ind << "}else{\n";
                                 ind++;
@@ -4731,7 +4731,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                         *out << ind << "const Tuple* tuple = factory.find({"<<boundTerms<<"},&_"<<l->getPredicateName()<<");\n";
                         *out << ind++ << "if(!tuple->isTrue()){\n";
                             *out << ind++ << "if(!tuple->isUndef()){\n";
-                                *out << ind << "propagatedLiterals.push_back(-1);\n";
+                                *out << ind << "propagatedLiterals.push_back(1);\n";
                                 //*out << ind << "std::cout<<\"Conflict at level -1: unable to find support for: \";head->print();std::cout<<std::endl;\n";
                             *out << --ind << "}else{\n";
                             ind++;
@@ -4766,7 +4766,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                         *out << ind++ << "if(tuples->size() == 0){\n";
 
                             *out << ind++ << "if(tuplesU->size() == 0){\n";
-                                *out << ind << "propagatedLiterals.push_back(-1);\n";
+                                *out << ind << "propagatedLiterals.push_back(1);\n";
                                 //*out << ind << "std::cout<<\"Conflict at level -1: unable to find support for: \";head->print();std::cout<<std::endl;\n";
                             *out << --ind << "}else if(tuplesU->size() == 1){\n";
                             ind++;
@@ -4894,7 +4894,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                         *out << --ind << "}else{\n";
                         ind++;
                             //*out << ind << "std::cout<<\"Conflict at level -1: true body found for not \";head->print();std::cout<<std::endl;\n";
-                            *out << ind << "propagatedLiterals.push_back(-1);\n";
+                            *out << ind << "propagatedLiterals.push_back(1);\n";
                         *out << --ind << "}\n";
                     }else{
                         *out << ind << "const std::vector<int>* tuples = &p"<<l->getPredicateName()<<"_";
@@ -4919,7 +4919,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                         *out << --ind << "}else{\n";
                         ind++;
                             //*out << ind << "std::cout<<\"Conflict at level -1: true body found for not \";head->print();std::cout<<std::endl;\n";
-                            *out << ind << "propagatedLiterals.push_back(-1);\n";
+                            *out << ind << "propagatedLiterals.push_back(1);\n";
 
                         *out << --ind << "}\n";
                     }
@@ -5053,11 +5053,11 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                             *out << --ind << "}\n";
                         }
                     }
-                    *out << ind << "handleConflict(-startVar);\n";
+                    *out << ind << "handleConflict(-startVar, propagatedLiterals);\n";
                     *out << ind << "return;\n";
                 }else{
                         // *out << ind << "std::cout<<\"Inserting -1\"<<std::endl;\n";
-                    *out << ind << "propagatedLiterals.push_back(-1);\n";
+                    *out << ind << "propagatedLiterals.push_back(1);\n";
                 }
             *out << --ind << "}\n";
             while(closingPars>0){

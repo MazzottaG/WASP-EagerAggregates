@@ -130,7 +130,7 @@ void EagerConstraintImpl::onLiteralTrue(int var, int decisionLevel, std::vector<
 #ifdef PRINT_EXEC_TIMES
     cout << "On literal true" << endl;
 #endif    
-    executionManager.executeProgramOnFacts(inputInterpretation);
+    executionManager.executeProgramOnFacts(inputInterpretation,propagatedLiterals);
 #ifdef PRINT_EXEC_TIMES
     cout << "Propagated: " << executionManager.getPropagatedLiteralsAndReasons().size() << endl;
 #endif   
@@ -144,34 +144,6 @@ void EagerConstraintImpl::onLiteralTrue(int var, int decisionLevel, std::vector<
     cout << "tot_propr " << prop_time_e / 1000 << endl;
     cout << "tot_solv " << solv_time_e / 1000 << endl;
 #endif
-    // const std::unordered_map<int, std::vector<int> > & propagatedLiteralsAndReasons = executionManager.getPropagatedLiteralsAndReasons();
-    // for (auto& it : propagatedLiteralsAndReasons) {
-    //     propagatedLiterals.push_back(-it.first);
-    //     //std::cout << "prop " << it.first << std::endl;
-    // }
-
-
-    std::vector<int> & propagatedLiteralsAndReasons = executionManager.getPropagatedLiteralsAndClear();
-    propagatedLiterals.reserve(propagatedLiteralsAndReasons.size());
-    for (int i=0;i<propagatedLiteralsAndReasons.size();i++) {
-        propagatedLiterals.push_back(-propagatedLiteralsAndReasons[i]);    
-    }
-    propagatedLiteralsAndReasons.clear();
-    // std::cout<<"OnLiteralTrue propagated size: "<<propagatedLiterals.size()<<std::endl;
-    //const std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> & propagatedLiteralsAndReasons = executionManager.getPropagatedLiteralsAndReasons();
-
-    //    for (auto& it : propagatedLiteralsAndReasons) {
-    //        it.first.print();
-    //        std::cout << "->";
-    //        for (const aspc::Literal & reason : it.second) {
-    //            reason.print();
-    //            std::cout << " ";
-    //        }
-    //        std::cout << std::endl;
-    //    }
-    //    for (auto& it : propagatedLiteralsAndReasons) {
-    //        propagatedLiterals.push_back(-literalsMap[it.first]);
-    //    }
 
 };
 
@@ -309,8 +281,8 @@ void EagerConstraintImpl::simplifyAtLevelZero(std::vector<int>& output) {
             inputInterpretation.push_back(fact);
         }
     }
-    executionManager.executeProgramOnFacts(inputInterpretation);
-    executionManager.simplifyAtLevelZero(output);
+    executionManager.executeProgramOnFacts(inputInterpretation,output);
+    // executionManager.simplifyAtLevelZero(output);
     //executionManager.clearPropagations();
     
 }
