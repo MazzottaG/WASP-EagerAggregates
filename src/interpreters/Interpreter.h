@@ -8,6 +8,7 @@
 using namespace std;
 class Reason;
 class Literal;
+class Solver;
 class Interpreter
 {
     public:
@@ -39,6 +40,7 @@ class Interpreter
         virtual bool checkAttribute( const string& ) const { return false; }
 
         virtual Reason* computePostponedReason(Literal){assert(0); return nullptr;}
+        virtual void addSolver(const Solver& s){}
 };
 
 #endif

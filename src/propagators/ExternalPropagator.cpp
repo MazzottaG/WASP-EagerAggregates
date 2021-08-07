@@ -48,6 +48,7 @@ ExternalPropagator::ExternalPropagator()
     check_checkAnswerSet = false;
     check_checkPartialInterpretation = false;
     check_postponed = false;
+    check_addSolver = false;
     check_getReasonForLiteral = false;
     check_getReasonForCheckFailure = false;
     check_onNewLowerBound = false;
@@ -94,6 +95,7 @@ ExternalPropagator::ExternalPropagator(
     check_onLitsTrue = interpreter->checkMethod( method_plugins_onLitsTrue );
     check_onLitTrue = interpreter->checkMethod( method_plugins_onLitTrue );
     check_postponed = interpreter->checkMethod( "##check_postponed" );
+    check_addSolver = interpreter->checkMethod( method_plugins_addSolver );
     check_getReasonForLiteral = interpreter->checkMethod( method_plugins_getReasonForLiteral );
     check_getReason = interpreter->checkMethod( method_plugins_getReason );
     check_endPropagation = interpreter->checkMethod( method_plugins_endPropagation );
@@ -120,6 +122,7 @@ ExternalPropagator::ExternalPropagator(
         solver.addPropagatorAttachedToPartialChecks( this );
     
     check_attribute_atomNames = interpreter->checkAttribute( attribute_plugins_atomNames );
+   
 }
 
 bool

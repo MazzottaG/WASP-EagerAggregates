@@ -86,6 +86,8 @@ class MinisatHeuristic
         inline void onFinishedSimplifications() { simplifyVariablesAtLevelZero(); onFinishedSimplificationsProtected(); }
         inline void onUnrollingVariable( Var v );
         
+        inline Activity getActivityForLiteral(Var v)const{assert(v<act.size()); return act[v];}
+
         inline void onLitInvolvedInConflict( Literal lit ) { variableBumpActivity( lit.getVariable() ); onLitInvolvedInConflictProtected( lit ); }
         inline void onConflict() { variableDecayActivity(); onConflictProtected(); }
         inline void onLitInImportantClause( Literal lit ) { bumpActivity( lit.getVariable() ); onLitInImportantClauseProtected( lit ); }

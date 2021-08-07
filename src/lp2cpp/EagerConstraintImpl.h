@@ -41,6 +41,7 @@ public:
     virtual const std::string & getFilepath() const;
     void notifyStartingSolver()const{ executionManager.notifyStartingSolver();}
     virtual Reason* getPostponedeReason(Literal lit){return executionManager.getPostponedeReason(lit);}
+    void addSolver(const Solver& s){solver=&s;}
 private:
     
     void performCompilation();
@@ -57,6 +58,7 @@ private:
     bool compilationDone = false;
     std::string fileDirectory;
     std::string filename;
+    const Solver* solver;
 };
 
 #endif /* EAGERCONSTRAINIMPL_H */

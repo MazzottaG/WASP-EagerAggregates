@@ -62,7 +62,7 @@ void EagerConstraintImpl::performCompilation() {
         executionManager.compileDynamicLibrary(executablePath, false);
     }
     compilationDone = true;
-
+    executionManager.setSolver(solver);
 }
 
 void EagerConstraintImpl::setFilename(const std::string & fileDirectory, const std::string & filename) {
@@ -232,9 +232,9 @@ void EagerConstraintImpl::addedVarName(int var, const std::string & literalStrin
 #endif
     if (!compilationDone) {
         performCompilation();
-
         executionManager.initCompiled();
     }
+
     int uVar=var>0 ? var : -var; 
 
     aspc::Literal atom = parseLiteral2(literalString);

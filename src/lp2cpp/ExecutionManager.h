@@ -71,7 +71,7 @@ public:
     virtual bool isLearned() const { return false; }
     virtual ostream& print( ostream& o ) const;
     virtual void onNavigatingForUnsatCore( const Solver& solver, vector< unsigned int >& visited, unsigned int numberOfCalls, Literal lit );
-    
+    void setSolver(const Solver* s){executor->setSolver(s);}
 private:
     aspc::Executor* executor;
     void (*destroy)(aspc::Executor*);

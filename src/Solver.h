@@ -113,6 +113,10 @@ class Solver
         inline void attachWatches();
         inline void clearComponents();
         inline void clearVariableOccurrences();
+        inline Activity getActivityForLiteral(int id)const{
+            Var v = Literal::createLiteralFromInt(id).getVariable();
+            return choiceHeuristic->getActivityForLiteral(v);
+        }
         
 //        inline void addVariable( const string& name );
         inline void addVariable();

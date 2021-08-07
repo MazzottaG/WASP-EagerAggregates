@@ -26,7 +26,7 @@
 #include "../propagators/ExternalPropagator.h"
 #include "../Literal.h";
 
-const set<string> supportedMethods = {method_plugins_onAnswerSet, method_plugins_onLitTrue, method_plugins_getReasonForLiteral, method_plugins_addedVarName, 
+const set<string> supportedMethods = {method_plugins_addSolver, method_plugins_onAnswerSet, method_plugins_onLitTrue, method_plugins_getReasonForLiteral, method_plugins_addedVarName, 
     method_plugins_onLiteralsUndefined, method_plugins_getVariablesToFreeze, method_plugins_onStartingSolver, method_plugins_onFact, method_plugins_getLiterals, method_plugins_simplifyAtLevelZero};
 
 MyCppEagerInterpreter::~MyCppEagerInterpreter() {
@@ -90,7 +90,10 @@ void MyCppEagerInterpreter::callVoidMethod(const string& method_name, int param1
         eagerConstraint.addedVarName(param1, param2);
     } 
 }
-
+void MyCppEagerInterpreter::addSolver(const Solver& s) {
+    std::cout<<"Adding solver in EagerInterpreter"<<std::endl;
+    eagerConstraint.addSolver(s);
+}
 bool MyCppEagerInterpreter::checkMethod(const string& method_name) const {
     if(method_name == "##check_postponed"){
         return eagerConstraint.check_postponed();

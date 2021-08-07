@@ -39,6 +39,7 @@ using namespace std;
 #define method_plugins_onLiteralsUndefined "onLiteralsUndefined"
 #define method_plugins_getReason "getReason"
 #define method_plugins_getReasonForLiteral "getReasonForLiteral"
+#define method_plugins_addSolver "addSolver"
 #define method_plugins_simplifyAtLevelZero "simplifyAtLevelZero"
 #define method_plugins_onAnswerSet "onAnswerSet"
 #define method_plugins_checkAnswerSet "checkAnswerSet"
@@ -111,6 +112,7 @@ class ExternalPropagator : public Propagator
         bool check_checkAnswerSet;
         bool check_checkPartialInterpretation;
         bool check_postponed;
+        bool check_addSolver;
         bool check_getReasonForLiteral;
         bool check_getReason;
         bool check_getReasonForCheckFailure;
