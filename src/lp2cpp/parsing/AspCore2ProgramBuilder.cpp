@@ -1797,9 +1797,10 @@ std::pair<bool,std::pair<std::string,AggrSetPredicate>> AspCore2ProgramBuilder::
         }
         if(!sharedAggrSet){
             aggrSetPredicates[aggregateSetPredicate]=aggrSet;
+            buildingHead.push_back(aspc::Atom(aggregateSetPredicate,aggrSet.getTerms()));
+            rewriteRule();
         }
-        buildingHead.push_back(aspc::Atom(aggregateSetPredicate,aggrSet.getTerms()));
-        rewriteRule();
+        
     }else{
         //Aggregate contains only one bound literal considering body variables and aggregation variables
         const aspc::Literal* literal = &aggreagateLiterals[0];
@@ -2235,12 +2236,12 @@ aspc::Program & AspCore2ProgramBuilder::getProgram() {
     // }
     
     // #ifdef TRACE_PARSING
-    //     std::cout<<"Original Program"<<std::endl;
-    //     for(const aspc::Rule& r:original_program.getRules()){
-    //         std::cout<<"Rule "<<r.getRuleId()<<" ";
-    //         r.print();
-    //     }
-    //     exit(180);
+        // std::cout<<"Original Program"<<std::endl;
+        // for(const aspc::Rule& r:original_program.getRules()){
+        //     std::cout<<"Rule "<<r.getRuleId()<<" ";
+        //     r.print();
+        // }
+        // exit(180);
     // #endif
     return original_program;
 }

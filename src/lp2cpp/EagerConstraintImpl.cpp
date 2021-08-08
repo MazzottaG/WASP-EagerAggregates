@@ -98,6 +98,8 @@ void EagerConstraintImpl::onAnswerSet(const std::vector<int>& answerSet){
     executionManager.printInternalLiterals();
 }
 void EagerConstraintImpl::onLiteralTrue(int var, int decisionLevel, std::vector<int> & propagatedLiterals) {
+    // std::cout<<"Onlittrue "<<var<<std::endl;
+
 #ifdef PRINT_EXEC_TIMES
     t1_e = high_resolution_clock::now();
     auto solve_duration_e = duration_cast<microseconds>(t1_e - t2_e).count();
@@ -144,6 +146,7 @@ void EagerConstraintImpl::onLiteralTrue(int var, int decisionLevel, std::vector<
     cout << "tot_propr " << prop_time_e / 1000 << endl;
     cout << "tot_solv " << solv_time_e / 1000 << endl;
 #endif
+    // std::cout<<"exit Onlittrue"<<std::endl;
 
 };
 
@@ -273,7 +276,6 @@ void EagerConstraintImpl::addedVarName(int var, const std::string & literalStrin
 }
 
 void EagerConstraintImpl::simplifyAtLevelZero(std::vector<int>& output) {
-
     std::vector<int> inputInterpretation;
     inputInterpretation.push_back(-1);
     for(int fact:facts) {

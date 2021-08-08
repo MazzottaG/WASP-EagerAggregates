@@ -1163,7 +1163,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "explainExternalLiteral(literal,conflictReason,visitedLiterals,true);\n";
         // *out << ind << "std::cout<<\"Explain \"<<-literal<<\" \";l->print();std::cout<<std::endl;\n";
         *out << ind << "explainExternalLiteral(-literal,conflictReason,visitedLiterals,true);\n";
-                        // *out << ind << "std::cout<<\"Inserting -1\"<<std::endl;\n";
+        // *out << ind << "std::cout<<\"Inserting -1\"<<std::endl;\n";
         *out << ind << "propagatedLiterals.push_back(1);\n";
         *out << ind << "reasonForLiteral[literal].clear();\n";
         // *out << ind++ << "for(unsigned i =0; i<conflictReason.size();i++){\n";
@@ -1212,7 +1212,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     *out << --ind << "}else{\n";
                     ind++;
                         *out << ind << "int sign = reasonLiteral>0 ? 1 : -1;\n";
-                        // *out << ind << "std::cout<<\"External literal \"<<sign * literal->getWaspID()<<std::endl;\n";
+                        // *out << ind << "std::cout<<\"External literal \"<<(int)(sign * (int)literal->getWaspID())<<std::endl;\n";
                         *out << ind << "reas.insert(sign * literal->getWaspID());\n";
                     *out << --ind << "}\n";
 
@@ -1794,6 +1794,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         // *out << ind << "if(aux->getPredicateName() == &_sum)std::cout<<\"Saving sum aux \"<<aux->getId(); aux->print();\n";
                         *out << ind << "const auto& insertResult = aux->setStatus(Undef);\n";
                         *out << ind++ << "if (insertResult.second) {\n";
+                            // *out << ind << "std::cout<<aux->getId()<<\" \";aux->print();\n";
                             if(builder->isAggrSetPredicate(aux.getPredicateName()) && aggrSetToAuxVal.count(aux.getPredicateName())!=0){
                                 std::unordered_set<std::string> distinctBody;
                                 for(const aspc::Rule& r : program.getRules()){
@@ -2844,9 +2845,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             // *out << ind << "int sign = literealToProp > 0 ? -1 : 1;\n";
             // *out << ind << "std::cout<<\"VAR: \"<<var <<std::endl;\n";
             *out << ind << "Tuple* literalNotPropagated = factory.getTupleFromWASPID(var);\n";
+            *out << ind << "int internalLit = literealToProp > 0 ? literalNotPropagated->getId() : -literalNotPropagated->getId();\n";
             // *out << ind << "std::cout<<\"Internal \"<<sign*literalNotPropagated->getId()<<std::endl;\n";
             *out << ind++ << "if(literalNotPropagated!=NULL)\n";
-                *out << ind-- << "reasonForLiteral[literalNotPropagated->getId()].clear();\n";
+                *out << ind-- << "reasonForLiteral[internalLit].clear();\n";
         *out << --ind << "}\n";
         *out << ind << "remainingPropagatingLiterals.clear();\n";
         *out << ind++ << "while(currentDecisionLevel > decisionLevel){\n";
@@ -2987,7 +2989,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << --ind << "}\n";
     } else {
         // mode == EAGER_MODE
-        //*out << ind << "std::cout<<\"OnFacts\"<<std::endl;\n";
+        // *out << ind << "std::cout<<\"OnFacts\"<<std::endl;\n";
         *out << ind << "std::vector<int> propagationStack;\n";
         *out << ind++ << "for(unsigned i=1;i<facts.size();i++) {\n";
             // *out << ind << "std::cout<<\"facts: \"<<facts[i]<<std::endl;\n";
@@ -3000,6 +3002,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             // *out << ind << "levelToExtLiterals[currentDecisionLevel].push_back(facts[i]);\n";
 
         *out << --ind << "}\n";
+        // *out << ind << "std::cout<<\"facts read\"<<std::endl;\n";
+        
     }
 
     if (mode == LAZY_MODE) {
@@ -3125,15 +3129,20 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             #ifdef TRACE_PROP_GEN
             *out << ind << "std::cout<<minus;starter.print();std::cout<<\" Starter\"<<std::endl;\n";
             #endif
+            // *out << ind << "std::cout<<minus;starter.print();std::cout<<\" Starter\"<<std::endl;\n";
+
             //*out << ind << "trace_msg(eagerprop,5,minus << starter.toString() << \" as Starter\");\n";
             *out << ind << "propagationStack.pop_back();\n";
             for(const aspc::Rule& r: program.getRules()){
                 compileEagerRule(r,true);
             }
+            // *out << ind << "std::cout<<\"Processed\"<<std::endl;\n";
+
         *out << --ind << "}\n";
     }
     //*out << ind << "trace_msg(eagerprop,2,\"Propagations computed\");\n";
-    *out << ind << "if(conflictCount > heapSize && propagatedLiterals.size() > heapSize) std::sort_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+heapSize,propComparison);\n";
+    // *out << ind << "std::cout<<\"propagation size \"<<propagatedLiterals.size()<<std::endl;\n";
+    *out << ind << "if(conflictCount > heapSize && propagatedLiterals.size() > heapSize){std::cout<<\"sort heap\"<<std::endl; std::sort_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+heapSize,propComparison);}\n";
 #ifdef TRACE_PROP_GEN
     *out << ind << "std::cout<<\"Out execute program on facts\"<<std::endl;\n";
 #endif
@@ -5012,6 +5021,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                     closingPars++;
                 }
             }
+            // *out << ind << "std::cout<<\"Evaluate propagation\"<<std::endl;\n";
             *out << ind++ << "if(tupleU != NULL){\n";
                 if(fromStarter){
                     *out << ind << "int itUndef = tupleU->getId();\n";
@@ -5067,6 +5077,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                             *out << --ind << "}\n";
                         }
                     }
+                    // *out << ind << "std::cout<<\"call handle conflict\"<<std::endl;\n";
                     *out << ind << "handleConflict(-startVar, propagatedLiterals);\n";
                     *out << ind << "return;\n";
                 }else{
