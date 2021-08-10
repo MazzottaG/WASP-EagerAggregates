@@ -76,6 +76,7 @@ namespace aspc {
         virtual void setSolver(const Solver* s){
             solver=s;
             propComparison.s=s;
+
         }
         virtual const std::vector<std::vector<aspc::Literal> > & getFailedConstraints() {
             return failedConstraints;

@@ -63,7 +63,10 @@ std::unordered_map<int,int> actualSum;
 std::unordered_map<int,int> possibleSum;
 bool unRoll=false;
 unsigned conflictCount=0;
+unsigned minConflicts=5;
 unsigned heapSize=10;
+unsigned minHeapSize=5;
+unsigned maxHeapSize=100;
 Executor::~Executor() {
 }
 
@@ -733,10 +736,10 @@ bool propUndefined(const Tuple* tupleU,bool isNegated,std::vector<int>& stack,bo
         int it = tupleU->getWaspID();
         int sign = isNegated == asNegative ? 1 : -1;
         if(remainingPropagatingLiterals.count(it*sign)==0){
-            if(conflictCount > heapSize && propagatedLiterals.size() == heapSize) std::make_heap(propagatedLiterals.begin(),propagatedLiterals.end(),propComparison);
             remainingPropagatingLiterals.insert(it*sign);
             propagatedLiterals.push_back(it*sign);
-            if(conflictCount > heapSize){
+            if(conflictCount > minConflicts){
+                if(propagatedLiterals.size() == heapSize){std::cout<<"Heap size: "<<heapSize<<std::endl;std::make_heap(propagatedLiterals.begin(),propagatedLiterals.end(),propComparison);/*for(int i=0; i < heapSize && i < propagatedLiterals.size(); i++)std::cout<<solver->getActivityForLiteral(propagatedLiterals[i])<<" ";std::cout<<std::endl;*/}
                 if(propagatedLiterals.size() > heapSize){
                     int heapMinimum = propagatedLiterals.front();
                     Activity heapMinimumWeight = solver->getActivityForLiteral(heapMinimum);
@@ -4308,6 +4311,10 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts,std::vector<
             }
         }
     }
-    if(conflictCount > heapSize && propagatedLiterals.size() > heapSize){std::cout<<"sort heap"<<std::endl; std::sort_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+heapSize,propComparison);}
+    if(!propagatedLiterals.empty()){
+        if(solver->getActivityForLiteral(propagatedLiterals.front()) < 1){
+            if(heapSize > minHeapSize)heapSize--;
+        }else if(heapSize < maxHeapSize) heapSize++;
+    }
 }
 }

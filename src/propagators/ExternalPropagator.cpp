@@ -122,6 +122,9 @@ ExternalPropagator::ExternalPropagator(
         solver.addPropagatorAttachedToPartialChecks( this );
     
     check_attribute_atomNames = interpreter->checkAttribute( attribute_plugins_atomNames );
+    if( check_addSolver){
+        interpreter->addSolver(solver);
+    }
    
 }
 
