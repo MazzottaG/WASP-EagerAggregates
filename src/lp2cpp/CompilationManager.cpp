@@ -724,11 +724,11 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "std::unordered_map<int,int> actualSum;\n";
     *out << ind << "std::unordered_map<int,int> possibleSum;\n";
     *out << ind << "bool unRoll=false;\n";
-    *out << ind << "unsigned conflictCount=0;\n";
-    *out << ind << "unsigned minConflicts=5;\n";
-    *out << ind << "unsigned heapSize=10;\n";
-    *out << ind << "unsigned minHeapSize=5;\n";
-    *out << ind << "unsigned maxHeapSize=100;\n";
+    // *out << ind << "unsigned conflictCount=0;\n";
+    // *out << ind << "unsigned minConflicts=5;\n";
+    // *out << ind << "unsigned heapSize=10;\n";
+    // *out << ind << "unsigned minHeapSize=5;\n";
+    // *out << ind << "unsigned maxHeapSize=100;\n";
 
     *out << ind++ << "Executor::~Executor() {\n";
     // for(const aspc::Rule & r : program.getRules()){
@@ -2580,20 +2580,20 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 // *out << ind << "std::cout <<\" \"<<sign*it<<std::endl;\n";
                 *out << ind << "remainingPropagatingLiterals.insert(it*sign);\n";
                 *out << ind << "propagatedLiterals.push_back(it*sign);\n";
-                *out << ind++ << "if(conflictCount > minConflicts){\n";
-                    *out << ind << "if(propagatedLiterals.size() == heapSize){/*std::cout<<\"Heap size: \"<<heapSize<<std::endl;*/std::make_heap(propagatedLiterals.begin(),propagatedLiterals.end(),propComparison);/*for(int i=0; i < heapSize && i < propagatedLiterals.size(); i++)std::cout<<solver->getActivityForLiteral(propagatedLiterals[i])<<\" \";std::cout<<std::endl;*/}\n";
+                // *out << ind++ << "if(conflictCount > minConflicts){\n";
+                //     *out << ind << "if(propagatedLiterals.size() == heapSize){/*std::cout<<\"Heap size: \"<<heapSize<<std::endl;*/std::make_heap(propagatedLiterals.begin(),propagatedLiterals.end(),propComparison);/*for(int i=0; i < heapSize && i < propagatedLiterals.size(); i++)std::cout<<solver->getActivityForLiteral(propagatedLiterals[i])<<\" \";std::cout<<std::endl;*/}\n";
                     
-                    *out << ind++ << "if(propagatedLiterals.size() > heapSize){\n";
-                        *out << ind << "int heapMinimum = propagatedLiterals.front();\n";
-                        *out << ind << "Activity heapMinimumWeight = solver->getActivityForLiteral(heapMinimum);\n";
-                        *out << ind << "Activity currentWeight = solver->getActivityForLiteral(propagatedLiterals.back());\n";
-                        *out << ind++ << "if(currentWeight > heapMinimumWeight){\n";
-                            *out << ind << "std::pop_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+heapSize,propComparison);\n";
-                            *out << ind << "std::swap(propagatedLiterals[heapSize-1],propagatedLiterals[propagatedLiterals.size()-1]);\n";
-                            *out << ind << "std::push_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+heapSize,propComparison);\n";
-                        *out << --ind << "}\n";
-                    *out << --ind << "}\n";
-                *out << --ind << "}\n";
+                //     *out << ind++ << "if(propagatedLiterals.size() > heapSize){\n";
+                //         *out << ind << "int heapMinimum = propagatedLiterals.front();\n";
+                //         *out << ind << "Activity heapMinimumWeight = solver->getActivityForLiteral(heapMinimum);\n";
+                //         *out << ind << "Activity currentWeight = solver->getActivityForLiteral(propagatedLiterals.back());\n";
+                //         *out << ind++ << "if(currentWeight > heapMinimumWeight){\n";
+                //             *out << ind << "std::pop_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+heapSize,propComparison);\n";
+                //             *out << ind << "std::swap(propagatedLiterals[heapSize-1],propagatedLiterals[propagatedLiterals.size()-1]);\n";
+                //             *out << ind << "std::push_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+heapSize,propComparison);\n";
+                //         *out << --ind << "}\n";
+                //     *out << --ind << "}\n";
+                // *out << --ind << "}\n";
             *out << --ind << "}\n";
 
         *out << --ind << "}\n";
@@ -2842,7 +2842,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         //*out << ind << "trace_msg(eagerprop,2,\"Unrolling to level: \"<<decisionLevel << \" \" <<currentDecisionLevel);\n";
         // *out << ind << "std::cout<<\"Unrolling to level: \"<<decisionLevel << \" \" <<currentDecisionLevel<<std::endl;\n";
         // *out << ind << "std::cout<<\"Literals not propagated: \"<<propagatedLiterals.size()<<std::endl;\n";
-        *out << ind << "if(conflictCount<heapSize)conflictCount++;\n";
+        // *out << ind << "if(conflictCount<heapSize)conflictCount++;\n";
         *out << ind++ << "for(int literealToProp : remainingPropagatingLiterals){\n";
             // *out << ind << "std::cout<<\"Literal not propagated: \"<<propagatedLiterals[i] <<std::endl;\n";
             *out << ind << "int var = literealToProp > 0 ? literealToProp : -literealToProp;\n";
@@ -3146,14 +3146,14 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     }
     //*out << ind << "trace_msg(eagerprop,2,\"Propagations computed\");\n";
     // *out << ind << "std::cout<<\"propagation size \"<<propagatedLiterals.size()<<std::endl;\n";
-    *out << ind++ << "if(!propagatedLiterals.empty()){\n";
-        *out << ind++ << "if(solver->getActivityForLiteral(propagatedLiterals.front()) < 1){\n";
-            *out << ind << "if(heapSize > minHeapSize)heapSize--;\n";
-        *out << --ind << "}else if(heapSize < maxHeapSize) heapSize++;\n";
-        // *out << ind << "for(int i=0; i < heapSize && i < propagatedLiterals.size(); i++)\n";
-        //     *out << ind << "std::cout<<solver->getActivityForLiteral(propagatedLiterals[i])<<\" \";\n";
-        // *out << ind << "std::cout<<std::endl;\n";
-    *out << --ind << "}\n"; 
+    // *out << ind++ << "if(!propagatedLiterals.empty()){\n";
+    //     *out << ind++ << "if(solver->getActivityForLiteral(propagatedLiterals.front()) < 1){\n";
+    //         *out << ind << "if(heapSize > minHeapSize)heapSize--;\n";
+    //     *out << --ind << "}else if(heapSize < maxHeapSize) heapSize++;\n";
+    //     // *out << ind << "for(int i=0; i < heapSize && i < propagatedLiterals.size(); i++)\n";
+    //     //     *out << ind << "std::cout<<solver->getActivityForLiteral(propagatedLiterals[i])<<\" \";\n";
+    //     // *out << ind << "std::cout<<std::endl;\n";
+    // *out << --ind << "}\n"; 
 
     // *out << ind << "if(conflictCount > minConflicts && propagatedLiterals.size() > heapSize){std::cout<<\"sort heap\"<<std::endl; std::sort_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+heapSize,propComparison);}\n";
 #ifdef TRACE_PROP_GEN
