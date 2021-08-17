@@ -233,6 +233,11 @@ void EagerConstraintImpl::addedVarName(int var, const std::string & literalStrin
 #ifdef EAGER_DEBUG
     std::cout << "addedVarName " << var << " -> " << literalString << std::endl;
 #endif
+
+#ifdef GROUNDING
+    std::cout << "Undefined literal: " << literalString << std::endl;
+#endif
+
     if (!compilationDone) {
         performCompilation();
         executionManager.initCompiled();

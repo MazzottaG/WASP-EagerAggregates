@@ -207,6 +207,7 @@ void ExecutionManager::compileDynamicLibrary(const string & executablePath, bool
     #else
         executor = new aspc::Executor();
     #endif
+    std::cout<<"Compiled"<<std::endl;
 }
 #else 
 

@@ -1887,6 +1887,9 @@ std::vector<std::string> AspCore2ProgramBuilder::writeAggrIdRule(std::pair<bool,
     return aggrIds;
 }
 void AspCore2ProgramBuilder::rewriteRuleWithCompletion(const aspc::Rule& r){
+    if(!r.isConstraint()){
+        printingPredicate.insert(r.getHead()[0].getPredicateName());
+    }
     if(!r.containsAggregate()){
         for(const aspc::Literal& l:r.getBodyLiterals()){
             buildingBody.push_back(aspc::Literal(l));
