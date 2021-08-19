@@ -63,6 +63,13 @@ void EagerConstraintImpl::performCompilation() {
     }
     compilationDone = true;
     executionManager.setSolver(solver);
+    unsigned minConflict = wasp::Options::eagerPropMinConflict != 0 ? wasp::Options::eagerPropMinConflict : defaultMinConflict;
+    unsigned minHeapSize = wasp::Options::eagerPropMinHeapSize != 0 ? wasp::Options::eagerPropMinHeapSize : defaultMinHeapSize;
+    unsigned maxHeapSize = wasp::Options::eagerPropMaxHeapSize != 0 ? wasp::Options::eagerPropMaxHeapSize : defaultMaxHeapSize; 
+    executionManager.setMinConflict(minConflict);
+    executionManager.setMinHeapSize(minHeapSize);
+    executionManager.setMaxHeapSize(maxHeapSize);
+    executionManager.computeHeapSize();
 }
 
 void EagerConstraintImpl::setFilename(const std::string & fileDirectory, const std::string & filename) {

@@ -43,6 +43,9 @@ public:
     virtual Reason* getPostponedeReason(Literal lit){return executionManager.getPostponedeReason(lit);}
     void addSolver(const Solver& s){solver=&s;}
 private:
+    unsigned defaultMinConflict=250;
+    unsigned defaultMinHeapSize=100;
+    unsigned defaultMaxHeapSize=500;
     
     void performCompilation();
     ExecutionManager executionManager;

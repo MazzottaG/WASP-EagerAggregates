@@ -142,6 +142,9 @@ namespace wasp
 #define OPTIONID_lp2cpp_datalog ( 'z' + 400 )
 #define OPTIONID_compile_eager ( 'z' + 401 )
 #define OPTIONID_compilerDisabled ( 'z' + 402 )
+#define OPTIONID_minConflict ( 'z' + 403 )
+#define OPTIONID_minHeapSize ( 'z' + 404 )
+#define OPTIONID_maxHeapSize ( 'z' + 405 )
 
 #ifdef TRACE_ON
 TraceLevels Options::traceLevels;
@@ -272,6 +275,9 @@ unsigned int Options::multiThreshold = 0;
 
 bool Options::lp2cppDatalog = false;
 bool Options::compilerDisabled = false;
+unsigned Options::eagerPropMinConflict = 0;
+unsigned Options::eagerPropMinHeapSize = 0;
+unsigned Options::eagerPropMaxHeapSize = 0;
 string Options::compile_eager = "";
 
 
@@ -343,6 +349,9 @@ Options::parse(
                 //options for running lp2cpp
                 { "lp2cpp-datalog", no_argument, NULL, OPTIONID_lp2cpp_datalog },
                 { "compilerDisabled", no_argument, NULL, OPTIONID_compilerDisabled },
+                { "min-conflict", required_argument, NULL, OPTIONID_minConflict },
+                { "min-heap-size", required_argument, NULL, OPTIONID_minHeapSize },
+                { "max-heap-size", required_argument, NULL, OPTIONID_maxHeapSize },
                 
                 //options for compiling only
                 { "compile-eager", required_argument, NULL, OPTIONID_compile_eager },
@@ -927,6 +936,15 @@ Options::parse(
 
             case OPTIONID_compilerDisabled:
                 compilerDisabled = true;
+                break;
+            case OPTIONID_minConflict:
+                eagerPropMinConflict = atoi( optarg );
+                break;
+            case OPTIONID_minHeapSize:
+                eagerPropMinHeapSize = atoi( optarg );
+                break;
+            case OPTIONID_maxHeapSize:
+                eagerPropMaxHeapSize = atoi( optarg );
                 break;
                 
             case OPTIONID_compile_eager:

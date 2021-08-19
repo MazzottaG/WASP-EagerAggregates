@@ -72,6 +72,10 @@ public:
     virtual ostream& print( ostream& o ) const;
     virtual void onNavigatingForUnsatCore( const Solver& solver, vector< unsigned int >& visited, unsigned int numberOfCalls, Literal lit );
     void setSolver(const Solver* s){executor->setSolver(s);}
+    void setMinConflict(unsigned minConflict){executor->setMinConflict(minConflict);}
+    void setMinHeapSize(unsigned minHeapSize){executor->setMinHeapSize(minHeapSize);}
+    void setMaxHeapSize(unsigned maxHeapSize){executor->setMaxHeapSize(maxHeapSize);}
+    void computeHeapSize(){executor->computeHeapSize();}
 private:
     aspc::Executor* executor;
     void (*destroy)(aspc::Executor*);

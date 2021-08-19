@@ -73,6 +73,9 @@ namespace aspc {
         virtual void handleConflict(int,std::vector<int>&);
         virtual void unRollToLevel(int);
         virtual void printInternalLiterals();
+        virtual void setMinConflict(unsigned minConflict){Executor::minConflict=minConflict;}
+        virtual void setMinHeapSize(unsigned minHeapSize){Executor::minHeapSize=minHeapSize;}
+        virtual void setMaxHeapSize(unsigned maxHeapSize){Executor::maxHeapSize=maxHeapSize;}
         virtual void setSolver(const Solver* s){
             solver=s;
             propComparison.s=s;
@@ -96,11 +99,19 @@ namespace aspc {
         virtual const std::unordered_map<int, std::vector<int> > & getPropagatedLiteralsAndReasons() const {
             return propagatedLiteralsAndReasons;
         }
-
+        void computeHeapSize(){
+            heapSize=(maxHeapSize - minHeapSize)/2;
+            // heapSize=maxHeapSize;
+            // heapSize=20;
+        }
         const UnorderedSet<int>& getConflictReason()const {return conflictReason;}
         void clearConflictReason(){conflictReason.clear();}
         
     private:
+        unsigned minConflict;
+        unsigned minHeapSize;
+        unsigned maxHeapSize;
+        unsigned heapSize;
         std::vector<std::vector<aspc::Literal> > failedConstraints;
         std::unordered_map<int, std::vector<int> > propagatedLiteralsAndReasons;
         std::unordered_set<int> remainingPropagatingLiterals;
@@ -110,6 +121,7 @@ namespace aspc {
         //std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> propagatedLiteralsAndReasons;
         std::vector<std::string> bodyLiterals;
         PropComparator propComparison;  
+        
     };
 }
 #endif
