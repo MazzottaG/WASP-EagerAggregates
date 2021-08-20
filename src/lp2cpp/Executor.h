@@ -100,8 +100,8 @@ namespace aspc {
             return propagatedLiteralsAndReasons;
         }
         void computeHeapSize(){
-            heapSize=(maxHeapSize - minHeapSize)/2;
-            // heapSize=maxHeapSize;
+            // heapSize=(maxHeapSize - minHeapSize)/2;
+            heapSize=maxHeapSize;
             // heapSize=20;
         }
         const UnorderedSet<int>& getConflictReason()const {return conflictReason;}

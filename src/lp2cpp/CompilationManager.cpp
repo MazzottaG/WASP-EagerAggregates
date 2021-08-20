@@ -2589,7 +2589,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 *out << ind << "remainingPropagatingLiterals.insert(it*sign);\n";
                 *out << ind << "propagatedLiterals.push_back(it*sign);\n";
                 *out << ind++ << "if(conflictCount > minConflict){\n";
-                    *out << ind << "if(propagatedLiterals.size() == heapSize){/*std::cout<<\"Heap size: \"<<heapSize<<std::endl;*/std::make_heap(propagatedLiterals.begin(),propagatedLiterals.end(),propComparison);/*for(int i=0; i < heapSize && i < propagatedLiterals.size(); i++)std::cout<<solver->getActivityForLiteral(propagatedLiterals[i])<<\" \";std::cout<<std::endl;*/}\n";
+                    // *out << ind << "if(propagatedLiterals.size() == heapSize){/*std::cout<<\"Heap size: \"<<heapSize<<std::endl;*/std::make_heap(propagatedLiterals.begin(),propagatedLiterals.end(),propComparison);/*for(int i=0; i < heapSize && i < propagatedLiterals.size(); i++)std::cout<<solver->getActivityForLiteral(propagatedLiterals[i])<<\" \";std::cout<<std::endl;*/}\n";
                     
                     *out << ind++ << "if(propagatedLiterals.size() > heapSize){\n";
                         *out << ind << "int heapMinimum = propagatedLiterals.front();\n";
@@ -2600,11 +2600,11 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                             *out << ind << "std::swap(propagatedLiterals[heapSize-1],propagatedLiterals[propagatedLiterals.size()-1]);\n";
                             *out << ind << "std::push_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+heapSize,propComparison);\n";
                         *out << --ind << "}\n";
-                    *out << --ind << "}\n";
-                    // *out << --ind << "}else{\n";
-                    // ind++;
-                    //     *out << ind << "std::push_heap(propagatedLiterals.begin(),propagatedLiterals.end(),propComparison);\n";
                     // *out << --ind << "}\n";
+                    *out << --ind << "}else{\n";
+                    ind++;
+                        *out << ind << "std::push_heap(propagatedLiterals.begin(),propagatedLiterals.end(),propComparison);\n";
+                    *out << --ind << "}\n";
                 *out << --ind << "}\n";
             *out << --ind << "}\n";
 
@@ -2855,8 +2855,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         #ifdef TRACE_PROPAGATOR
         *out << ind << "std::cout<<\"Unrolling to level: \"<<decisionLevel << \" \" <<currentDecisionLevel<<std::endl;\n";
         #endif
-        // *out << ind << "std::cout<<\"Literals not propagated: \"<<propagatedLiterals.size()<<std::endl;\n";
         *out << ind << "conflictCount++;\n";
+        // *out << ind << "std::cout<<\"Conflict count: \"<<conflictCount<<std::endl;\n";
+
         #ifdef TRACE_PROPAGATOR
         *out << ind << "std::cout<<\"Unfolding incomplete propagation\"<<std::endl;\n";
         #endif
@@ -3166,17 +3167,17 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     }
     //*out << ind << "trace_msg(eagerprop,2,\"Propagations computed\");\n";
     // *out << ind << "std::cout<<\"propagation size \"<<propagatedLiterals.size()<<std::endl;\n";
-    *out << ind++ << "if(!propagatedLiterals.empty()){\n";
-        *out << ind++ << "if(solver->getActivityForLiteral(propagatedLiterals.front()) < 1){\n";
-            *out << ind << "if(heapSize > minHeapSize)heapSize--;\n";
-        *out << --ind << "}else if(heapSize < Executor::maxHeapSize) heapSize++;\n";
-        // *out << ind << "for(int i=0; i < heapSize && i < propagatedLiterals.size(); i++)\n";
-        //     *out << ind << "std::cout<<solver->getActivityForLiteral(propagatedLiterals[i])<<\" \";\n";
-        // *out << ind << "std::cout<<std::endl;\n";
-    *out << --ind << "}\n"; 
+    // *out << ind++ << "if(!propagatedLiterals.empty()){\n";
+    //     *out << ind++ << "if(solver->getActivityForLiteral(propagatedLiterals.front()) < 1){\n";
+    //         *out << ind << "if(heapSize > minHeapSize)heapSize--;\n";
+    //     *out << --ind << "}else if(heapSize < Executor::maxHeapSize) heapSize++;\n";
+    //     // *out << ind << "for(int i=0; i < heapSize && i < propagatedLiterals.size(); i++)\n";
+    //     //     *out << ind << "std::cout<<solver->getActivityForLiteral(propagatedLiterals[i])<<\" \";\n";
+    //     // *out << ind << "std::cout<<std::endl;\n";
+    // *out << --ind << "}\n"; 
 
-    *out << ind << "if(conflictCount > minConflict && propagatedLiterals.size() >= heapSize){/*std::cout<<\"sort heap\"<<std::endl;*/ std::sort_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+heapSize,propComparison);}\n";
-    // *out << ind << "if(conflictCount > minConflict && propagatedLiterals.size() > 1){/*std::cout<<\"sort heap\"<<std::endl;*/ int currentHeapSize = propagatedLiterals.size() < heapSize ? propagatedLiterals.size() : heapSize; std::sort_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+currentHeapSize,propComparison);}\n";
+    // *out << ind << "if(conflictCount > minConflict && propagatedLiterals.size() >= heapSize){/*std::cout<<\"sort heap\"<<std::endl;*/ std::sort_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+heapSize,propComparison);}\n";
+    *out << ind << "if(conflictCount > minConflict && propagatedLiterals.size() > 1){int currentHeapSize = propagatedLiterals.size() < heapSize ? propagatedLiterals.size() : heapSize; /*std::cout<<\"sort heap: \"<<currentHeapSize<<std::endl;*/ std::sort_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+currentHeapSize,propComparison);}\n";
 #ifdef TRACE_PROP_GEN
     *out << ind << "std::cout<<\"Out execute program on facts\"<<std::endl;\n";
 #endif
@@ -3864,9 +3865,10 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                        *out << ind++ << "if(tuples->size()>="<<guard<<"){\n";
 
                         //*out << ind << "std::cout<<\"Conflitct on aggregate start from aggrId false "<<r.getRuleId()<<"\"<<std::endl;\n";
+                        *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[-startVar];\n";
                         *out << ind++ << "for(unsigned i =0; i< tuples->size(); i++){\n";
                             *out << ind << "int it = tuples->at(i);\n";
-                            *out << ind << "reasonForLiteral[-startVar].insert(it);\n";
+                            *out << ind << "reas->insert(it);\n";
                         *out << --ind << "}\n";
                         *out << ind << "handleConflict(-startVar, propagatedLiterals);\n";
                         *out << ind << "return;\n";
@@ -3881,18 +3883,19 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                 *out << ind++ << "if(actSum >= "<<guard<<"-currentTuple->at(0)){\n";
                                     *out << ind << "int itProp =currentTuple->getId();\n";
                                     *out << ind++ << "if(reasonForLiteral.count(-itProp)==0 || reasonForLiteral[-itProp].empty()){\n";
+                                        *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[-itProp];\n";
                                         *out << ind++ << "if(reason.empty()){\n";
                                             *out << ind++ << "for(unsigned i =0; i< tuples->size(); i++){\n";
                                                 *out << ind << "int it = tuples->at(i);\n";
                                                 *out << ind << "reason.push_back(it);\n";
-                                                *out << ind << "reasonForLiteral[-itProp].insert(it);\n";
+                                                *out << ind << "reas->insert(it);\n";
                                             *out << --ind << "}\n";
                                             *out << ind << "reason.push_back(startVar);\n";
-                                            *out << ind << "reasonForLiteral[-itProp].insert(startVar);\n";
+                                            *out << ind << "reas->insert(startVar);\n";
                                         *out << --ind << "}else{\n";
                                         ind++;
                                             *out << ind++ << "for(int reasonLit : reason)\n";
-                                                *out << ind-- << "reasonForLiteral[-itProp].insert(reasonLit);\n";
+                                                *out << ind-- << "reas->insert(reasonLit);\n";
                                         *out << --ind << "}\n";
                                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -3914,18 +3917,19 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                 *out << ind++ << "if(actSum >= "<<guard<<"-currentTuple->at("<<varIndex<<")){\n";
                                     *out << ind << "int itProp = currentTuple->getId();\n";
                                         *out << ind++ << "if(reasonForLiteral.count(-itProp)==0 || reasonForLiteral[-itProp].empty()){\n";
+                                        *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[-itProp];\n";
                                         *out << ind++ << "if(reason.empty()){\n";
                                             *out << ind++ << "for(unsigned i =0; i< tuples->size(); i++){\n";
                                                 *out << ind << "int it = tuples->at(i);\n";
                                                 *out << ind << "reason.push_back(it);\n";
-                                                *out << ind << "reasonForLiteral[-itProp].insert(it);\n";
+                                                *out << ind << "reas->insert(it);\n";
                                             *out << --ind << "}\n";
                                             *out << ind << "reason.push_back(startVar);\n";
-                                            *out << ind << "reasonForLiteral[-itProp].insert(startVar);\n";
+                                            *out << ind << "reas->insert(startVar);\n";
                                         *out << --ind << "}else{\n";
                                         ind++;
                                             *out << ind++ << "for(int reasonLit : reason)\n";
-                                                *out << ind-- << "reasonForLiteral[-itProp].insert(reasonLit);\n";
+                                                *out << ind-- << "reas->insert(reasonLit);\n";
                                         *out << --ind << "}\n";
                                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -3947,8 +3951,9 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                 *out << ind++ << "while(!tuplesU->empty()){\n";
                                     *out << ind << "int itProp = tuplesU->at(0);\n";
                                     *out << ind++ << "if(reasonForLiteral.count(-itProp)==0 || reasonForLiteral[-itProp].empty()){\n";
+                                        *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[-itProp];\n";
                                         *out << ind++ << "for(int reasonLit : reason)\n";
-                                            *out << ind-- << "reasonForLiteral[-itProp].insert(reasonLit);\n";
+                                            *out << ind-- << "reas->insert(reasonLit);\n";
                                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     *out << ind << "propUndefined(factory.getTupleFromInternalID(tuplesU->at(0)),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
@@ -3957,8 +3962,9 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                 *out << ind++ << "for(unsigned i =0; i<tuplesU->size(); i++){\n";
                                     *out << ind << "int itProp = tuplesU->at(i);\n";
                                     *out << ind++ << "if(reasonForLiteral.count(-itProp)==0 || reasonForLiteral[-itProp].empty()){\n";
+                                        *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[-itProp];\n";
                                         *out << ind++ << "for(int reasonLit : reason)\n";
-                                            *out << ind-- << "reasonForLiteral[-itProp].insert(reasonLit);\n";
+                                            *out << ind-- << "reas->insert(reasonLit);\n";
                                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     *out << ind << "propUndefined(factory.getTupleFromInternalID(tuplesU->at(i)),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
@@ -3978,9 +3984,10 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                         *out << ind++ << "if(tuples->size()+tuplesU->size() < "<<guard<<"){\n";
                         //*out << ind << "std::cout<<\"Conflitct on aggregate starting from aggrId true "<<r.getRuleId()<<"\"<<std::endl;\n";
                         *out << ind << "const std::vector<int>* tuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                        *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[-startVar];\n";
                         *out << ind++ << "for(unsigned i = 0; i < tuplesF->size(); i++){\n";
                             *out << ind << "int it = tuplesF->at(i);\n";
-                            *out << ind << "reasonForLiteral[-startVar].insert(-it);\n";
+                            *out << ind << "reas->insert(-it);\n";
                         *out << --ind << "}\n";
                         *out << ind << "handleConflict(-startVar, propagatedLiterals);\n";
                         *out << ind << "return;\n";
@@ -3995,11 +4002,12 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                     *out << ind << "int itProp = tuplesU->at(index);\n";
                                     *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].empty()){\n";
                                         *out << ind << "const std::vector<int>* tuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                                        *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[itProp];\n";
                                         *out << ind++ << "for(unsigned i = 0; i < tuplesF->size(); i++){\n";
                                             *out << ind << "int it = tuplesF->at(i);\n";
-                                            *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
+                                            *out << ind << "reas->insert(-it);\n";
                                         *out << --ind << "}\n";
-                                        *out << ind << "reasonForLiteral[itProp].insert(startVar);\n";
+                                        *out << ind << "reas->insert(startVar);\n";
                                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     // reason contains aggr_id and all aggr_set false
@@ -4022,11 +4030,12 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                     *out << ind << "int itProp = tuplesU->at(index);\n";
                                     *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].empty()){\n";
                                         *out << ind << "const std::vector<int>* tuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                                        *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[itProp];\n";
                                         *out << ind++ << "for(unsigned i = 0; i < tuplesF->size(); i++){\n";
                                             *out << ind << "int it = tuplesF->at(i);\n";
-                                            *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
+                                            *out << ind << "reas->insert(-it);\n";
                                         *out << --ind << "}\n";
-                                        *out << ind << "reasonForLiteral[itProp].insert(startVar);\n";
+                                        *out << ind << "reas->insert(startVar);\n";
                                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     // reason contains aggr_id and all aggr_set false
@@ -4043,11 +4052,12 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                 *out << ind << "int itProp = tuplesU->at(0);\n";
                                 *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].empty()){\n";
                                     *out << ind << "const std::vector<int>* tuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                                    *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[itProp];\n";
                                     *out << ind++ << "for(unsigned i = 0; i < tuplesF->size(); i++){\n";
                                         *out << ind << "int it = tuplesF->at(i);\n";
-                                        *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
+                                        *out << ind << "reas->insert(-it);\n";
                                     *out << --ind << "}\n";
-                                    *out << ind << "reasonForLiteral[itProp].insert(startVar);\n";
+                                    *out << ind << "reas->insert(startVar);\n";
                                 *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                 // reason contains aggr_id and all aggr_set false
@@ -4058,11 +4068,12 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                 *out << ind << "int itProp = tuplesU->at(index);\n";
                                 *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].empty()){\n";
                                     *out << ind << "const std::vector<int>* tuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                                    *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[itProp];\n";
                                     *out << ind++ << "for(unsigned i = 0; i < tuplesF->size(); i++){\n";
                                         *out << ind << "int it = tuplesF->at(i);\n";
-                                        *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
+                                        *out << ind << "reas->insert(-it);\n";
                                     *out << --ind << "}\n";
-                                    *out << ind << "reasonForLiteral[itProp].insert(startVar);\n";
+                                    *out << ind << "reas->insert(startVar);\n";
                                 *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                 // reason contains aggr_id and all aggr_set false
@@ -4145,9 +4156,10 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     if(fromStarter){
                         *out << ind << "int itProp = tuples->at(i);\n";
                         *out << ind << "const std::vector<int>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                        *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[-itProp];\n";
                         *out << ind++ << "for(unsigned j = 0; j < joinTuplesF->size(); j++){\n";
                             *out << ind << "int it = joinTuplesF->at(j);\n";
-                            *out << ind << "reasonForLiteral[-itProp].insert(-it);\n";
+                            *out << ind << "reas->insert(-it);\n";
                         *out << --ind << "}\n";
                         *out << ind << "handleConflict(-itProp, propagatedLiterals);\n";
                         *out << ind << "return;\n";
@@ -4166,12 +4178,13 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             *out << ind << "int itProp = joinTuplesU->at(index);\n";
                             *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].empty()){\n";
                                 *out << ind << "const std::vector<int>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                                *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[itProp];\n";
                                 *out << ind++ << "for(unsigned i = 0; i < joinTuplesF->size(); i++){\n";
                                     *out << ind << "int it =joinTuplesF->at(i);\n";
-                                    *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
+                                    *out << ind << "reas->insert(-it);\n";
                                 *out << --ind << "}\n";
                                 *out << ind << "int itAggrId = tuples->at(i);\n";
-                                *out << ind << "reasonForLiteral[itProp].insert(itAggrId);\n";
+                                *out << ind << "reas->insert(itAggrId);\n";
                             *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                             // reason contains aggr_id and all aggr_set false
@@ -4193,12 +4206,13 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             *out << ind << "int itProp = joinTuplesU->at(index);\n";
                             *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].empty()){\n";
                                 *out << ind << "const std::vector<int>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                                *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[itProp];\n";
                                 *out << ind++ << "for(unsigned i = 0; i < joinTuplesF->size(); i++){\n";
                                     *out << ind << "int it = joinTuplesF->at(i);\n";
-                                    *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
+                                    *out << ind << "reas->insert(-it);\n";
                                 *out << --ind << "}\n";
                                 *out << ind << "int itAggrId = tuples->at(i);\n";
-                                *out << ind << "reasonForLiteral[itProp].insert(itAggrId);\n";
+                                *out << ind << "reas->insert(itAggrId);\n";
                             *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                             // reason contains body, aggr_id and all aggr_set false
@@ -4215,12 +4229,14 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             *out << ind << "int itProp = joinTuplesU->at(0);\n";
                             *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].empty()){\n";
                                 *out << ind << "const std::vector<int>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                                *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[itProp];\n";
+
                                 *out << ind++ << "for(unsigned i = 0; i < joinTuplesF->size(); i++){\n";
                                     *out << ind << "int it = joinTuplesF->at(i);\n";
-                                    *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
+                                    *out << ind << "reas->insert(-it);\n";
                                 *out << --ind << "}\n";
                                 *out << ind << "int itAggrId = tuples->at(i);\n";
-                                *out << ind << "reasonForLiteral[itProp].insert(itAggrId);\n";
+                                *out << ind << "reas->insert(itAggrId);\n";
                             *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                             // reason contains body, aggr_id and all aggr_set false
@@ -4231,12 +4247,14 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             *out << ind << "int itProp = joinTuplesU->at(index);\n";
                             *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].empty()){\n";
                                 *out << ind << "const std::vector<int>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                                *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[itProp];\n";
+
                                 *out << ind++ << "for(unsigned i = 0; i < joinTuplesF->size(); i++){\n";
                                     *out << ind << "int it = joinTuplesF->at(i);\n";
-                                    *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
+                                    *out << ind << "reas->insert(-it);\n";
                                 *out << --ind << "}\n";
                                 *out << ind << "int itAggrId = tuples->at(i);\n";
-                                *out << ind << "reasonForLiteral[itProp].insert(itAggrId);\n";
+                                *out << ind << "reas->insert(itAggrId);\n";
                             *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                             // reason contains body, aggr_id and all aggr_set false
@@ -4287,9 +4305,11 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     //*out << ind << "std::cout<<\"Conflitct on aggregate starting from false aggr id "<<r.getRuleId()<<"\"<<actualSum[aggrIdIt]<<std::endl;\n";
                     if(fromStarter){
                         *out << ind << "int itProp = tuplesF->at(i);\n";
+                        *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[itProp];\n";
+
                         *out << ind++ << "for(unsigned j =0; j< joinTuples->size(); j++){\n";
                             *out << ind << "int it = joinTuples->at(j);\n";
-                            *out << ind << "reasonForLiteral[itProp].insert(it);\n";
+                            *out << ind << "reas->insert(it);\n";
                         *out << --ind << "}\n";
                         *out << ind << "handleConflict(itProp, propagatedLiterals);\n";
                         *out << ind << "return;\n";
@@ -4321,19 +4341,21 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                         }
 
                             *out << ind++ << "if(reasonForLiteral.count(-itProp) == 0 || reasonForLiteral[-itProp].empty()){\n";
+                                *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[-itProp];\n";
+
                                 *out << ind++ << "if(reason.empty()){\n";
                                     *out << ind++ << "for(unsigned i =0; i< joinTuples->size(); i++){\n";
                                         *out << ind << "int it = joinTuples->at(i);\n";
                                         *out << ind << "reason.push_back(it);\n";
-                                        *out << ind << "reasonForLiteral[-itProp].insert(it);\n";
+                                        *out << ind << "reas->insert(it);\n";
                                     *out << --ind << "}\n";
                                     *out << ind << "int it = tuplesF->at(i);\n";
                                     *out << ind << "reason.push_back(-it);\n";
-                                    *out << ind << "reasonForLiteral[-itProp].insert(-it);\n";
+                                    *out << ind << "reas->insert(-it);\n";
                                 *out << --ind << "}else{\n";
                                 ind++;
                                     *out << ind++ << "for(int reasonLit : reason)\n";
-                                        *out << ind-- << "reasonForLiteral[-itProp].insert(reasonLit);\n";
+                                        *out << ind-- << "reas->insert(reasonLit);\n";
                                 *out << --ind << "}\n";
                             *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -4362,19 +4384,21 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                         }
                             *out << ind << "int itProp = joinTuplesU->at(index);\n";
                             *out << ind++ << "if(reasonForLiteral.count(-itProp) == 0 || reasonForLiteral[-itProp].empty()){\n";
+                                *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[-itProp];\n";
+
                                 *out << ind++ << "if(reason.empty()){\n";
                                     *out << ind++ << "for(unsigned i =0; i< joinTuples->size(); i++){\n";
                                         *out << ind << "int it = joinTuples->at(i);\n";
                                         *out << ind << "reason.push_back(it);\n";
-                                        *out << ind << "reasonForLiteral[-itProp].insert(it);\n";
+                                        *out << ind << "reas->insert(it);\n";
                                     *out << --ind << "}\n";
                                     *out << ind << "int it = tuplesF->at(i);\n";
                                     *out << ind << "reason.push_back(-it);\n";
-                                    *out << ind << "reasonForLiteral[-itProp].insert(-it);\n";
+                                    *out << ind << "reas->insert(-it);\n";
                                 *out << --ind << "}else{\n";
                                 ind++;
                                     *out << ind++ << "for(int reasonLit : reason)\n";
-                                        *out << ind-- << "reasonForLiteral[-itProp].insert(reasonLit);\n";
+                                        *out << ind-- << "reas->insert(reasonLit);\n";
                                 *out << --ind << "}\n";
                             *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -4424,9 +4448,11 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
 
                     *out << ind << "int itProp = tuplesU->at(i);\n";
                     *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].empty()){\n";
+                        *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[itProp];\n";
+
                         *out << ind++ << "for(unsigned j = 0; j < joinTuples->size(); j++){\n";
                             *out << ind << "int it = joinTuples->at(j);\n";
-                            *out << ind << "reasonForLiteral[itProp].insert(it);\n";
+                            *out << ind << "reas->insert(it);\n";
                         *out << --ind << "}\n";
                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -4440,9 +4466,11 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     *out << ind << "int itProp = tuplesU->at(i);\n";
                     *out << ind++ << "if(reasonForLiteral.count(-itProp) == 0 || reasonForLiteral[-itProp].empty()){\n";
                         *out << ind << "const std::vector<int>* joinTuplesF = &f"<<mapName<<".getValues(sharedVar);\n";
+                        *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[-itProp];\n";
+
                         *out << ind++ << "for(unsigned j = 0; j < joinTuplesF->size(); j++){\n";
                             *out << ind << "int it = joinTuplesF->at(j);\n";
-                            *out << ind << "reasonForLiteral[-itProp].insert(-it);\n";
+                            *out << ind << "reas->insert(-it);\n";
                             // *out << ind << "std::cout<<-it<<std::endl;\n";
                         *out << --ind << "}\n";
                     *out << --ind << "}\n";
@@ -4567,9 +4595,11 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                             *out << k << "_";
                                         }
                                         *out << ".getValues({"<<boundTerms<<"});\n";
+                                        *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[-itHead];\n";
+
                                         *out << ind++ << "for(unsigned i=0;i<tuplesF->size();i++){\n";
                                             *out << ind << "int it = tuplesF->at(i);\n";
-                                            *out << ind << "reasonForLiteral[-itHead].insert(-it);\n";
+                                            *out << ind << "reas->insert(-it);\n";
                                         *out << --ind << "}\n";
                                         *out << ind << "handleConflict(-itHead, propagatedLiterals);\n";
                                         *out << ind << "return;\n";
@@ -4582,12 +4612,14 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                                 *out << k << "_";
                                             }
                                             *out << ".getValues({"<<boundTerms<<"});\n";
+                                            *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[itProp];\n";
+
                                             *out << ind++ << "for(unsigned i=0;i<tuplesF->size();i++){\n";
                                                 *out << ind << "int it = tuplesF->at(i);\n";
-                                                *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
+                                                *out << ind << "reas->insert(-it);\n";
                                             *out << --ind << "}\n";
                                             *out << ind << "int it = head->getId();\n";
-                                            *out << ind << "reasonForLiteral[itProp].insert(it);\n";
+                                            *out << ind << "reas->insert(it);\n";
                                         *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                         *out << ind << "propUndefined(factory.getTupleFromInternalID(tuplesU->at(0)),false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
@@ -4602,9 +4634,11 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                                 *out << k << "_";
                                             }
                                             *out << ".getValues({"<<boundTerms<<"});\n";
+                                            *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[-itHead];\n";
+
                                             *out << ind++ << "for(unsigned i=0;i<tuplesF->size();i++){\n";
                                                 *out << ind << "int it = tuplesF->at(i);\n";
-                                                *out << ind << "reasonForLiteral[-itHead].insert(-it);\n";
+                                                *out << ind << "reas->insert(-it);\n";
                                             *out << --ind << "}\n";
                                         *out << --ind << "}\n";
                                         //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -4696,9 +4730,11 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                         *out << k << "_";
                                     }
                                     *out << ".getValues({"<<boundTerms<<"});\n";
+                                    *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[-startVar];\n";
+
                                     *out << ind++ << "for(unsigned i=0; i<tuplesF->size(); i++){\n";
                                         *out << ind << "int it = tuplesF->at(i);\n";
-                                        *out << ind << "reasonForLiteral[-startVar].insert(-it);\n";
+                                        *out << ind << "reas->insert(-it);\n";
                                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"conflict on rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     *out << ind << "handleConflict(-startVar, propagatedLiterals);\n";
@@ -4714,11 +4750,13 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                             *out << k << "_";
                                         }
                                         *out << ".getValues({"<<boundTerms<<"});\n";
+                                        *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[itProp];\n";
+
                                         *out << ind++ << "for(unsigned i=0; i<tuplesF->size(); i++){\n";
                                             *out << ind << "int it = tuplesF->at(i);\n";
-                                            *out << ind << "reasonForLiteral[itProp].insert(-it);\n";
+                                            *out << ind << "reas->insert(-it);\n";
                                         *out << --ind << "}\n";
-                                        *out << ind << "reasonForLiteral[itProp].insert(startVar);\n";
+                                        *out << ind << "reas->insert(startVar);\n";
                                     *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     *out << ind << "propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
@@ -5083,6 +5121,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                     *out << ind << "var*=itUndef;\n";
                     // *out << ind << "std::cout<<\"compute reason for \"<<var<<std::endl;\n";
                     *out << ind++ << "if(reasonForLiteral.count(var) == 0 || reasonForLiteral[var].empty()){\n";
+                        *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[var];\n";
 
                         for(unsigned index = 0; index<oredered_body.size();index++){
                             if(oredered_body[index]->isLiteral()){
@@ -5096,7 +5135,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                 }
                                     std::string sign = l->isNegated() ? "-1" : "1";
                                         // *out << ind << "std::cout<<\"add to reason of \"<<var<<\": \"<<it*"<<sign<<"<<std::endl;\n";
-                                    *out << ind << "reasonForLiteral[var].insert(it*"<<sign<<");\n";
+                                    *out << ind << "reas->insert(it*"<<sign<<");\n";
                                 *out << --ind << "}\n";
                             }
                         }
@@ -5122,6 +5161,8 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
             ind++;
                 // *out << ind << "std::cout<<\"Conflict On Constraint "<<r.getRuleId()<<"\"<<std::endl;\n";
                 if(fromStarter){
+                    *out << ind << "VectorAsSet<int>* reas = &reasonForLiteral[-startVar];\n";
+
                     for(unsigned index = 1; index<oredered_body.size();index++){
                         if(oredered_body[index]->isLiteral()){
                             const aspc::Literal* l =  (aspc::Literal*)oredered_body[index];
@@ -5129,7 +5170,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                 *out << ind << "int it = tuple"<<index<<"->getId();\n";
                                 // *out << ind << "std::cout<<it<<\" \";tuple"<<index<<"->print();\n";
                                 std::string sign = l->isNegated() ? "-1" : "1";
-                                *out << ind << "reasonForLiteral[-startVar].insert(it*"<<sign<<");\n";
+                                *out << ind << "reas->insert(it*"<<sign<<");\n";
                             *out << --ind << "}\n";
                         }
                     }
