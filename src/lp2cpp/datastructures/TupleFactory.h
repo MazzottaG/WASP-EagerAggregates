@@ -4,6 +4,8 @@
 #include <list>
 #include <cassert>
 #include "TupleLight.h"
+#include <variant>
+
 struct TuplePointerHash {
 
    inline std::size_t operator()(const TupleLight* v) const {
@@ -26,6 +28,7 @@ class TupleFactory{
         std::vector<TupleLight*> internalIDToTuple;
         std::unordered_map<int,TupleLight*> waspIDToTuple;
         std::list<TupleLight> storage;
+        std::unordered_map<const std::string*,unsigned> aggregateSetToIndex;
 
     public:
         static TupleLight bufferTuple;
@@ -35,6 +38,7 @@ class TupleFactory{
         TupleFactory(/* args */){
             storage.push_back(TupleLight());
             internalIDToTuple.push_back(&storage.back());
+            AggregateSetCmp::factory=this;
         }
         
         ~TupleFactory(){
@@ -43,25 +47,20 @@ class TupleFactory{
         void removeFromCollisionsList(int id){
             if(id < internalIDToTuple.size()){
                 TupleLight* tupleToRemove = internalIDToTuple[id];
-                // std::cout<<"Removing from collisionsList ";tupleToRemove->print();std::cout<<std::endl;
-                std::vector<std::pair<std::vector<int>*,unsigned>>* collisionsLists = &tupleToRemove->getCollisionsLists();
+                std::vector<std::pair<std::variant< std::vector<int>, std::set<int,AggregateSetCmp> >*,unsigned>>* collisionsLists = &tupleToRemove->getCollisionsLists();
                 for (unsigned i=0; i<collisionsLists->size(); i++) {
-                    std::vector<int> & collisionList = *(collisionsLists->at(i).first);
-                    // std::cout<<"Original collisions list: "<<std::endl;
-                    // for(unsigned id : collisionList){
-                    //     internalIDToTuple[id]->print();
-                    // }
-                    // std::cout<<std::endl;
+                    std::variant< std::vector<int>, std::set<int,AggregateSetCmp> >* collisionList = collisionsLists->at(i).first;
                     unsigned index = collisionsLists->at(i).second;
-                    collisionList[index] = collisionList[collisionList.size() - 1];
-                    // std::cout<<"Swapping with ";internalIDToTuple[collisionList[index]]->print();std::cout<<std::endl;
-                    internalIDToTuple[collisionList[index]]->setCollisionListIndex(&collisionList, index,i);
-                    collisionList.pop_back();
-                    // std::cout<<"New collisions list: "<<std::endl;
-                    // for(unsigned id : collisionList){
-                    //     internalIDToTuple[id]->print();
-                    // }
-                    // std::cout<<std::endl;
+
+                    if(std::holds_alternative<std::vector<int>>(*collisionList)){
+                        std::vector<int>& collisionVector = std::get<std::vector<int>>(*collisionList);
+                        collisionVector[index] = collisionVector[collisionVector.size() - 1];
+                        internalIDToTuple[collisionVector[index]]->setCollisionListIndex(collisionList, index,i);
+                        collisionVector.pop_back();
+                    }else{
+                        std::set< int, AggregateSetCmp >& collisionSet = std::get<std::set<int,AggregateSetCmp>>(*collisionList);
+                        collisionSet.erase(id); 
+                    }
                 }
                 tupleToRemove->clearCollisionsList();
             }
@@ -69,6 +68,7 @@ class TupleFactory{
         //store new wasp tuple and return a smart reference to it
         TupleLight* addNewTuple(std::vector<int> terms,const std::string* predName, unsigned id){
             // std::cout<<"addNewTuple"<<std::endl;
+            // std::cout<<*predName<<std::endl;
             bufferTuple.setContent(terms.data(),terms.size(),predName);
             // SmartTuple smart(&tuple);
             auto it = tupleToInternalVar.find(&bufferTuple);
@@ -165,6 +165,16 @@ class TupleFactory{
         }
         void printSize(){
             std::cout<<storage.size()<<std::endl;
+        }
+        unsigned getIndexForAggrSet(const std::string* pred)const{
+            auto it = aggregateSetToIndex.find(pred);
+            if(it != aggregateSetToIndex.end()){
+                return it->second;
+            }
+            return 0;
+        }
+        void setIndexForAggregateSet(unsigned index,const std::string* pred){
+            aggregateSetToIndex.emplace(pred,index);
         }
 };
 

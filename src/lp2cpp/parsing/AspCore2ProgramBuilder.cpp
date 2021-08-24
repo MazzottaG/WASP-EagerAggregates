@@ -1483,6 +1483,14 @@ void AspCore2ProgramBuilder::onRule() {
         else
             original_program.addPredicate(l.getPredicateName(), l.getAriety());
     }
+    for(const aspc::ArithmeticRelationWithAggregate& aggrRelation: inequalitiesWithAggregate){
+        for(const aspc::Literal& l : aggrRelation.getAggregate().getAggregateLiterals()){
+            if(analyzeDependencyGraph)
+                program.addAggregatePredicate(l.getPredicateName(), l.getAriety());
+            else
+                original_program.addAggregatePredicate(l.getPredicateName(), l.getAriety());
+        }
+    }
 
     buildingBody.clear();
     buildingHead.clear();
@@ -1553,6 +1561,14 @@ void AspCore2ProgramBuilder::labelComponents(std::unordered_set<unsigned>& label
                                 appearInConstraint=true;
                                 break;
                             }
+                        }
+                        if(r.containsAggregate()){
+                            for(const aspc::Literal& l : r.getArithmeticRelationsWithAggregate()[0].getAggregate().getAggregateLiterals()){
+                                if(l.getPredicateName() == currentPredicateName){
+                                    appearInConstraint=true;
+                                    break;
+                                }
+                            }   
                         }
                         if(appearInConstraint)
                             break;
@@ -1732,18 +1748,33 @@ std::pair<bool,std::pair<std::string,AggrSetPredicate>> AspCore2ProgramBuilder::
     std::vector<aspc::ArithmeticRelation> aggregateInequalities(aggregareRelation.getAggregate().getAggregateInequalities());
     std::vector<std::string> aggregateVariables(aggregareRelation.getAggregate().getAggregateVariables());
     if(!writeRule){
-        std::unordered_set<std::string> aggregateBodyVariables;
         const aspc::Literal* l = &aggregateLiterals[0];
-        l->addVariablesToSet(aggregateBodyVariables);
-
-        for(std::string v :aggregateVariables){
-            aggregateBodyVariables.insert(v);
+        for(unsigned i=0;i<l->getAriety();i++){
+            if(l->isVariableTermAt(i)){
+                bool found=false;
+                for(std::string v : aggregateVariables){
+                    if(v == l->getTermAt(i)){
+                        found=true;
+                        break;
+                    } 
+                }
+                if(!found){
+                    if(bodyVariables.count(l->getTermAt(i))!=0)
+                        found=true;
+                    else{
+                        writeRule=true;
+                        break;
+                    }
+                }
+            }
         }
-        
-        for(std::string v : aggregateBodyVariables){
-            if(bodyVariables.count(v)==0){
-                writeRule=true;
-                break;
+        if(!writeRule){
+            for(unsigned i=0;i<l->getAriety() && !writeRule;i++){
+                for(unsigned j=i+1;j<l->getAriety() && !writeRule;j++){
+                    if(l->isVariableTermAt(i) && l->isVariableTermAt(j) && l->getTermAt(i)==l->getTermAt(j)){
+                        writeRule=true;
+                    }
+                }
             }
         }
     }
@@ -1802,14 +1833,15 @@ std::pair<bool,std::pair<std::string,AggrSetPredicate>> AspCore2ProgramBuilder::
         }
         
     }else{
+
         //Aggregate contains only one bound literal considering body variables and aggregation variables
-        const aspc::Literal* literal = &aggreagateLiterals[0];
+        
+        const aspc::Literal* literal = &aggregateLiterals[0];
         aggregateSetPredicate=literal->getPredicateName();
         for(unsigned i=0; i<literal->getAriety(); i++){
             aggrSet.addTerm(literal->getTermAt(i));
         }
     }
-
     return std::pair<bool,std::pair<std::string,AggrSetPredicate>>(writeRule,std::pair<std::string,AggrSetPredicate>(aggregateSetPredicate,aggrSet));
 }
 void AspCore2ProgramBuilder::rewriteConstraint(const aspc::Rule& r){
@@ -2050,9 +2082,11 @@ aspc::Program & AspCore2ProgramBuilder::getProgram() {
         analyzeInputProgram();
         buildGraphNoCompletion();
         addManualDependecy();
-        // for(const aspc::Rule& r: original_program.getRules()){
-        //     r.print();
-        // }
+        #ifdef TRACE_PROPAGATOR
+        for(const aspc::Rule& r: original_program.getRules()){
+            r.print();
+        }
+        #endif
         // exit(180);
         
     }

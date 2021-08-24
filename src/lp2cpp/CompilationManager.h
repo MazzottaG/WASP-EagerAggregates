@@ -137,6 +137,8 @@ private:
     
     int mode;
 
+    std::unordered_map<std::string,unsigned> predicateToOrderdedAux;
+    std::unordered_set<std::string> internalPredicates;
     
 };
 

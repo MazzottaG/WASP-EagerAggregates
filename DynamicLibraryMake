@@ -1,13 +1,15 @@
-COMMON_FLAGS=-std=c++14 -O3 -fPIC -DNDEBUG -g -ggdb -fomit-frame-pointer
+COMMON_FLAGS=-std=c++17 -O3 -fPIC -DNDEBUG -g -ggdb -fomit-frame-pointer
 SRC_FOLDER=src/lp2cpp/
 
 all: executor
 
 executor: Executor.so
 
-Executor.so: $(SRC_FOLDER)Executor.cpp TupleFactory.o Literal.o ConstantsManager.o Atom.o SharedFunctions.o InputDirector.o AspCore2InstanceBuilder.o
-	g++ $(COMMON_FLAGS) -shared $(SRC_FOLDER)Executor.cpp TupleFactory.o Literal.o ConstantsManager.o Atom.o SharedFunctions.o InputDirector.o  AspCore2InstanceBuilder.o -o Executor.so 
-
+Executor.so: $(SRC_FOLDER)Executor.cpp AggregateSetCmp.o TupleFactory.o Literal.o ConstantsManager.o Atom.o SharedFunctions.o InputDirector.o AspCore2InstanceBuilder.o
+	g++ $(COMMON_FLAGS) -shared $(SRC_FOLDER)Executor.cpp AggregateSetCmp.o TupleFactory.o Literal.o ConstantsManager.o Atom.o SharedFunctions.o InputDirector.o  AspCore2InstanceBuilder.o -o Executor.so 
+	
+AggregateSetCmp.o: $(SRC_FOLDER)datastructures/AggregateSetCmp.cpp $(SRC_FOLDER)datastructures/AggregateSetCmp.h
+	g++ $(COMMON_FLAGS) -c $(SRC_FOLDER)datastructures/AggregateSetCmp.cpp
 TupleFactory.o: $(SRC_FOLDER)datastructures/TupleFactory.cpp $(SRC_FOLDER)datastructures/TupleFactory.h
 	g++ $(COMMON_FLAGS) -c $(SRC_FOLDER)datastructures/TupleFactory.cpp
 

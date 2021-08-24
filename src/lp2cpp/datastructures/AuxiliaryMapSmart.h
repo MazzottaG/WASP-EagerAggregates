@@ -28,9 +28,12 @@
 #include <list>
 #include <vector>
 #include <unordered_map>
+#include <set>
 #include <cmath>
 #include "TupleLight.h"
 #include <bitset>
+#include <variant>
+
 const long SHIFT = sizeof(int)*CHAR_BIT;
 const long POW = std::pow(2,sizeof(int)*CHAR_BIT);
 template<size_t S>
@@ -44,24 +47,43 @@ public:
     virtual ~AuxiliaryMapSmart() {
     }
 
-    inline const std::vector< int >& getValues(const std::vector<int>& key) const {
+    inline const std::vector< int >& getValuesVec(const std::vector<int>& key) const {
         std::bitset<S> keyCode;
         valueToPos(key,keyCode);
         const auto it = tuples.find(keyCode);
         if (it == tuples.end()) {
-            return EMPTY_RESULT;
+            return EMPTY_RESULT_VEC;
         }
-        return it->second;
+        return std::get<std::vector<int>>(it->second);
+    }
+    inline const std::set< int, AggregateSetCmp >& getValuesSet(const std::vector<int>& key) const {
+        std::bitset<S> keyCode;
+        valueToPos(key,keyCode);
+        const auto it = tuples.find(keyCode);
+        if (it == tuples.end()) {
+            return EMPTY_RESULT_SET;
+        }
+        return std::get<std::set<int,AggregateSetCmp>>(it->second);
     }
 
-    inline void insert2(const TupleLight & value) {
+    inline void insert2Vec(const TupleLight & value) {
         
         std::bitset<S> keyCode;
         std::vector<int> key = getKey(value);
         valueToPos(key,keyCode);
         auto & collisionList = tuples[keyCode];
-        value.setCollisionListIndex(&collisionList, collisionList.size());
-        collisionList.push_back(value.getId());
+        std::vector<int>& collisionVector = std::get<std::vector<int>>(collisionList);
+        value.setCollisionListIndex(&collisionList, collisionVector.size());
+        collisionVector.push_back(value.getId());
+    }
+    inline void insert2Set(const TupleLight & value) {
+        std::bitset<S> keyCode;
+        std::vector<int> key = getKey(value);
+        valueToPos(key,keyCode);
+        auto& collisionList = tuples.emplace(keyCode,std::set<int,AggregateSetCmp>()).first->second;
+        std::set < int, AggregateSetCmp >& collisionSet = std::get< std::set < int, AggregateSetCmp > > (collisionList);
+        value.setCollisionListIndex(&collisionList, collisionSet.size());
+        collisionSet.insert(value.getId());
     }
     
     void clear() {
@@ -95,16 +117,20 @@ protected:
         return key;
     }
     
-    std::unordered_map<std::bitset<S>, std::vector< int > > tuples;
+    std::unordered_map<std::bitset<S>, std::variant < std::vector< int >, std::set< int, AggregateSetCmp> > > tuples;
     unsigned keySize;
     std::vector<unsigned> keyIndices;
-    static const std::vector< int > EMPTY_RESULT;
+    static const std::vector< int > EMPTY_RESULT_VEC;
+    static const std::set< int, AggregateSetCmp > EMPTY_RESULT_SET;
 
 
 };
 
 template<size_t S>
-const std::vector< int > AuxiliaryMapSmart<S>::EMPTY_RESULT;
+const std::vector< int > AuxiliaryMapSmart<S>::EMPTY_RESULT_VEC;
+
+template<size_t S>
+const std::set< int, AggregateSetCmp > AuxiliaryMapSmart<S>::EMPTY_RESULT_SET;
 
 
 #endif /* AUXILIARYMAPSMART_H */
