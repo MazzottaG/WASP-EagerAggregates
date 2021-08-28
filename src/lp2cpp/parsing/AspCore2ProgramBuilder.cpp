@@ -2086,8 +2086,8 @@ aspc::Program & AspCore2ProgramBuilder::getProgram() {
         for(const aspc::Rule& r: original_program.getRules()){
             r.print();
         }
-        #endif
         // exit(180);
+        #endif
         
     }
     // if(analyzeDependencyGraph){

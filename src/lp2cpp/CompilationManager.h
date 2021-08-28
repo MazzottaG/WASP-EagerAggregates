@@ -84,6 +84,10 @@ private:
     void printLiteralTuple(const aspc::Literal* l, const std::vector<bool> & coveredMask) ;
     void printLiteralTuple(const aspc::Literal* l, const std::unordered_set<std::string> & boundVariables);
     void printLiteralTuple(const aspc::Literal* l);
+
+    void printAtomVariables(const aspc::Atom* atom,std::string tupleName,string pointer,std::unordered_set<std::string>& boundVariables,unsigned& closingPars);
+    bool printGetValues(std::string predicateName,std::vector<unsigned> boundIndices,std::string boundTerms,std::string mapPrefix,std::string name);
+    void compileEagerSimpleRule(const aspc::Rule& r,bool fromStarter);
     
     std::ostream* out;
     
