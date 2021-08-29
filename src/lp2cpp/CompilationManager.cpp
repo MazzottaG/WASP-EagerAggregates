@@ -1234,8 +1234,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind << "int lit = stack.back();\n";
             // *out << ind << "std::cout<<\"Reason Literal \"<<lit<<\" \"<<std::endl;\n";
             *out << ind << "stack.pop_back();\n";
-            *out << ind << "VectorAsSet<int>* currentReas = reasonForLiteral[lit].get();\n";
-            *out << ind << "unsigned currentReasonSize= currentReas != NULL ? currentReas->size() : 0;\n";
+            *out << ind << "auto itReason = reasonForLiteral.find(lit);\n";
+            *out << ind << "VectorAsSet<int>* currentReas = itReason != reasonForLiteral.end() ? itReason->second.get() : NULL;\n";
+            *out << ind << "unsigned currentReasonSize= itReason != reasonForLiteral.end() ? currentReas->size() : 0;\n";
             // *out << ind << "std::cout<<\"Reason size: \"<<currentReasonSize<<std::endl;\n";
             *out << ind++ << "for(unsigned i = 0; i<currentReasonSize; i++){\n";
                 // *out << ind << "std::cout<<\"i: \"<<i<<\" size: \"<<currentReasonSize<<std::endl;\n";
@@ -1594,8 +1595,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "unsigned uVar = var > 0 ? var : -var;\n";
         *out << ind << "Tuple* tuple = factory.getTupleFromWASPID(uVar);\n";
         *out << ind << "int internalVar = var > 0 ? tuple->getId() : -tuple->getId();\n";
-        *out << ind << "VectorAsSet<int>* reas = reasonForLiteral[internalVar].get();\n";
-        *out << ind << "if(reas!=NULL)reas->clear();\n";
+        *out << ind << "auto reas = reasonForLiteral.find(internalVar);\n";
+        *out << ind << "if(reas!=reasonForLiteral.end())reas->second.get()->clear();\n";
         *out << ind << "std::string minus = var < 0 ? \"-\" : \"\";\n";
 
         #ifdef TRACE_PROPAGATOR
@@ -4087,8 +4088,11 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                 // *out << ind++ << "if(actSum+currentTuple->at(0) >= "<<guard<<"){\n";
                                 *out << ind++ << "if(actSum >= "<<guard<<"-currentTuple->at(0)){\n";
                                     *out << ind << "int itProp =currentTuple->getId();\n";
-                                    *out << ind++ << "if(reasonForLiteral.count(-itProp)==0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty())\n";
-                                        *out << ind-- << "reasonForLiteral[-itProp]=shared_reason;\n";
+                                    *out << ind << "auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);\n";
+                                    *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                        *out << ind-- << "itReason.first->second=shared_reason;\n";
+                                    // *out << ind++ << "if(reasonForLiteral.count(-itProp)==0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty())\n";
+                                    //     *out << ind-- << "reasonForLiteral[-itProp]=shared_reason;\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     *out << ind << "propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                                 *out << --ind << "}else break;\n";
@@ -4114,8 +4118,11 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                 // *out << ind++ << "if(actSum+currentTuple->at("<<varIndex<<") >= "<<guard<<"){\n";
                                 *out << ind++ << "if(actSum >= "<<guard<<"-currentTuple->at("<<varIndex<<")){\n";
                                     *out << ind << "int itProp = currentTuple->getId();\n";
-                                    *out << ind++ << "if(reasonForLiteral.count(-itProp)==0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty())\n";
-                                        *out << ind-- << "reasonForLiteral[-itProp]=shared_reason;\n";
+                                    *out << ind << "auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);\n";
+                                    *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                        *out << ind-- << "itReason.first->second=shared_reason;\n";
+                                    // *out << ind++ << "if(reasonForLiteral.count(-itProp)==0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty())\n";
+                                    //     *out << ind-- << "reasonForLiteral[-itProp]=shared_reason;\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     *out << ind << "propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                                 *out << --ind << "}else break;\n";
@@ -4141,10 +4148,12 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                     *out << ind << "int itProp = *tuplesU->begin();\n";
                                 else
                                     *out << ind << "int itProp = tuplesU->at(0);\n";
-
-                                    *out << ind++ << "if(reasonForLiteral.count(-itProp)==0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty()){\n";
-                                        *out << ind << "reasonForLiteral[-itProp]=shared_reason;\n";
-                                    *out << --ind << "}\n";
+                                    *out << ind << "auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);\n";
+                                    *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                        *out << ind-- << "itReason.first->second=shared_reason;\n";
+                                    // *out << ind++ << "if(reasonForLiteral.count(-itProp)==0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty()){\n";
+                                    //     *out << ind << "reasonForLiteral[-itProp]=shared_reason;\n";
+                                    // *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0)
                                         *out << ind << "propUndefined(factory.getTupleFromInternalID(*tuplesU->begin()),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
@@ -4159,9 +4168,12 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                     *out << ind++ << "for(unsigned i =0; i<tuplesU->size(); i++){\n";
                                         *out << ind << "int itProp = tuplesU->at(i);\n";
                                 }
-                                    *out << ind++ << "if(reasonForLiteral.count(-itProp)==0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty()){\n";
-                                        *out << ind << "reasonForLiteral[-itProp]=shared_reason;\n";
-                                    *out << --ind << "}\n";
+                                *out << ind << "auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);\n";
+                                *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                    *out << ind-- << "itReason.first->second=shared_reason;\n";
+                                    // *out << ind++ << "if(reasonForLiteral.count(-itProp)==0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty()){\n";
+                                    //     *out << ind << "reasonForLiteral[-itProp]=shared_reason;\n";
+                                    // *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                 if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0)
                                     *out << ind << "propUndefined(factory.getTupleFromInternalID(*i),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
@@ -4217,10 +4229,12 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                         *out << --ind << "}\n";
                                         *out << ind << "shared_reason.get()->insert(startVar);\n";
                                     *out << --ind << "}\n";
-
-                                    *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
-                                        *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
-                                    *out << --ind << "}\n";
+                                    *out << ind << "auto itReason = reasonForLiteral.emplace(itProp,shared_reason);\n";
+                                    *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                        *out << ind-- << "itReason.first->second=shared_reason;\n";
+                                    // *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
+                                    //     *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
+                                    // *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     // reason contains aggr_id and all aggr_set false
                                     *out << ind << "propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
@@ -4248,9 +4262,12 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                         *out << --ind << "}\n";
                                         *out << ind << "shared_reason.get()->insert(startVar);\n";
                                     *out << --ind << "}\n";
-                                    *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
-                                        *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
-                                    *out << --ind << "}\n";
+                                    *out << ind << "auto itReason = reasonForLiteral.emplace(itProp,shared_reason);\n";
+                                    *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                        *out << ind-- << "itReason.first->second=shared_reason;\n";
+                                    // *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
+                                    //     *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
+                                    // *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     // reason contains aggr_id and all aggr_set false
                                     *out << ind << "propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
@@ -4284,10 +4301,12 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                     *out << ind << "int itProp = *tuplesU->begin();\n";
                                 else
                                     *out << ind << "int itProp = tuplesU->at(0);\n";
-
-                                *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
-                                    *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
-                                *out << --ind << "}\n";
+                                *out << ind << "auto itReason = reasonForLiteral.emplace(itProp,shared_reason);\n";
+                                    *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                        *out << ind-- << "itReason.first->second=shared_reason;\n";
+                                // *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
+                                //     *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
+                                // *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                 // reason contains aggr_id and all aggr_set false
                                 if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0)
@@ -4318,10 +4337,12 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                 *out << ind++ << "for(unsigned index=0;index<tuplesU->size();index++){\n";
                                     *out << ind << "int itProp = tuplesU->at(index);\n";
                             }
-
-                                *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
-                                    *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
-                                *out << --ind << "}\n";
+                                *out << ind << "auto itReason = reasonForLiteral.emplace(itProp,shared_reason);\n";
+                                *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                    *out << ind-- << "itReason.first->second=shared_reason;\n";
+                                // *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
+                                //     *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
+                                // *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                 // reason contains aggr_id and all aggr_set false
                                 *out << ind << "propUndefined(factory.getTupleFromInternalID(tuplesU->at(index)),false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
@@ -4446,9 +4467,12 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                 *out << ind << "shared_reason.get()->insert(itAggrId);\n";
 
                             *out << --ind << "}\n";
-                            *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
-                                *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
-                            *out << --ind << "}\n";
+                            *out << ind << "auto itReason = reasonForLiteral.emplace(itProp,shared_reason);\n";
+                            *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                *out << ind-- << "itReason.first->second=shared_reason;\n";
+                            // *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
+                            //     *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
+                            // *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                             // reason contains aggr_id and all aggr_set false
                             *out << ind << "propUndefined(currentJoinTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
@@ -4476,9 +4500,12 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                 *out << ind << "int itAggrId = tuples->at(i);\n";
                                 *out << ind << "shared_reason.get()->insert(itAggrId);\n";
                             *out << --ind << "}\n";
-                            *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
-                                *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
-                            *out << --ind << "}\n";
+                            *out << ind << "auto itReason = reasonForLiteral.emplace(itProp,shared_reason);\n";
+                            *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                *out << ind-- << "itReason.first->second=shared_reason;\n";
+                            // *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
+                            //     *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
+                            // *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                             // reason contains body, aggr_id and all aggr_set false
                             *out << ind << "propUndefined(currentJoinTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
@@ -4511,9 +4538,12 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                         }else{
                             *out << ind << "int itProp = joinTuplesU->at(0);\n";
                         }
-                            *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
-                                *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
-                            *out << --ind << "}\n";
+                            *out << ind << "auto itReason = reasonForLiteral.emplace(itProp,shared_reason);\n";
+                            *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                *out << ind-- << "itReason.first->second=shared_reason;\n";
+                            // *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
+                            //     *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
+                            // *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                             // reason contains body, aggr_id and all aggr_set false
                             *out << ind << "propUndefined(factory.getTupleFromInternalID(joinTuplesU->at(0)),false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
@@ -4541,9 +4571,12 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             *out << ind++ << "for(unsigned index=0; index<joinTuplesU->size(); index++){\n";
                                 *out << ind << "int itProp = joinTuplesU->at(index);\n";
                         }
-                            *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
-                                *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
-                            *out << --ind << "}\n";
+                            *out << ind << "auto itReason = reasonForLiteral.emplace(itProp,shared_reason);\n";
+                            *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                *out << ind-- << "itReason.first->second=shared_reason;\n";
+                            // *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
+                            //     *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
+                            // *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                             // reason contains body, aggr_id and all aggr_set false
                             *out << ind << "propUndefined(factory.getTupleFromInternalID(joinTuplesU->at(index)),false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
@@ -4635,24 +4668,27 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                 *out << ind << "const Tuple* currentJoinTuple = factory.getTupleFromInternalID(joinTuplesU->at(0));\n";
 
                         }
-
-                            *out << ind++ << "if(reasonForLiteral.count(-itProp) == 0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty()){\n";
-                                *out << ind++ << "if(shared_reason.get()->empty()){\n";
-                                if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                                    *out << ind++ << "for(auto i =joinTuples->begin(); i != joinTuples->end(); i++){\n";
-                                        *out << ind << "int it = *i;\n";
-                                }else{
-                                    *out << ind++ << "for(unsigned i =0; i< joinTuples->size(); i++){\n";
-                                        *out << ind << "int it = joinTuples->at(i);\n";
-                                }
-                                        *out << ind << "shared_reason.get()->insert(it);\n";
-                                    *out << --ind << "}\n";
-                                    *out << ind << "int it = tuplesF->at(i);\n";
-                                    *out << ind << "shared_reason.get()->insert(-it);\n";
+                            
+                            // *out << ind++ << "if(reasonForLiteral.count(-itProp) == 0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty()){\n";
+                            *out << ind++ << "if(shared_reason.get()->empty()){\n";
+                            if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
+                                *out << ind++ << "for(auto i =joinTuples->begin(); i != joinTuples->end(); i++){\n";
+                                    *out << ind << "int it = *i;\n";
+                            }else{
+                                *out << ind++ << "for(unsigned i =0; i< joinTuples->size(); i++){\n";
+                                    *out << ind << "int it = joinTuples->at(i);\n";
+                            }
+                                    *out << ind << "shared_reason.get()->insert(it);\n";
                                 *out << --ind << "}\n";
-                                *out << ind << "reasonForLiteral[-itProp]=shared_reason;\n";
+                                *out << ind << "int it = tuplesF->at(i);\n";
+                                *out << ind << "shared_reason.get()->insert(-it);\n";
                             *out << --ind << "}\n";
-                            //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
+                            //     *out << ind << "reasonForLiteral[-itProp]=shared_reason;\n";
+                            // *out << --ind << "}\n";
+                            *out << ind << "auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);\n";
+                            *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                *out << ind-- << "itReason.first->second=shared_reason;\n";
+                                //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                             *out << ind << "propUndefined(currentJoinTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                         *out << --ind << "}\n";
                     }else{
@@ -4678,24 +4714,27 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             // *out << ind++ << "if(actSum+currentJoinTuple->at("<<varIndex<<") >= "<<guard<<"){\n";
                             *out << ind++ << "if(actSum < "<<guard<<"-currentJoinTuple->at("<<varIndex<<"))break;\n";
                         }
-                            *out << ind++ << "if(reasonForLiteral.count(-itProp) == 0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty()){\n";
+                            // *out << ind++ << "if(reasonForLiteral.count(-itProp) == 0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty()){\n";
 
-                                *out << ind++ << "if(shared_reason.get()->empty()){\n";
-                                if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                                    *out << ind++ << "for(auto i = joinTuples->begin(); i != joinTuples->end(); i++){\n";
-                                        *out << ind << "int it = *i;\n";
-                                }else{
-                                    *out << ind++ << "for(unsigned i =0; i< joinTuples->size(); i++){\n";
-                                        *out << ind << "int it = joinTuples->at(i);\n";
-                                }
-                                        *out << ind << "shared_reason.get()->insert(it);\n";
-                                    *out << --ind << "}\n";
-                                    *out << ind << "int it = tuplesF->at(i);\n";
-                                    *out << ind << "shared_reason.get()->insert(-it);\n";
+                            *out << ind++ << "if(shared_reason.get()->empty()){\n";
+                            if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
+                                *out << ind++ << "for(auto i = joinTuples->begin(); i != joinTuples->end(); i++){\n";
+                                    *out << ind << "int it = *i;\n";
+                            }else{
+                                *out << ind++ << "for(unsigned i =0; i< joinTuples->size(); i++){\n";
+                                    *out << ind << "int it = joinTuples->at(i);\n";
+                            }
+                                    *out << ind << "shared_reason.get()->insert(it);\n";
                                 *out << --ind << "}\n";
-                                *out << ind << "reasonForLiteral[-itProp]=shared_reason;\n";
-
+                                *out << ind << "int it = tuplesF->at(i);\n";
+                                *out << ind << "shared_reason.get()->insert(-it);\n";
                             *out << --ind << "}\n";
+                            //     *out << ind << "reasonForLiteral[-itProp]=shared_reason;\n";
+
+                            // *out << --ind << "}\n";
+                            *out << ind << "auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);\n";
+                            *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                *out << ind-- << "itReason.first->second=shared_reason;\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                             *out << ind << "propUndefined(currentJoinTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                         *out << --ind << "}\n";
@@ -4744,7 +4783,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     *out << ind++ << "if(joinTuples->size() >= "<<guard<<"){\n";
 
                     *out << ind << "int itProp = tuplesU->at(i);\n";
-                    *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
+                    // *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
                     if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
                         *out << ind++ << "for(auto j = joinTuples->begin(); j != joinTuples->end(); j++){\n";
                             *out << ind << "int it = *j;\n";
@@ -4754,9 +4793,12 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     }
                             *out << ind << "shared_reason.get()->insert(it);\n";
                         *out << --ind << "}\n";
-                        *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
+                    //     *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
 
-                    *out << --ind << "}\n";
+                    // *out << --ind << "}\n";
+                    *out << ind << "auto itReason = reasonForLiteral.emplace(itProp,shared_reason);\n";
+                    *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                        *out << ind-- << "itReason.first->second=shared_reason;\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                     *out << ind << "propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                 if(aggregateRelation->getAggregate().isSum()){
@@ -4766,7 +4808,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     *out << --ind << "}else if(joinTuples->size() + joinTuplesU->size() < "<<guard<<"){\n";
                 ind++;
                     *out << ind << "int itProp = tuplesU->at(i);\n";
-                    *out << ind++ << "if(reasonForLiteral.count(-itProp) == 0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty()){\n";
+                    // *out << ind++ << "if(reasonForLiteral.count(-itProp) == 0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty()){\n";
                     if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
                         *out << ind << "const std::set<int,AggregateSetCmp>* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                         *out << ind++ << "for(auto j = joinTuplesF->begin(); j != joinTuplesF->end(); j++){\n";
@@ -4779,9 +4821,12 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             *out << ind << "shared_reason.get()->insert(-it);\n";
                             // *out << ind << "std::cout<<-it<<std::endl;\n";
                         *out << --ind << "}\n";
-                        *out << ind << "reasonForLiteral[-itProp]=shared_reason;\n";
+                    //     *out << ind << "reasonForLiteral[-itProp]=shared_reason;\n";
 
-                    *out << --ind << "}\n";
+                    // *out << --ind << "}\n";
+                    *out << ind << "auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);\n";
+                    *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                        *out << ind-- << "itReason.first->second=shared_reason;\n";
                     // *out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                     *out << ind << "propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                 *out << --ind << "}else{\n";
@@ -4848,10 +4893,13 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                 ind++;
                     //undefined head for true body
                     *out << ind << "int it = head->getId();\n";
-                    *out << ind++ << "if(reasonForLiteral.count(it) == 0  || reasonForLiteral[it].get()==NULL || reasonForLiteral[it].get()->empty()){\n";
+                    // *out << ind++ << "if(reasonForLiteral.count(it) == 0  || reasonForLiteral[it].get()==NULL || reasonForLiteral[it].get()->empty()){\n";
                         *out << ind << "shared_reason.get()->insert(startVar);\n";
-                        *out << ind << "reasonForLiteral[it]=shared_reason;\n";
-                    *out << ind-- << "};\n";
+                    //     *out << ind << "reasonForLiteral[it]=shared_reason;\n";
+                    // *out << ind-- << "};\n";
+                    *out << ind << "auto itReason = reasonForLiteral.emplace(it,shared_reason);\n";
+                    *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                        *out << ind-- << "itReason.first->second=shared_reason;\n";
                     //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                     *out << ind << "propUndefined(head,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                 *out << --ind << "}\n";
@@ -4879,10 +4927,13 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                     ind++;
                         *out << ind++ << "if(head != NULL && head->isUndef()){\n";
                             *out << ind << "int it = head->getId();\n";
-                            *out << ind++ << "if(reasonForLiteral.count(-it) == 0 || reasonForLiteral[-it].get()==NULL || reasonForLiteral[-it].get()->empty()){\n";
+                            // *out << ind++ << "if(reasonForLiteral.count(-it) == 0 || reasonForLiteral[-it].get()==NULL || reasonForLiteral[-it].get()->empty()){\n";
                                 *out << ind << "shared_reason.get()->insert(startVar);\n";
-                                *out << ind << "reasonForLiteral[-it]=shared_reason;\n";
-                            *out << ind-- << "};\n";
+                            //     *out << ind << "reasonForLiteral[-it]=shared_reason;\n";
+                            // *out << ind-- << "};\n";
+                            *out << ind << "auto itReason = reasonForLiteral.emplace(-it,shared_reason);\n";
+                            *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                *out << ind-- << "itReason.first->second=shared_reason;\n";
                                 //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                             *out << ind << "propUndefined(head,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                         *out << --ind << "}\n";
@@ -4942,7 +4993,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                             //last possible support for true head
                             if(isSet){
                                 *out << ind << "int itProp = *tuplesU->begin();\n";
-                                *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
+                                // *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
                                     printGetValues(body->getPredicateName(),boundIndices,boundTerms,"f","tuplesF");
                                     *out << ind++ << "for(auto i=tuplesF->begin();i!=tuplesF->end();i++){\n";
                                         *out << ind << "int it = *i;\n";
@@ -4950,14 +5001,16 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                     *out << --ind << "}\n";
                                     *out << ind << "int it = head->getId();\n";
                                     *out << ind << "shared_reason.get()->insert(it);\n";
-                                    *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
-
-                                *out << --ind << "}\n";
+                                //     *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
+                                // *out << --ind << "}\n";
+                                *out << ind << "auto itReason = reasonForLiteral.emplace(itProp,shared_reason);\n";
+                                *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                    *out << ind-- << "itReason.first->second=shared_reason;\n";
                                 //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                 *out << ind << "propUndefined(factory.getTupleFromInternalID(*tuplesU->begin()),false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                             }else{
                                 *out << ind << "int itProp = tuplesU->at(0);\n";
-                                *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
+                                // *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
                                     printGetValues(body->getPredicateName(),boundIndices,boundTerms,"f","tuplesF");
                                     *out << ind++ << "for(unsigned i=0;i<tuplesF->size();i++){\n";
                                         *out << ind << "int it = tuplesF->at(i);\n";
@@ -4965,9 +5018,11 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                     *out << --ind << "}\n";
                                     *out << ind << "int it = head->getId();\n";
                                     *out << ind << "shared_reason.get()->insert(it);\n";
-                                    *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
-
-                                *out << --ind << "}\n";
+                                //     *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
+                                // *out << --ind << "}\n";
+                                *out << ind << "auto itReason = reasonForLiteral.emplace(itProp,shared_reason);\n";
+                                *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                    *out << ind-- << "itReason.first->second=shared_reason;\n";
                                 //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                 *out << ind << "propUndefined(factory.getTupleFromInternalID(tuplesU->at(0)),false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                             }
@@ -4983,7 +5038,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                 *out << ind << "std::cout<<\"Propagation: head without support "<<r.getRuleId()<<"\"<<std::endl;\n";
                             #endif
                             *out << ind << "int itHead = head->getId();\n";
-                            *out << ind++ << "if(reasonForLiteral.count(-itHead) == 0  || reasonForLiteral[-itHead].get()==NULL || reasonForLiteral[-itHead].get()->empty()){\n";
+                            // *out << ind++ << "if(reasonForLiteral.count(-itHead) == 0  || reasonForLiteral[-itHead].get()==NULL || reasonForLiteral[-itHead].get()->empty()){\n";
                                 printGetValues(body->getPredicateName(),boundIndices,boundTerms,"f","tuplesF");
                                 if(isSet){
                                     *out << ind++ << "for(auto i=tuplesF->begin();i!=tuplesF->end();i++){\n";
@@ -4996,9 +5051,12 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                         *out << ind << "shared_reason.get()->insert(-it);\n";
                                     *out << --ind << "}\n";
                                 }
-                                *out << ind << "reasonForLiteral[-itHead]=shared_reason;\n";
+                            //     *out << ind << "reasonForLiteral[-itHead]=shared_reason;\n";
 
-                            *out << --ind << "}\n";
+                            // *out << --ind << "}\n";
+                            *out << ind << "auto itReason = reasonForLiteral.emplace(-itHead,shared_reason);\n";
+                            *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                *out << ind-- << "itReason.first->second=shared_reason;\n";
                             //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                             *out << ind << "propUndefined(head,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                         *out << --ind << "}\n";
@@ -5039,10 +5097,13 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                     *out << --ind << "}else if(currentBody->isUndef()){\n";
                     ind++;
                         *out << ind << "int it = currentBody->getId();\n";
-                        *out << ind++ << "if(reasonForLiteral.count(it) == 0 || reasonForLiteral[it].get()==NULL || reasonForLiteral[it].get()->empty()){\n";
+                        // *out << ind++ << "if(reasonForLiteral.count(it) == 0 || reasonForLiteral[it].get()==NULL || reasonForLiteral[it].get()->empty()){\n";
                             *out << ind << "shared_reason.get()->insert(startVar);\n";
-                            *out << ind << "reasonForLiteral[it]=shared_reason;\n";
-                        *out << --ind << "}\n";
+                        //     *out << ind << "reasonForLiteral[it]=shared_reason;\n";
+                        // *out << --ind << "}\n";
+                        *out << ind << "auto itReason = reasonForLiteral.emplace(it,shared_reason);\n";
+                            *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                *out << ind-- << "itReason.first->second=shared_reason;\n";
                         //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                         *out << ind << "propUndefined(currentBody,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                     *out << --ind << "}\n";
@@ -5058,10 +5119,13 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                     *out << --ind << "}else if(currentBody->isUndef()){\n";
                     ind++;
                         *out << ind << "int it = currentBody->getId();\n";
-                        *out << ind++ << "if(reasonForLiteral.count(-it) == 0 || reasonForLiteral[-it].get()==NULL || reasonForLiteral[-it].get()->empty()){\n";
+                        // *out << ind++ << "if(reasonForLiteral.count(-it) == 0 || reasonForLiteral[-it].get()==NULL || reasonForLiteral[-it].get()->empty()){\n";
                             *out << ind << "shared_reason.get()->insert(startVar);\n";
-                            *out << ind << "reasonForLiteral[-it]=shared_reason;\n";
-                        *out << --ind << "}\n";
+                        //     *out << ind << "reasonForLiteral[-it]=shared_reason;\n";
+                        // *out << --ind << "}\n";
+                        *out << ind << "auto itReason = reasonForLiteral.emplace(-it,shared_reason);\n";
+                        *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                            *out << ind-- << "itReason.first->second=shared_reason;\n";
                             //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                         *out << ind << "propUndefined(currentBody,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                     *out << --ind << "}\n";
@@ -5111,7 +5175,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                 *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(*tuplesU->begin());\n";
                                 bool checkFormat=checkTupleFormat(*body,"currentTuple",true);
                                 *out << ind << "int itProp = currentTuple->getId();\n";
-                                *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
+                                // *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
 
                                     printGetValues(body->getPredicateName(),boundIndices,boundTerms,"f","tuplesF");
                                     *out << ind++ << "for(auto i=tuplesF->begin(); i!=tuplesF->end(); i++){\n";
@@ -5119,9 +5183,12 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                         *out << ind << "shared_reason.get()->insert(-it);\n";
                                     *out << --ind << "}\n";
                                     *out << ind << "shared_reason.get()->insert(startVar);\n";
-                                    *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
+                                //     *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
 
-                                *out << --ind << "}\n";
+                                // *out << --ind << "}\n";
+                                *out << ind << "auto itReason = reasonForLiteral.emplace(itProp,shared_reason);\n";
+                                *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                    *out << ind-- << "itReason.first->second=shared_reason;\n";
                                 //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                 *out << ind << "propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                                 if(checkFormat)
@@ -5130,7 +5197,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                 *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesU->at(0));\n";
                                 bool checkFormat=checkTupleFormat(*body,"currentTuple",true);
                                 *out << ind << "int itProp = currentTuple->getId();\n";
-                                *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
+                                // *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
 
                                     printGetValues(body->getPredicateName(),boundIndices,boundTerms,"f","tuplesF");
                                     *out << ind++ << "for(unsigned i=0; i<tuplesF->size(); i++){\n";
@@ -5138,9 +5205,12 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                         *out << ind << "shared_reason.get()->insert(-it);\n";
                                     *out << --ind << "}\n";
                                     *out << ind << "shared_reason.get()->insert(startVar);\n";
-                                    *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
+                                //     *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
 
-                                *out << --ind << "}\n";
+                                // *out << --ind << "}\n";
+                                *out << ind << "auto itReason = reasonForLiteral.emplace(itProp,shared_reason);\n";
+                                *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                    *out << ind-- << "itReason.first->second=shared_reason;\n";
                                 //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                 *out << ind << "propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                                 if(checkFormat)
@@ -5195,16 +5265,22 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                 // }
                                 *out << ind++ << "while(!tuplesU->empty()){\n";
                                     *out << ind << "int it = *tuplesU->begin();\n";
-                                    *out << ind++ << "if(reasonForLiteral.count(-it) == 0 || reasonForLiteral[-it].get()==NULL || reasonForLiteral[-it].get()->empty())\n";
-                                        *out << ind-- << "reasonForLiteral[-it]=shared_reason;\n";
+                                    // *out << ind++ << "if(reasonForLiteral.count(-it) == 0 || reasonForLiteral[-it].get()==NULL || reasonForLiteral[-it].get()->empty())\n";
+                                    //     *out << ind-- << "reasonForLiteral[-it]=shared_reason;\n";
+                                    *out << ind << "auto itReason = reasonForLiteral.emplace(-it,shared_reason);\n";
+                                    *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                        *out << ind-- << "itReason.first->second=shared_reason;\n";
                                     //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     *out << ind << "propUndefined(factory.getTupleFromInternalID(*tuplesU->begin()),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                                 *out << --ind << "}\n";
                             }else{
                                 *out << ind++ << "for(auto itUndef = tuplesU->begin(); itUndef!=tuplesU->end();itUndef++){\n";
                                     *out << ind << "int it = *itUndef;\n";
-                                    *out << ind++ << "if(reasonForLiteral.count(-it) == 0 || reasonForLiteral[-it].get()==NULL || reasonForLiteral[-it].get()->empty())\n";
-                                        *out << ind-- << "reasonForLiteral[-it]=shared_reason;\n";
+                                    // *out << ind++ << "if(reasonForLiteral.count(-it) == 0 || reasonForLiteral[-it].get()==NULL || reasonForLiteral[-it].get()->empty())\n";
+                                    //     *out << ind-- << "reasonForLiteral[-it]=shared_reason;\n";
+                                    *out << ind << "auto itReason = reasonForLiteral.emplace(-it,shared_reason);\n";
+                                    *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                        *out << ind-- << "itReason.first->second=shared_reason;\n";
                                     //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     *out << ind << "propUndefined(factory.getTupleFromInternalID(it),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                                 *out << --ind << "}\n";
@@ -5214,16 +5290,22 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                             if(internalPredicates.count(body->getPredicateName())!=0){
                                 *out << ind++ << "while(!tuplesU->empty()){\n";
                                     *out << ind << "int it = tuplesU->back();\n";
-                                    *out << ind++ << "if(reasonForLiteral.count(-it) == 0 || reasonForLiteral[-it].get()==NULL || reasonForLiteral[-it].get()->empty())\n";
-                                        *out << ind-- << "reasonForLiteral[-it]=shared_reason;\n";
+                                    // *out << ind++ << "if(reasonForLiteral.count(-it) == 0 || reasonForLiteral[-it].get()==NULL || reasonForLiteral[-it].get()->empty())\n";
+                                    //     *out << ind-- << "reasonForLiteral[-it]=shared_reason;\n";
+                                    *out << ind << "auto itReason = reasonForLiteral.emplace(-it,shared_reason);\n";
+                                    *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                        *out << ind-- << "itReason.first->second=shared_reason;\n";
                                     //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     *out << ind << "propUndefined(factory.getTupleFromInternalID(it),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                                 *out << --ind << "}\n";
                             }else{
                                 *out << ind++ << "for(unsigned i = 0; i<tuplesU->size();i++){\n";
                                     *out << ind << "int it = tuplesU->at(i);\n";
-                                    *out << ind++ << "if(reasonForLiteral.count(-it) == 0 || reasonForLiteral[-it].get()==NULL || reasonForLiteral[-it].get()->empty())\n";
-                                        *out << ind-- << "reasonForLiteral[-it]=shared_reason;\n";
+                                    // *out << ind++ << "if(reasonForLiteral.count(-it) == 0 || reasonForLiteral[-it].get()==NULL || reasonForLiteral[-it].get()->empty())\n";
+                                    //     *out << ind-- << "reasonForLiteral[-it]=shared_reason;\n";
+                                    *out << ind << "auto itReason = reasonForLiteral.emplace(-it,shared_reason);\n";
+                                    *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                                        *out << ind-- << "itReason.first->second=shared_reason;\n";
                                     //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     *out << ind << "propUndefined(factory.getTupleFromInternalID(it),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                                 *out << --ind << "}\n";
@@ -5726,7 +5808,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                     #endif
                     *out << ind << "std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();\n";
 
-                    *out << ind++ << "if(reasonForLiteral.count(var) == 0 || reasonForLiteral[var].get() == NULL || reasonForLiteral[var].get()->empty()){\n";
+                    // *out << ind++ << "if(reasonForLiteral.count(var) == 0 || reasonForLiteral[var].get() == NULL || reasonForLiteral[var].get()->empty()){\n";
 
                         for(unsigned index = 0; index<oredered_body.size();index++){
                             if(oredered_body[index]->isLiteral()){
@@ -5744,16 +5826,19 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                 *out << --ind << "}\n";
                             }
                         }
-                        *out << ind << "reasonForLiteral[var]=shared_reason;\n";
+                        *out << ind << "auto itReason = reasonForLiteral.emplace(var,shared_reason);\n";
+                        *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
+                            *out << ind-- << "itReason.first->second=shared_reason;\n";
+                        // *out << ind << "reasonForLiteral[var]=shared_reason;\n";
 
-                    *out << --ind << "}else{\n";
-                    ind++;
-                        //*out << ind << "std::cout<<\"Reason of \"<<var<<\"already computed \"<<reasonForLiteral[var].size()<<\" \"<<std::endl;\n";
-                        // *out << ind << "if(reasonForLiteral[var].size()>0){std::cout<<reasonForLiteral[var][0]<<std::endl;}else{std::cout<<\"Found empty reason\"<<std::endl;}\n";
-                        // *out << ind << "UnorderedSet<int> rrrrrr;\n";
-                        // *out << ind << "std::unordered_set<int> visitedLiteralssssssss;\n";
-                        // *out << ind << "explainExternalLiteral(tupleU->getId(),rrrrrr,visitedLiteralssssssss,true);\n";
-                    *out << --ind << "}\n";
+                    // *out << --ind << "}else{\n";
+                    // ind++;
+                    //     //*out << ind << "std::cout<<\"Reason of \"<<var<<\"already computed \"<<reasonForLiteral[var].size()<<\" \"<<std::endl;\n";
+                    //     // *out << ind << "if(reasonForLiteral[var].size()>0){std::cout<<reasonForLiteral[var][0]<<std::endl;}else{std::cout<<\"Found empty reason\"<<std::endl;}\n";
+                    //     // *out << ind << "UnorderedSet<int> rrrrrr;\n";
+                    //     // *out << ind << "std::unordered_set<int> visitedLiteralssssssss;\n";
+                    //     // *out << ind << "explainExternalLiteral(tupleU->getId(),rrrrrr,visitedLiteralssssssss,true);\n";
+                    // *out << --ind << "}\n";
                 }
                 #ifdef TRACE_PROPAGATOR
                 *out << ind << "std::cout<<\"Constraint propagation "<<r.getRuleId()<<"\"<<std::endl;\n";
