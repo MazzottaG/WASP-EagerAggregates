@@ -1,4 +1,21 @@
 /*
+ *
+ *  Copyright 2021  BLIND.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -58,17 +75,18 @@ void EagerConstraintImpl::performCompilation() {
         string newHash = fileManagement.computeMD5(executorPath) ;
         executionManager.compileDynamicLibrary(executablePath, newHash != hash);
         fileManagement.releaseLock(fd, executorPath);
+        
     }else{
         executionManager.compileDynamicLibrary(executablePath, false);
     }
     compilationDone = true;
     executionManager.setSolver(solver);
-    unsigned minConflict = wasp::Options::eagerPropMinConflict != 0 ? wasp::Options::eagerPropMinConflict : defaultMinConflict;
-    unsigned minHeapSize = wasp::Options::eagerPropMinHeapSize != 0 ? wasp::Options::eagerPropMinHeapSize : defaultMinHeapSize;
-    unsigned maxHeapSize = wasp::Options::eagerPropMaxHeapSize != 0 ? wasp::Options::eagerPropMaxHeapSize : defaultMaxHeapSize; 
-    executionManager.setMinConflict(minConflict);
-    executionManager.setMinHeapSize(minHeapSize);
-    executionManager.setMaxHeapSize(maxHeapSize);
+    // unsigned minConflict = wasp::Options::eagerPropMinConflict != 0 ? wasp::Options::eagerPropMinConflict : defaultMinConflict;
+    // unsigned minHeapSize = wasp::Options::eagerPropMinHeapSize != 0 ? wasp::Options::eagerPropMinHeapSize : defaultMinHeapSize;
+    // unsigned maxHeapSize = wasp::Options::eagerPropMaxHeapSize != 0 ? wasp::Options::eagerPropMaxHeapSize : defaultMaxHeapSize; 
+    executionManager.setMinConflict(defaultMinConflict);
+    executionManager.setMinHeapSize(defaultMinHeapSize);
+    executionManager.setMaxHeapSize(defaultMaxHeapSize);
     executionManager.computeHeapSize();
 }
 

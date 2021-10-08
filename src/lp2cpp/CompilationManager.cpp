@@ -1,5 +1,22 @@
 /*
  *
+ *  Copyright 2021  BLIND.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+/*
+ *
  *  Copyright 2016 Bernardo Cuteri, Alessandro De Rosis, Francesco Ricca.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -392,26 +409,6 @@ void CompilationManager::writeNegativeReasonsFunctions(aspc::Program & program) 
     // }
     // *out << --ind << "}\n";
 }
-// void CompilationManager::checkExistsShareVariableMap(int ruleId, int aggrIndex,std::string& sharedVariables,bool create){
-
-//     //*out << ind << "std::cout<<\"check exists shared value tuple\"<<std::endl;\n";
-
-//     int countVar=0;
-//     std::string indexesToString="";
-//     for(unsigned varIndex : aggregateVariablesIndex[std::to_string(ruleId)+":"+std::to_string(aggrIndex)]){
-//         indexesToString+=std::to_string(varIndex);
-//         if(countVar < aggregateVariablesIndex[std::to_string(ruleId)+":"+std::to_string(aggrIndex)].size()-1)
-//             indexesToString+=",";
-//         countVar++;
-//     }
-
-//     if(create){
-//         *out << ind++ << "if(!sharedVariables_"<<ruleId<<"_ToAggregate_"<<aggrIndex<<".count({"<<sharedVariables<<"})){\n";
-//             *out << ind << "sharedVariables_"<<ruleId<<"_ToAggregate_"<<aggrIndex<<".insert({"<<sharedVariables<<"});\n";
-//     }else{
-//         *out << ind++ << "if(sharedVariables_"<<ruleId<<"_ToAggregate_"<<aggrIndex<<".count({"<<sharedVariables<<"})!=0){\n";
-//     }
-// }
 void CompilationManager::printVars(const aspc::Literal& li,std::string tupleName,std::unordered_set<std::string> & boundVars)const{
     //std::cout<<tupleName<<std::endl;
     for (unsigned tiIndex = 0; tiIndex < li.getTerms().size(); tiIndex++) {
@@ -447,34 +444,6 @@ bool CompilationManager::checkTupleFormat(const aspc::Literal& li,std::string tu
     }
     return false;
 
-    // std::string point = tuplePointer ? "->":".";
-    // bool checkVariablesEquals=false;
-    // for(unsigned i=0;i<li.getAriety();i++){
-    //     for(unsigned j=i+1;j<li.getAriety();j++){
-    //         if(li.isVariableTermAt(i) && li.isVariableTermAt(j) && li.getTermAt(i)==li.getTermAt(j)){
-    //             if(!checkVariablesEquals){
-    //                 *out << ind++ << "if(tuple"<<buildIndex<<point<<"at("<<i<<") == tuple"<<buildIndex<<point<<"at("<<j<<")";
-    //                 checkVariablesEquals=true;
-    //             }else
-    //                 *out << "&& tuple"<<buildIndex<<point<<"at("<<i<<") == tuple"<<buildIndex<<point<<"at("<<j<<")";
-    //         }
-    //     }
-    //     if(!li.isVariableTermAt(i)){
-    //         std::string mapStringConstant = !isInteger(li.getTermAt(i)) ? "ConstantsManager::getInstance().mapConstant(\"" + escapeDoubleQuotes(li.getTermAt(i)) + "\")" : li.getTermAt(i);
-
-    //         if(!checkVariablesEquals){
-    //             *out << ind++ << "if(tuple"<<buildIndex<<point<<"at("<<i<<") == "<<mapStringConstant;
-    //             checkVariablesEquals=true;
-    //         }else{
-    //             *out << "&& tuple"<<buildIndex<<point<<"at("<<i<<") == "<<mapStringConstant;
-    //         }
-    //     }
-    // }
-    // if(checkVariablesEquals){
-    //     *out << "){\n";
-    // }
-
-    // return checkVariablesEquals;
 }
 void CompilationManager::declareAuxMap(std::string mapVariableName,std::vector<unsigned> keyIndexes,std::string predicateName,bool createFalseAuxMap,bool aggrStruct){
     if(!declaredMaps.count(mapVariableName)){
@@ -542,9 +511,6 @@ void CompilationManager::declareAuxMap(std::string mapVariableName,std::vector<u
     }
 }
 void CompilationManager::storePossibleSum(const std::string& auxValPred,std::string tupleName,std::vector<int> sharedVarIndex, int sumVar){
-    // *out << ind << "std::unordered_set<int> possibleValuesSet"<<aggrSetToVal.second<<";\n";
-    // *out << ind << "std::vector<int> possibleValues"<<aggrSetToVal.second<<";\n";
-    // *out << ind << "possibleValues"<<aggrSetToVal.second<<".push_back(0);\n";
     *out << ind++ << "{\n";
         *out << ind << "std::vector<int> key({";
         for(unsigned i=0; i<sharedVarIndex.size(); i++){
@@ -686,9 +652,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     for (const pair<std::string, unsigned>& predicate : predicates) {
         //*out << ind << "const std::string & "<< predicate.first << " = ConstantsManager::getInstance().getPredicateName("<< predicate.first <<");\n";
         *out << ind << "const std::string _" << predicate.first << " = \"" << predicate.first << "\";\n";
-        // *out << ind << "PredicateWSet w" << predicate.first << "(" << predicate.second << ");\n";
-        // *out << ind << "PredicateWSet u" << predicate.first << "(" << predicate.second << ");\n";
-        // *out << ind << "PredicateWSet f" << predicate.first << "(" << predicate.second << ");\n";
 
     }
     const std::set< pair<std::string, unsigned> >& aggregatePredicates = program.getAggregatePredicates();
@@ -697,10 +660,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
         if(!predicates.count(predicate)){
             *out << ind << "const std::string _" << predicate.first << " = \"" << predicate.first << "\";\n";
-            // *out << ind << "PredicateWSet w" << predicate.first << "(" << predicate.second << ");\n";
-            // *out << ind << "PredicateWSet u" << predicate.first << "(" << predicate.second << ");\n";
-            // *out << ind << "PredicateWSet f" << predicate.first << "(" << predicate.second << ");\n";
-
         }
     }
     std::set< pair<std::string, unsigned> > predicatesNotCompletion;
@@ -709,9 +668,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         for(const aspc::Literal& l : r.getBodyLiterals()){
             if(predicatesNotCompletion.count({l.getPredicateName(),l.getAriety()})==0 && aggregatePredicates.count({l.getPredicateName(),l.getAriety()})==0 && predicates.count({l.getPredicateName(),l.getAriety()})==0){
                 *out << ind << "const std::string _" << l.getPredicateName() << " = \"" << l.getPredicateName() << "\";\n";
-                // *out << ind << "PredicateWSet w" << l.getPredicateName() << "(" << l.getAriety() << ");\n";
-                // *out << ind << "PredicateWSet u" << l.getPredicateName() << "(" << l.getAriety() << ");\n";
-                // *out << ind << "PredicateWSet f" << l.getPredicateName() << "(" << l.getAriety() << ");\n";
                 predicatesNotCompletion.insert({l.getPredicateName(),l.getAriety()});
             }
         }
@@ -719,9 +675,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             for(const aspc::Literal& l : aggrRelation.getAggregate().getAggregateLiterals()){
                 if(predicatesNotCompletion.count({l.getPredicateName(),l.getAriety()})==0 && aggregatePredicates.count({l.getPredicateName(),l.getAriety()})==0 && predicates.count({l.getPredicateName(),l.getAriety()})==0){
                     *out << ind << "const std::string _" << l.getPredicateName() << " = \"" << l.getPredicateName() << "\";\n";
-                    // *out << ind << "PredicateWSet w" << l.getPredicateName() << "(" << l.getAriety() << ");\n";
-                    // *out << ind << "PredicateWSet u" << l.getPredicateName() << "(" << l.getAriety() << ");\n";
-                    // *out << ind << "PredicateWSet f" << l.getPredicateName() << "(" << l.getAriety() << ");\n";
                     predicatesNotCompletion.insert({l.getPredicateName(),l.getAriety()});
                 }
             }
@@ -730,43 +683,17 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     if(mode == EAGER_MODE){
         *out << ind << "std::unordered_map<int,std::vector<int>> levelToIntLiterals;\n";
-        // *out << ind << "std::map<int,std::vector<int>> levelToExtLiterals;\n";
         *out << ind << "std::unordered_map<int,std::shared_ptr<VectorAsSet<int>>> reasonForLiteral;\n";
         *out << ind << "int currentDecisionLevel=-1;\n";
-        // *out << ind << "std::unordered_map<int,int> supportedLiterals;\n";
         *out << ind << "bool undefinedLoaded=false;\n";
-        // for(auto internalPred : program.getHeadPredicates()){
-        //     *out << ind << "bool loadUndef"<<internalPred<<"=false;\n";
-        // }
     }
-    // *out << ind << "std::unordered_map<std::string,std::map<std::vector<int>,std::set<std::vector<int>>>> trueAggrVars;\n";
-    // *out << ind << "std::unordered_map<std::string,std::map<std::vector<int>,std::set<std::vector<int>>>> undefAggrVars;\n";
-    // *out << ind << "std::unordered_map<std::string,std::map<std::vector<int>,std::set<int>>> positiveAggrReason;\n";
-    // *out << ind << "std::unordered_map<std::string,std::map<std::vector<int>,std::set<int>>> negativeAggrReason;\n";
-    // *out << ind << "std::unordered_map<std::string,std::map<std::vector<int>, unsigned int>> actualSum;\n";
-    // *out << ind << "std::unordered_map<std::string,std::map<std::vector<int>, unsigned int>> possibleSum;\n";
 
     *out << ind << "std::unordered_map<int,int> actualSum;\n";
     *out << ind << "std::unordered_map<int,int> possibleSum;\n";
     *out << ind << "bool unRoll=false;\n";
     *out << ind << "unsigned conflictCount=0;\n";
-    // *out << ind << "unsigned minConflicts=250;\n";
-    // *out << ind << "unsigned heapSize=200;\n";
-    // *out << ind << "unsigned minHeapSize=100;\n";
-    // *out << ind << "unsigned maxHeapSize=500;\n";
 
     *out << ind++ << "Executor::~Executor() {\n";
-    // for(const aspc::Rule & r : program.getRules()){
-    //     if(r.isConstraint() && r.containsAggregate()){
-    //         for(const aspc::ArithmeticRelationWithAggregate& ar: r.getArithmeticRelationsWithAggregate()){
-    //             *out << ind++ << "for(auto sharedVar : sharedVariables_"<<r.getRuleId()<<"_ToAggregate_"<<ar.getFormulaIndex()<<"){\n";
-    //             *out << ind << "delete sharedVar.second->first;\n";
-    //             *out << ind << "delete sharedVar.second->second;\n";
-    //             *out << ind << "delete sharedVar.second;\n";
-    //             *out << --ind << "}\n";
-    //         }
-    //     }
-    // }
     *out << --ind << "}\n\n";
 
     *out << ind << "\n";
@@ -774,16 +701,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "const std::set<int,AggregateSetCmp> EMPTY_TUPLES_SET;\n";
     *out << ind << "std::unordered_map<std::string, const std::string * > stringToUniqueStringPointer;\n";
 
-    // *out << ind << "typedef void (*ExplainNegative)(const std::vector<int> & lit, std::unordered_set<std::string> & open_set, std::vector<const Tuple *> & output);\n\n";
-
-    // *out << ind << "std::vector<Tuple> atomsTable;\n\n";
-    // *out << ind << "std::unordered_map<int,int> waspIDMapping;\n\n";
-    // *out << ind << "unsigned lastID=0;\n\n";
     *out << ind << "TupleFactory factory;\n";
-
-    // *out << ind << "std::unordered_map<Tuple, unsigned, TuplesHash> tupleToVar;\n\n";
-
-    // *out << ind << "std::unordered_map<const std::string*, ExplainNegative> explainNegativeFunctionsMap;\n\n";
 
     *out << ind++ << "const std::string* parseTuple(const std::string & literalString,std::vector<int>& terms) {\n";
 
@@ -798,7 +716,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "predicateName = literalString.substr(0);\n";
     *out << --ind << "}\n";
     *out << --ind << "}\n";
-    // *out << ind << "std::vector<int> terms;\n";
     *out << ind++ << "for (; i < literalString.size(); i++) {\n";
     *out << ind << "char c = literalString[i];\n";
     *out << ind++ << "if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_' || c == '-') {\n";
@@ -824,29 +741,11 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     *out << ind << "//only ground lit function calls are not known a priori\n";
 
-    // *out << ind++ << "void explainNegativeLiteral(const Tuple * lit, std::unordered_set<std::string> & open_set, std::vector<const Tuple *> & output) {\n";
-    // *out << ind << "explainNegativeFunctionsMap[lit->getPredicateName()](*lit, open_set, output);\n";
-    // *out << --ind << "}\n\n";
-
-
     //perform join functions
-
 
     GraphWithTarjanAlgorithm& graphWithTarjanAlgorithm = builder->getGraphWithTarjanAlgorithm();
     std::vector< std::vector <int> > sccs = graphWithTarjanAlgorithm.SCC();
 
-    // std::cout<<"sccs size: "<<sccs.size()<<std::endl;
-    // for(unsigned int i=0; i<sccs.size(); i++){
-    //     std::cout<<"Printing sccs["<<i<<"]"<<std::endl;
-    //     for(unsigned int j=0;j<sccs[i].size();j++){
-    //         std::cout<<sccs[i][j]<<" ";
-    //     }
-    //     std::cout<<std::endl;
-    // }
-    //print working set
-    //     for (const pair<std::string, unsigned>& predicate : predicates) {
-    //        *out << ind << "w" << predicate.first <<".printTuples(\""<<predicate.first<<"\");\n";
-    //    }
     const std::unordered_map<int, Vertex>& vertexByID = builder->getVertexByIDMap();
 
     //compute levels of each predicate
@@ -863,13 +762,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::unordered_map <std::string, std::vector <AuxMap*> > predicateToAuxiliaryMaps;\n";
         *out << ind << "std::unordered_map <std::string, std::vector <AuxMap*> > predicateToUndefAuxiliaryMaps;\n";
         *out << ind << "std::unordered_map <std::string, std::vector <AuxMap*> > predicateToFalseAuxiliaryMaps;\n";
-    } else {
-        // *out << ind << "std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToAuxiliaryMaps;\n";
-        // *out << ind << "std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToUndefAuxiliaryMaps;\n";
-        // *out << ind << "std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToNegativeAuxiliaryMaps;\n";
-        // *out << ind << "std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToNegativeUndefAuxiliaryMaps;\n";
-
-        // *out << ind << "std::unordered_map <const std::string*, std::vector <AuxMap*> > predicateToFalseAuxiliaryMaps;\n";
     }
     unsigned sccsSize = sccs.size();
     if (programHasConstraint) {
@@ -959,11 +851,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         }
     }
     for (aspc::Rule& r : program.getRules()) {
-        // std::cout<<std::endl;
-        // r.print();
-        // std::cout<<std::endl;
 
-        //r is a constraint
         bool exitRule = true;
         unsigned lIndex = 0;
         unsigned headLevel = sccs.size();
@@ -971,8 +859,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             std::unordered_set<std::string> internal;
             std::unordered_set<std::string> ext;
 
-            // std::cout<<"ordering rule "<<r.getRuleId()<<std::endl;
-            // r.print();
             std::vector<unsigned> starters;
             starters.push_back(r.getBodySize());
             for (const aspc::Formula* f : r.getFormulas()) {
@@ -991,13 +877,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             r.bodyReordering(starters);
 
             for(unsigned starter : starters){
-                // std::cout<<"starter "<<starter<<std::endl;
-                // r.print();
                 if(starter <= r.getBodySize()){
                     declareDataStructures(r,starter,aggregatePredicates);
                 }
             }
-            // std::cout<<"End body reordering"<<std::endl;
         }
         else if (!r.isConstraint()) {
             if(mode == EAGER_MODE){
@@ -1032,56 +915,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 starterToExitRulesByComponent[headLevel][starterL->getPredicateName()].push_back(r.getRuleId());
 
             } else {
-                //mode == EAGER
-
-            //     vector<unsigned> starters;
-            //     for (unsigned i = 0; i < r.getBodySize(); i++) {
-
-            //         if (r.getFormulas()[i]->isLiteral() || r.getFormulas()[i]->containsAggregate()) {
-            //             starters.push_back(i);
-            //         }
-            //     }
-            //     if (r.isConstraint()) {
-            //         starters.push_back(r.getBodySize());
-            //     }
-            //     r.bodyReordering(starters);
-
-            //     for (unsigned i = 0; i < starters.size(); i++) {
-            //         unsigned starter = r.getStarters()[i];
-            //         if (starter != r.getBodySize()) {
-            //             string pred_name;
-
-            //             if(r.getFormulas()[starter]->isLiteral()){
-            //                 aspc::Literal* starterL = (aspc::Literal*) r.getFormulas()[starter];
-            //                 pred_name=starterL->getPredicateName();
-            //             }else if(r.getFormulas()[starter]->containsAggregate()){
-            //                 aspc::ArithmeticRelationWithAggregate* starterAggr = (aspc::ArithmeticRelationWithAggregate*) r.getFormulas()[starter];
-            //                 pred_name="#"+std::to_string(r.getRuleId())+":"+std::to_string(starter);
-            //             }
-            //             auto & rules = starterToExitRulesByComponent[headLevel][pred_name];
-            //             bool alreadyAdded = false;
-            //             for (unsigned rule : rules) {
-            //                 alreadyAdded = alreadyAdded | (rule == r.getRuleId());
-            //             }
-            //             if (!alreadyAdded) {
-            //                 rules.push_back(r.getRuleId());
-            //             }
-
-
-            //         }
-            //     }
 
             }
-            // exitRules[r.getRuleId()] = true;
         }
-        // if(r.containsAggregate()){
-        //     declareDataStructureForAggregate(r,aggregatePredicates);
-        // }
-
-        // for (unsigned starter : r.getStarters()) {
-        // declareDataStructures(r, starter,aggregatePredicates);
-        // }
-
     }
     for(const aspc::Rule& r : builder->getRuleWithoutCompletion()){
         std::vector<unsigned> orderedFormulas;
@@ -1169,16 +1005,11 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         }
     }
 
-    // std::vector< std::unordered_map<std::string, std::vector<unsigned>>> starterToExitRulesByComponent(sccsSize);
-    // declareDataStructuresForReasonsOfNegative(program);
-    // std::cout<<"End reordering"<<std::endl;
-
     for (const std::string & predicate : modelGeneratorPredicatesInNegativeReasons) {
         //*out << ind << "const std::string & "<< predicate.first << " = ConstantsManager::getInstance().getPredicateName("<< predicate.first <<");\n";
         *out << ind << "PredicateWSet neg_w" << predicate << "(" << predicateArieties[predicate] << ");\n";
     }
 
-    // *out << ind++ << "void explainAggrLiteral(int var){\n";
     *out << ind++ << "void Executor::handleConflict(int literal,std::vector<int>& propagatedLiterals){\n";
 
         *out << ind++ << "if(currentDecisionLevel == -1){\n";
@@ -1272,103 +1103,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "return 0;\n";
     *out << --ind << "}\n";
     *out << ind++ << "void Executor::explainAggrLiteral(int var,UnorderedSet<int>& reas){\n";
-        // *out << ind << "int v = var==-1?var:-var;\n";
-        // // *out << ind << "std::cout << \"Explain \" << v << std::endl;\n";
-
-        // *out << ind << "PostponedReasonData* data = reasonMapping.getAt(v);\n";
-        // *out << ind << "if(data == nullptr || data->getPropagationLevel() == -1) return;\n";
-        // *out << ind << "const std::vector<int>* aggregates_id = &data->getAggregateId();\n";
-        // *out << ind++ << "for(int i=0; i < aggregates_id->size();i++){\n";
-        //     *out << ind << "int aggr_index=aggregates_id->at(i);\n";
-        //     *out << ind << "std::vector<int> sharedVars(data->getSharedVariables());\n";
-        //     *out << ind << "unsigned int  varsIndex=sharedVariable[aggr_index].addElements(sharedVars)->getId();\n";
-        //     // *out << ind << "std::cout << \"Collecting reason from aggr \" <<aggr_index<<std::endl;\n";
-        //     *out << ind++ << "if(data->isPositive(i)){\n";
-        //         // *out << ind << "std::cout<<\"Positive\"<<std::endl;\n";
-        //         *out << ind << "positiveAggrReason[aggr_index][varsIndex].getLiteralUntil(data->getPropagationLevel(),reas);\n";
-        //             // *out << ind << "int uLit= lit>=0 ? lit : -1*lit;\n";
-        //             // *out << ind << "std::string m= lit>=0 ? \"\" : \"-\";\n";
-        //             // *out << ind << "std::cout << m; atomsTable[uLit].print(); std::cout<<std::endl;\n";
-        //             // *out << ind << "std::cout << lit << std::endl;\n";
-        //     *out << --ind << "}else{\n";
-        //         ind++;
-        //         // *out << ind << "std::cout << \"Negative\" <<std::endl;\n";
-        //         *out << ind << "negativeAggrReason[aggr_index][varsIndex].getLiteralUntil(data->getPropagationLevel(),reas);\n";
-        //             // *out << ind << "int uLit= lit>=0 ? lit : -1*lit;\n";
-        //             // *out << ind << "std::string m= lit>=0 ? \"\" : \"-\";\n";
-        //             // *out << ind << "std::cout << m; atomsTable[uLit].print(); std::cout<<std::endl;\n";
-        //             // *out << ind << "std::cout << lit << std::endl;\n";
-        //     *out << --ind << "}\n";
-        // *out << --ind << "}\n";
-        // // *out << ind << "std::cout << \"Collecting reason from constraint body \" <<std::endl;\n";
-        // *out << ind << "const UnorderedSet<int>* body = &data->getBodyReason();\n";
-        // *out << ind++ << "for(unsigned i=0;i<body->size();i++){\n";
-        //     // *out << ind << "int uLit= l>=0 ? l : -1*l;\n";
-        //     // *out << ind << "std::string m= l>=0 ? \"\" : \"-\";\n";
-        //     // *out << ind << "std::cout << m; atomsTable[uLit].print(); std::cout<<std::endl;\n";
-        //     // *out << ind << "std::cout << l << std::endl;\n";
-
-        //     *out << ind << "reas.insert(body->at(i));\n";
-        // *out << --ind << "}\n";
-        // // *out << ind << "std::cout << \"reason computed\" <<std::endl;\n";
-
         *out << ind << "return;\n";
     *out << --ind << "}\n";
 
-    // if (programHasConstraint) {
-    //     *out << ind++ << "void explainPositiveLiteral(const Tuple * tuple, std::unordered_set<std::string> & open_set, std::vector<const Tuple*> & outputReasons) {\n";
-    //     //*out << ind << "const std::vector<const Tuple*> & tupleReasons = predicateReasonsMap.at(*tuple->getPredicateName())->at(tuple->getId());\n";
-    //     // *out << ind << "std::cout << \"explainPositiveLiteral\" <<std::endl;\n";
-    //     *out << ind << "const std::vector<const Tuple*> & tupleReasons = tuple->getPositiveReasons();\n";
-    //     *out << ind++ << " if (tupleReasons.empty()) {\n";
-    //     *out << ind << "outputReasons.push_back(tuple);\n";
-    //     *out << --ind << "}\n";
-    //     *out << ind++ << "else {\n";
-    //     *out << ind++ << "for (const Tuple * reason : tupleReasons) {\n";
-    //     *out << ind << "explainPositiveLiteral(reason, open_set, outputReasons);\n";
-    //     *out << --ind << "}\n";
-
-
-    //     *out << --ind << "}\n";
-    //     *out << ind++ << "for (const Tuple & reason : tuple->getNegativeReasons()) {\n";
-    //     *out << ind << "explainNegativeLiteral(&reason, open_set, outputReasons);\n";
-    //     //*out << ind << "outputReasons.push_back(&reason);\n";
-    //     *out << --ind << "}\n";
-    //     *out << --ind << "}\n\n";
-
-    //     *out << ind++ << "aspc::Literal tupleToLiteral(const Tuple & tuple) {\n";
-    //     *out << ind << "aspc::Literal literal(*tuple.getPredicateName(), tuple.isNegated());\n";
-    //     *out << ind++ << "for (int i=0; i < tuple.size(); i++) {\n";
-    //     *out << ind << "literal.addTerm(ConstantsManager::getInstance().unmapConstant(tuple[i]));\n";
-    //     *out << --ind << "}\n";
-    //     *out << ind << "return literal;\n";
-    //     *out << --ind << "}\n";
-
-    // }
-
-    // COMMENTED FOR INCOMPATIBILITIES
-    // if (program.hasConstraint()) {
-    //     writeNegativeReasonsFunctionsPrototypes(program);
-    //     // *out << ind << "void explainPositiveLiteral(const Tuple *, std::unordered_set<std::string> &, std::vector<const Tuple*> &);\n";
-    //     writeNegativeReasonsFunctions(program);
-    // }
-
-    //generateFindSharedValueInJoinTuple(program);
-
-    //print tuples
-    // *out << ind++ << "void printTuples(const std::string & predicateName, const Tuples & tuples) {\n";
-    // *out << ind++ << "for (const std::vector<int> * tuple : tuples) {\n";
-    // *out << ind << "std::cout <<predicateName<< \"(\";\n";
-    // *out << ind++ << "for (unsigned i = 0; i < tuple->size(); i++) {\n";
-    // *out << ind++ << "if (i > 0) {\n";
-    // *out << ind << "std::cout << \",\";\n";
-    // *out << --ind << "}\n";
-    // *out << ind << "std::cout << ConstantsManager::getInstance().unmapConstant((*tuple)[i]);\n";
-    // *out << --ind << "}\n";
-    // *out << ind << "std::cout << \").\\n\";\n";
-    // *out << --ind << "}\n";
-    // *out << --ind << "}\n";
-    //handle arieties
     *out << ind++ << "void Executor::executeFromFile(const char* filename) {\n";
     *out << ind << "DLV2::InputDirector director;\n";
     *out << ind << "AspCore2InstanceBuilder* builder = new AspCore2InstanceBuilder();\n";
@@ -1379,9 +1116,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "executeProgramOnFacts(builder->getProblemInstance());\n";
     *out << ind << "delete builder;\n";
     *out << --ind << "}\n\n";
-
-
-
 
 
     string tupleType = "WithoutReasons";
@@ -1450,27 +1184,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     // ---------------------- onLiteralUndef(const aspc::Literal* l) --------------------------------------//
     *out << ind++ << "inline void Executor::onLiteralUndef(const aspc::Literal* l) {\n";
-    //*out << ind << "std::cout<<i<<\"\\n\";\n";
-
-    //    if (mode == LAZY_MODE) {
-    //        *out << ind << "std::unordered_map<std::string,PredicateWSet*>::iterator it = predicateUSetMap.find(l->getPredicateName());\n";
-    //        *out << ind++ << "if(it==predicateUSetMap.end()) {\n";
-    //        if (!programHasConstraint) {
-    //            *out << ind << "l->print();\n";
-    //            *out << ind << "std::cout<<\".\\n\";\n";
-    //        }
-    //        *out << --ind << "}\n";
-    //        *out << ind++ << "else {\n";
-    //        *out << ind << "const auto& insertResult=it->second->insert(l->getTuple" << tupleType << "());\n";
-    //
-    //        *out << ind++ << "if(insertResult.second){\n";
-    //        //    *out << ind << "it->second->insert(tuple);\n";
-    //        *out << ind++ << "for(AuxMap* auxMap:predicateToUndefAuxiliaryMaps[it->first]){\n";
-    //        *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-    //        *out << --ind << "}\n";
-    //        *out << --ind << "}\n";
-    //        *out << --ind << "}\n";
-    //    }
     *out << --ind << "}\n";
     // ---------------------- end onLiteralTrue() --------------------------------------//
     // ---------------------- onLiteralTrue(int var) --------------------------------------//
@@ -1579,10 +1292,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     #ifdef TRACE_PROP_GEN
         *out << ind << "std::cout<<\"Exit onLiteralTrue\"<<std::endl;\n";
     #endif
-        // *out << ind << "std::cout<<\"ActualSum aggr_id0: \"<<actualSum[factory.addNewInternalTuple({},&_aggr_id0)->getId()]<<std::endl;\n";
-        // *out << ind << "std::cout<<\"ActualSum aggr_id1: \"<<actualSum[factory.addNewInternalTuple({},&_aggr_id1)->getId()]<<std::endl;\n";
-        // *out << ind << "std::cout<<\"PossibleSum aggr_id0: \"<<possibleSum[factory.addNewInternalTuple({},&_aggr_id0)->getId()]<<std::endl;\n";
-        // *out << ind << "std::cout<<\"PossibleSum aggr_id1: \"<<possibleSum[factory.addNewInternalTuple({},&_aggr_id1)->getId()]<<std::endl;\n";
     }
 
     *out << --ind << "}\n";
@@ -1606,7 +1315,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind-- << "std::cout<<\"Undef \" << minus << tuple->toString()<<std::endl;\n";
         #endif
 
-        // *out << ind << "if(reasonForLiteral.count(18)!=0)std::cout<<\"reason of 18 size: \"<<reasonForLiteral[18].size()<<std::endl;else std::cout<<\"reason of 18 not founded \"<<std::endl;\n";
 #ifdef EAGER_DEBUG
         *out << ind << "std::cout<<\"on literal undef \";\n";
         *out << ind << "std::cout<<var<<\"\\n\";\n";
@@ -1614,7 +1322,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::cout<<\"\\n\";\n";
 #endif
         //*out << ind << "trace_msg(eagerprop, 2, \"Literal undef received \" << minus << tuple->toString());\n";
-        // *out << ind << "std::cout<<\"Literal undef received \" << minus << tuple->toString()<<std::endl;\n";
 
         *out << ind << "const auto& insertResult = tuple->setStatus(Undef);\n";
         *out << ind++ << "if (insertResult.second) {\n";
@@ -1701,10 +1408,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::cout<<\"Undef received\"<<std::endl;\n";
         #endif
         //*out << ind << "trace_msg(eagerprop,2,\"Computing internalUndefined\");\n";
-        *out << ind << "std::cout<<\"MinConflict: \"<<minConflict<<std::endl;\n";
-        *out << ind << "std::cout<<\"MinHeapSize: \"<<minHeapSize<<std::endl;\n";
-        *out << ind << "std::cout<<\"MaxHeapSize: \"<<maxHeapSize<<std::endl;\n";
-        *out << ind << "std::cout<<\"HeapSize: \"<<heapSize<<std::endl;\n";
+        // *out << ind << "std::cout<<\"MinConflict: \"<<minConflict<<std::endl;\n";
+        // *out << ind << "std::cout<<\"MinHeapSize: \"<<minHeapSize<<std::endl;\n";
+        // *out << ind << "std::cout<<\"MaxHeapSize: \"<<maxHeapSize<<std::endl;\n";
+        // *out << ind << "std::cout<<\"HeapSize: \"<<heapSize<<std::endl;\n";
         *out << ind << "undefinedLoaded=true;\n";
         // *out << ind << "std::cout<<\"Undef generation\"<<std::endl;\n";
         GraphWithTarjanAlgorithm graph = builder->getGraphWithTarjanAlgorithm();
@@ -2348,14 +2055,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             }
             *out << ind << "exit(-1);\n";
         #endif
-        // *out << ind++ << "for(int id :uroomTOcabinetSize.getTuplesId()){\n";
-        //     *out << ind << "factory.getTupleFromInternalID(id)->print();\n";
-        //     *out << ind << "std::cout<<std::endl;\n";
-        // *out << --ind << "}\n";
-        // *out << ind << "exit(0);\n";
-        // *out << ind << "factory.print();\n";
-        // *out << ind << "for(const Tuple* t : uaggr_set0.getTuples()){t->print();std::cout<<std::endl;}\n";
-        // *out << ind << "std::cout<<\"Starting sum value\"<<std::endl;\n";
         #ifdef TRACE_PROPAGATOR
         *out << ind++ << "for(auto pair : actualSum){\n";
             *out << ind << "factory.getTupleFromInternalID(pair.first)->print();\n";
@@ -2374,17 +2073,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << --ind << "}\n";
 
     *out << ind++ << "inline void Executor::addedVarName(int var, const std::string & atom) {\n";
-    // *out << ind << "atomsTable.resize(var+1);\n";
-    // *out << ind << "atomsTable.insert(atomsTable.begin()+var, parseTuple(atom));\n";
-    //waspIDMapping
-    // *out << ind++ << "if(waspIDMapping.find(var)==waspIDMapping.end()){\n";
-    //     *out << ind << "std::cout<<\"Added \"<<var<<\" \"<<atomsTable.size()<<std::endl;\n";
-    //     *out << ind << "waspIDMapping[var]=atomsTable.size();\n";
-    //     *out << ind << "atomsTable.push_back(parseTuple(atom));\n";
-    //     *out << ind << "tupleToVar[atomsTable.back()]= var;\n";
-    //     *out << ind << "if(var>lastID) lastID=var;\n";
-    // *out << --ind << "}\n";
-    // *out << ind << "std::cout<<\"Atoms table size: \"<<atomsTable.size()<<std::endl;\n";
         #ifdef TRACE_PROPAGATOR
         // *out << ind << "std::cout<<var<<\" \" << atom<<std::endl;\n";
         #endif
@@ -2398,10 +2086,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     // ---------------------- clearPropagatedLiterals() --------------------------------------//
     *out << ind++ << "void Executor::clearPropagations() {\n";
     *out << ind << "propagatedLiteralsAndReasons.clear();\n";
-    // *out << ind << "propagatedLiterals.clear();\n";
-    // *out << ind << "std::cout<<\"clearPropagation\"<<std::endl;\n";
-    //*out << ind << "reasonsForPropagatedLiterals.clear();\n";
-    //*out << ind << "propagatedLiterals.clear();\n";
     *out << --ind << "}\n";
 
     // ---------------------- end clearPropagatedLiterals() --------------------------------------//
@@ -2450,98 +2134,21 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     // ---------------------- init() --------------------------------------//
     *out << ind++ << "void Executor::init() {\n";
-    *out << ind << "std::cout<<\"Init\"<<std::endl;\n";
-    // COMMENTED FOR INCOMPATIBILITIES
-    // if (program.hasConstraint()) {
-    //     *out << ind << "createFunctionsMap();\n";
-    // }
     string reference = (mode == EAGER_MODE) ? "&" : "";
 
     for (const pair<std::string, unsigned>& predicate : predicates) {
 
-        // *out << ind << "predicateWSetMap[" << reference << "_" << predicate.first << "]=&w" << predicate.first << ";\n";
-        // if (mode == EAGER_MODE) {
-        //     *out << ind << "predicateUSetMap[&_" << predicate.first << "]=&u" << predicate.first << ";\n";
-        //     *out << ind << "predicateFSetMap[&_" << predicate.first << "]=&f" << predicate.first << ";\n";
-        // }
         *out << ind << "stringToUniqueStringPointer[\"" << predicate.first << "\"] = &_" << predicate.first << ";\n";
     }
     for (const pair<std::string, unsigned>& predicate : aggregatePredicates) {
         if(predicates.count(predicate)==0){
-            // *out << ind << "predicateWSetMap[" << reference << "_" << predicate.first << "]=&w" << predicate.first << ";\n";
-            // if (mode == EAGER_MODE) {
-            //     *out << ind << "predicateUSetMap[&_" << predicate.first << "]=&u" << predicate.first << ";\n";
-            //     *out << ind << "predicateFSetMap[&_" << predicate.first << "]=&f" << predicate.first << ";\n";
-            // }
             *out << ind << "stringToUniqueStringPointer[\"" << predicate.first << "\"] = &_" << predicate.first << ";\n";
         }
     }
     for (const pair<std::string, unsigned>& predicate : predicatesNotCompletion) {
 
-        // *out << ind << "predicateWSetMap[" << reference << "_" << predicate.first << "]=&w" << predicate.first << ";\n";
-        // if (mode == EAGER_MODE) {
-        //     *out << ind << "predicateUSetMap[&_" << predicate.first << "]=&u" << predicate.first << ";\n";
-        //     *out << ind << "predicateFSetMap[&_" << predicate.first << "]=&f" << predicate.first << ";\n";
-        // }
         *out << ind << "stringToUniqueStringPointer[\"" << predicate.first << "\"] = &_" << predicate.first << ";\n";
     }
-    // for(aspc::Rule& r :program.getRules()){
-    //     if(!r.isConstraint() && r.containsAggregate()){
-    //         std::string predName = r.getBodyLiterals()[0].getPredicateName();
-    //         *out << ind << "sharedVariables[&_"<<predName<<"]=&"<<sharedVarToAggr[predName]<<";\n";
-    //         *out << ind << "sharedVarWAggr[&_"<<predName<<"]=&w"<<sharedVarToAggr[predName]<<";\n";
-    //         *out << ind << "sharedVarUAggr[&_"<<predName<<"]=&u"<<sharedVarToAggr[predName]<<";\n";
-    //         *out << ind << "sharedVarFAggr[&_"<<predName<<"]=&f"<<sharedVarToAggr[predName]<<";\n";
-    //     }
-    // }
-
-
-
-    // for (const std::string & predicate : modelGeneratorPredicatesInNegativeReasons) {
-    //     *out << ind << "predicateFSetMap[_" << predicate << "] = &neg_w" << predicate << ";\n";
-    // }
-
-    // for (const auto & entry : predicateToAuxiliaryMaps) {
-    //     for (const auto & auxSet : entry.second) {
-    //         *out << ind << "predicateToAuxiliaryMaps[" << reference << "_" << entry.first << "].push_back(&p" << auxSet << ");\n";
-    //     }
-    // }
-    // for (const auto & entry : predicateToNegativeAuxiliaryMaps) {
-    //     for (const auto & auxSet : entry.second) {
-    //         *out << ind << "predicateToNegativeAuxiliaryMaps[" << reference << "_" << entry.first << "].push_back(&np" << auxSet << ");\n";
-    //     }
-    // }
-
-    // for (const auto & entry : predicateToUndefAuxiliaryMaps) {
-    //     for (const auto & auxSet : entry.second) {
-    //         *out << ind << "predicateToUndefAuxiliaryMaps[" << reference << "_" << entry.first << "].push_back(&u" << auxSet << ");\n";
-    //     }
-    // }
-    // for (const auto & entry : predicateToNegativeUndefAuxiliaryMaps) {
-    //     for (const auto & auxSet : entry.second) {
-    //         *out << ind << "predicateToNegativeUndefAuxiliaryMaps[" << reference << "_" << entry.first << "].push_back(&nu" << auxSet << ");\n";
-    //     }
-    // }
-
-    // for (const auto & entry : predicateToFalseAuxiliaryMaps) {
-    //     for (const auto & auxSet : entry.second) {
-    //         *out << ind << "predicateToFalseAuxiliaryMaps[" << reference << "_" << entry.first << "].push_back(&f" << auxSet << ");\n";
-    //     }
-    // }
-    // for(std::string aggrSetPred : sumAggrSetPredicate){
-    //     // *out << ind << "aggr_setPredicate.insert(&_"<<aggrSetPred<<");\n";
-    //     for(auto mapName : sumAggrSetPredicateToAggrId[aggrSetPred]){
-    //         if(mapName.first!=""){
-    //             // *out << ind << "sumAggrIdForAggrSetAuxMap[&_"<<aggrSetPred<<"].push_back(&p"<<mapName.first<<");\n";
-    //             // *out << ind << "sumAggrIdForAggrSetUAuxMap[&_"<<aggrSetPred<<"].push_back(&u"<<mapName.first<<");\n";
-    //             // *out << ind << "sumAggrIdForAggrSetFAuxMap[&_"<<aggrSetPred<<"].push_back(&f"<<mapName.first<<");\n";
-    //         }
-    //         // else{
-    //         //     *out << ind << "sumAggrIdForAggrSet[&_"<<aggrSetPred<<"].push_back(&w"<<mapName.second<<");\n";
-    //         //     *out << ind << "sumAggrIdForAggrSetU[&_"<<aggrSetPred<<"].push_back(&u"<<mapName.second<<");\n";
-    //         // }
-    //     }
-    // }
 
     for(auto pair :predicateToOrderdedAux ){
         *out << ind << "factory.setIndexForAggregateSet("<<pair.second<<",&_"<<pair.first<<");\n";
@@ -2554,25 +2161,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind++ << "if(tupleU->getWaspID() == 0){\n";
             *out << ind << "bool propagated=false;\n";
             *out << ind << "Tuple* realTupleU=factory.find(*tupleU);\n";
-            // *out << ind << "realTupleU->print();std::cout<<std::endl;\n";
-            // *out << ind << "std::unordered_map<const std::string*,PredicateWSet*>::iterator falseSet = predicateFSetMap.find(tupleU->getPredicateName());\n";
-            // *out << ind << "std::unordered_map<const std::string*,PredicateWSet*>::iterator undefSet = predicateUSetMap.find(tupleU->getPredicateName());\n";
-            // *out << ind << "std::unordered_map<const std::string*,PredicateWSet*>::iterator trueSet = predicateWSetMap.find(tupleU->getPredicateName());\n";
-
-            // *out << ind++ << "if(falseSet==predicateFSetMap.end()){\n";
-            //     // *out << ind << "std::cout<<\"Unable to find false set for: \"<<tupleU->getPredicateName()<<std::endl;\n";
-            //     *out << ind << "exit(180);\n";
-            // *out << -- ind << "}\n";
-
-            // *out << ind++ << "if(undefSet==predicateUSetMap.end()){\n";
-            //     // *out << ind << "std::cout<<\"Unable to find undef set for: \"<<tupleU->getPredicateName()<<std::endl;\n";
-            //     *out << ind << "exit(180);\n";
-            // *out << -- ind << "}\n";
-
-            // *out << ind++ << "if(trueSet==predicateWSetMap.end()){\n";
-            //     // *out << ind << "std::cout<<\"Unable to find true set for: \"<<tupleU->getPredicateName()<<std::endl;\n";
-            //     *out << ind << "exit(180);\n";
-            // *out << -- ind << "}\n";
             *out << ind++ << "if(isNegated == asNegative){\n";
                 *out << ind++ << "if(realTupleU->isFalse()){\n";
                     // *out << ind << "std::cout<<\"Conflict: Literal is already false\"<<std::endl;\n";
@@ -2636,8 +2224,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                             }
                         }
                         #ifdef TRACE_PROPAGATOR
-                        *out << ind << "std::cout<<\"Literal propagated as True\";";
-                        *out << ind << "tupleU->print();\n";
+                        *out << ind++ << "if(currentDecisionLevel <= 0){\n";
+                            *out << ind << "std::cout<<\" Literal propagated as True\";";
+                            *out << ind << "tupleU->print();\n";
+                        *out << ind-- << "}\n";
                         #endif
                         *out << ind << "propagated = true;\n";
                     *out << --ind << "}\n";
@@ -2706,8 +2296,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                             }
                         }
                         #ifdef TRACE_PROPAGATOR
-                        *out << ind << "std::cout<<\"Literal propagated as False\";";
+                        *out << ind++ << "if(currentDecisionLevel <= 0){\n";
+                        *out << ind << "std::cout<<currentDecisionLevel<<\" Literal propagated as False\";";
                         *out << ind << "tupleU->print();\n";
+                        *out << --ind << "}\n";
                         #endif
                         *out << ind << "propagated = true;\n";
                     *out << --ind << "}\n";
@@ -2726,15 +2318,16 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind << "int sign = isNegated == asNegative ? 1 : -1;\n";
             *out << ind++ << "if(remainingPropagatingLiterals.count(it*sign)==0){\n";
                 #ifdef TRACE_PROPAGATOR
-                *out << ind << "std::cout<<\"Propagating external literal: \";\n";
+                *out << ind++ << "if(currentDecisionLevel <= 0){\n";
+                *out << ind << "std::cout<<currentDecisionLevel<<\" Propagating external literal: \";\n";
                 *out << ind << "tupleU->print();\n";
+                *out << --ind << "}\n";
                 #endif
 
                 *out << ind << "remainingPropagatingLiterals.insert(it*sign);\n";
                 *out << ind << "propagatedLiterals.push_back(it*sign);\n";
                 *out << ind++ << "if(conflictCount > minConflict){\n";
                     // *out << ind << "if(propagatedLiterals.size() == heapSize){/*std::cout<<\"Heap size: \"<<heapSize<<std::endl;*/std::make_heap(propagatedLiterals.begin(),propagatedLiterals.end(),propComparison);/*for(int i=0; i < heapSize && i < propagatedLiterals.size(); i++)std::cout<<solver->getActivityForLiteral(propagatedLiterals[i])<<\" \";std::cout<<std::endl;*/}\n";
-
                     *out << ind++ << "if(propagatedLiterals.size() > heapSize){\n";
                         *out << ind << "int heapMinimum = propagatedLiterals.front();\n";
                         *out << ind << "Activity heapMinimumWeight = solver->getActivityForLiteral(heapMinimum);\n";
@@ -2787,7 +2380,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         for(unsigned ruleId: it->second.rules){
                             for(const aspc::Rule& r: builder->getRuleWithoutCompletion()){
                                 if(ruleId == r.getRuleId()){
-                                    std::cout<<"Rule: "<<r.getRuleId()<<" without completion"<<std::endl;
+                                    // std::cout<<"Rule: "<<r.getRuleId()<<" without completion"<<std::endl;
                                     if(!r.isConstraint()){
                                     *out << ind++ << "{\n";
                                         *out << ind << "std::set<std::vector<int>> trueHeads;\n";
@@ -3051,13 +2644,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "remainingPropagatingLiterals.clear();\n";
         *out << ind++ << "while(currentDecisionLevel > decisionLevel){\n";
             // *out << ind << "std::cout<<\"clear level: \"<<currentDecisionLevel<<std::endl;\n";
-            // *out << ind << "levelToExtLiterals.erase(currentDecisionLevel);\n";
             *out << ind++ << "while(!levelToIntLiterals[currentDecisionLevel].empty()){\n";
                 *out << ind << "int var = levelToIntLiterals[currentDecisionLevel].back();\n";
                 *out << ind << "levelToIntLiterals[currentDecisionLevel].pop_back();\n";
                 *out << ind << "reasonForLiteral[var].get()->clear();\n";
-                // *out << ind++ << "if(supportedLiterals[var] >= currentDecisionLevel)\n";
-                //     *out << ind-- << "supportedLiterals.erase(var);\n";
                 *out << ind << "int uVar = var>0 ? var : -var;\n";
                 *out << ind << "Tuple* tuple = factory.getTupleFromInternalID(uVar);\n";
 
@@ -3127,18 +2717,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << --ind << "}\n";
         *out << ind << "clearConflictReason();\n";
 
-        // *out << ind << "std::cout<<\"True aggr set\"<<std::endl;\n";
-        // *out << ind++ << "for(int id : waggr_set0.getTuplesId())\n";
-        //     *out << ind-- << "factory.getTupleFromInternalID(id)->print();\n";
-        // *out << ind << "std::cout<<std::endl;\n";
-        // *out << ind << "std::cout<<\"Undef aggr set\"<<std::endl;\n";
-        // *out << ind++ << "for(int id : uaggr_set0.getTuplesId())\n";
-        //     *out << ind-- << "factory.getTupleFromInternalID(id)->print();\n";
-        // *out << ind << "std::cout<<std::endl;\n";
-        //*out << ind << "std::cout<<\"End unroll\"<<std::endl;\n";
-        // *out << ind << "for(const Tuple* t :waux0.getTuples()){std::cout<<\"True aux: \";t->print();std::cout<<std::endl;}\n";
-        // *out << ind << "for(const Tuple* t :faux0.getTuples()){std::cout<<\"False aux: \";t->print();std::cout<<std::endl;}\n";
-        // *out << ind << "for(const Tuple* t :uaux0.getTuples()){std::cout<<\"Undef aux: \";t->print();std::cout<<std::endl;}\n";
         //*out << ind << "trace_msg(eagerprop,2,\"Unrolling ended\");\n";
 
     *out << --ind << "}\n";
@@ -3164,16 +2742,12 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         #ifdef TRACE_PROP_GEN
         *out << ind << "std::cout<<\"Execute program on facts: decision level \"<<decisionLevel<<std::endl;\n";
         #endif
-        // *out << ind++ << "if(currentDecisionLevel > decisionLevel || unRoll)\n";
-        //     *out << ind-- << "unRollToLevel(decisionLevel);\n";
         *out << ind << "currentDecisionLevel=decisionLevel;\n";
         // *out << ind << "std::cout<<\"Current Decision Level: \"<<currentDecisionLevel<<std::endl;\n";
 #ifdef EAGER_DEBUG
         *out << ind << "std::cout<<\"Execute program on facts: decision level \"<<decisionLevel<<std::endl;\n";
 #endif
-        //*out << ind++ << "if(decisionLevel > 0) {\n";
         *out << ind << "clearPropagations();\n";
-        //*out << --ind << "}\n";
     }
 
 
@@ -3267,17 +2841,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     } else {
         //mode == EAGER_MODE
         *out << ind << "if(decisionLevel>-1) {\n";
-            // *out << ind << "std::cout<<\"level > -1\"<<std::endl;\n";
-            // *out << ind++ << "for(auto pair : actualSum){\n";
-            //     *out << ind << "atomsTable[pair.first].print();\n";
-            //     *out << ind << "std::cout<<\" ActualSum \"<<pair.second<<std::endl;\n";
-            //     // *out << ind << "if(pair.second>6 || pair.second<0)exit(0);\n";
-            // *out << --ind <<"}\n";
-            // *out << ind++ << "for(auto pair : possibleSum){\n";
-            //     *out << ind << "atomsTable[pair.first].print();\n";
-            //     *out << ind << "std::cout<<\"PossibleSum \"<<pair.second<<std::endl;\n";
-            //     // *out << ind << "if(pair.second>6 || pair.second<0)exit(0);\n";
-            // *out << --ind <<"}\n";
         *out << ind << "}\n";
         *out << ind++ << "if(decisionLevel==-1) {\n";
             // *out << ind << "std::cout<<\"level -1\"<<std::endl;\n";
@@ -3309,15 +2872,12 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 compiledRuleIndices.insert(rule->getRuleId());
                 compileEagerRule(*rule,false);
             }
+            #ifdef TRACE_PROPAGATOR
+            *out << ind << "exit(0);\n";
+            #endif
             // *out << ind << "std::cout<<\"end level -1\"<<std::endl;\n";
 
         *out << --ind << "}//close decision level == -1\n";
-        // *out << ind << "std::cout<<\"outOfDecisionLevel\"<<std::endl;\n";
-
-        // *out << ind++ << "for(unsigned i=1;i<facts.size();i++) {\n";
-        //     *out << ind << "propagationStack.push_back(facts[i]);\n";
-        // *out << --ind << "}\n";
-        // *out << ind << "std::cout<<propagatedLiterals.size()<<std::endl;\n";
         *out << ind++ << "while(!propagationStack.empty()){\n";
             *out << ind << "int startVar = propagationStack.back();\n";
             *out << ind << "int uStartVar = startVar<0 ? -startVar : startVar;\n";
@@ -3338,17 +2898,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
         *out << --ind << "}\n";
     }
-    //*out << ind << "trace_msg(eagerprop,2,\"Propagations computed\");\n";
-    // *out << ind << "std::cout<<\"propagation size \"<<propagatedLiterals.size()<<std::endl;\n";
-    // *out << ind++ << "if(!propagatedLiterals.empty()){\n";
-    //     *out << ind++ << "if(solver->getActivityForLiteral(propagatedLiterals.front()) < 1){\n";
-    //         *out << ind << "if(heapSize > minHeapSize)heapSize--;\n";
-    //     *out << --ind << "}else if(heapSize < Executor::maxHeapSize) heapSize++;\n";
-    //     // *out << ind << "for(int i=0; i < heapSize && i < propagatedLiterals.size(); i++)\n";
-    //     //     *out << ind << "std::cout<<solver->getActivityForLiteral(propagatedLiterals[i])<<\" \";\n";
-    //     // *out << ind << "std::cout<<std::endl;\n";
-    // *out << --ind << "}\n";
-
     // *out << ind << "if(conflictCount > minConflict && propagatedLiterals.size() >= heapSize){/*std::cout<<\"sort heap\"<<std::endl;*/ std::sort_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+heapSize,propComparison);}\n";
     *out << ind << "if(conflictCount > minConflict && propagatedLiterals.size() > 1){int currentHeapSize = propagatedLiterals.size() < heapSize ? propagatedLiterals.size() : heapSize; /*std::cout<<\"sort heap: \"<<currentHeapSize<<std::endl;*/ std::sort_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+currentHeapSize,propComparison);}\n";
 #ifdef TRACE_PROP_GEN
@@ -3518,11 +3067,6 @@ void CompilationManager::declareRuleEagerStructures(const aspc::Rule& r){
                             sharedVarAggrIdAggrSet[aggrId->getPredicateName()].push_back(i);
                         }
                     }
-                    // std::cout<<aggrId->getPredicateName()<<std::endl;
-                    // for(unsigned v : sharedVarAggrIdAggrSet[aggrId->getPredicateName()]){
-                    //     std::cout<<v << " ";
-                    // }
-                    // std::cout<<std::endl;
                 }
 
                 for(std::string aggrVar : r.getArithmeticRelationsWithAggregate()[0].getAggregate().getAggregateVariables()){
@@ -4085,15 +3629,11 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             *out << --ind << "}\n";
                             *out << ind++ << "while(!tuplesU->empty()){\n";
                                 *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(*tuplesU->begin());\n";
-                                // *out << ind++ << "if(actSum+currentTuple->at(0) >= "<<guard<<"){\n";
                                 *out << ind++ << "if(actSum >= "<<guard<<"-currentTuple->at(0)){\n";
                                     *out << ind << "int itProp =currentTuple->getId();\n";
                                     *out << ind << "auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);\n";
                                     *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                                         *out << ind-- << "itReason.first->second=shared_reason;\n";
-                                    // *out << ind++ << "if(reasonForLiteral.count(-itProp)==0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty())\n";
-                                    //     *out << ind-- << "reasonForLiteral[-itProp]=shared_reason;\n";
-                                    //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     *out << ind << "propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                                 *out << --ind << "}else break;\n";
                             *out << --ind << "}\n";
@@ -4115,14 +3655,11 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             *out << --ind << "}\n";
                             *out << ind++ << "for(auto itUndef = tuplesU->begin(); itUndef != tuplesU->end(); itUndef++){\n";
                                 *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(*itUndef);\n";
-                                // *out << ind++ << "if(actSum+currentTuple->at("<<varIndex<<") >= "<<guard<<"){\n";
                                 *out << ind++ << "if(actSum >= "<<guard<<"-currentTuple->at("<<varIndex<<")){\n";
                                     *out << ind << "int itProp = currentTuple->getId();\n";
                                     *out << ind << "auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);\n";
                                     *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                                         *out << ind-- << "itReason.first->second=shared_reason;\n";
-                                    // *out << ind++ << "if(reasonForLiteral.count(-itProp)==0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty())\n";
-                                    //     *out << ind-- << "reasonForLiteral[-itProp]=shared_reason;\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     *out << ind << "propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                                 *out << --ind << "}else break;\n";
@@ -4151,9 +3688,6 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                     *out << ind << "auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);\n";
                                     *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                                         *out << ind-- << "itReason.first->second=shared_reason;\n";
-                                    // *out << ind++ << "if(reasonForLiteral.count(-itProp)==0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty()){\n";
-                                    //     *out << ind << "reasonForLiteral[-itProp]=shared_reason;\n";
-                                    // *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0)
                                         *out << ind << "propUndefined(factory.getTupleFromInternalID(*tuplesU->begin()),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
@@ -4171,9 +3705,6 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                 *out << ind << "auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);\n";
                                 *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                                     *out << ind-- << "itReason.first->second=shared_reason;\n";
-                                    // *out << ind++ << "if(reasonForLiteral.count(-itProp)==0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty()){\n";
-                                    //     *out << ind << "reasonForLiteral[-itProp]=shared_reason;\n";
-                                    // *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                 if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0)
                                     *out << ind << "propUndefined(factory.getTupleFromInternalID(*i),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
@@ -4217,7 +3748,6 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                         if(builder->isAggrSetPredicate(aggrSetPred->getPredicateName())){
                             *out << ind++ << "while(!tuplesU->empty()){\n";
                                 *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(*tuplesU->begin());\n";
-                                // *out << ind++ << "if(actSum+posSum-currentTuple->at(0) < "<<guard<<"){\n";
                                 *out << ind++ << "if(actSum < "<<guard<<"-posSum+currentTuple->at(0)){\n";
                                     *out << ind << "int itProp = *tuplesU->begin();\n";
 
@@ -4232,9 +3762,6 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                     *out << ind << "auto itReason = reasonForLiteral.emplace(itProp,shared_reason);\n";
                                     *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                                         *out << ind-- << "itReason.first->second=shared_reason;\n";
-                                    // *out << ind++ << "if(reasonForLiteral.count(itProp) == 0 || reasonForLiteral[itProp].get()==NULL || reasonForLiteral[itProp].get()->empty()){\n";
-                                    //     *out << ind << "reasonForLiteral[itProp]=shared_reason;\n";
-                                    // *out << --ind << "}\n";
                                     //*out << ind << "std::cout<<\"Propagating from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     // reason contains aggr_id and all aggr_set false
                                     *out << ind << "propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
@@ -5719,6 +5246,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
         compileEagerRuleWithAggregate(r,fromStarter);
         // std::cout<<"compiled"<<std::endl;
         return;
+        
     }
     if(!r.isConstraint()){
         compileEagerSimpleRule(r,fromStarter);

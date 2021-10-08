@@ -1,5 +1,22 @@
 /*
  *
+ *  Copyright 2021  BLIND.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+/*
+ *
  *  Copyright 2016 Bernardo Cuteri, Francesco Ricca.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -198,7 +215,6 @@ public:
     void labelComponents(std::unordered_set<unsigned>& labeledComponent,const std::vector<std::vector<int>>& scc);
     void buildGraphNoCompletion();
     bool isPredicateBodyNoCompletion(int)const;
-    void onRuleRewrited();
     const  std::map<std::string, unsigned> & getArietyMap();
     bool isInternalPredicateName(std::string predName) {
         unsigned predId = predicateIDs[predName];
@@ -243,17 +259,11 @@ public:
     bool isAggrSetPredicate(std::string predicate){
         return aggrSetPredicates.count(predicate)!=0;
     }
-    void preprocess(bool& ,bool&, bool=true );
     void rewriteRule(bool = false);
-    void rewriteRuleWithAggregate(bool = false);
-    void rewriteRuleWithAggregateNotBound();
-    void rewriteRuleWithCompletion(bool = false);
-    void rewriteConstraint();
 
     void rewriteConstraint(const aspc::Rule& r);
     void rewriteRuleWithAggregate(const aspc::Rule& r);
     void rewriteRuleWithCompletion(const aspc::Rule& r);
-    void rewriteRule(const aspc::Rule& r);
     std::pair<bool,std::pair<std::string,AggrSetPredicate>> buildAggregateSet(std::unordered_set<std::string> bodyVariables,const aspc::ArithmeticRelationWithAggregate& aggregareRelation);
     std::pair<bool,std::pair<std::string,AggrSetPredicate>> buildBody(std::unordered_set<std::string> aggregateBodyVariables,const aspc::Rule& r,std::string auxValPred,std::vector<std::string> auxValTerm);
     std::vector<std::string> writeAggrIdRule(std::pair<bool,std::pair<std::string,AggrSetPredicate>> body,std::pair<bool,std::pair<std::string,AggrSetPredicate>> aggrSet,const aspc::Rule& r);
@@ -282,7 +292,6 @@ public:
     const std::unordered_map<int, Vertex>& getVertexByIDMap() const;
     const std::unordered_map<int, Vertex>& getVertexByIDMapNoCompletion() {return vertexByIDNoCompletion;}
     const std::unordered_map<std::string, int>& getPredicateIDsMap() const;
-    void addRuleToOriginalProgram();
 
 };
 

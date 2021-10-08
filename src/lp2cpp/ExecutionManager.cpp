@@ -1,5 +1,22 @@
 /*
  *
+ *  Copyright 2021  BLIND.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+/*
+ *
  *  Copyright 2016 Bernardo Cuteri, Alessandro De Rosis, Francesco Ricca.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -181,9 +198,10 @@ void ExecutionManager::compileDynamicLibrary(const string & executablePath, bool
     string executorFile = executablePath + "/Executor.so";
     FilesManagement fileManagement;
     //if(false){
+
     if (fileHasChanged || !fileManagement.exists(executorFile)) {
         string command = "cd " + executablePath + " && make -f DynamicLibraryMake -s";
-        //cout<<command<<endl;
+        // cout<<command<<endl;
         int commandReturn = system(command.c_str());
         if (commandReturn) {
             throw std::runtime_error("Failed to execute command " + command);
@@ -207,7 +225,6 @@ void ExecutionManager::compileDynamicLibrary(const string & executablePath, bool
     #else
         executor = new aspc::Executor();
     #endif
-    std::cout<<"Compiled"<<std::endl;
 }
 #else 
 

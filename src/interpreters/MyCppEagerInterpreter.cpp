@@ -91,7 +91,6 @@ void MyCppEagerInterpreter::callVoidMethod(const string& method_name, int param1
     } 
 }
 void MyCppEagerInterpreter::addSolver(const Solver& s) {
-    std::cout<<"Adding solver in EagerInterpreter"<<std::endl;
     eagerConstraint.addSolver(s);
 }
 bool MyCppEagerInterpreter::checkMethod(const string& method_name) const {

@@ -357,7 +357,6 @@ term_
         }
     | NUMBER  
         { 
-            std::cout<<"NUMBER"<<std::endl;
             director.getBuilder()->onTerm($1); 
             delete[] $1;
         }

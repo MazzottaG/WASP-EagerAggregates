@@ -21,6 +21,8 @@ cxxflags.estats = -Wall -Wextra -std=c++11 -DNDEBUG -DSTATS_ON -DESTATS_ON -O3
 linkflags.estats = -lm -ldl
 cxxflags.traceagerprop = -Wall -Wextra -std=c++17 -DNDEBUG -DTRACE_PROPAGATOR -O3
 linkflags.traceagerprop = -lm -ldl
+cxxflags.grounding = -Wall -Wextra -std=c++17 -DNDEBUG -DGROUNDING -O3
+linkflags.grounding = -lm -ldl
 
 #for profiling eager
 cxxflags.prof = -Wall -Wextra -std=c++14 -DNDEBUG -DLP2CPP_DEBUG -O3 -g
