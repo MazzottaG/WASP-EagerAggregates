@@ -64,9 +64,9 @@ class TupleFactory{
         void removeFromCollisionsList(int id){
             if(id < internalIDToTuple.size()){
                 TupleLight* tupleToRemove = internalIDToTuple[id];
-                std::vector<std::pair<std::variant< std::vector<int>, std::set<int,AggregateSetCmp> >*,unsigned>>* collisionsLists = &tupleToRemove->getCollisionsLists();
+                std::vector<std::pair<std::variant< std::vector<int>, std::set<int,std::greater<int>> >*,unsigned>>* collisionsLists = &tupleToRemove->getCollisionsLists();
                 for (unsigned i=0; i<collisionsLists->size(); i++) {
-                    std::variant< std::vector<int>, std::set<int,AggregateSetCmp> >* collisionList = collisionsLists->at(i).first;
+                    std::variant< std::vector<int>, std::set<int,std::greater<int>> >* collisionList = collisionsLists->at(i).first;
                     unsigned index = collisionsLists->at(i).second;
 
                     if(std::holds_alternative<std::vector<int>>(*collisionList)){
@@ -75,11 +75,19 @@ class TupleFactory{
                         internalIDToTuple[collisionVector[index]]->setCollisionListIndex(collisionList, index,i);
                         collisionVector.pop_back();
                     }else{
-                        std::set< int, AggregateSetCmp >& collisionSet = std::get<std::set<int,AggregateSetCmp>>(*collisionList);
+                        std::set< int,std::greater<int> >& collisionSet = std::get<std::set<int,std::greater<int>>>(*collisionList);
                         collisionSet.erase(id); 
                     }
                 }
                 tupleToRemove->clearCollisionsList();
+            }
+        }
+        void setId(TupleLight* t,unsigned id){
+            if(t->getId()!=id){ 
+                if(id < internalIDToTuple.size()){
+                    t->setId(id);
+                    internalIDToTuple[id]=t;
+                }
             }
         }
         //store new wasp tuple and return a smart reference to it

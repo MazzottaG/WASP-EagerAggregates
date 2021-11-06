@@ -48,6 +48,9 @@ aspc::Atom::Atom(const aspc::Atom& b) : predicateName(b.predicateName), terms(b.
 
 }
 
+aspc::Atom::Atom() : predicateName(""), terms({}) {
+
+}
 aspc::Atom::~Atom() {
 
 }

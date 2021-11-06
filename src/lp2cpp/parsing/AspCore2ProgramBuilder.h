@@ -115,6 +115,9 @@ private:
     
     std::unordered_map<std::string, std::string> auxPossibleSumToAggrSet;
     std::unordered_map<std::string, std::string> aggrSetToAuxVal;
+    std::unordered_set<std::string> domPredicate;
+    std::unordered_map<std::string,aspc::Literal> domToBody;
+    std::unordered_map<std::string,std::vector<std::string>> domToTerms;
     void buildExpression();
     bool negatedTerm=false;
 public:
@@ -264,12 +267,14 @@ public:
     void rewriteConstraint(const aspc::Rule& r);
     void rewriteRuleWithAggregate(const aspc::Rule& r);
     void rewriteRuleWithCompletion(const aspc::Rule& r);
-    std::pair<bool,std::pair<std::string,AggrSetPredicate>> buildAggregateSet(std::unordered_set<std::string> bodyVariables,const aspc::ArithmeticRelationWithAggregate& aggregareRelation);
+    std::pair<bool,std::pair<std::string,AggrSetPredicate>> buildAggregateSet(std::unordered_set<std::string> bodyVariables,const aspc::ArithmeticRelationWithAggregate& aggregareRelation,std::string domPred,std::vector<std::string>domTerms);
     std::pair<bool,std::pair<std::string,AggrSetPredicate>> buildBody(std::unordered_set<std::string> aggregateBodyVariables,const aspc::Rule& r,std::string auxValPred,std::vector<std::string> auxValTerm);
     std::vector<std::string> writeAggrIdRule(std::pair<bool,std::pair<std::string,AggrSetPredicate>> body,std::pair<bool,std::pair<std::string,AggrSetPredicate>> aggrSet,const aspc::Rule& r);
     void clearData();
     std::vector<aspc::Literal> rewriteAggregate(std::vector<aspc::Literal>& ,const std::unordered_set<string>& ,const aspc::ArithmeticRelationWithAggregate&,bool=false);
     void addManualDependecy();
+    aspc::Literal* getAssociatedBodyPred(const std::string& domPred){if(domToBody.count(domPred)==0) return NULL;return &domToBody[domPred];}
+    std::vector<std::string> getDomTerms(const std::string& domPred){if(domToTerms.count(domPred)==0) return std::vector<std::string>();return domToTerms[domPred];}
 //    const void printSCC(){
 //        std::vector<std::vector<int> > SCC = graphWithTarjanAlgorithm.SCC();
 //        for(int i = 0;i< SCC.size();i++)

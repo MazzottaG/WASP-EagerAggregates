@@ -33,7 +33,7 @@
  *
  */
 
-/* 
+/*
  * File:   AuxiliaryMap.h
  * Author: bernardo
  *
@@ -73,18 +73,34 @@ public:
         }
         return std::get<std::vector<int>>(it->second);
     }
-    inline const std::set< int, AggregateSetCmp >& getValuesSet(const std::vector<int>& key) const {
+
+    // inline const std::set< int >& getValuesSetId(const std::vector<int>& key) const {
+    //     std::bitset<S> keyCode;
+    //     valueToPos(key,keyCode);
+    //     const auto it = tuples.find(keyCode);
+    //     if (it == tuples.end()) {
+    //         return EMPTY_RESULT_SET;
+    //     }
+    //     auto& vsets = std::get<std::variant< std::set<int,AggregateSetCmp>, std::set<int> >(it->second)
+    //     return std::get<set<int>>(vsets);
+    // }
+
+    // inline const std::set< int, AggregateSetCmp >& getValuesSet(const std::vector<int>& key) const {
+    inline const std::set< int, std::greater<int> >& getValuesSet(const std::vector<int>& key) const {
         std::bitset<S> keyCode;
         valueToPos(key,keyCode);
         const auto it = tuples.find(keyCode);
         if (it == tuples.end()) {
             return EMPTY_RESULT_SET;
         }
-        return std::get<std::set<int,AggregateSetCmp>>(it->second);
+        return std::get<std::set<int,std::greater<int>>>(it->second);
+        // return std::get<std::set<int,AggregateSetCmp>>(it->second);
+        // auto& vsets = std::get<std::variant< std::set<int,AggregateSetCmp>, std::set<int> >(it->second)
+        // return std::get<set<int, AggregateSetCmp>>(vsets);
     }
 
     inline void insert2Vec(const TupleLight & value) {
-        
+
         std::bitset<S> keyCode;
         std::vector<int> key = getKey(value);
         valueToPos(key,keyCode);
@@ -97,17 +113,43 @@ public:
         std::bitset<S> keyCode;
         std::vector<int> key = getKey(value);
         valueToPos(key,keyCode);
-        auto& collisionList = tuples.emplace(keyCode,std::set<int,AggregateSetCmp>()).first->second;
-        std::set < int, AggregateSetCmp >& collisionSet = std::get< std::set < int, AggregateSetCmp > > (collisionList);
+        // auto& collisionList = tuples.emplace(keyCode,std::set<int,AggregateSetCmp>()).first->second;
+        // std::set < int, AggregateSetCmp >& collisionSet = std::get< std::set < int, AggregateSetCmp > > (collisionList);
+        auto& collisionList = tuples.emplace(keyCode,std::set<int,std::greater<int>>()).first->second;
+        std::set<int,std::greater<int>>& collisionSet = std::get< std::set<int,std::greater<int>> > (collisionList);
         value.setCollisionListIndex(&collisionList, collisionSet.size());
         collisionSet.insert(value.getId());
     }
-    
+    // inline void insert2Set(const TupleLight & value) {
+    //     std::bitset<S> keyCode;
+    //     std::vector<int> key = getKey(value);
+    //     valueToPos(key,keyCode);
+    //     std::variant< std::set<int,AggregateSetCmp>, std::set<int> > tmp;
+    //     tmp = std::set<int, AggregateSetCmp >();
+    //     auto& collisionList = tuples.emplace(keyCode,tmp).first->second;
+    //     std::set < int, AggregateSetCmp >& collisionSet = std::get< std::set < int, AggregateSetCmp > > ( std::get < std::variant < std::set<int,AggregateSetCmp>, std::set<int> > > (collisionList) );
+    //     value.setCollisionListIndex(&collisionList, collisionSet.size());
+    //     collisionSet.insert(value.getId());
+    // }
+    // inline void insert2SetId(const TupleLight & value) {
+    //     std::bitset<S> keyCode;
+    //     std::vector<int> key = getKey(value);
+    //     valueToPos(key,keyCode);
+    //     std::variant< std::set<int,AggregateSetCmp>, std::set<int> > tmp;
+    //     tmp = std::set<int>();
+    //     auto& collisionList = tuples.emplace(
+    //         keyCode,
+    //         tmp;
+    //     ).first->second;
+    //     std::set < int >& collisionSet = std::get< std::set < int > > ( std::get < std::variant< std::set<int,AggregateSetCmp>, std::set<int> > > (collisionList));
+    //     value.setCollisionListIndex(&collisionList, collisionSet.size());
+    //     collisionSet.insert(value.getId());
+    // }
     void clear() {
         tuples.clear();
     }
     inline unsigned size()const{
-        
+
         unsigned size = tuples.size();
         for (const auto element : tuples){
             if(element.second.empty())
@@ -125,7 +167,7 @@ protected:
             keyCode |= (bit_set_val = val);
         }
     }
-    
+
     std::vector<int> getKey(const TupleLight& value){
         std::vector<int> key(keySize);
         for (unsigned i = 0; i < keySize; i++) {
@@ -133,12 +175,15 @@ protected:
         }
         return key;
     }
-    
-    std::unordered_map<std::bitset<S>, std::variant < std::vector< int >, std::set< int, AggregateSetCmp> > > tuples;
+
+    std::unordered_map<std::bitset<S>, std::variant < std::vector< int >, std::set<int,std::greater<int>> > > tuples;
+    // std::unordered_map<std::bitset<S>, std::variant < std::vector< int >, std::set< int, AggregateSetCmp> > > tuples;
+    // std::unordered_map<std::bitset<S>, std::variant < std::vector< int >, std::variant< std::set< int, AggregateSetCmp>, std::set<int> > > > tuples;
     unsigned keySize;
     std::vector<unsigned> keyIndices;
     static const std::vector< int > EMPTY_RESULT_VEC;
-    static const std::set< int, AggregateSetCmp > EMPTY_RESULT_SET;
+    // static const std::set< int, AggregateSetCmp > EMPTY_RESULT_SET;
+    static const std::set<int,std::greater<int>> EMPTY_RESULT_SET;
 
 
 };
@@ -146,9 +191,11 @@ protected:
 template<size_t S>
 const std::vector< int > AuxiliaryMapSmart<S>::EMPTY_RESULT_VEC;
 
-template<size_t S>
-const std::set< int, AggregateSetCmp > AuxiliaryMapSmart<S>::EMPTY_RESULT_SET;
+// template<size_t S>
+// const std::set< int, AggregateSetCmp > AuxiliaryMapSmart<S>::EMPTY_RESULT_SET;
 
+template<size_t S>
+const std::set<int,std::greater<int>> AuxiliaryMapSmart<S>::EMPTY_RESULT_SET;
 
 #endif /* AUXILIARYMAPSMART_H */
 

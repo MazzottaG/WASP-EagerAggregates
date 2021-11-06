@@ -698,7 +698,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     *out << ind << "\n";
     *out << ind << "const std::vector<int> EMPTY_TUPLES_VEC;\n";
-    *out << ind << "const std::set<int,AggregateSetCmp> EMPTY_TUPLES_SET;\n";
+    *out << ind << "const std::set<int,std::greater<int>> EMPTY_TUPLES_SET;\n";
     *out << ind << "std::unordered_map<std::string, const std::string * > stringToUniqueStringPointer;\n";
 
     *out << ind << "TupleFactory factory;\n";
@@ -756,6 +756,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             predicateLevels[c] = sccs.size() - i - 1;
         }
     }
+    // std::cout<<"getTarjan"<<std::endl;
 
 
     if (mode == LAZY_MODE) {
@@ -774,9 +775,12 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     const std::unordered_map<std::string, int>& predicateIDs = builder->getPredicateIDsMap();
     // std::cout << "Rules size: "<<program.getRules().size()<<std::endl;
     for(const auto& auxPred : builder->getAuxPredicateBody()){
+        // std::cout<<auxPred.first<<std::endl;
         std::unordered_set<unsigned> visitedLiterals;
         std::unordered_set<std::string> boundVariables;
+        // std::cout<<auxPred.second.size()<<std::endl;
         while(visitedLiterals.size() < auxPred.second.size()){
+            
             const aspc::Literal* lit = NULL;
             unsigned litIndex=0;
             for(unsigned k=0;k<auxPred.second.size();k++){
@@ -790,8 +794,11 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     }
                 }
             }
-            if(lit != NULL)
+            if(lit != NULL){
                 visitedLiterals.insert(litIndex);
+                // std::cout<<lit->getPredicateName()<<" "<<std::endl;
+            }
+            
 
             if(lit != NULL && !lit->isBoundedLiteral(boundVariables)){
                 std::string auxMapName = lit->getPredicateName()+"_";
@@ -844,6 +851,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             }
         }
     }
+    
     if(mode == EAGER_MODE){
         for(const auto& pair : builder->getAggrSetToAuxVal()){
             std::cout<<"declaring map for auxToVal "<<pair.first+"_"<<std::endl;
@@ -1141,7 +1149,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 predIndex++;
             }
         *out << --ind <<"}\n";
-    }
+    } 
     // ---------------------- onLiteralTrue(const aspc::Literal* l) --------------------------------------//
     *out << ind++ << "inline void Executor::onLiteralTrue(const aspc::Literal* l) {\n";
     if (mode == LAZY_MODE) {
@@ -1399,7 +1407,12 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     // ---------------------- end onLiteralTrue(int var) --------------------------------------//
     // ---------------------- addedVarName(int var, const std::string & atom) --------------------------------------//
     // std::cout<<"Printing aux generation"<<std::endl;
-
+    *out << ind++ << "bool compTuple(const int& l1,const int& l2){\n";
+        *out << ind << "Tuple* first = factory.getTupleFromInternalID(l1);\n";
+        *out << ind << "unsigned firstAggrVarIndex = factory.getIndexForAggrSet(first->getPredicateName());\n";
+        *out << ind << "int w = first->at(firstAggrVarIndex)-factory.getTupleFromInternalID(l2)->at(firstAggrVarIndex);\n";
+        *out << ind << "return w==0 ? l1 > l2 : w > 0;\n";
+    *out << --ind << "}\n";
     *out << ind++ << "void Executor::undefLiteralsReceived()const{\n";
         // *out << ind << "exit(180);\n";
         *out << ind++ << "if(undefinedLoaded)\n";
@@ -1429,7 +1442,75 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             for(unsigned predId : scc[component]){
                 auto it = vertexByID.find(scc[component][0]);
                 if(it!=vertexByID.end()){
-                    if(auxToBody.count(it->second.name)!=0){
+                    const aspc::Literal* domToBody=builder->getAssociatedBodyPred(it->second.name);
+                    if(domToBody!=NULL){
+                        
+                        *out << ind++ << "{\n";
+                        std::string type = predicateToOrderdedAux.count(domToBody->getPredicateName())!=0 ? "const std::set<int,std::greater<int>>*": "const std::vector<int>*";
+                        std::string toStruct = predicateToOrderdedAux.count(domToBody->getPredicateName())!=0 ? "Set" : "Vec";
+
+                        *out << ind << type << " tuples = &p"<<domToBody->getPredicateName()<<"_.getValues"<<toStruct<<"({});\n";
+                        *out << ind << type << " tuplesU = &u"<<domToBody->getPredicateName()<<"_.getValues"<<toStruct<<"({});\n";
+                        *out << ind << type << " tuplesF = &f"<<domToBody->getPredicateName()<<"_.getValues"<<toStruct<<"({});\n";
+                        if(predicateToOrderdedAux.count(domToBody->getPredicateName())!=0){
+                            *out << ind << "auto itTrue = tuples->begin();\n";
+                            *out << ind << "auto itUndef = tuplesU->begin();\n";
+                            *out << ind << "auto itFalse = tuplesF->begin();\n";
+                            *out << ind++ << "while(itTrue != tuples->end() || itUndef != tuplesU->end() || itFalse != tuplesF->end()){\n";
+                                *out << ind << "const Tuple* tuple = NULL;\n";
+                                *out << ind++ << "if(itTrue!=tuples->end()){\n";
+                                    *out << ind << "tuple=factory.getTupleFromInternalID(*itTrue);\n";
+                                    *out << ind-- << "itTrue++;\n";
+                                *out << ind++ << "}else if(itUndef!=tuplesU->end()){\n";
+                                    *out << ind << "tuple=factory.getTupleFromInternalID(*itUndef);\n";
+                                    *out << ind-- << "itUndef++;\n";
+                                *out << ind++ << "}else if(itFalse!=tuplesF->end()){\n";
+                                    *out << ind << "tuple=factory.getTupleFromInternalID(*itFalse);\n";
+                                    *out << ind << "itFalse++;\n";
+                                *out << --ind << "}\n";
+                        }else{
+                            *out << ind++ << "for(unsigned i=0; i<tuples->size()+tuplesU->size()+tuplesF->size();i++){\n";
+                                *out << ind << "const Tuple* tuple = NULL;\n";
+                                *out << ind++ << "if(i<tuples->size()){\n";
+                                    *out << ind-- << "tuple=factory.getTupleFromInternalID(tuples->at(i));\n";
+                                *out << ind++ << "}else if(i<tuples->size()+tuplesU->size()){\n";
+                                    *out << ind-- << "tuple=factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));\n";
+                                *out << ind++ << "}else if(i<tuples->size()+tuplesU->size()+tuplesF->size()){\n";
+                                    *out << ind << "tuple=factory.getTupleFromInternalID(tuplesF->at(i-tuples->size()-tuplesU->size()));\n";
+                                *out << --ind << "}\n";
+                        }
+                        aspc::Literal dom(false,aspc::Atom(it->second.name,builder->getDomTerms(it->second.name)));
+                        std::unordered_set<std::string> terms;
+                        dom.addVariablesToSet(terms);
+                        std::unordered_set<std::string> boundVars;
+                        for(unsigned k=0;k<domToBody->getAriety();k++){
+                            if(domToBody->isVariableTermAt(k) && terms.count(domToBody->getTermAt(k))!=0){
+                                if(boundVars.count(domToBody->getTermAt(k))==0){
+                                    *out << ind << "int "<<domToBody->getTermAt(k)<<" = tuple->at("<<k<<");\n";
+                                    boundVars.insert(domToBody->getTermAt(k));
+                                }
+                            }
+                        }
+                        std::string domterms="";
+                        for(unsigned k=0;k<dom.getAriety();k++){
+                            if(k>0)
+                                domterms+=",";
+                            domterms+=dom.getTermAt(k);
+                        }                        
+                                *out << ind << "Tuple* dom = factory.addNewInternalTuple({"<<domterms<< "}, &_"<<dom.getPredicateName()<<");\n";
+                                // *out << ind << "if(aux->getPredicateName() == &_sum)std::cout<<\"Saving sum aux \"<<aux->getId(); aux->print();\n";
+                                *out << ind << "const auto& insertResult = dom->setStatus(True);\n";
+                                *out << ind++ << "if (insertResult.second) {\n";
+                                    *out << ind << "factory.removeFromCollisionsList(dom->getId());\n";
+                                    *out << ind << "insertTrue(insertResult);\n";
+                                *out << --ind << "}\n";
+                            *out << --ind << "}\n";
+                        *out << --ind << "}\n";
+                        
+
+
+
+                    }else if(auxToBody.count(it->second.name)!=0){
                         std::unordered_set<unsigned> visitedLiterals;
                         std::unordered_set<unsigned> visitedIneqs;
                         std::unordered_set<std::string> boundVariables;
@@ -1437,6 +1518,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         *out << ind++ << "{\n";
                         #ifdef TRACE_PROPAGATOR
                             *out << ind << "std::cout<<\"Generating: "<<it->second.name<<"\"<<std::endl;\n";
+                            std::cout<<"Printing aux computing "<<it->second.name<<std::endl;
                         #endif
                         while (visitedLiterals.size()<auxToBody[it->second.name].size() || visitedIneqs.size()<auxToInequality[it->second.name].size()){
                             const aspc::ArithmeticRelation* selectedIneq=NULL;
@@ -1464,7 +1546,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                 }
                                 visitedIneqs.insert(selectedIndex);
                             }else{
-
+                                
                                 for(unsigned i=0; i<auxToBody[it->second.name].size() && visitedLiterals.size()<auxToBody[it->second.name].size();i++){
                                     if(visitedLiterals.count(i)==0){
                                         if(auxToBody[it->second.name][i].isBoundedLiteral(boundVariables)){
@@ -1477,6 +1559,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         }
                                     }
                                 }
+                            
                                 if(selectedLit!=NULL){
                                     // std::cout<<"current formula is literal"<<std::endl;
 
@@ -1495,7 +1578,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         }
                                         closingPars++;
                                     }else{
-                                        std::string type = predicateToOrderdedAux.count(selectedLit->getPredicateName())!=0 ? "const std::set<int,AggregateSetCmp>*": "const std::vector<int>*";
+                                        std::string type = predicateToOrderdedAux.count(selectedLit->getPredicateName())!=0 ? "const std::set<int,std::greater<int>>*": "const std::vector<int>*";
                                         std::string toStruct = predicateToOrderdedAux.count(selectedLit->getPredicateName())!=0 ? "Set" : "Vec";
 
                                         *out << ind << type << " tuples = &p"<<selectedLit->getPredicateName()<<"_";
@@ -1554,6 +1637,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                             }
                                     }
                                     visitedLiterals.insert(selectedIndex);
+                                }else{
+                                    std::cout<<"Unable to find literal"<<std::endl;
+                                    exit(180);
                                 }
                             }
                         }
@@ -1569,6 +1655,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         // *out << ind << "if(aux->getPredicateName() == &_sum)std::cout<<\"Saving sum aux \"<<aux->getId(); aux->print();\n";
                         *out << ind << "const auto& insertResult = aux->setStatus(Undef);\n";
                         *out << ind++ << "if (insertResult.second) {\n";
+                        
                             #ifdef TRACE_PROPAGATOR
                                 *out << ind << "std::cout<<aux->getId()<<\" \";aux->print();\n";
                             #endif
@@ -1687,7 +1774,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
                         *out << ind++ << "{\n";
                             if(predicateToOrderdedAux.count(it->second.name)!=0){
-                                *out << ind << "const std::set<int,AggregateSetCmp>* tuplesU = &u"<<it->second.name<<"_.getValuesSet({});\n";
+                                *out << ind << "const std::set<int,std::greater<int>>* tuplesU = &u"<<it->second.name<<"_.getValuesSet({});\n";
                                 *out << ind++ << "for(auto it = tuplesU->begin(); it != tuplesU->end(); it++){\n";
                                     *out << ind << "Tuple * tuple = factory.getTupleFromInternalID(*it);\n";
 
@@ -1757,8 +1844,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                     }
                                     *out << ind++ << "{\n";
                                         if(predicateToOrderdedAux.count(bodyLit->getPredicateName())!=0){
-                                            *out << ind << "const std::set<int,AggregateSetCmp>* tuples = &p"<<bodyLit->getPredicateName()<<"_.getValuesSet({});\n";
-                                            *out << ind << "const std::set<int,AggregateSetCmp>* tuplesU = &u"<<bodyLit->getPredicateName()<<"_.getValuesSet({});\n";
+                                            *out << ind << "const std::set<int,std::greater<int>>* tuples = &p"<<bodyLit->getPredicateName()<<"_.getValuesSet({});\n";
+                                            *out << ind << "const std::set<int,std::greater<int>>* tuplesU = &u"<<bodyLit->getPredicateName()<<"_.getValuesSet({});\n";
                                             *out << ind << "auto itTrue = tuples->begin();\n";
                                             *out << ind << "auto itUndef = tuplesU->begin();\n";
 
@@ -1931,8 +2018,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                 if(!builder->isBodyPredicate(bodyLit->getPredicateName())){
                                     *out << ind++ << "{\n";
                                         if(predicateToOrderdedAux.count(bodyLit->getPredicateName())!=0){
-                                            *out << ind << "const std::set<int,AggregateSetCmp>* tuples = &p"<<bodyLit->getPredicateName()<<"_.getValuesSet({});\n";
-                                            *out << ind << "const std::set<int,AggregateSetCmp>* tuplesU = &u"<<bodyLit->getPredicateName()<<"_.getValuesSet({});\n";
+                                            *out << ind << "const std::set<int,std::greater<int>>* tuples = &p"<<bodyLit->getPredicateName()<<"_.getValuesSet({});\n";
+                                            *out << ind << "const std::set<int,std::greater<int>>* tuplesU = &u"<<bodyLit->getPredicateName()<<"_.getValuesSet({});\n";
                                             *out << ind << "auto itTrue = tuples->begin();\n";
                                             *out << ind << "auto itUndef = tuplesU->begin();\n";
                                             *out << ind++ << "for(; itTrue!=tuples->end() || itUndef != tuplesU->end();){\n";
@@ -2006,7 +2093,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
                             *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(it);\n";
                             if(predicateToOrderdedAux.count(aggrSetPred.first)!=0){
-                                *out << ind << "const std::set<int,AggregateSetCmp>* aggrSetTuples = &u"<<aggrSetPred.first<<"_";
+                                *out << ind << "const std::set<int,std::greater<int>>* aggrSetTuples = &u"<<aggrSetPred.first<<"_";
                                 for(unsigned k : sharedVarAggrIDToAggrSetIndices[aggrId->getPredicateName()]){
                                     *out << k << "_";
                                 }
@@ -2047,6 +2134,50 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 }
             }
         }
+        if(predicateToOrderdedAux.size()>0){
+            *out << ind << "std::vector<int> ordered_ids;\n";
+            *out << ind << "std::vector<int> tuplesIdOrdered;\n";
+            *out << ind << "std::map<int, Tuple*> idToTuples;\n";
+            *out << ind << "int currentIdIndex=0;\n";
+            
+        }
+        for(auto& pair : predicateToOrderdedAux){
+            *out << ind++ << "{\n";
+                *out<<ind<<"std::cout<<\"Ordering\"<<std::endl;\n";
+                *out << ind << "const std::set<int,greater<int>> tuples = u"<<pair.first<<"_.getValuesSet({});\n"; 
+                *out << ind << "ordered_ids.reserve(tuples.size());\n";
+                *out << ind << "tuplesIdOrdered.reserve(tuples.size());\n";
+                *out << ind++ << "for(int id :tuples){\n";
+                    *out << ind << "tuplesIdOrdered.push_back(id);\n";
+                    *out << ind << "ordered_ids.push_back(id);\n";
+                    *out << ind << "idToTuples[id]=factory.getTupleFromInternalID(id);\n";
+                    *out << ind << "factory.removeFromCollisionsList(id);\n";
+                    *out << ind << "idToTuples[id]->setStatus(UNKNOWN);\n";
+
+                *out << --ind << "}\n";
+                *out << ind << "std::stable_sort(tuplesIdOrdered.begin(),tuplesIdOrdered.end(),compTuple);\n";
+                *out << ind++ << "for(int id: tuplesIdOrdered){\n";
+                    *out << ind << "Tuple* t=idToTuples[id];\n";
+                    *out << ind << "factory.setId(t,ordered_ids[currentIdIndex++]);\n";
+                    *out << ind << "const auto& insertResult = t->setStatus(Undef);\n";
+                    *out << ind++ << "if (insertResult.second) {\n";
+                        *out << ind << "factory.removeFromCollisionsList(t->getId());\n";
+                        *out << ind << "insertUndef(insertResult);\n";
+                    *out << --ind << "}\n";
+
+                *out << --ind << "}\n";
+                #ifdef TRACE_PROPAGATOR
+                    *out << ind++ << "for(int id :u"<<pair.first<<"_.getValuesSet({})){\n";
+                        *out << ind << "std::cout<<id<<\" \";factory.getTupleFromInternalID(id)->print();\n";
+                    *out << --ind << "}\n";
+                #endif
+                *out << ind << "ordered_ids.clear();\n";
+                *out << ind << "tuplesIdOrdered.clear();\n";
+                *out << ind << "idToTuples.clear();\n";
+                *out << ind << "currentIdIndex=0;\n";
+            *out << --ind << "}\n";
+            
+        }
         #ifdef GROUNDING
             for(std::string pred : builder->getPrintingPredicates()){
                 *out << ind++ << "for(int internalId : u"<<pred<<"_.getValues({})){\n";
@@ -2064,7 +2195,11 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind << "factory.getTupleFromInternalID(pair.first)->print();\n";
             *out << ind << "std::cout<<\"PossibleSum \"<<pair.second<<std::endl;\n";
         *out << --ind <<"}\n";
-        *out << ind << "std::cout<<\"Generated\"<<std::endl;\n";
+        *out << ind << "std::cout<<\"Generated\"<<std::endl;\n";        
+        *out << ind << "exit(180);\n";
+        // *out << ind++ << "for(int id :uaggr_set0_.getValuesVec({})){\n";
+        //     *out << ind << "std::cout<<id<<\" \";factory.getTupleFromInternalID(id)->print();\n";
+        // *out << --ind << "}\n";
         #endif
         // *out << --ind <<"}\n";
         // *out << ind << "exit(180);\n";
@@ -2420,7 +2555,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                         closingPars++;
                                                     }
                                                 }else{
-                                                    std::string type = predicateToOrderdedAux.count(l->getPredicateName()) == 0 ? "const std::vector<int>*" : "const std::set<int,AggregateSetCmp>*";
+                                                    std::string type = predicateToOrderdedAux.count(l->getPredicateName()) == 0 ? "const std::vector<int>*" : "const std::set<int,std::greater<int>>*";
                                                     std::string toStruct = predicateToOrderdedAux.count(l->getPredicateName()) != 0 ? "Set" : "Vec";
 
                                                     *out << ind << type << " tuples = &p"<<l->getPredicateName()<<"_";
@@ -2504,7 +2639,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                                 localPars++;
                                                             }
                                                         }else{
-                                                            std::string type = predicateToOrderdedAux.count(l->getPredicateName())==0 ? "const std::vector<int>*" : "const std::set<int,AggregateSetCmp>*";
+                                                            std::string type = predicateToOrderdedAux.count(l->getPredicateName())==0 ? "const std::vector<int>*" : "const std::set<int,std::greater<int>>*";
                                                             std::string toStruct = predicateToOrderdedAux.count(l->getPredicateName())==0 ? "Vec" : "Set";
                                                             *out << ind << type << " tuples = &p"<<l->getPredicateName()<<"_";
                                                             std::string boundTerms="";
@@ -2873,7 +3008,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 compileEagerRule(*rule,false);
             }
             #ifdef TRACE_PROPAGATOR
-            *out << ind << "exit(0);\n";
+            // *out << ind << "exit(0);\n";
             #endif
             // *out << ind << "std::cout<<\"end level -1\"<<std::endl;\n";
 
@@ -3077,7 +3212,18 @@ void CompilationManager::declareRuleEagerStructures(const aspc::Rule& r){
                         }
                     }
                 }
-                std::string mapName = aggrId->getPredicateName()+"_";
+                std::string mapName = aggregate->getPredicateName()+"_";
+                if (!declaredMaps.count(mapName) && r.getArithmeticRelationsWithAggregate()[0].getAggregate().isSum()){
+                    int BITSETSIZE=0;
+                    *out << ind << "AuxMap<"<<BITSETSIZE<<"> p" << mapName << "({});\n";
+                    *out << ind << "AuxMap<"<<BITSETSIZE<<"> u" << mapName << "({});\n";
+                    *out << ind << "AuxMap<"<<BITSETSIZE<<"> f" << mapName << "({});\n";
+                    predicateToAuxiliaryMaps[aggregate->getPredicateName()].insert(mapName);
+                    predicateToUndefAuxiliaryMaps[aggregate->getPredicateName()].insert(mapName);
+                    predicateToFalseAuxiliaryMaps[aggregate->getPredicateName()].insert(mapName);
+                    declaredMaps.insert(mapName);
+                }
+                mapName = aggrId->getPredicateName()+"_";
                 if (!declaredMaps.count(mapName)){
                     int BITSETSIZE=0;
                     *out << ind << "AuxMap<"<<BITSETSIZE<<"> p" << mapName << "({});\n";
@@ -3088,6 +3234,7 @@ void CompilationManager::declareRuleEagerStructures(const aspc::Rule& r){
                     predicateToFalseAuxiliaryMaps[aggrId->getPredicateName()].insert(mapName);
                     declaredMaps.insert(mapName);
                 }
+                
                 // if(domBody!=NULL && domBody->getAriety() != sharedVarAggrIDToBodyIndices[aggrId->getPredicateName()].size()){
                 if(domBody!=NULL){
                     std::string indices="";
@@ -3453,7 +3600,7 @@ unsigned CompilationManager::exploreLiteral(const aspc::Literal* lit,std::unorde
         *out << ind++ << "if(tuple"<<currentLitIndex<<"!=NULL){\n";
         pars++;
     }else{
-        std::string type = predicateToOrderdedAux.count(lit->getPredicateName())!=0 ? "const std::set<int,AggregateSetCmp>*":"const std::vector<int>*";
+        std::string type = predicateToOrderdedAux.count(lit->getPredicateName())!=0 ? "const std::set<int,std::greater<int>>*":"const std::vector<int>*";
         std::string toStruct = predicateToOrderdedAux.count(lit->getPredicateName())!=0 ? "Set":"Vec";
         std::string toEmptyStruct = predicateToOrderdedAux.count(lit->getPredicateName())!=0 ? "_SET":"_VEC";
 
@@ -3576,8 +3723,8 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                 std::string plusOne = r.getArithmeticRelationsWithAggregate()[0].isPlusOne() ? "+1":"";
                 std::string guard = r.getArithmeticRelationsWithAggregate()[0].getGuard().getStringRep()+plusOne;
                 if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                    *out << ind << "const std::set<int,AggregateSetCmp>* tuples = &p"<<mapName<<".getValuesSet(sharedVar);\n";
-                    *out << ind << "const std::set<int,AggregateSetCmp>* tuplesU = &u"<<mapName<<".getValuesSet(sharedVar);\n";
+                    *out << ind << "const std::set<int,std::greater<int>>* tuples = &p"<<mapName<<".getValuesSet(sharedVar);\n";
+                    *out << ind << "const std::set<int,std::greater<int>>* tuplesU = &u"<<mapName<<".getValuesSet(sharedVar);\n";
                 }else{
                     *out << ind << "const std::vector<int>* tuples = &p"<<mapName<<".getValuesVec(sharedVar);\n";
                     *out << ind << "const std::vector<int>* tuplesU = &u"<<mapName<<".getValuesVec(sharedVar);\n";
@@ -3726,7 +3873,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                         *out << ind++ << "if(tuples->size()+tuplesU->size() < "<<guard<<"){\n";
                         //*out << ind << "std::cout<<\"Conflitct on aggregate starting from aggrId true "<<r.getRuleId()<<"\"<<std::endl;\n";
                         if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                            *out << ind << "const std::set<int,AggregateSetCmp>* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                            *out << ind << "const std::set<int,std::greater<int>>* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                             *out << ind++ << "for(auto i = tuplesF->begin(); i != tuplesF->end(); i++){\n";
                                 *out << ind << "int it = *i;\n";
 
@@ -3752,7 +3899,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                     *out << ind << "int itProp = *tuplesU->begin();\n";
 
                                     *out << ind++ << "if(shared_reason.get()->empty()){\n";
-                                        *out << ind << "const std::set<int,AggregateSetCmp>* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                                        *out << ind << "const std::set<int,std::greater<int>>* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                                         *out << ind++ << "for(auto i = tuplesF->begin(); i != tuplesF->end(); i++){\n";
                                             *out << ind << "int it = *i;\n";
                                             *out << ind << "shared_reason.get()->insert(-it);\n";
@@ -3782,7 +3929,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                 *out << ind++ << "if(actSum < "<<guard<<"-posSum+currentTuple->at("<<varIndex<<")){\n";
                                     *out << ind << "int itProp = currentTuple->getId();\n";
                                     *out << ind++ << "if(shared_reason.get()->empty()){\n";
-                                        *out << ind << "const std::set<int,AggregateSetCmp>* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                                        *out << ind << "const std::set<int,std::greater<int>>* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                                         *out << ind++ << "for(auto i = tuplesF->begin(); i != tuplesF->end(); i++){\n";
                                             *out << ind << "int it = *i;\n";
                                             *out << ind << "shared_reason.get()->insert(-it);\n";
@@ -3808,7 +3955,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                         if(builder->isAggrSetPredicate(aggrSetPred->getPredicateName())){
                             *out << ind++ << "if(tuplesU->size() > 0){\n";
                                 if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                                    *out << ind << "const std::set<int,AggregateSetCmp>* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                                    *out << ind << "const std::set<int,std::greater<int>>* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                                     *out << ind++ << "for(auto i = tuplesF->begin(); i != tuplesF->end(); i++){\n";
                                         *out << ind << "int it = *i;\n";
 
@@ -3844,7 +3991,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                         }else{
                             *out << ind++ << "if(!tuplesU->empty()){\n";
                                 if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                                    *out << ind << "const std::set<int,AggregateSetCmp>* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                                    *out << ind << "const std::set<int,std::greater<int>>* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                                     *out << ind++ << "for(auto i = tuplesF->begin(); i != tuplesF->end(); i++){\n";
                                         *out << ind << "int it = *i;\n";
                                 }else{
@@ -3936,8 +4083,8 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                 }
                 *out << "});\n";
                 if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                    *out << ind << "const std::set<int,AggregateSetCmp>* joinTuples = &p"<<mapName<<".getValuesSet(sharedVar);\n";
-                    *out << ind << "const std::set<int,AggregateSetCmp>* joinTuplesU = &u"<<mapName<<".getValuesSet(sharedVar);\n";
+                    *out << ind << "const std::set<int,std::greater<int>>* joinTuples = &p"<<mapName<<".getValuesSet(sharedVar);\n";
+                    *out << ind << "const std::set<int,std::greater<int>>* joinTuplesU = &u"<<mapName<<".getValuesSet(sharedVar);\n";
                 }else{
                     *out << ind << "const std::vector<int>* joinTuples = &p"<<mapName<<".getValuesVec(sharedVar);\n";
                     *out << ind << "const std::vector<int>* joinTuplesU = &u"<<mapName<<".getValuesVec(sharedVar);\n";
@@ -3958,7 +4105,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                         *out << ind << "int itProp = tuples->at(i);\n";
 
                         if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                            *out << ind << "const std::set<int,AggregateSetCmp>* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                            *out << ind << "const std::set<int,std::greater<int>>* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                             *out << ind++ << "for(auto j = joinTuplesF->begin(); j != joinTuplesF->end(); j++){\n";
                                 *out << ind << "int it = *j;\n";
                         }else{
@@ -3985,7 +4132,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             *out << ind << "if(actSum >= "<<guard<<"-posSum+currentJoinTuple->at(0)) {break;}\n";
                             *out << ind << "int itProp = *joinTuplesU->begin();\n";
                             *out << ind++ << "if(shared_reason.get()->empty()){\n";
-                                *out << ind << "const std::set<int,AggregateSetCmp>* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                                *out << ind << "const std::set<int,std::greater<int>>* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                                 *out << ind++ << "for(auto i = joinTuplesF->begin(); i != joinTuplesF->end(); i++){\n";
                                     *out << ind << "int it = *i;\n";
                                     *out << ind << "shared_reason.get()->insert(-it);\n";
@@ -4019,7 +4166,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             *out << ind << "if(actSum >= "<<guard<<"-posSum+currentJoinTuple->at("<<varIndex<<")) {break;}\n";
                             *out << ind << "int itProp = *index;\n";
                             *out << ind++ << "if(shared_reason.get()->empty()){\n";
-                                *out << ind << "const std::set<int,AggregateSetCmp>* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                                *out << ind << "const std::set<int,std::greater<int>>* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                                 *out << ind++ << "for(auto i = joinTuplesF->begin(); i != joinTuplesF->end(); i++){\n";
                                     *out << ind << "int it = *i;\n";
                                     *out << ind << "shared_reason.get()->insert(-it);\n";
@@ -4046,7 +4193,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     if(builder->isAggrSetPredicate(aggrSetPred->getPredicateName())){
                         *out << ind++ << "if(!joinTuplesU->empty()){\n";
                             if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                                *out << ind << "const std::set<int,AggregateSetCmp>* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                                *out << ind << "const std::set<int,std::greater<int>>* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                                 *out << ind++ << "for(auto i = joinTuplesF->begin(); i != joinTuplesF->end(); i++){\n";
                                     *out << ind << "int it = *i;\n";
                             }else{
@@ -4078,7 +4225,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     }else{
                         *out << ind++ << "if(!joinTuplesU->empty()){\n";
                             if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                                *out << ind << "const std::set<int,AggregateSetCmp>* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                                *out << ind << "const std::set<int,std::greater<int>>* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                                 *out << ind++ << "for(auto i = joinTuplesF->begin(); i != joinTuplesF->end(); i++){\n";
                                     *out << ind << "int it = *i;\n";
                             }else{
@@ -4140,8 +4287,8 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                 }
                 *out << "});\n";
                 if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                    *out << ind << "const std::set<int,AggregateSetCmp>* joinTuples = &p"<<mapName<<".getValuesSet(sharedVar);\n";
-                    *out << ind << "const std::set<int,AggregateSetCmp>* joinTuplesU = &u"<<mapName<<".getValuesSet(sharedVar);\n";
+                    *out << ind << "const std::set<int,std::greater<int>>* joinTuples = &p"<<mapName<<".getValuesSet(sharedVar);\n";
+                    *out << ind << "const std::set<int,std::greater<int>>* joinTuplesU = &u"<<mapName<<".getValuesSet(sharedVar);\n";
                 }else{
                     *out << ind << "const std::vector<int>* joinTuples = &p"<<mapName<<".getValuesVec(sharedVar);\n";
                     *out << ind << "const std::vector<int>* joinTuplesU = &u"<<mapName<<".getValuesVec(sharedVar);\n";
@@ -4195,7 +4342,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                 *out << ind << "const Tuple* currentJoinTuple = factory.getTupleFromInternalID(joinTuplesU->at(0));\n";
 
                         }
-                            
+
                             // *out << ind++ << "if(reasonForLiteral.count(-itProp) == 0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty()){\n";
                             *out << ind++ << "if(shared_reason.get()->empty()){\n";
                             if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
@@ -4293,8 +4440,8 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                 }
                 *out << "});\n";
                 if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                    *out << ind << "const std::set<int,AggregateSetCmp>* joinTuples = &p"<<mapName<<".getValuesSet(sharedVar);\n";
-                    *out << ind << "const std::set<int,AggregateSetCmp>* joinTuplesU = &u"<<mapName<<".getValuesSet(sharedVar);\n";
+                    *out << ind << "const std::set<int,std::greater<int>>* joinTuples = &p"<<mapName<<".getValuesSet(sharedVar);\n";
+                    *out << ind << "const std::set<int,std::greater<int>>* joinTuplesU = &u"<<mapName<<".getValuesSet(sharedVar);\n";
                 }else{
                     *out << ind << "const std::vector<int>* joinTuples = &p"<<mapName<<".getValuesVec(sharedVar);\n";
                     *out << ind << "const std::vector<int>* joinTuplesU = &u"<<mapName<<".getValuesVec(sharedVar);\n";
@@ -4337,7 +4484,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     *out << ind << "int itProp = tuplesU->at(i);\n";
                     // *out << ind++ << "if(reasonForLiteral.count(-itProp) == 0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty()){\n";
                     if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                        *out << ind << "const std::set<int,AggregateSetCmp>* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                        *out << ind << "const std::set<int,std::greater<int>>* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                         *out << ind++ << "for(auto j = joinTuplesF->begin(); j != joinTuplesF->end(); j++){\n";
                             *out << ind << "int it = *j;\n";
                     }else{
@@ -4380,7 +4527,7 @@ void printRulePropagationStartingFromTrueHead(){
 
 }
 bool CompilationManager::printGetValues(std::string predicateName,std::vector<unsigned> boundIndices,std::string boundTerms,std::string mapPrefix,std::string name){
-    std::string collisionListType = predicateToOrderdedAux.count(predicateName)!=0 ? "const std::set<int,AggregateSetCmp>*" : "const std::vector<int>*";
+    std::string collisionListType = predicateToOrderdedAux.count(predicateName)!=0 ? "const std::set<int,std::greater<int>>*" : "const std::vector<int>*";
     std::string toStruct = predicateToOrderdedAux.count(predicateName)!=0 ? "Set" : "Vec";
 
     *out << ind << collisionListType << " " << name << " = &" << mapPrefix << predicateName << "_";
@@ -4811,7 +4958,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                     //*out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
                                     *out << ind << "propUndefined(factory.getTupleFromInternalID(it),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                                 *out << --ind << "}\n";
-                                
+
                             }
                         }else{
                             if(internalPredicates.count(body->getPredicateName())!=0){
@@ -5246,7 +5393,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
         compileEagerRuleWithAggregate(r,fromStarter);
         // std::cout<<"compiled"<<std::endl;
         return;
-        
+
     }
     if(!r.isConstraint()){
         compileEagerSimpleRule(r,fromStarter);

@@ -30,6 +30,7 @@ class AggrSetPredicate {
         std::vector<std::string> terms;
         std::vector<aspc::Literal> literals;
         std::vector<aspc::ArithmeticRelation> inequalities;
+        std::string bodyDomainPredicate;
     public:
         AggrSetPredicate(const AggrSetPredicate& p){
             for(std::string t : p.terms)
@@ -41,12 +42,16 @@ class AggrSetPredicate {
             for(aspc::ArithmeticRelation ineq : p.inequalities){
                 this->inequalities.push_back(ineq);
             }
+            this->bodyDomainPredicate=p.bodyDomainPredicate;
         }
-        AggrSetPredicate(){}
+        AggrSetPredicate(){bodyDomainPredicate="";}
         void addTerm(std::string t){terms.push_back(t);}
         void addLiteral(aspc::Literal l){literals.push_back(l);}
         void addInequality(aspc::ArithmeticRelation r){inequalities.push_back(r);}
+        void setBodyDomain(std::string needDomain){bodyDomainPredicate=needDomain;}
+
         std::vector<std::string> getTerms()const{return terms;}
+        std::string getBodyDomain()const{return bodyDomainPredicate;}
         // AggrSetPredicate(){}
         // AggrSetPredicate(const AggrSetPredicate& other){
         //     for(std::string t : other.terms){

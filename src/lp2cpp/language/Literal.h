@@ -47,6 +47,7 @@ namespace aspc {
         Literal(const std::string & predicateName, bool negated);
         Literal(bool negated, const aspc::Atom & atom);
         Literal(const Literal &);
+        Literal();
         virtual ~Literal();
 
         void negate();

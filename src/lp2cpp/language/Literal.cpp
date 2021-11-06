@@ -53,6 +53,9 @@ aspc::Literal::Literal(const string& predicateName, bool negated): atom(predicat
     
 }
 
+aspc::Literal::Literal() {
+    
+}
 
 void aspc::Literal::addTerm(const string& t) {
     atom.addTerm(t);
