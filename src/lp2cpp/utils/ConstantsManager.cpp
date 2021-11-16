@@ -64,7 +64,8 @@ string ConstantsManager::unmapConstant(int mapped) const {
     if (mapped >= halfMaxInt) {
         return inverseMap[mapped - halfMaxInt];
     }
-    return to_string(mapped);
+    // return to_string(mapped);
+    return inverseMap[mapped];
 }
 
 const string& ConstantsManager::getPredicateName(const string& predicateName) {

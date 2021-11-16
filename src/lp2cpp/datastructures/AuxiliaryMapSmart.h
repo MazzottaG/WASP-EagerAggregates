@@ -50,6 +50,7 @@
 #include "TupleLight.h"
 #include <bitset>
 #include <variant>
+#include "IndexedSet.h"
 
 const long SHIFT = sizeof(int)*CHAR_BIT;
 const long POW = std::pow(2,sizeof(int)*CHAR_BIT);
@@ -86,14 +87,14 @@ public:
     // }
 
     // inline const std::set< int, AggregateSetCmp >& getValuesSet(const std::vector<int>& key) const {
-    inline const std::set< int, std::greater<int> >& getValuesSet(const std::vector<int>& key) const {
+    inline const IndexedSet& getValuesSet(const std::vector<int>& key) const {
         std::bitset<S> keyCode;
         valueToPos(key,keyCode);
         const auto it = tuples.find(keyCode);
         if (it == tuples.end()) {
             return EMPTY_RESULT_SET;
         }
-        return std::get<std::set<int,std::greater<int>>>(it->second);
+        return std::get<IndexedSet>(it->second);
         // return std::get<std::set<int,AggregateSetCmp>>(it->second);
         // auto& vsets = std::get<std::variant< std::set<int,AggregateSetCmp>, std::set<int> >(it->second)
         // return std::get<set<int, AggregateSetCmp>>(vsets);
@@ -115,8 +116,8 @@ public:
         valueToPos(key,keyCode);
         // auto& collisionList = tuples.emplace(keyCode,std::set<int,AggregateSetCmp>()).first->second;
         // std::set < int, AggregateSetCmp >& collisionSet = std::get< std::set < int, AggregateSetCmp > > (collisionList);
-        auto& collisionList = tuples.emplace(keyCode,std::set<int,std::greater<int>>()).first->second;
-        std::set<int,std::greater<int>>& collisionSet = std::get< std::set<int,std::greater<int>> > (collisionList);
+        auto& collisionList = tuples.emplace(keyCode,IndexedSet()).first->second;
+        IndexedSet& collisionSet = std::get< IndexedSet > (collisionList);
         value.setCollisionListIndex(&collisionList, collisionSet.size());
         collisionSet.insert(value.getId());
     }
@@ -176,14 +177,14 @@ protected:
         return key;
     }
 
-    std::unordered_map<std::bitset<S>, std::variant < std::vector< int >, std::set<int,std::greater<int>> > > tuples;
+    std::unordered_map<std::bitset<S>, std::variant < std::vector< int >, IndexedSet > > tuples;
     // std::unordered_map<std::bitset<S>, std::variant < std::vector< int >, std::set< int, AggregateSetCmp> > > tuples;
     // std::unordered_map<std::bitset<S>, std::variant < std::vector< int >, std::variant< std::set< int, AggregateSetCmp>, std::set<int> > > > tuples;
     unsigned keySize;
     std::vector<unsigned> keyIndices;
     static const std::vector< int > EMPTY_RESULT_VEC;
     // static const std::set< int, AggregateSetCmp > EMPTY_RESULT_SET;
-    static const std::set<int,std::greater<int>> EMPTY_RESULT_SET;
+    static const IndexedSet EMPTY_RESULT_SET;
 
 
 };
@@ -195,7 +196,7 @@ const std::vector< int > AuxiliaryMapSmart<S>::EMPTY_RESULT_VEC;
 // const std::set< int, AggregateSetCmp > AuxiliaryMapSmart<S>::EMPTY_RESULT_SET;
 
 template<size_t S>
-const std::set<int,std::greater<int>> AuxiliaryMapSmart<S>::EMPTY_RESULT_SET;
+const IndexedSet AuxiliaryMapSmart<S>::EMPTY_RESULT_SET;
 
 #endif /* AUXILIARYMAPSMART_H */
 

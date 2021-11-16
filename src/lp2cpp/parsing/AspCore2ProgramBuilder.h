@@ -118,6 +118,10 @@ private:
     std::unordered_set<std::string> domPredicate;
     std::unordered_map<std::string,aspc::Literal> domToBody;
     std::unordered_map<std::string,std::vector<std::string>> domToTerms;
+
+    std::unordered_map<std::string,std::vector<int>> predsToRules;
+    std::unordered_map<std::string,std::vector<std::string>> supportPredicates;
+    std::unordered_map<std::string,std::vector<aspc::Literal>> predsToHeads;
     void buildExpression();
     bool negatedTerm=false;
 public:
@@ -217,7 +221,9 @@ public:
     void analyzeInputProgram();
     void labelComponents(std::unordered_set<unsigned>& labeledComponent,const std::vector<std::vector<int>>& scc);
     void buildGraphNoCompletion();
+    void buildConstraintDuplicateHeads();
     bool isPredicateBodyNoCompletion(int)const;
+    const aspc::Literal* getSupportingHead(std::string pred);
     const  std::map<std::string, unsigned> & getArietyMap();
     bool isInternalPredicateName(std::string predName) {
         unsigned predId = predicateIDs[predName];
@@ -230,6 +236,9 @@ public:
     
     const std::unordered_map<std::string,std::vector<aspc::Literal>>& getAuxPredicateBody()const{
         return auxPredicateToBody;
+    }
+    const std::vector<aspc::ArithmeticRelation>& getInequalitiesForAuxPredicate(std::string pred){
+        return auxPredicateToInequality[pred];
     }
     const std::unordered_map<std::string,std::vector<aspc::ArithmeticRelation>>& getAuxPredicateInequalities() const{
         return auxPredicateToInequality;

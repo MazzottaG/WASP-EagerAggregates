@@ -21,6 +21,7 @@
 #include <list>
 #include <cassert>
 #include "TupleLight.h"
+#include "IndexedSet.h"
 #include <variant>
 
 struct TuplePointerHash {
@@ -64,9 +65,9 @@ class TupleFactory{
         void removeFromCollisionsList(int id){
             if(id < internalIDToTuple.size()){
                 TupleLight* tupleToRemove = internalIDToTuple[id];
-                std::vector<std::pair<std::variant< std::vector<int>, std::set<int,std::greater<int>> >*,unsigned>>* collisionsLists = &tupleToRemove->getCollisionsLists();
+                std::vector<std::pair<std::variant< std::vector<int>, IndexedSet >*,unsigned>>* collisionsLists = &tupleToRemove->getCollisionsLists();
                 for (unsigned i=0; i<collisionsLists->size(); i++) {
-                    std::variant< std::vector<int>, std::set<int,std::greater<int>> >* collisionList = collisionsLists->at(i).first;
+                    std::variant< std::vector<int>, IndexedSet >* collisionList = collisionsLists->at(i).first;
                     unsigned index = collisionsLists->at(i).second;
 
                     if(std::holds_alternative<std::vector<int>>(*collisionList)){
@@ -75,7 +76,7 @@ class TupleFactory{
                         internalIDToTuple[collisionVector[index]]->setCollisionListIndex(collisionList, index,i);
                         collisionVector.pop_back();
                     }else{
-                        std::set< int,std::greater<int> >& collisionSet = std::get<std::set<int,std::greater<int>>>(*collisionList);
+                        IndexedSet& collisionSet = std::get<IndexedSet>(*collisionList);
                         collisionSet.erase(id); 
                     }
                 }

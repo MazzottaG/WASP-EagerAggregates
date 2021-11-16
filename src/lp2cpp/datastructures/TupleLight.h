@@ -27,6 +27,8 @@
 #include <variant>
 #include <set>
 #include "AggregateSetCmp.h"
+#include "../utils/ConstantsManager.h"
+#include "IndexedSet.h"
 
 enum TruthStatus {
     True = 0, False, Undef, UNKNOWN
@@ -113,7 +115,7 @@ public:
         this->id = id;
     }
     
-    void setCollisionListIndex(std::variant< std::vector<int>, std::set<int,std::greater<int>> >* collisionList, unsigned index,int internalIndex=-1)const {
+    void setCollisionListIndex(std::variant< std::vector<int>, IndexedSet >* collisionList, unsigned index,int internalIndex=-1)const {
         if(internalIndex>=0){
             if(collisionsLists[internalIndex].first!=collisionList){
                 std::cout<<"Error in swaping position in collision list"<<std::endl;
@@ -123,16 +125,16 @@ public:
             return;
         }
         if(collisionsListsSize>=collisionsLists.size()){
-            collisionsLists.push_back(std::pair<std::variant< std::vector<int>, std::set<int,std::greater<int>> >*,unsigned>(collisionList,index));
+            collisionsLists.push_back(std::pair<std::variant< std::vector<int>, IndexedSet >*,unsigned>(collisionList,index));
             collisionsListsSize++;
             return;
         }
-        collisionsLists[collisionsListsSize]=std::pair<std::variant< std::vector<int>, std::set<int,std::greater<int>> >*,unsigned>(collisionList,index);
+        collisionsLists[collisionsListsSize]=std::pair<std::variant< std::vector<int>, IndexedSet >*,unsigned>(collisionList,index);
         collisionsListsSize++;
     }
 
     // void removeFromCollisionsLists(const TupleFactory& factory) const ;
-    std::vector<std::pair<std::variant< std::vector<int>, std::set<int,std::greater<int>> >*,unsigned>>& getCollisionsLists()const{return collisionsLists;}
+    std::vector<std::pair<std::variant< std::vector<int>, IndexedSet >*,unsigned>>& getCollisionsLists()const{return collisionsLists;}
 
     void clearCollisionsList(){
         collisionsListsSize=0;
@@ -197,7 +199,12 @@ public:
             if (i > 0) {
                 std::cout << ",";
             }
-            std::cout << operator[](i);
+            int term = operator[](i);
+            if(term>=INT_MAX / 2){
+                std::cout << ConstantsManager::getInstance().unmapConstant(term); 
+            }else{
+                std::cout << term;
+            }
         }
         std::cout << ")" <<std::endl;
     }
@@ -244,7 +251,7 @@ private:
     int* content;
     int size_;
     mutable unsigned collisionsListsSize;
-    mutable std::vector<std::pair< std::variant< std::vector<int>, std::set<int,std::greater<int>> >*,unsigned>> collisionsLists;
+    mutable std::vector<std::pair< std::variant< std::vector<int>, IndexedSet >*,unsigned>> collisionsLists;
     // mutable std::unordered_map<std::vector<unsigned>*, unsigned> collisionsLists;
 };
 

@@ -427,7 +427,8 @@ bool CompilationManager::checkTupleFormat(const aspc::Literal& li,std::string tu
         if(!li.isVariableTermAt(i)){
             if(conditions!="")
                 conditions+=" && ";
-            conditions+=tupleName+point+"at("+std::to_string(i)+")=="+li.getTermAt(i);
+            conditions+=tupleName+point+"at("+std::to_string(i)+")==";
+            conditions+= isInteger(li.getTermAt(i)) ? li.getTermAt(i) : "ConstantsManager::getInstance().mapConstant(\""+li.getTermAt(i)+"\")";
         }else{
             for(unsigned j = i+1; j < li.getAriety(); j++){
                 if(li.isVariableTermAt(j) && li.getTermAt(i) == li.getTermAt(j)){
@@ -624,8 +625,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         for(auto pred : builder->getAuxPredicateBody()){
             internalPredicates.insert(pred.first);
         }
+        //store first occurence index of the first aggregate var
         for(const aspc::Rule& r : program.getRules()){
-
             if(!r.isConstraint()){
                 internalPredicates.insert(r.getHead()[0].getPredicateName());
                 if (r.containsAggregate() && r.getArithmeticRelationsWithAggregate()[0].getAggregate().isSum()){
@@ -698,7 +699,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     *out << ind << "\n";
     *out << ind << "const std::vector<int> EMPTY_TUPLES_VEC;\n";
-    *out << ind << "const std::set<int,std::greater<int>> EMPTY_TUPLES_SET;\n";
+    *out << ind << "const IndexedSet EMPTY_TUPLES_SET;\n";
     *out << ind << "std::unordered_map<std::string, const std::string * > stringToUniqueStringPointer;\n";
 
     *out << ind << "TupleFactory factory;\n";
@@ -777,13 +778,25 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     for(const auto& auxPred : builder->getAuxPredicateBody()){
         // std::cout<<auxPred.first<<std::endl;
         std::unordered_set<unsigned> visitedLiterals;
+        std::unordered_set<unsigned> visitedIneqs;
         std::unordered_set<std::string> boundVariables;
-        // std::cout<<auxPred.second.size()<<std::endl;
-        while(visitedLiterals.size() < auxPred.second.size()){
+        const auto& auxToIneq = builder->getInequalitiesForAuxPredicate(auxPred.first);
+        // std::cout<<auxToIneq.size()<<std::endl;
+        while(visitedLiterals.size() < auxPred.second.size() || visitedIneqs.size() < auxToIneq.size()){
+            const aspc::ArithmeticRelation* ineq = NULL;
             
+            if(visitedIneqs.size() < auxToIneq.size()){
+                for(unsigned k=0;k<auxToIneq.size();k++){
+                    if(visitedIneqs.count(k)==0 && (auxToIneq[k].isBoundedValueAssignment(boundVariables) || auxToIneq[k].isBoundedRelation(boundVariables))){
+                        ineq=&auxToIneq[k];
+                        visitedIneqs.insert(k);
+                        break;
+                    }
+                }
+            }
             const aspc::Literal* lit = NULL;
             unsigned litIndex=0;
-            for(unsigned k=0;k<auxPred.second.size();k++){
+            for(unsigned k=0;k<auxPred.second.size() && ineq==NULL;k++){
                 if(visitedLiterals.count(k)==0){
                     if(auxPred.second[k].isBoundedLiteral(boundVariables)){
                         lit=&auxPred.second[k];
@@ -794,11 +807,16 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     }
                 }
             }
-            if(lit != NULL){
+            if(lit == NULL && ineq==NULL){
+                std::cout<<"Unsafe rule"<<std::endl;
+                exit(180);
+            }else if(lit!=NULL){
                 visitedLiterals.insert(litIndex);
                 // std::cout<<lit->getPredicateName()<<" "<<std::endl;
+            }else{
+                ineq->addVariablesToSet(boundVariables);
+                // std::cout<<ineq->getStringRep()<<" "<<std::endl;
             }
-            
 
             if(lit != NULL && !lit->isBoundedLiteral(boundVariables)){
                 std::string auxMapName = lit->getPredicateName()+"_";
@@ -864,8 +882,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         unsigned lIndex = 0;
         unsigned headLevel = sccs.size();
         if(mode == EAGER_MODE){
-            std::unordered_set<std::string> internal;
-            std::unordered_set<std::string> ext;
 
             std::vector<unsigned> starters;
             starters.push_back(r.getBodySize());
@@ -1442,11 +1458,12 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             for(unsigned predId : scc[component]){
                 auto it = vertexByID.find(scc[component][0]);
                 if(it!=vertexByID.end()){
+                    // std::cout<<it->second.name<<std::endl;
                     const aspc::Literal* domToBody=builder->getAssociatedBodyPred(it->second.name);
                     if(domToBody!=NULL){
                         
                         *out << ind++ << "{\n";
-                        std::string type = predicateToOrderdedAux.count(domToBody->getPredicateName())!=0 ? "const std::set<int,std::greater<int>>*": "const std::vector<int>*";
+                        std::string type = predicateToOrderdedAux.count(domToBody->getPredicateName())!=0 ? "const IndexedSet*": "const std::vector<int>*";
                         std::string toStruct = predicateToOrderdedAux.count(domToBody->getPredicateName())!=0 ? "Set" : "Vec";
 
                         *out << ind << type << " tuples = &p"<<domToBody->getPredicateName()<<"_.getValues"<<toStruct<<"({});\n";
@@ -1483,19 +1500,26 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         std::unordered_set<std::string> terms;
                         dom.addVariablesToSet(terms);
                         std::unordered_set<std::string> boundVars;
+                        unsigned pars=0;
                         for(unsigned k=0;k<domToBody->getAriety();k++){
-                            if(domToBody->isVariableTermAt(k) && terms.count(domToBody->getTermAt(k))!=0){
-                                if(boundVars.count(domToBody->getTermAt(k))==0){
+                            if(!domToBody->isVariableTermAt(k) || boundVars.count(domToBody->getTermAt(k))!=0){
+                                std::string termRep = domToBody->isVariableTermAt(k) || isInteger(domToBody->getTermAt(k)) ? domToBody->getTermAt(k) : "ConstantsManager::getInstance().mapConstant(\""+domToBody->getTermAt(k)+"\")";
+                                *out << ind++ << "if(tuple->at("<<k<<") == "<<termRep<<"){\n";
+                                pars++;
+                            }else{
+                                if(terms.count(domToBody->getTermAt(k))!=0){
                                     *out << ind << "int "<<domToBody->getTermAt(k)<<" = tuple->at("<<k<<");\n";
                                     boundVars.insert(domToBody->getTermAt(k));
                                 }
                             }
                         }
+
                         std::string domterms="";
                         for(unsigned k=0;k<dom.getAriety();k++){
+                            std::string termRep = dom.isVariableTermAt(k) || isInteger(dom.getTermAt(k)) ? dom.getTermAt(k) : "ConstantsManager::getInstance().mapConstant(\""+dom.getTermAt(k)+"\")";
                             if(k>0)
                                 domterms+=",";
-                            domterms+=dom.getTermAt(k);
+                            domterms+=termRep;
                         }                        
                                 *out << ind << "Tuple* dom = factory.addNewInternalTuple({"<<domterms<< "}, &_"<<dom.getPredicateName()<<");\n";
                                 // *out << ind << "if(aux->getPredicateName() == &_sum)std::cout<<\"Saving sum aux \"<<aux->getId(); aux->print();\n";
@@ -1505,6 +1529,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                     *out << ind << "insertTrue(insertResult);\n";
                                 *out << --ind << "}\n";
                             *out << --ind << "}\n";
+                        while(pars>0){
+                            *out << --ind << "}\n";
+                            pars--;
+                        }
                         *out << --ind << "}\n";
                         
 
@@ -1566,9 +1594,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                     if(selectedLit->isBoundedLiteral(boundVariables)){
                                         *out << ind << "Tuple* boundTuple = factory.find({";
                                         for(unsigned i=0;i<selectedLit->getAriety();i++){
+                                            std::string termRep = selectedLit->isVariableTermAt(i) || isInteger(selectedLit->getTermAt(i)) ? selectedLit->getTermAt(i) : "ConstantsManager::getInstance().mapConstant(\""+selectedLit->getTermAt(i)+"\")";
                                             if(i>0)
                                                 *out << ",";
-                                            *out << selectedLit->getTermAt(i);
+                                            *out << termRep;
                                         }
                                         *out << "}, &_"<<selectedLit->getPredicateName()<<");\n";
                                         if(selectedLit->isPositiveLiteral()){
@@ -1578,7 +1607,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         }
                                         closingPars++;
                                     }else{
-                                        std::string type = predicateToOrderdedAux.count(selectedLit->getPredicateName())!=0 ? "const std::set<int,std::greater<int>>*": "const std::vector<int>*";
+                                        std::string type = predicateToOrderdedAux.count(selectedLit->getPredicateName())!=0 ? "const IndexedSet*": "const std::vector<int>*";
                                         std::string toStruct = predicateToOrderdedAux.count(selectedLit->getPredicateName())!=0 ? "Set" : "Vec";
 
                                         *out << ind << type << " tuples = &p"<<selectedLit->getPredicateName()<<"_";
@@ -1588,7 +1617,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                             if(!selectedLit->isVariableTermAt(i) || boundVariables.count(selectedLit->getTermAt(i))!=0){
                                                 if(boundTerms!="")
                                                     boundTerms+=",";
-                                                boundTerms+=selectedLit->getTermAt(i);
+                                                std::string termRep = selectedLit->isVariableTermAt(i) || isInteger(selectedLit->getTermAt(i)) ? selectedLit->getTermAt(i) : "ConstantsManager::getInstance().mapConstant(\""+selectedLit->getTermAt(i)+"\")";
+                                                boundTerms+=termRep;
                                                 *out << i << "_";
                                                 boundTermsIndices.push_back(i);
                                             }
@@ -1625,14 +1655,13 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         }
 
                                             for(unsigned i=0;i<selectedLit->getAriety();i++){
-                                                if(selectedLit->isVariableTermAt(i)){
-                                                    if(boundVariables.count(selectedLit->getTermAt(i))==0){
+                                                if(selectedLit->isVariableTermAt(i) && boundVariables.count(selectedLit->getTermAt(i))==0){
                                                         *out << ind << "int "<<selectedLit->getTermAt(i)<<" = tuple->at("<<i<<");\n";
                                                         boundVariables.insert(selectedLit->getTermAt(i));
-                                                    }else{
-                                                        *out << ind++ << "if(tuple->at("<<i<<") == "<<selectedLit->getTermAt(i)<<"){\n";
-                                                        closingPars++;
-                                                    }
+                                                }else{
+                                                    std::string termRep = selectedLit->isVariableTermAt(i) || isInteger(selectedLit->getTermAt(i)) ? selectedLit->getTermAt(i) : "ConstantsManager::getInstance().mapConstant(\""+selectedLit->getTermAt(i)+"\")";
+                                                    *out << ind++ << "if(tuple->at("<<i<<") == "<<termRep<<"){\n";
+                                                    closingPars++;
                                                 }
                                             }
                                     }
@@ -1643,13 +1672,16 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                 }
                             }
                         }
-                        // std::cout<<"AuxBody visited"<<std::endl;
+                        #ifdef TRACE_PROPAGATOR
+                            std::cout<<"AuxBody visited"<<std::endl;
+                        #endif
                         aspc::Literal aux(false,aspc::Atom(it->second.name,builder->getAuxPredicateTerms(it->second.name)));
                         std::string auxTerms;
                         for(unsigned k=0;k<aux.getAriety();k++){
                             if(k>0)
                                 auxTerms += ",";
-                            auxTerms += aux.getTermAt(k);
+                            std::string termRep = aux.isVariableTermAt(k) || isInteger(aux.getTermAt(k)) ? aux.getTermAt(k) : "ConstantsManager::getInstance().mapConstant(\""+aux.getTermAt(k)+"\")";
+                            auxTerms += termRep;
                         }
                         *out << ind << "Tuple* aux = factory.addNewInternalTuple({"<<auxTerms<< "}, &_"<<aux.getPredicateName()<<");\n";
                         // *out << ind << "if(aux->getPredicateName() == &_sum)std::cout<<\"Saving sum aux \"<<aux->getId(); aux->print();\n";
@@ -1702,7 +1734,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                     for(unsigned k=0; k<head->getAriety();k++){
                                         if(headTerms!="")
                                             headTerms+=",";
-                                        headTerms+=head->getTermAt(k);
+                                        std::string termRep = head->isVariableTermAt(k) || isInteger(head->getTermAt(k)) ? head->getTermAt(k) : "ConstantsManager::getInstance().mapConstant(\""+head->getTermAt(k)+"\")";
+                                        headTerms+=termRep;
                                     }
                                     *out << ind++ << "{\n";
                                         *out << ind << "Tuple* head = factory.addNewInternalTuple({"<<headTerms<<"},&_"<<head->getPredicateName()<<");\n";
@@ -1747,7 +1780,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                 for(unsigned k=0; k<aggr_id->getAriety();k++){
                                                     if(aggrIdTerms!="")
                                                         aggrIdTerms+=",";
-                                                    aggrIdTerms+=aggr_id->getTermAt(k);
+                                                    std::string termRep = aggr_id->isVariableTermAt(k) || isInteger(aggr_id->getTermAt(k)) ? aggr_id->getTermAt(k) : "ConstantsManager::getInstance().mapConstant(\""+aggr_id->getTermAt(k)+"\")";
+                                                    aggrIdTerms+=termRep;
                                                 }
 
                                                 *out << ind << "Tuple* aggr_id"<<aggr_r.getRuleId()<<" = factory.addNewInternalTuple({"<<aggrIdTerms<<"},&_"<<aggr_id->getPredicateName()<<");\n";
@@ -1760,6 +1794,18 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                             }
                                         }
                                     *out << --ind << "}\n";
+                                    const aspc::Literal* supHead = builder->getSupportingHead(head->getPredicateName());
+                                    if(supHead!=NULL){
+
+                                        *out << ind++ << "{\n";
+                                            *out << ind << "Tuple* head = factory.addNewInternalTuple({"<<headTerms<<"},&_"<<supHead->getPredicateName()<<");\n";
+                                            *out << ind << "const auto& headInsertResult = head->setStatus(Undef);\n";
+                                            *out << ind++ << "if (headInsertResult.second) {\n";
+                                                *out << ind << "factory.removeFromCollisionsList(head->getId());\n";
+                                                *out << ind << "insertUndef(headInsertResult);\n";
+                                            *out << --ind << "}\n";
+                                        *out << --ind << "}\n";
+                                    }
                                 }
                             }
 
@@ -1771,10 +1817,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         }
                         *out << --ind << "}\n";
                     }else if(!builder->isAggrSetPredicate(it->second.name) && aggrSetToAuxVal.count(it->second.name)!=0){
-
+                        std::cout<<"aggrSetToAuxVal"<<std::endl;
                         *out << ind++ << "{\n";
                             if(predicateToOrderdedAux.count(it->second.name)!=0){
-                                *out << ind << "const std::set<int,std::greater<int>>* tuplesU = &u"<<it->second.name<<"_.getValuesSet({});\n";
+                                *out << ind << "const IndexedSet* tuplesU = &u"<<it->second.name<<"_.getValuesSet({});\n";
                                 *out << ind++ << "for(auto it = tuplesU->begin(); it != tuplesU->end(); it++){\n";
                                     *out << ind << "Tuple * tuple = factory.getTupleFromInternalID(*it);\n";
 
@@ -1818,6 +1864,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                             *out << --ind << "}\n";
                         *out << --ind << "}\n";
                     }else{
+                        std::cout<<"generic"<<std::endl;
                         for(const aspc::Rule& r : program.getRules()){
 
                             if(!r.isConstraint() && r.getHead()[0].getPredicateName()==it->second.name && !r.containsAggregate()){
@@ -1830,22 +1877,25 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         if(!head->isVariableTermAt(i)){
                                             if(terms!="")
                                                 terms+=",";
-                                            terms+=head->getTermAt(i);
+                                            std::string termRep = isInteger(head->getTermAt(i)) ? head->getTermAt(i) : "ConstantsManager::getInstance().mapConstant(\""+head->getTermAt(i)+"\")";
+                                            terms+=termRep;
                                             continue;
-                                        }
-                                        for(unsigned j = 0; j<bodyLit->getAriety(); j++){
-                                            if(bodyLit->isVariableTermAt(j) && head->getTermAt(i)==bodyLit->getTermAt(j)){
-                                                if(terms!="")
-                                                    terms+=",";
-                                                terms+="tuple->at("+std::to_string(j)+")";
-                                                break;
+                                        }else{
+                                            for(unsigned j = 0; j<bodyLit->getAriety(); j++){
+                                                if(bodyLit->isVariableTermAt(j) && head->getTermAt(i)==bodyLit->getTermAt(j)){
+                                                    if(terms!="")
+                                                        terms+=",";
+                                                    terms+="tuple->at("+std::to_string(j)+")";
+                                                    break;
+                                                }
                                             }
                                         }
+                                        
                                     }
                                     *out << ind++ << "{\n";
                                         if(predicateToOrderdedAux.count(bodyLit->getPredicateName())!=0){
-                                            *out << ind << "const std::set<int,std::greater<int>>* tuples = &p"<<bodyLit->getPredicateName()<<"_.getValuesSet({});\n";
-                                            *out << ind << "const std::set<int,std::greater<int>>* tuplesU = &u"<<bodyLit->getPredicateName()<<"_.getValuesSet({});\n";
+                                            *out << ind << "const IndexedSet* tuples = &p"<<bodyLit->getPredicateName()<<"_.getValuesSet({});\n";
+                                            *out << ind << "const IndexedSet* tuplesU = &u"<<bodyLit->getPredicateName()<<"_.getValuesSet({});\n";
                                             *out << ind << "auto itTrue = tuples->begin();\n";
                                             *out << ind << "auto itUndef = tuplesU->begin();\n";
 
@@ -2018,8 +2068,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                 if(!builder->isBodyPredicate(bodyLit->getPredicateName())){
                                     *out << ind++ << "{\n";
                                         if(predicateToOrderdedAux.count(bodyLit->getPredicateName())!=0){
-                                            *out << ind << "const std::set<int,std::greater<int>>* tuples = &p"<<bodyLit->getPredicateName()<<"_.getValuesSet({});\n";
-                                            *out << ind << "const std::set<int,std::greater<int>>* tuplesU = &u"<<bodyLit->getPredicateName()<<"_.getValuesSet({});\n";
+                                            *out << ind << "const IndexedSet* tuples = &p"<<bodyLit->getPredicateName()<<"_.getValuesSet({});\n";
+                                            *out << ind << "const IndexedSet* tuplesU = &u"<<bodyLit->getPredicateName()<<"_.getValuesSet({});\n";
                                             *out << ind << "auto itTrue = tuples->begin();\n";
                                             *out << ind << "auto itUndef = tuplesU->begin();\n";
                                             *out << ind++ << "for(; itTrue!=tuples->end() || itUndef != tuplesU->end();){\n";
@@ -2065,7 +2115,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 }
             }
         }
-        //std::cout<<"End scc iteration"<<std::endl;
+        std::cout<<"End scc iteration"<<std::endl;
 
         //*out << ind << "trace_msg(eagerprop,2,\"Computing sums\");\n";
 
@@ -2093,7 +2143,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
                             *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(it);\n";
                             if(predicateToOrderdedAux.count(aggrSetPred.first)!=0){
-                                *out << ind << "const std::set<int,std::greater<int>>* aggrSetTuples = &u"<<aggrSetPred.first<<"_";
+                                *out << ind << "const IndexedSet* aggrSetTuples = &u"<<aggrSetPred.first<<"_";
                                 for(unsigned k : sharedVarAggrIDToAggrSetIndices[aggrId->getPredicateName()]){
                                     *out << k << "_";
                                 }
@@ -2144,7 +2194,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         for(auto& pair : predicateToOrderdedAux){
             *out << ind++ << "{\n";
                 *out<<ind<<"std::cout<<\"Ordering\"<<std::endl;\n";
-                *out << ind << "const std::set<int,greater<int>> tuples = u"<<pair.first<<"_.getValuesSet({});\n"; 
+                *out << ind << "const IndexedSet tuples = u"<<pair.first<<"_.getValuesSet({});\n"; 
                 *out << ind << "ordered_ids.reserve(tuples.size());\n";
                 *out << ind << "tuplesIdOrdered.reserve(tuples.size());\n";
                 *out << ind++ << "for(int id :tuples){\n";
@@ -2196,10 +2246,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind << "std::cout<<\"PossibleSum \"<<pair.second<<std::endl;\n";
         *out << --ind <<"}\n";
         *out << ind << "std::cout<<\"Generated\"<<std::endl;\n";        
+        *out << ind++ << "for(int id :uscost_.getValuesSet({})){\n";
+            *out << ind << "std::cout<<id<<\" \";factory.getTupleFromInternalID(id)->print();\n";
+        *out << --ind << "}\n";
         *out << ind << "exit(180);\n";
-        // *out << ind++ << "for(int id :uaggr_set0_.getValuesVec({})){\n";
-        //     *out << ind << "std::cout<<id<<\" \";factory.getTupleFromInternalID(id)->print();\n";
-        // *out << --ind << "}\n";
         #endif
         // *out << --ind <<"}\n";
         // *out << ind << "exit(180);\n";
@@ -2555,7 +2605,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                         closingPars++;
                                                     }
                                                 }else{
-                                                    std::string type = predicateToOrderdedAux.count(l->getPredicateName()) == 0 ? "const std::vector<int>*" : "const std::set<int,std::greater<int>>*";
+                                                    std::string type = predicateToOrderdedAux.count(l->getPredicateName()) == 0 ? "const std::vector<int>*" : "const IndexedSet*";
                                                     std::string toStruct = predicateToOrderdedAux.count(l->getPredicateName()) != 0 ? "Set" : "Vec";
 
                                                     *out << ind << type << " tuples = &p"<<l->getPredicateName()<<"_";
@@ -2639,7 +2689,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                                 localPars++;
                                                             }
                                                         }else{
-                                                            std::string type = predicateToOrderdedAux.count(l->getPredicateName())==0 ? "const std::vector<int>*" : "const std::set<int,std::greater<int>>*";
+                                                            std::string type = predicateToOrderdedAux.count(l->getPredicateName())==0 ? "const std::vector<int>*" : "const IndexedSet*";
                                                             std::string toStruct = predicateToOrderdedAux.count(l->getPredicateName())==0 ? "Vec" : "Set";
                                                             *out << ind << type << " tuples = &p"<<l->getPredicateName()<<"_";
                                                             std::string boundTerms="";
@@ -2975,6 +3025,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         }
     } else {
         //mode == EAGER_MODE
+        std::cout<<"Gen On Facts"<<std::endl;
         *out << ind << "if(decisionLevel>-1) {\n";
         *out << ind << "}\n";
         *out << ind++ << "if(decisionLevel==-1) {\n";
@@ -3013,6 +3064,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             // *out << ind << "std::cout<<\"end level -1\"<<std::endl;\n";
 
         *out << --ind << "}//close decision level == -1\n";
+        std::cout<<"Gen -1"<<std::endl;
+        
         *out << ind++ << "while(!propagationStack.empty()){\n";
             *out << ind << "int startVar = propagationStack.back();\n";
             *out << ind << "int uStartVar = startVar<0 ? -startVar : startVar;\n";
@@ -3032,6 +3085,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             // *out << ind << "std::cout<<\"Processed\"<<std::endl;\n";
 
         *out << --ind << "}\n";
+        std::cout<<"Gen end"<<std::endl;
+        
     }
     // *out << ind << "if(conflictCount > minConflict && propagatedLiterals.size() >= heapSize){/*std::cout<<\"sort heap\"<<std::endl;*/ std::sort_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+heapSize,propComparison);}\n";
     *out << ind << "if(conflictCount > minConflict && propagatedLiterals.size() > 1){int currentHeapSize = propagatedLiterals.size() < heapSize ? propagatedLiterals.size() : heapSize; /*std::cout<<\"sort heap: \"<<currentHeapSize<<std::endl;*/ std::sort_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+currentHeapSize,propComparison);}\n";
@@ -3048,7 +3103,6 @@ void CompilationManager::declareDataStructures(const aspc::Rule& r, unsigned sta
     std::unordered_set<std::string> boundVariables;
     if (start < r.getBodySize()) {
         r.getFormulas().at(start)->addVariablesToSet(boundVariables);
-
     }else{
         if(start > r.getFormulas().size()){
             for(unsigned k = 0; k < r.getHead()[0].getAriety(); k++){
@@ -3305,15 +3359,17 @@ void CompilationManager::declareRuleEagerStructures(const aspc::Rule& r){
                 mapNames[mapName]=head->getPredicateName();
             }
 
+            // TODO useless structure ----- review carefully
             std::string mapNameBody=lit->getPredicateName()+"_";
-            if(declaringMaps.find(mapName)==declaringMaps.end()){
-                declaringMaps[mapName]={indices,lit->getAriety()};
-                mapNames[mapName]=lit->getPredicateName();
+            if(declaringMaps.find(mapNameBody)==declaringMaps.end()){
+                declaringMaps[mapNameBody]={indices,lit->getAriety()};
+                mapNames[mapNameBody]=lit->getPredicateName();
             }
 
             std::unordered_set<std::string> bodyVars;
             lit->addVariablesToSet(bodyVars);
 
+            // TODO useless structure ----- review carefully
             for(unsigned k=0; k<head->getAriety(); k++){
                 if(!head->isVariableTermAt(k) || bodyVars.count(head->getTermAt(k))!=0){
                     mapName+=std::to_string(k)+"_";
@@ -3556,7 +3612,8 @@ unsigned CompilationManager::exploreLiteral(const aspc::Literal* lit,std::unorde
             boundIndices.push_back(k);
             if(boundTerms != "")
                 boundTerms+=",";
-            boundTerms+=lit->getTermAt(k);
+            std::string term= lit->isVariableTermAt(k) || isInteger(lit->getTermAt(k)) ? lit->getTermAt(k) : "ConstantsManager::getInstance().mapConstant(\""+lit->getTermAt(k)+"\")";
+            boundTerms+=term;
         }
     }
     if(lit->isBoundedLiteral(boundVariables)){
@@ -3600,7 +3657,7 @@ unsigned CompilationManager::exploreLiteral(const aspc::Literal* lit,std::unorde
         *out << ind++ << "if(tuple"<<currentLitIndex<<"!=NULL){\n";
         pars++;
     }else{
-        std::string type = predicateToOrderdedAux.count(lit->getPredicateName())!=0 ? "const std::set<int,std::greater<int>>*":"const std::vector<int>*";
+        std::string type = predicateToOrderdedAux.count(lit->getPredicateName())!=0 ? "const IndexedSet*":"const std::vector<int>*";
         std::string toStruct = predicateToOrderdedAux.count(lit->getPredicateName())!=0 ? "Set":"Vec";
         std::string toEmptyStruct = predicateToOrderdedAux.count(lit->getPredicateName())!=0 ? "_SET":"_VEC";
 
@@ -3696,10 +3753,15 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
             *out << ind << "std::cout<<\"Prop rule with aggr\"<<std::endl;\n";
             #endif
             std::unordered_set<std::string> boundVariables;
+            unsigned pars=0;
             for(unsigned i = 0; i<aggrIdAtom->getAriety(); i++){
+                std::string term = aggrIdAtom->isVariableTermAt(i) || isInteger(aggrIdAtom->getTermAt(i)) ? aggrIdAtom->getTermAt(i) : "ConstantManager::getInstance().mapConstant(\""+aggrIdAtom->getTermAt(i)+"\")"; 
                 if(aggrIdAtom->isVariableTermAt(i) && boundVariables.count(aggrIdAtom->getTermAt(i))==0){
                     *out << ind << "int "<<aggrIdAtom->getTermAt(i)<<" = starter["<<i<<"];\n";
                     boundVariables.insert(aggrIdAtom->getTermAt(i));
+                }else{
+                    *out << ind++ << "if("<<term<<" = starter["<<i<<"]){\n";
+                    pars++;
                 }
             }
                 *out << ind << "std::vector<int> sharedVar({";
@@ -3723,20 +3785,20 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                 std::string plusOne = r.getArithmeticRelationsWithAggregate()[0].isPlusOne() ? "+1":"";
                 std::string guard = r.getArithmeticRelationsWithAggregate()[0].getGuard().getStringRep()+plusOne;
                 if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                    *out << ind << "const std::set<int,std::greater<int>>* tuples = &p"<<mapName<<".getValuesSet(sharedVar);\n";
-                    *out << ind << "const std::set<int,std::greater<int>>* tuplesU = &u"<<mapName<<".getValuesSet(sharedVar);\n";
+                    *out << ind << "const IndexedSet* tuples = &p"<<mapName<<".getValuesSet(sharedVar);\n";
+                    *out << ind << "const IndexedSet* tuplesU = &u"<<mapName<<".getValuesSet(sharedVar);\n";
                 }else{
                     *out << ind << "const std::vector<int>* tuples = &p"<<mapName<<".getValuesVec(sharedVar);\n";
                     *out << ind << "const std::vector<int>* tuplesU = &u"<<mapName<<".getValuesVec(sharedVar);\n";
                 }
-                string bodyTerms = "";
-                if(bodyPred!=NULL){
-                    for(unsigned i = 0; i<bodyPred->getAriety();i++){
-                        if(bodyTerms!="")
-                            bodyTerms+=",";
-                        bodyTerms+=bodyPred->getTermAt(i);
-                    }
-                }
+                // string bodyTerms = "";
+                // if(bodyPred!=NULL){
+                //     for(unsigned i = 0; i<bodyPred->getAriety();i++){
+                //         if(bodyTerms!="")
+                //             bodyTerms+=",";
+                //         bodyTerms+=bodyPred->getTermAt(i);
+                //     }
+                // }
                 // *out << ind << "std::cout<<\"Actual Sum: \"<<actualSum[uStartVar]<<std::endl;\n";
                 *out << ind << "std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();\n";
                 *out << ind++ << "if(startVar < 0){\n";
@@ -3873,7 +3935,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                         *out << ind++ << "if(tuples->size()+tuplesU->size() < "<<guard<<"){\n";
                         //*out << ind << "std::cout<<\"Conflitct on aggregate starting from aggrId true "<<r.getRuleId()<<"\"<<std::endl;\n";
                         if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                            *out << ind << "const std::set<int,std::greater<int>>* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                            *out << ind << "const IndexedSet* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                             *out << ind++ << "for(auto i = tuplesF->begin(); i != tuplesF->end(); i++){\n";
                                 *out << ind << "int it = *i;\n";
 
@@ -3899,7 +3961,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                     *out << ind << "int itProp = *tuplesU->begin();\n";
 
                                     *out << ind++ << "if(shared_reason.get()->empty()){\n";
-                                        *out << ind << "const std::set<int,std::greater<int>>* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                                        *out << ind << "const IndexedSet* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                                         *out << ind++ << "for(auto i = tuplesF->begin(); i != tuplesF->end(); i++){\n";
                                             *out << ind << "int it = *i;\n";
                                             *out << ind << "shared_reason.get()->insert(-it);\n";
@@ -3929,7 +3991,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                                 *out << ind++ << "if(actSum < "<<guard<<"-posSum+currentTuple->at("<<varIndex<<")){\n";
                                     *out << ind << "int itProp = currentTuple->getId();\n";
                                     *out << ind++ << "if(shared_reason.get()->empty()){\n";
-                                        *out << ind << "const std::set<int,std::greater<int>>* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                                        *out << ind << "const IndexedSet* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                                         *out << ind++ << "for(auto i = tuplesF->begin(); i != tuplesF->end(); i++){\n";
                                             *out << ind << "int it = *i;\n";
                                             *out << ind << "shared_reason.get()->insert(-it);\n";
@@ -3955,7 +4017,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                         if(builder->isAggrSetPredicate(aggrSetPred->getPredicateName())){
                             *out << ind++ << "if(tuplesU->size() > 0){\n";
                                 if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                                    *out << ind << "const std::set<int,std::greater<int>>* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                                    *out << ind << "const IndexedSet* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                                     *out << ind++ << "for(auto i = tuplesF->begin(); i != tuplesF->end(); i++){\n";
                                         *out << ind << "int it = *i;\n";
 
@@ -3991,7 +4053,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                         }else{
                             *out << ind++ << "if(!tuplesU->empty()){\n";
                                 if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                                    *out << ind << "const std::set<int,std::greater<int>>* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                                    *out << ind << "const IndexedSet* tuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                                     *out << ind++ << "for(auto i = tuplesF->begin(); i != tuplesF->end(); i++){\n";
                                         *out << ind << "int it = *i;\n";
                                 }else{
@@ -4025,6 +4087,11 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                         *out << --ind << "}\n";
                     }
                 *out << --ind << "}\n";
+                while (pars>0){
+                    *out << --ind << "}\n";
+                    pars--;
+                }
+                
             *out << --ind << "}//close aggr id starter\n";
             // std::cout<<"Compiled starter aggr id"<<std::endl;
 
@@ -4042,15 +4109,14 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
         }
         std::string plusOne = r.getArithmeticRelationsWithAggregate()[0].isPlusOne() ? "+1":"";
         std::string guard = r.getArithmeticRelationsWithAggregate()[0].getGuard().getStringRep()+plusOne;
-        string bodyTerms = "";
-        if(bodyPred!=NULL){
-            for(unsigned i = 0; i<bodyPred->getAriety();i++){
-                if(bodyTerms!="")
-                    bodyTerms+=",";
-                bodyTerms+=bodyPred->getTermAt(i);
-            }
-        }
-
+        // string bodyTerms = "";
+        // if(bodyPred!=NULL){
+        //     for(unsigned i = 0; i<bodyPred->getAriety();i++){
+        //         if(bodyTerms!="")
+        //             bodyTerms+=",";
+        //         bodyTerms+=bodyPred->getTermAt(i);
+        //     }
+        // }
             *out << ind << "const std::vector<int>* tuples = &p"<<aggrIdAtom->getPredicateName()<<"_.getValuesVec({});\n";
             *out << ind << "const std::vector<int>* tuplesU = &u"<<aggrIdAtom->getPredicateName()<<"_.getValuesVec({});\n";
             *out << ind << "const std::vector<int>* tuplesF = &f"<<aggrIdAtom->getPredicateName()<<"_.getValuesVec({});\n";
@@ -4062,13 +4128,18 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
 
             *out << ind++ << "for(unsigned i = 0; i<tuples->size(); i++){\n";
             {
+                unsigned pars=0;
                 *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(tuples->at(i));\n";
                 std::unordered_set<std::string> boundVariables;
                 for(unsigned i = 0; i<aggrIdAtom->getAriety(); i++){
-                    if(aggrIdAtom->isVariableTermAt(i) && boundVariables.count(aggrIdAtom->getTermAt(i))==0){
-                        *out << ind << "int "<<aggrIdAtom->getTermAt(i)<<" = currentTuple->at("<<i<<");\n";
-                        boundVariables.insert(aggrIdAtom->getTermAt(i));
-                    }
+                        std::string term = aggrIdAtom->isVariableTermAt(i) || isInteger(aggrIdAtom->getTermAt(i)) ? aggrIdAtom->getTermAt(i) : "ConstantManager::getInstance().mapConstant(\""+aggrIdAtom->getTermAt(i)+"\")"; 
+                        if(aggrIdAtom->isVariableTermAt(i) && boundVariables.count(aggrIdAtom->getTermAt(i))==0){
+                            *out << ind << "int "<<aggrIdAtom->getTermAt(i)<<" = currentTuple->at("<<i<<");\n";
+                            boundVariables.insert(aggrIdAtom->getTermAt(i));
+                        }else{
+                            *out << ind++ << "if("<<term<<" == currentTuple->at("<<i<<")){\n";
+                            pars++;
+                        }
                 }
                 *out << ind << "std::vector<int> sharedVar({";
                 if(bodyPred!=NULL){
@@ -4083,8 +4154,8 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                 }
                 *out << "});\n";
                 if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                    *out << ind << "const std::set<int,std::greater<int>>* joinTuples = &p"<<mapName<<".getValuesSet(sharedVar);\n";
-                    *out << ind << "const std::set<int,std::greater<int>>* joinTuplesU = &u"<<mapName<<".getValuesSet(sharedVar);\n";
+                    *out << ind << "const IndexedSet* joinTuples = &p"<<mapName<<".getValuesSet(sharedVar);\n";
+                    *out << ind << "const IndexedSet* joinTuplesU = &u"<<mapName<<".getValuesSet(sharedVar);\n";
                 }else{
                     *out << ind << "const std::vector<int>* joinTuples = &p"<<mapName<<".getValuesVec(sharedVar);\n";
                     *out << ind << "const std::vector<int>* joinTuplesU = &u"<<mapName<<".getValuesVec(sharedVar);\n";
@@ -4105,7 +4176,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                         *out << ind << "int itProp = tuples->at(i);\n";
 
                         if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                            *out << ind << "const std::set<int,std::greater<int>>* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                            *out << ind << "const IndexedSet* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                             *out << ind++ << "for(auto j = joinTuplesF->begin(); j != joinTuplesF->end(); j++){\n";
                                 *out << ind << "int it = *j;\n";
                         }else{
@@ -4132,7 +4203,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             *out << ind << "if(actSum >= "<<guard<<"-posSum+currentJoinTuple->at(0)) {break;}\n";
                             *out << ind << "int itProp = *joinTuplesU->begin();\n";
                             *out << ind++ << "if(shared_reason.get()->empty()){\n";
-                                *out << ind << "const std::set<int,std::greater<int>>* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                                *out << ind << "const IndexedSet* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                                 *out << ind++ << "for(auto i = joinTuplesF->begin(); i != joinTuplesF->end(); i++){\n";
                                     *out << ind << "int it = *i;\n";
                                     *out << ind << "shared_reason.get()->insert(-it);\n";
@@ -4166,7 +4237,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             *out << ind << "if(actSum >= "<<guard<<"-posSum+currentJoinTuple->at("<<varIndex<<")) {break;}\n";
                             *out << ind << "int itProp = *index;\n";
                             *out << ind++ << "if(shared_reason.get()->empty()){\n";
-                                *out << ind << "const std::set<int,std::greater<int>>* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                                *out << ind << "const IndexedSet* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                                 *out << ind++ << "for(auto i = joinTuplesF->begin(); i != joinTuplesF->end(); i++){\n";
                                     *out << ind << "int it = *i;\n";
                                     *out << ind << "shared_reason.get()->insert(-it);\n";
@@ -4193,7 +4264,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     if(builder->isAggrSetPredicate(aggrSetPred->getPredicateName())){
                         *out << ind++ << "if(!joinTuplesU->empty()){\n";
                             if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                                *out << ind << "const std::set<int,std::greater<int>>* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                                *out << ind << "const IndexedSet* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                                 *out << ind++ << "for(auto i = joinTuplesF->begin(); i != joinTuplesF->end(); i++){\n";
                                     *out << ind << "int it = *i;\n";
                             }else{
@@ -4225,7 +4296,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     }else{
                         *out << ind++ << "if(!joinTuplesU->empty()){\n";
                             if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                                *out << ind << "const std::set<int,std::greater<int>>* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                                *out << ind << "const IndexedSet* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                                 *out << ind++ << "for(auto i = joinTuplesF->begin(); i != joinTuplesF->end(); i++){\n";
                                     *out << ind << "int it = *i;\n";
                             }else{
@@ -4259,6 +4330,10 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
 
                     *out << --ind << "}\n";
                 }
+                while(pars>0){
+                    pars--;
+                    *out << --ind << "}\n";
+                }
             }
             *out << --ind << "}//close true for\n";
             //OPTIMIZATION Add if !starter.isNegated
@@ -4266,12 +4341,17 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
             // *out << ind << "std::cout<<\"Prop for false head\"<<std::endl;\n";
             *out << ind++ << "for(unsigned i = 0; i<tuplesF->size(); i++){\n";
             {
+                unsigned pars=0;
                 *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesF->at(i));\n";
                 std::unordered_set<std::string> boundVariables;
                 for(unsigned i = 0; i<aggrIdAtom->getAriety(); i++){
+                    std::string term = aggrIdAtom->isVariableTermAt(i) || isInteger(aggrIdAtom->getTermAt(i)) ? aggrIdAtom->getTermAt(i) : "ConstantsManager::getInstance().mapConstant(\""+aggrIdAtom->getTermAt(i)+"\")"; 
                     if(aggrIdAtom->isVariableTermAt(i) && boundVariables.count(aggrIdAtom->getTermAt(i))==0){
                         *out << ind << "int "<<aggrIdAtom->getTermAt(i)<<" = currentTuple->at("<<i<<");\n";
                         boundVariables.insert(aggrIdAtom->getTermAt(i));
+                    }else{
+                        *out << ind++ << "if("<<term<<" == currentTuple->at("<<i<<")){\n";
+                        pars++;
                     }
                 }
                 *out << ind << "std::vector<int> sharedVar({";
@@ -4287,8 +4367,8 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                 }
                 *out << "});\n";
                 if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                    *out << ind << "const std::set<int,std::greater<int>>* joinTuples = &p"<<mapName<<".getValuesSet(sharedVar);\n";
-                    *out << ind << "const std::set<int,std::greater<int>>* joinTuplesU = &u"<<mapName<<".getValuesSet(sharedVar);\n";
+                    *out << ind << "const IndexedSet* joinTuples = &p"<<mapName<<".getValuesSet(sharedVar);\n";
+                    *out << ind << "const IndexedSet* joinTuplesU = &u"<<mapName<<".getValuesSet(sharedVar);\n";
                 }else{
                     *out << ind << "const std::vector<int>* joinTuples = &p"<<mapName<<".getValuesVec(sharedVar);\n";
                     *out << ind << "const std::vector<int>* joinTuplesU = &u"<<mapName<<".getValuesVec(sharedVar);\n";
@@ -4413,19 +4493,28 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             *out << ind << "propUndefined(currentJoinTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                         *out << --ind << "}\n";
                     }
-
                 *out << --ind << "}\n";
+                while (pars>0){
+                    *out << --ind << "}\n";
+                    pars--;
+                }
+                
             }
             *out << --ind << "}//close false for\n";
 
             *out << ind++ << "for(unsigned i = 0; i<tuplesU->size();){\n";
             {
+                unsigned pars=0;
                 *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesU->at(i));\n";
                 std::unordered_set<std::string> boundVariables;
                 for(unsigned i = 0; i<aggrIdAtom->getAriety(); i++){
+                    std::string term = aggrIdAtom->isVariableTermAt(i) || isInteger(aggrIdAtom->getTermAt(i)) ? aggrIdAtom->getTermAt(i) : "ConstantsManager::getInstance().mapConstant(\""+aggrIdAtom->getTermAt(i)+"\")"; 
                     if(aggrIdAtom->isVariableTermAt(i) && boundVariables.count(aggrIdAtom->getTermAt(i))==0){
                         *out << ind << "int "<<aggrIdAtom->getTermAt(i)<<" = currentTuple->at("<<i<<");\n";
                         boundVariables.insert(aggrIdAtom->getTermAt(i));
+                    }else{
+                        *out << ind++ << "if("<<term<<" = currentTuple->at("<<i<<")){\n";
+                        pars++;
                     }
                 }
                 *out << ind << "std::vector<int> sharedVar({";
@@ -4440,8 +4529,8 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                 }
                 *out << "});\n";
                 if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                    *out << ind << "const std::set<int,std::greater<int>>* joinTuples = &p"<<mapName<<".getValuesSet(sharedVar);\n";
-                    *out << ind << "const std::set<int,std::greater<int>>* joinTuplesU = &u"<<mapName<<".getValuesSet(sharedVar);\n";
+                    *out << ind << "const IndexedSet* joinTuples = &p"<<mapName<<".getValuesSet(sharedVar);\n";
+                    *out << ind << "const IndexedSet* joinTuplesU = &u"<<mapName<<".getValuesSet(sharedVar);\n";
                 }else{
                     *out << ind << "const std::vector<int>* joinTuples = &p"<<mapName<<".getValuesVec(sharedVar);\n";
                     *out << ind << "const std::vector<int>* joinTuplesU = &u"<<mapName<<".getValuesVec(sharedVar);\n";
@@ -4484,7 +4573,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     *out << ind << "int itProp = tuplesU->at(i);\n";
                     // *out << ind++ << "if(reasonForLiteral.count(-itProp) == 0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty()){\n";
                     if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
-                        *out << ind << "const std::set<int,std::greater<int>>* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
+                        *out << ind << "const IndexedSet* joinTuplesF = &f"<<mapName<<".getValuesSet(sharedVar);\n";
                         *out << ind++ << "for(auto j = joinTuplesF->begin(); j != joinTuplesF->end(); j++){\n";
                             *out << ind << "int it = *j;\n";
                     }else{
@@ -4507,6 +4596,10 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                 ind++;
                     *out << ind << "i++;\n";
                 *out << --ind << "}\n";
+                while(pars > 0){
+                    *out << --ind << "}\n";
+                    pars--;
+                }
             }
             *out << --ind << "}//close undef for\n";
         *out << --ind << "}//close aggr set starter\n";
@@ -4518,7 +4611,8 @@ void CompilationManager::printAtomVariables(const aspc::Atom* atom,std::string t
             *out << ind << "int "<<atom->getTermAt(k)<<" = "<<tupleName<<pointer<<"at("<<k<<");\n";
             boundVariables.insert(atom->getTermAt(k));
         }else{
-            *out << ind++ << "if("<<tupleName<<pointer<<"at("<<k<<") == "<<atom->getTermAt(k)<<"){\n";
+            std::string term = atom->isVariableTermAt(k) || isInteger(atom->getTermAt(k)) ? atom->getTermAt(k) : "ConstantsManager::getInstance().mapConstant(\""+atom->getTermAt(k)+"\")";
+            *out << ind++ << "if("<<tupleName<<pointer<<"at("<<k<<") == "<<term<<"){\n";
             closingPars++;
         }
     }
@@ -4527,7 +4621,7 @@ void printRulePropagationStartingFromTrueHead(){
 
 }
 bool CompilationManager::printGetValues(std::string predicateName,std::vector<unsigned> boundIndices,std::string boundTerms,std::string mapPrefix,std::string name){
-    std::string collisionListType = predicateToOrderdedAux.count(predicateName)!=0 ? "const std::set<int,std::greater<int>>*" : "const std::vector<int>*";
+    std::string collisionListType = predicateToOrderdedAux.count(predicateName)!=0 ? "const IndexedSet*" : "const std::vector<int>*";
     std::string toStruct = predicateToOrderdedAux.count(predicateName)!=0 ? "Set" : "Vec";
 
     *out << ind << collisionListType << " " << name << " = &" << mapPrefix << predicateName << "_";
@@ -4620,7 +4714,8 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                             boundIndices.push_back(i);
                             if(boundTerms!="")
                                 boundTerms+=", ";
-                            boundTerms+=body->getTermAt(i);
+                            std::string term = body->isVariableTermAt(i) || isInteger(body->getTermAt(i)) ? body->getTermAt(i) : "ConstantsManager::getInstance().mapConstant(\""+body->getTermAt(i)+"\")";
+                            boundTerms+=term;
                         }
                     }
                     bool isSet = printGetValues(body->getPredicateName(),boundIndices,boundTerms,"p","tuples");
@@ -4763,7 +4858,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                 *out << ind++ << "if(startVar > 0){\n";
                     *out << ind++ << "if(!currentBody->isUndef() && !currentBody->isTrue()){\n";
                         //*out << ind << "std::cout<<\"Conflict: unable to find support for true head "<<r.getRuleId()<<"\"<<std::endl;\n";
-                        *out << ind << "int it = currentTuple->getId();\n";
+                        *out << ind << "int it = currentBody->getId();\n";
                         *out << ind << "shared_reason.get()->insert(startVar);\n";
                         *out << ind << "reasonForLiteral[it]=shared_reason;\n";
                         *out << ind << "handleConflict(it, propagatedLiterals);\n";
@@ -4813,7 +4908,8 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                         boundIndices.push_back(k);
                         if(boundTerms!="")
                             boundTerms+=",";
-                        boundTerms+=body->getTermAt(k);
+                        std::string term = body->isVariableTermAt(k) || isInteger(body->getTermAt(k)) ? body->getTermAt(k) : "ConstantsManager::getInstance().mapConstant(\""+body->getTermAt(k)+"\")";
+                        boundTerms+=term;
                     }
                 }
                 bool isSet = printGetValues(body->getPredicateName(),boundIndices,boundTerms,"p","tuples");
@@ -5031,7 +5127,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                 boundIndices.push_back(i);
                                 if(boundTerms!="")
                                     boundTerms+=", ";
-                                boundTerms+=body->getTermAt(i);
+                                boundTerms += body->isVariableTermAt(i) || isInteger(body->getTermAt(i)) ? body->getTermAt(i) : "ConstantsManager::getInstance().mapConstant(\""+body->getTermAt(i)+"\")";
                             }
                         }
                         bool isBodySet = printGetValues(body->getPredicateName(),boundIndices,boundTerms,"p","tuples");
@@ -5098,7 +5194,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                 boundIndices.push_back(i);
                                 if(boundTerms!="")
                                     boundTerms+=", ";
-                                boundTerms+=body->getTermAt(i);
+                                boundTerms+=body->isVariableTermAt(i) || isInteger(body->getTermAt(i)) ? body->getTermAt(i) : "ConstantsManager::getInstance().mapConstant(\""+body->getTermAt(i)+"\")";
                             }
                         }
                         bool isBodySet = printGetValues(body->getPredicateName(),boundIndices,boundTerms,"p","tuples");
@@ -5169,7 +5265,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                 boundIndices.push_back(i);
                                 if(boundTerms!="")
                                     boundTerms+=", ";
-                                boundTerms+=body->getTermAt(i);
+                                boundTerms+=body->isVariableTermAt(i) || isInteger(body->getTermAt(i)) ? body->getTermAt(i) : "ConstantsManager::getInstance().mapConstant(\""+body->getTermAt(i)+"\")";
                             }
                         }
                         bool isBodySet = printGetValues(body->getPredicateName(),boundIndices,boundTerms,"p","tuples");
@@ -5242,7 +5338,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                 boundIndices.push_back(i);
                                 if(boundTerms!="")
                                     boundTerms+=", ";
-                                boundTerms+=body->getTermAt(i);
+                                boundTerms+=body->isVariableTermAt(i) || isInteger(body->getTermAt(i)) ? body->getTermAt(i) : "ConstantsManager::getInstance().mapConstant(\""+body->getTermAt(i)+"\")";
                             }
                         }
                         bool isBodySet = printGetValues(body->getPredicateName(),boundIndices,boundTerms,"p","tuples");
@@ -5317,7 +5413,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                 boundIndices.push_back(i);
                                 if(boundTerms!="")
                                     boundTerms+=", ";
-                                boundTerms+=body->getTermAt(i);
+                                boundTerms+=body->isVariableTermAt(i) || isInteger(body->getTermAt(i)) ? body->getTermAt(i) : "ConstantsManager::getInstance().mapConstant(\""+body->getTermAt(i)+"\")";
                             }
                         }
                         bool isBodySet = printGetValues(body->getPredicateName(),boundIndices,boundTerms,"p","tuples");
@@ -5363,7 +5459,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                 boundIndices.push_back(i);
                                 if(boundTerms!="")
                                     boundTerms+=", ";
-                                boundTerms+=body->getTermAt(i);
+                                boundTerms+=body->isVariableTermAt(i) || isInteger(body->getTermAt(i)) ? body->getTermAt(i) : "ConstantsManager::getInstance().mapConstant(\""+body->getTermAt(i)+"\")";
                             }
                         }
                         bool isBodySet = printGetValues(body->getPredicateName(),boundIndices,boundTerms,"p","tuples");
@@ -5436,12 +5532,16 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                 #endif
 
                 closingPars++;
-                if(checkTupleFormat(aspc::Literal(sign=="",*start),"starter",false))
-                    closingPars++;
+                // if(checkTupleFormat(aspc::Literal(sign=="",*start),"starter",false))
+                //     closingPars++;
                 for(unsigned k = 0; k<start->getAriety(); k++){
                     if(start->isVariableTermAt(k) && boundVariables.count(start->getTermAt(k))==0){
                         *out << ind << "int "<<start->getTermAt(k)<<" = starter["<<k<<"];\n";
                         boundVariables.insert(start->getTermAt(k));
+                    }else{
+                        std::string term = start->isVariableTermAt(k) || isInteger(start->getTermAt(k)) ? start->getTermAt(k) : "ConstantsManager::getInstance().mapConstant(\""+start->getTermAt(k)+"\")";
+                        *out << ind++ << "if("<<term<<" == starter["<<k<<"]){\n";
+                        closingPars++;
                     }
                 }
 
