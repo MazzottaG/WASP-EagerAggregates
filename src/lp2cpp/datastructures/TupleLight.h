@@ -139,17 +139,17 @@ public:
     void clearCollisionsList(){
         collisionsListsSize=0;
     }
-    int operator[](unsigned i)const{
+    inline int operator[](const unsigned& i)const{
         return content[i];
     }
-    int at(unsigned i)const{
+    inline int at(const unsigned& i)const{
         return content[i];
     }
 
-    int& operator[](unsigned i){
+    inline int& operator[](const unsigned& i){
         return content[i];
     }
-    int& at(unsigned i){
+    inline int& at(const unsigned& i){
         return content[i];
     }
     

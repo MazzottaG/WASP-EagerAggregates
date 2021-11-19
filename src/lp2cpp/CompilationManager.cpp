@@ -567,6 +567,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     // *out << ind << "#include \"datastructures/SmartPredicateSet.h\"\n\n";
     *out << ind << "#include \"datastructures/AuxiliaryMapSmart.h\"\n\n";
     *out << ind << "#include \"datastructures/VectorAsSet.h\"\n\n";
+    *out << ind << "#include \"../tsl/hopscotch_map.h\"\n\n";
     *out << ind << "#include<ctime>\n\n";
     *out << ind << "#include<ctime>\n\n";
     *out << ind << "#include<map>\n\n";
@@ -689,8 +690,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "bool undefinedLoaded=false;\n";
     }
 
-    *out << ind << "std::unordered_map<int,int> actualSum;\n";
-    *out << ind << "std::unordered_map<int,int> possibleSum;\n";
+    *out << ind << "tsl::hopscotch_map<int,int> actualSum;\n";
+    *out << ind << "tsl::hopscotch_map<int,int> possibleSum;\n";
     *out << ind << "bool unRoll=false;\n";
     *out << ind << "unsigned conflictCount=0;\n";
 
@@ -2236,6 +2237,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             }
             *out << ind << "exit(-1);\n";
         #endif
+        *out << ind << "std::cout<<possibleSum.size()<<std::endl;\n";
+        *out << ind << "std::cout<<possibleSum.bucket_count()<<std::endl;\n";
+        *out << ind << "std::cout<<possibleSum.load_factor()<<std::endl;\n";
         #ifdef TRACE_PROPAGATOR
         *out << ind++ << "for(auto pair : actualSum){\n";
             *out << ind << "factory.getTupleFromInternalID(pair.first)->print();\n";
