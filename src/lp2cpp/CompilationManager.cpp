@@ -1894,6 +1894,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         
                                     }
                                     *out << ind++ << "{\n";
+                                        
                                         if(predicateToOrderdedAux.count(bodyLit->getPredicateName())!=0){
                                             *out << ind << "const IndexedSet* tuples = &p"<<bodyLit->getPredicateName()<<"_.getValuesSet({});\n";
                                             *out << ind << "const IndexedSet* tuplesU = &u"<<bodyLit->getPredicateName()<<"_.getValuesSet({});\n";
@@ -1905,7 +1906,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                 *out << ind++ << "if(itTrue!=tuples->end()){\n";
                                                     *out << ind << "tuple=factory.getTupleFromInternalID(*itTrue);\n";
                                                     *out << ind << "itTrue++;\n";
-
                                         }else{
                                             *out << ind << "const std::vector<int>* tuples = &p"<<bodyLit->getPredicateName()<<"_.getValuesVec({});\n";
                                             *out << ind << "const std::vector<int>* tuplesU = &u"<<bodyLit->getPredicateName()<<"_.getValuesVec({});\n";
@@ -2004,29 +2004,30 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                 *out << --ind << "}\n";
                                                 if(checkFormat)
                                                     *out << --ind << "}\n";
-                                            *out << --ind << "}\n";
-                                            //save aggr_id if new body is saved
-                                            for(const aspc::Rule& aggr_id_rule : program.getRules()){
-                                                if(!aggr_id_rule.isConstraint() && aggr_id_rule.containsAggregate() && !aggr_id_rule.getBodyLiterals().empty() && aggr_id_rule.getBodyLiterals()[0].getPredicateName() == head->getPredicateName()){
-                                                    const aspc::Atom* aggr_id = &aggr_id_rule.getHead()[0];
-                                                    *out << ind++ << "{\n";
-                                                    checkFormat = checkTupleFormat(*bodyLit,"tuple",true);
-                                                        *out << ind << "Tuple* aggrId = factory.addNewInternalTuple({"<<terms<<"},&_"<<aggr_id->getPredicateName()<<");\n";
-                                                        *out << ind << "const auto& insertResult = aggrId->setStatus(Undef);\n";
-                                                        *out << ind++ << "if (insertResult.second) {\n";
-                                                            *out << ind << "factory.removeFromCollisionsList(aggrId->getId());\n";
-
-                                                            // *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<aggr_id->getPredicateName()<<"]) {\n";
-                                                            //     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
-                                                            // *out << --ind << "}\n";
-                                                            *out << ind << "insertUndef(insertResult);\n";
-                                                        *out << --ind << "}\n";
-                                                    if(checkFormat)
-                                                        *out << --ind << "}\n";
-                                                    *out << --ind << "}\n";
-                                                }
-                                            }
                                         *out << --ind << "}\n";
+                                        //save aggr_id if new body is saved
+                                        for(const aspc::Rule& aggr_id_rule : program.getRules()){
+                                            if(!aggr_id_rule.isConstraint() && aggr_id_rule.containsAggregate() && !aggr_id_rule.getBodyLiterals().empty() && aggr_id_rule.getBodyLiterals()[0].getPredicateName() == head->getPredicateName()){
+                                                const aspc::Atom* aggr_id = &aggr_id_rule.getHead()[0];
+                                                *out << ind++ << "{\n";
+                                                checkFormat = checkTupleFormat(*bodyLit,"tuple",true);
+                                                    *out << ind << "Tuple* aggrId = factory.addNewInternalTuple({"<<terms<<"},&_"<<aggr_id->getPredicateName()<<");\n";
+                                                    *out << ind << "const auto& insertResult = aggrId->setStatus(Undef);\n";
+                                                    *out << ind++ << "if (insertResult.second) {\n";
+                                                        *out << ind << "factory.removeFromCollisionsList(aggrId->getId());\n";
+
+                                                        // *out << ind++ << "for (AuxMap* auxMap : predicateToUndefAuxiliaryMaps[&_"<<aggr_id->getPredicateName()<<"]) {\n";
+                                                        //     *out << ind << "auxMap -> insert2(*insertResult.first);\n";
+                                                        // *out << --ind << "}\n";
+                                                        *out << ind << "insertUndef(insertResult);\n";
+                                                    *out << --ind << "}\n";
+                                                if(checkFormat)
+                                                    *out << --ind << "}\n";
+                                                *out << --ind << "}\n";
+                                            }
+                                        }
+                                        *out << --ind << "}\n";
+                                    
                                     *out << --ind << "}\n";
                                 }
                             }
@@ -2250,11 +2251,18 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind << "std::cout<<\"PossibleSum \"<<pair.second<<std::endl;\n";
         *out << --ind <<"}\n";
         *out << ind << "std::cout<<\"Generated\"<<std::endl;\n";        
-        *out << ind++ << "for(int id :uscost_.getValuesSet({})){\n";
+        *out << ind++ << "for(int id :uaux0_.getValuesSet({})){\n";
+            *out << ind << "std::cout<<id<<\" \";factory.getTupleFromInternalID(id)->print();\n";
+        *out << --ind << "}\n";
+        *out << ind++ << "for(int id :ul2_.getValuesSet({})){\n";
+            *out << ind << "std::cout<<id<<\" \";factory.getTupleFromInternalID(id)->print();\n";
+        *out << --ind << "}\n";
+        *out << ind++ << "for(int id :ul3_.getValuesVec({})){\n";
             *out << ind << "std::cout<<id<<\" \";factory.getTupleFromInternalID(id)->print();\n";
         *out << --ind << "}\n";
         *out << ind << "exit(180);\n";
         #endif
+        *out << ind << "std::cout<<\"exit undef received\"<<std::endl;\n";
         // *out << --ind <<"}\n";
         // *out << ind << "exit(180);\n";
         //*out << ind << "trace_msg(eagerprop,2,\"Interna lUndefined Computed\");\n";
@@ -4638,6 +4646,7 @@ bool CompilationManager::printGetValues(std::string predicateName,std::vector<un
 void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromStarter){
     const aspc::Literal* body = &r.getBodyLiterals()[0];
     const aspc::Atom* head = &r.getHead()[0];
+    
     if(fromStarter){
         *out << ind++ << "if(starter.getPredicateName() == &_"<<body->getPredicateName()<<"){\n";
         {
@@ -4652,7 +4661,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
             }
             *out << "}, &_"<<head->getPredicateName()<<");\n";
             *out << ind << "std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();\n";
-            *out << ind++ << "if(startVar>0){\n";
+            *out << ind++ << "if(startVar > 0){\n";
                 //rule propagation starting from true body
                 *out << ind++ << "if(head == NULL || (!head->isTrue() && !head->isUndef())){\n";
                     //head false found for true body
@@ -4860,7 +4869,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                 }
                 *out << "}, &_"<<body->getPredicateName()<<");\n";
                 *out << ind++ << "if(startVar > 0){\n";
-                    *out << ind++ << "if(!currentBody->isUndef() && !currentBody->isTrue()){\n";
+                    *out << ind++ << "if(currentBody->isFalse()){\n";
                         //*out << ind << "std::cout<<\"Conflict: unable to find support for true head "<<r.getRuleId()<<"\"<<std::endl;\n";
                         *out << ind << "int it = currentBody->getId();\n";
                         *out << ind << "shared_reason.get()->insert(startVar);\n";

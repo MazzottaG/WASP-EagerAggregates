@@ -122,6 +122,7 @@ private:
     std::unordered_map<std::string,std::vector<int>> predsToRules;
     std::unordered_map<std::string,std::vector<std::string>> supportPredicates;
     std::unordered_map<std::string,std::vector<aspc::Literal>> predsToHeads;
+    std::vector<std::string> sups;
     void buildExpression();
     bool negatedTerm=false;
 public:

@@ -647,7 +647,7 @@ void AspCore2ProgramBuilder::rewriteRule(bool addDomBody){
     bool headInMoreRules=predsToRules.count(buildingHead[0].getPredicateName())!=0 && predsToRules[buildingHead[0].getPredicateName()].size()>1;
     if(buildingBody.size()==1 && inequalities.empty()){
         // if the same variables occurs in two terms position rule must be rewrited
-        bool conditionOnLiteral = false;
+        bool conditionOnLiteral = buildingBody[0].isNegated();
         for(unsigned i=0; i<buildingBody[0].getAriety() && ! conditionOnLiteral; i++){
             if(buildingBody[0].isVariableTermAt(i)){
                 for(unsigned j=i+1; j<buildingBody[0].getAriety() && ! conditionOnLiteral; j++){
@@ -663,7 +663,8 @@ void AspCore2ProgramBuilder::rewriteRule(bool addDomBody){
                 std::cout<<"Rule not rewrited"<<std::endl;
             #endif
             if(headInMoreRules){
-                std::string supPredicate = "sup_"+std::to_string(supportPredicates.size());
+                std::string supPredicate = "sup_"+std::to_string(sups.size());
+                sups.push_back(supPredicate);
                 supportPredicates[buildingHead[0].getPredicateName()].push_back(supPredicate);
                 predsToHeads[buildingHead[0].getPredicateName()].push_back(aspc::Literal(false,buildingHead[0]));
                 std::vector<std::string> terms(buildingHead[0].getTerms());
@@ -754,13 +755,13 @@ void AspCore2ProgramBuilder::rewriteRule(bool addDomBody){
         }
     }
     
-    
     if(!iffCase){
         buildingBody.clear();
         buildingBody.push_back(aspc::Literal(false,aspc::Atom(auxPredicate,auxDistinctTerms)));
         inequalities.clear();
         if(headInMoreRules){
-            std::string supPredicate = "sup_"+std::to_string(supportPredicates.size());
+            std::string supPredicate = "sup_"+std::to_string(sups.size());
+            sups.push_back(supPredicate);
             supportPredicates[buildingHead[0].getPredicateName()].push_back(supPredicate);
             predsToHeads[buildingHead[0].getPredicateName()].push_back(aspc::Literal(false,buildingHead[0]));
             std::vector<std::string> terms(buildingHead[0].getTerms());
