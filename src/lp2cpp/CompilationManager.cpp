@@ -6988,15 +6988,23 @@ void CompilationManager::buildGeneratorActualAndPossibleSum(AspCore2ProgramBuild
                 }
                 std::string boundTerms="";
                 std::string boundIndices="";
-                for(unsigned k=0; k<aggrSet->getAriety(); k++){
-                    std::string term = aggrSet->isVariableTermAt(k) || isInteger(aggrSet->getTermAt(k)) ? aggrSet->getTermAt(k) : "ConstantsManager::getInstance().mapConstant(\""+aggrSet->getTermAt(k)+"\")";
-                    if(!aggrSet->isVariableTermAt(k) || boundVars.count(term)!=0){
-                        if(boundTerms!="")
-                            boundTerms+=",";
-                        boundTerms+=term;
-                        boundIndices+=std::to_string(k)+"_";
-                    }
+                for(unsigned k :sharedVarAggrIDToAggrSetIndices[aggrId->getPredicateName()]){
+                    std::string term = aggrSet->getTermAt(k);
+                    if(boundTerms!="")
+                        boundTerms+=",";
+                    boundTerms+=term;
+                    boundIndices+=std::to_string(k)+"_";
                 }
+                // for(unsigned k=0; k<aggrSet->getAriety(); k++){
+                //     std::string term = aggrSet->isVariableTermAt(k) || isInteger(aggrSet->getTermAt(k)) ? aggrSet->getTermAt(k) : "ConstantsManager::getInstance().mapConstant(\""+aggrSet->getTermAt(k)+"\")";
+                //     if(!aggrSet->isVariableTermAt(k) || boundVars.count(term)!=0){
+                //         if(boundTerms!="")
+                //             boundTerms+=",";
+                //         boundTerms+=term;
+                //         boundIndices+=std::to_string(k)+"_";
+                //     }
+                // }
+                
                 *out << ind << "const IndexedSet* aggrSet = &p"<<aggrSet->getPredicateName()<<"_"<<boundIndices<<".getValuesSet({"<<boundTerms<<"});\n";
                 *out << ind << "const IndexedSet* aggrSetU = &u"<<aggrSet->getPredicateName()<<"_"<<boundIndices<<".getValuesSet({"<<boundTerms<<"});\n";
                 *out << ind << "auto itTrue = aggrSet->begin();\n";
