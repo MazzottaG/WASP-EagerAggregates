@@ -6654,6 +6654,7 @@ unsigned CompilationManager::buildGeneratorForSimpleRule(const aspc::Literal* bo
             closingPars++;
         }else{
             *out << ind << "int "<<term<< " = tuple->at("<<k<<");\n";
+            terms.insert(term);
         }
     }
     
