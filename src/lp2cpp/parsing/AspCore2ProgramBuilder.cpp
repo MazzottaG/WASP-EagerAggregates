@@ -961,7 +961,7 @@ void AspCore2ProgramBuilder::onRule() {
         }
 
     } else {
-        std::cout << "creating rule" << std::endl;
+        // std::cout << "creating rule" << std::endl;
 
         aspc::Rule rule = aspc::Rule(buildingHead, buildingBody, inequalities,inequalitiesWithAggregate, true,!analyzeDependencyGraph);
         // rule.print();
@@ -1766,7 +1766,7 @@ void AspCore2ProgramBuilder::rewriteRuleWithCompletion(const aspc::Rule& r,int r
 }
 void AspCore2ProgramBuilder::addManualDependecy(){
     for(auto& pair: auxPossibleSumToAggrSet){
-        std::cout<<"Adding manual dependecy "<<pair.second<<" "<<pair.first<<std::endl;
+        // std::cout<<"Adding manual dependecy "<<pair.second<<" "<<pair.first<<std::endl;
         int currentHeadId = predicateIDs.size();
         unordered_map<string, int>::iterator itAuxVal = predicateIDs.find(pair.first);
         if (itAuxVal != predicateIDs.end())
@@ -1787,7 +1787,7 @@ void AspCore2ProgramBuilder::addManualDependecy(){
         graphWithTarjanAlgorithm.addEdge(currentBodyId, currentHeadId);
     }
     for(auto pair : domToBody){
-        std::cout<<"Adding manual dependecy "<<pair.second.getPredicateName()<<" "<<pair.first<<std::endl;
+        // std::cout<<"Adding manual dependecy "<<pair.second.getPredicateName()<<" "<<pair.first<<std::endl;
         int currentHeadId = predicateIDs.size();
         unordered_map<string, int>::iterator itAuxVal = predicateIDs.find(pair.first);
         if (itAuxVal != predicateIDs.end())
@@ -1997,7 +1997,7 @@ aspc::Literal AspCore2ProgramBuilder::buildBodyRule(const aspc::Rule& r,const as
     std::string auxValPred="auxVal"+std::to_string(auxPossibleSumToAggrSet.size());
     std::string var;
     if(!r.getArithmeticRelationsWithAggregate()[0].isBoundedRelation(bodyVars)){
-        std::cout<< "aggr not bound"<<std::endl;
+        // std::cout<< "aggr not bound"<<std::endl;
         if(r.getArithmeticRelationsWithAggregate()[0].getComparisonType() == aspc::EQ){
             buildAuxVal=true;
             for(std::string v : r.getArithmeticRelationsWithAggregate()[0].getGuard().getAllTerms()){
@@ -2071,7 +2071,7 @@ aspc::Literal AspCore2ProgramBuilder::buildBodyRule(const aspc::Rule& r,const as
             }
         }
         if(buildAuxVal){
-            std::cout<<"Building auxVal"<<std::endl;
+            // std::cout<<"Building auxVal"<<std::endl;
             aspc::Literal l(false,aspc::Atom(auxValPred,{var}));
             buildingBody.push_back(l);
             for(unsigned i=0;i<l.getAriety();i++){

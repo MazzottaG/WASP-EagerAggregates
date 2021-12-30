@@ -880,7 +880,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     
     if(mode == EAGER_MODE){
         for(const auto& pair : builder->getAggrSetToAuxVal()){
-            std::cout<<"declaring map for auxToVal "<<pair.first+"_"<<std::endl;
+            // std::cout<<"declaring map for auxToVal "<<pair.first+"_"<<std::endl;
             declareAuxMap(pair.first+"_",{},pair.first,true,false);
         }
     }
@@ -1809,13 +1809,13 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         *out << ind++ << "if(tuple!=NULL){\n";
                             *out << ind << "std::cout << \"Searching foundness for\"; tuple->print();\n";
                             for(const auto& supRules : supportingRules){
-                                std::cout << supRules.first<<std::endl;
+                                // std::cout << supRules.first<<std::endl;
                                 if(auxToBody.count(supRules.first)!=0)
                                     continue;
                                 *out << ind++ << "if(tuple->getPredicateName() == &_"<<supRules.first<<"){\n";
                                 
                                     for(const auto& r :supRules.second){
-                                        r.print();
+                                        // r.print();
                                         const aspc::Atom* head = NULL;
                                         const aspc::Literal* body = NULL;
                                                 
@@ -3860,7 +3860,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         //         }
         //     }
         // }
-        std::cout<<"End scc iteration"<<std::endl;
+        // std::cout<<"End scc iteration"<<std::endl;
 
         //*out << ind << "trace_msg(eagerprop,2,\"Computing sums\");\n";
 
@@ -3981,9 +3981,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             }
             *out << ind << "exit(-1);\n";
         #endif
-        *out << ind << "std::cout<<possibleSum.size()<<std::endl;\n";
-        *out << ind << "std::cout<<possibleSum.bucket_count()<<std::endl;\n";
-        *out << ind << "std::cout<<possibleSum.load_factor()<<std::endl;\n";
+        // *out << ind << "std::cout<<possibleSum.size()<<std::endl;\n";
+        // *out << ind << "std::cout<<possibleSum.bucket_count()<<std::endl;\n";
+        // *out << ind << "std::cout<<possibleSum.load_factor()<<std::endl;\n";
         // *out << ind << "for(auto t : pauxVal0_.getValuesVec({})) factory.getTupleFromInternalID(t)->print();\n";
         
         #ifdef TRACE_PROPAGATOR
@@ -3999,7 +3999,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         // *out << ind << "const std::vector<int>& tuplesU = ua_.getValuesVec({});\n";
         // *out << ind << "for(int lit :tuplesU)factory.getTupleFromInternalID(lit)->print();\n";                
         #endif
-        *out << ind << "std::cout<<\"exit undef received\"<<std::endl;\n";
+        // *out << ind << "std::cout<<\"exit undef received\"<<std::endl;\n";
         // *out << --ind <<"}\n";
         // *out << ind << "exit(180);\n";
         //*out << ind << "trace_msg(eagerprop,2,\"Interna lUndefined Computed\");\n";
@@ -4326,7 +4326,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         for(unsigned formulaIndex: orderedBodyFormulas){
                                             const aspc::Formula* f = r.getFormulas()[formulaIndex];
                                             if(!f->isLiteral() && !f->containsAggregate()){
-                                                f->print();
+                                                // f->print();
                                                 const aspc::ArithmeticRelation* ineq = (aspc::ArithmeticRelation*)f;
                                                 if(ineq->isBoundedValueAssignment(boundVariables)){
                                                     *out << ind << "int "<<ineq->getAssignmentStringRep(boundVariables)<<";\n";
@@ -4410,7 +4410,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                 unsigned localPars=0;
                                                 for(const aspc::Formula* fAggr:aggrBodyFormulas){
                                                     if(!fAggr->isLiteral() && !fAggr->containsAggregate()){
-                                                        fAggr->print();
+                                                        // fAggr->print();
                                                         const aspc::ArithmeticRelation* ineq = (aspc::ArithmeticRelation*)fAggr;
                                                         if(ineq->isBoundedValueAssignment(localBoundVariables)){
                                                             *out << ind << "int "<<ineq->getAssignmentStringRep(localBoundVariables)<<";\n";
@@ -4778,7 +4778,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         }
     } else {
         //mode == EAGER_MODE
-        std::cout<<"Gen On Facts"<<std::endl;
+        // std::cout<<"Gen On Facts"<<std::endl;
         *out << ind << "if(decisionLevel>-1) {\n";
         *out << ind << "}\n";
         *out << ind++ << "if(decisionLevel==-1) {\n";
@@ -4817,7 +4817,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             // *out << ind << "std::cout<<\"end level -1\"<<std::endl;\n";
 
         *out << --ind << "}//close decision level == -1\n";
-        std::cout<<"Gen -1"<<std::endl;
+        // std::cout<<"Gen -1"<<std::endl;
         *out << ind << "std::vector<int> propagated;\n";
         *out << ind++ << "while(!propagationStack.empty()){\n";
             *out << ind << "int startVar = propagationStack.back();\n";
@@ -4825,7 +4825,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind << "int uStartVar = startVar<0 ? -startVar : startVar;\n";
             *out << ind << "Tuple starter (*factory.getTupleFromInternalID(uStartVar));\n";
             *out << ind << "std::string minus = startVar < 0 ? \"not \" : \"\";\n";
-            *out << ind << "std::cout<<\"Starter \"<<minus;starter.print();\n";
+            // *out << ind << "std::cout<<\"Starter \"<<minus;starter.print();\n";
             // *out << ind << "starter.setNegated(startVar<0);\n";
             #ifdef TRACE_PROPAGATOR
             *out << ind << "std::cout<<\"Starter \"<<minus;starter.print();\n";
@@ -6483,7 +6483,7 @@ void CompilationManager::buildGeneratorForRecursiveComponent(std::vector<int> co
     *out << ind++ << "{\n";
         *out << ind << "std::vector<int> generationStack;\n";
     for(int ruleId : exitRules){
-        sourceProgram->getRules()[ruleId].print();
+        // sourceProgram->getRules()[ruleId].print();
         *out << ind++ << "{\n";
             unsigned closingPars = buildGeneratorForExiteRule(sourceProgram->getRules()[ruleId],builder->getSubPrograms(),ruleId,sumAggrSetPredicates,true);
             while (closingPars>0){
@@ -6511,18 +6511,18 @@ void CompilationManager::buildGeneratorForRecursiveComponent(std::vector<int> co
                                 unsigned closingPars = printStarter(l,boundTerms);
                                 const aspc::Atom* currentlySaving = &joinRule->getBodyLiterals().back().getAtom();
                                 closingPars+=buildGeneratorForConstraint(joinRule,"saving"+std::to_string(subProgram.size()-1),sumAggrSetPredicates,forumulaIndex,boundTerms);
-                                joinRule->print();
-                                std::cout<<"Sub rules"<<std::endl;
+                                // joinRule->print();
+                                // std::cout<<"Sub rules"<<std::endl;
                                 for(int subRuleId = subProgram.size()-2;subRuleId>=0;subRuleId--){
                                     const aspc::Rule* currentSubRule = &subProgram[subRuleId];
-                                    currentSubRule->print();
+                                    // currentSubRule->print();
                                     const aspc::Atom* head =NULL;
                                     if(currentSubRule->getBodyLiterals()[0].getPredicateName() == currentlySaving->getPredicateName()){
-                                        std::cout << "previouslySaved"<<std::endl;
+                                        // std::cout << "previouslySaved"<<std::endl;
                                         if(currentSubRule->isConstraint()){
-                                            std::cout << "constraint"<<std::endl;
+                                            // std::cout << "constraint"<<std::endl;
                                             if(currentSubRule->getBodyLiterals().size() == 2 && currentSubRule->getBodyLiterals()[1].isNegated()){
-                                                currentSubRule->getBodyLiterals()[1].print();std::cout << " nextToSave"<<std::endl;
+                                                // currentSubRule->getBodyLiterals()[1].print();std::cout << " nextToSave"<<std::endl;
                                         
                                                 head = &currentSubRule->getBodyLiterals()[1].getAtom();
                                             }
@@ -6559,18 +6559,18 @@ void CompilationManager::buildGeneratorForRecursiveComponent(std::vector<int> co
                     unsigned closingPars = printStarter(body,boundTerms);
                     const aspc::Atom* currentlySaving = &joinRule->getHead()[0];
                     closingPars+=buildLiteralSaving(&joinRule->getHead()[0],"saving"+std::to_string(subProgram.size()-1));
-                    joinRule->print();
-                    std::cout<<"Sub rules"<<std::endl;
+                    // joinRule->print();
+                    // std::cout<<"Sub rules"<<std::endl;
                     for(int subRuleId = subProgram.size()-2;subRuleId>=0;subRuleId--){
                         const aspc::Rule* currentSubRule = &subProgram[subRuleId];
-                        currentSubRule->print();
+                        // currentSubRule->print();
                         const aspc::Atom* head =NULL;
                         if(currentSubRule->getBodyLiterals()[0].getPredicateName() == currentlySaving->getPredicateName()){
-                            std::cout << "previouslySaved"<<std::endl;
+                            // std::cout << "previouslySaved"<<std::endl;
                             if(currentSubRule->isConstraint()){
-                                std::cout << "constraint"<<std::endl;
+                                // std::cout << "constraint"<<std::endl;
                                 if(currentSubRule->getBodyLiterals().size() == 2 && currentSubRule->getBodyLiterals()[1].isNegated()){
-                                    currentSubRule->getBodyLiterals()[1].print();std::cout << " nextToSave"<<std::endl;
+                                    // currentSubRule->getBodyLiterals()[1].print();std::cout << " nextToSave"<<std::endl;
                             
                                     head = &currentSubRule->getBodyLiterals()[1].getAtom();
                                 }
@@ -6662,8 +6662,8 @@ unsigned CompilationManager::buildGeneratorForSimpleRule(const aspc::Literal* bo
 unsigned CompilationManager::buildGeneratorForConstraint(aspc::Rule* joinRule,std::string tupleName,std::unordered_set<std::string>sumAggrSetPredicates,unsigned starterIndex,std::unordered_set<std::string> boundVars){
     joinRule->bodyReordering({starterIndex});
     const auto& orderedBody = joinRule->getOrderedBodyByStarter(starterIndex);
-    joinRule->print();
-    std::cout<<"bodyOrdered"<<std::endl;
+    // joinRule->print();
+    // std::cout<<"bodyOrdered"<<std::endl;
     unsigned closingPars =0;
     for(unsigned i=0;i<orderedBody.size();i++){
         if(orderedBody[i]->isBoundedRelation(boundVars)){
@@ -6851,18 +6851,18 @@ unsigned CompilationManager::buildGeneratorForExiteRule(const aspc::Rule& r,std:
         currentlySaving=head;
         closingPars += buildGeneratorForSimpleRule(body,head,"saving"+std::to_string(litId),sumAggrSetPredicates);
     }
-    joinRule->print();
-    std::cout<<"Sub rules"<<std::endl;
+    // joinRule->print();
+    // std::cout<<"Sub rules"<<std::endl;
     for(int subRuleId = subProgram->size()-2;subRuleId>=0;subRuleId--){
         const aspc::Rule* currentSubRule = &subProgram->at(subRuleId);
-        currentSubRule->print();
+        // currentSubRule->print();
         const aspc::Atom* head =NULL;
         if(currentSubRule->getBodyLiterals()[0].getPredicateName() == currentlySaving->getPredicateName()){
-            std::cout << "previouslySaved"<<std::endl;
+            // std::cout << "previouslySaved"<<std::endl;
             if(currentSubRule->isConstraint()){
-                std::cout << "constraint"<<std::endl;
+                // std::cout << "constraint"<<std::endl;
                 if(currentSubRule->getBodyLiterals().size() == 2 && currentSubRule->getBodyLiterals()[1].isNegated()){
-                    currentSubRule->getBodyLiterals()[1].print();std::cout << " nextToSave"<<std::endl;
+                    // currentSubRule->getBodyLiterals()[1].print();std::cout << " nextToSave"<<std::endl;
             
                     head = &currentSubRule->getBodyLiterals()[1].getAtom();
                 }
@@ -6902,7 +6902,7 @@ void CompilationManager::buildGeneratorForNonRecursiveComponent(std::vector<int>
     }
     auto vertex = vertexMap.find(component[0]);
     if(vertex != vertexMap.end()){
-        std::cout << "non recursive " <<vertex->second.name<< std::endl;
+        // std::cout << "non recursive " <<vertex->second.name<< std::endl;
         if(builder->isAuxValPred(vertex->second.name)){
             buildAuxValGenerator(vertex->second.name,builder->getRuleForAuxVal(vertex->second.name),sourceProgram);
         }else if(builder->isDomPredicate(vertex->second.name)){
@@ -6916,11 +6916,11 @@ void CompilationManager::buildGeneratorForNonRecursiveComponent(std::vector<int>
             
         }else{
             int ruleId=0;
-            std::cout << "searching rules for component"<<std::endl;
+            // std::cout << "searching rules for component"<<std::endl;
             for(const aspc::Rule& r : sourceProgram->getRules()){
-                r.print();
+                // r.print();
                 if(!r.isConstraint() && r.getHead()[0].getPredicateName() == vertex->second.name){
-                    std::cout << "Rule found for component"<<std::endl;
+                    // std::cout << "Rule found for component"<<std::endl;
                     *out << ind++ << "{\n"; 
                     unsigned closingPars =1;
 
@@ -7041,7 +7041,7 @@ void CompilationManager::buildGenerator(AspCore2ProgramBuilder* builder){
                 }
             }
         }
-        std::cout << "Generating component "<< componentId<<std::endl;
+        // std::cout << "Generating component "<< componentId<<std::endl;
         if(recursive)
             buildGeneratorForRecursiveComponent(scc[componentId],builder);
         else
