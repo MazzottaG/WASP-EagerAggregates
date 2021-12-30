@@ -107,6 +107,13 @@ std::unordered_map<char,std::string> convertToWordArithmeticOp={
     {'*',"TIMES"},
     {'/',"DIV"}
 };
+unsigned aspc::Aggregate::getFirstVarIndex()const{
+    for(int k =0; k<aggregateLiterals[0].getAriety();k++){
+        if(aggregateLiterals[0].isVariableTermAt(k) && aggregateLiterals[0].getTermAt(k) == aggregateVariables[0])
+            return k;
+    }
+    return 0;
+}
 void aspc::Aggregate::computeJoinTupleName(){
     tupleName="";
     // for(std::string v : aggregateVariables){

@@ -194,6 +194,8 @@ public:
     }
 
     void print() const {
+        if(status == False)
+            std::cout << "not ";
         std::cout << *predicateName << "(";
         for (unsigned i = 0; i < size_; i++) {
             if (i > 0) {

@@ -74,7 +74,7 @@ namespace aspc {
         virtual ~Executor();
         virtual void undefLiteralsReceived()const;
         virtual void executeProgramOnFacts(const std::vector<aspc::Literal*> & facts);
-        virtual void executeProgramOnFacts(const std::vector<int> & facts,std::vector<int>& propagatedLiterals);
+        virtual void executeProgramOnFacts(const std::vector<int> & facts,std::vector<int>& propagatedLiterals,bool fromPropagator=false);
         virtual void onLiteralTrue(const aspc::Literal* l);
         virtual void onLiteralTrue(int var);
         virtual void onLiteralTrue(int var, const std::string&);

@@ -58,6 +58,8 @@
 class AspCore2ProgramBuilder : public DLV2::InputBuilder {
 private:
     aspc::Program program;
+    aspc::Program preProgram;
+    
     aspc::Program original_program;
     bool analyzeDependencyGraph=true;
     std::vector<aspc::Rule> ruleWithoutCompletion;
@@ -114,6 +116,7 @@ private:
     std::unordered_set<std::string> printingPredicate;
     
     std::unordered_map<std::string, std::string> auxPossibleSumToAggrSet;
+    std::unordered_map<std::string, int> auxValToRule;
     std::unordered_map<std::string, std::string> aggrSetToAuxVal;
     std::unordered_set<std::string> domPredicate;
     std::unordered_map<std::string,aspc::Literal> domToBody;
@@ -123,6 +126,10 @@ private:
     std::unordered_map<std::string,std::vector<std::string>> supportPredicates;
     std::unordered_map<std::string,std::vector<aspc::Literal>> predsToHeads;
     std::vector<std::string> sups;
+
+    std::unordered_set<std::string> recursivePredicates;
+    std::unordered_map<int,std::vector<aspc::Rule>> ruleToSubProgram;
+    std::unordered_map<int,std::vector<std::pair<int,std::string>>> aggregateToAggrId;
     void buildExpression();
     bool negatedTerm=false;
 public:
@@ -219,12 +226,15 @@ public:
     virtual void onWeightAtLevels(int nWeight, int nLevel, int nTerm);
     
     aspc::Program & getProgram();
+    aspc::Program & getSourceProgram();
     void analyzeInputProgram();
     void labelComponents(std::unordered_set<unsigned>& labeledComponent,const std::vector<std::vector<int>>& scc);
     void buildGraphNoCompletion();
     void buildConstraintDuplicateHeads();
     bool isPredicateBodyNoCompletion(int)const;
     const aspc::Literal* getSupportingHead(std::string pred);
+    bool isSupPredicateForHead(std::string sup,std::string head);
+    std::vector<std::string> getSupPredicatesForHead(std::string head);
     const  std::map<std::string, unsigned> & getArietyMap();
     bool isInternalPredicateName(std::string predName) {
         unsigned predId = predicateIDs[predName];
@@ -232,6 +242,9 @@ public:
     }
     bool isInternalPredicate(int predId)const {
         return internalPredicatesId.find(predId)!=internalPredicatesId.end();
+    }
+    bool isDomPredicate(std::string predicate){
+        return domPredicate.count(predicate)!=0;
     }
     const unordered_set<std::string> getPrintingPredicates(){return printingPredicate;}
     
@@ -259,8 +272,14 @@ public:
     bool isAuxPredicate(std::string predicate){
         return auxPredicateToBody.count(predicate)!=0;
     }
+    std::string getAssignedAggrSet(std::string auxVal){
+        return auxPossibleSumToAggrSet[auxVal];
+    }
     bool isAuxValPred(std::string predicate){
         return auxPossibleSumToAggrSet.count(predicate)!=0;
+    }
+    int getRuleForAuxVal(std::string predicate){
+        return auxValToRule[predicate];
     }
     bool isBodyPredicate(std::string predicate){
         return bodyPredicates.count(predicate)!=0;
@@ -272,19 +291,23 @@ public:
     bool isAggrSetPredicate(std::string predicate){
         return aggrSetPredicates.count(predicate)!=0;
     }
-    void rewriteRule(bool = false);
+    bool isAggrIdPredicate(std::string predicate){
+        return aggrIdPredicates.count(predicate)!=0;
+    }
+    void rewriteRule(int,bool=false);
 
     void rewriteConstraint(const aspc::Rule& r);
     void rewriteRuleWithAggregate(const aspc::Rule& r);
-    void rewriteRuleWithCompletion(const aspc::Rule& r);
-    std::pair<bool,std::pair<std::string,AggrSetPredicate>> buildAggregateSet(std::unordered_set<std::string> bodyVariables,const aspc::ArithmeticRelationWithAggregate& aggregareRelation,std::string domPred,std::vector<std::string>domTerms);
-    std::pair<bool,std::pair<std::string,AggrSetPredicate>> buildBody(std::unordered_set<std::string> aggregateBodyVariables,const aspc::Rule& r,std::string auxValPred,std::vector<std::string> auxValTerm);
+    void rewriteRuleWithCompletion(const aspc::Rule& r,int);
+    std::pair<bool,std::pair<std::string,AggrSetPredicate>> buildAggregateSet(std::unordered_set<std::string> bodyVariables,const aspc::ArithmeticRelationWithAggregate& aggregareRelation,std::string domPred,std::vector<std::string>domTerms,int ruleId);
+    std::pair<bool,std::pair<std::string,AggrSetPredicate>> buildBody(std::unordered_set<std::string> aggregateBodyVariables,const aspc::Rule& r,std::string auxValPred,std::vector<std::string> auxValTerm,int ruleId);
     std::vector<std::string> writeAggrIdRule(std::pair<bool,std::pair<std::string,AggrSetPredicate>> body,std::pair<bool,std::pair<std::string,AggrSetPredicate>> aggrSet,const aspc::Rule& r);
     void clearData();
     std::vector<aspc::Literal> rewriteAggregate(std::vector<aspc::Literal>& ,const std::unordered_set<string>& ,const aspc::ArithmeticRelationWithAggregate&,bool=false);
     void addManualDependecy();
     aspc::Literal* getAssociatedBodyPred(const std::string& domPred){if(domToBody.count(domPred)==0) return NULL;return &domToBody[domPred];}
     std::vector<std::string> getDomTerms(const std::string& domPred){if(domToTerms.count(domPred)==0) return std::vector<std::string>();return domToTerms[domPred];}
+    const std::unordered_map<int,std::vector<aspc::Rule>>&  getSubPrograms();
 //    const void printSCC(){
 //        std::vector<std::vector<int> > SCC = graphWithTarjanAlgorithm.SCC();
 //        for(int i = 0;i< SCC.size();i++)
@@ -301,13 +324,27 @@ public:
 //        }
 //    }
     void clearAggregateFields();
+    bool isLazyPredicate(std::string pred){
+        return predicateIDsNoCompletion.count(pred)!=0;
+    }
+    GraphWithTarjanAlgorithm& getSourceGraphWithTarjanAlgorithm();
     GraphWithTarjanAlgorithm& getGraphWithTarjanAlgorithm();
     GraphWithTarjanAlgorithm& getGraphWithTarjanAlgorithmNoCompletion(){return graphWithTarjanAlgorithmNoCompletion;}
     void normalizeArithmeticRelationsWithAggregate();
+    const std::unordered_map<int, Vertex>& getSourceVertexByIDMap() const;
     const std::unordered_map<int, Vertex>& getVertexByIDMap() const;
     const std::unordered_map<int, Vertex>& getVertexByIDMapNoCompletion() {return vertexByIDNoCompletion;}
     const std::unordered_map<std::string, int>& getPredicateIDsMap() const;
 
+    void rewritSourceProgram();
+    aspc::ArithmeticRelationWithAggregate buildAggrSetRule(const aspc::Rule&,std::string&);
+    aspc::Literal buildBodyRule(const aspc::Rule&,const aspc::ArithmeticRelationWithAggregate&,std::string&);
+    
+    void onRuleFirstRewriting();
+    void onConstraintFirstRewriting();
+
+    std::vector<std::pair<int,std::string>> getAggrIdForAggregate(int ruleId){return aggregateToAggrId[ruleId];}
+    std::unordered_map<int,std::vector<std::pair<int,std::string>>> getAggregateToAggrID(){return aggregateToAggrId;}
 };
 
 #endif	/* ASPCORE2PROGRAMBUILDER_H */

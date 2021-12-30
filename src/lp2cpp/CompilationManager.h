@@ -105,7 +105,17 @@ private:
     void printAtomVariables(const aspc::Atom* atom,std::string tupleName,string pointer,std::unordered_set<std::string>& boundVariables,unsigned& closingPars);
     bool printGetValues(std::string predicateName,std::vector<unsigned> boundIndices,std::string boundTerms,std::string mapPrefix,std::string name);
     void compileEagerSimpleRule(const aspc::Rule& r,bool fromStarter);
-    
+    void buildGenerator(AspCore2ProgramBuilder* builder);
+    void buildGeneratorForRecursiveComponent(std::vector<int> component,AspCore2ProgramBuilder* builder);
+    void buildGeneratorForNonRecursiveComponent(std::vector<int> component,AspCore2ProgramBuilder* builder);
+    unsigned buildGeneratorForSimpleRule(const aspc::Literal* body,const aspc::Atom* head,std::string tupleName,std::unordered_set<std::string> sumAggrSetPredicates,bool asTrue=false);
+    unsigned buildGeneratorForConstraint(aspc::Rule* joinRule,std::string tupleName,std::unordered_set<std::string>sumAggrSetPredicates,unsigned starterIndex,std::unordered_set<std::string> boundVars);
+    unsigned buildLiteralSaving(const aspc::Atom* head,std::string tupleName,bool asTrue=false);
+    void buildAuxValGenerator(std::string predicate,int ruleId,const aspc::Program* sourceProgram);
+    void buildGeneratorActualAndPossibleSum(AspCore2ProgramBuilder* builder);
+    void findExitRuleForComponent(std::vector<int> component,AspCore2ProgramBuilder* builder, std::vector<int>& exitRules, std::vector<int>& rules,unordered_set<std::string>& stackPredicates);
+    unsigned buildGeneratorForExiteRule(const aspc::Rule& r,std::unordered_map<int, std::vector<aspc::Rule>>ruleToSubProgram,int ruleId,std::unordered_set<std::string> sumAggrSetPredicates,bool collect=false);
+    unsigned printStarter(const aspc::Literal* body,std::unordered_set<std::string>& boundTerms);
     std::ostream* out;
     
     std::set<std::string> bodyPredicates;
