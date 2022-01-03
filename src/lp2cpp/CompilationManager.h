@@ -116,6 +116,7 @@ private:
     void findExitRuleForComponent(std::vector<int> component,AspCore2ProgramBuilder* builder, std::vector<int>& exitRules, std::vector<int>& rules,unordered_set<std::string>& stackPredicates);
     unsigned buildGeneratorForExiteRule(const aspc::Rule& r,std::unordered_map<int, std::vector<aspc::Rule>>ruleToSubProgram,int ruleId,std::unordered_set<std::string> sumAggrSetPredicates,bool collect=false);
     unsigned printStarter(const aspc::Literal* body,std::unordered_set<std::string>& boundTerms);
+    void buildAggrSetOrdering(const AspCore2ProgramBuilder* builder);
     std::ostream* out;
     
     std::set<std::string> bodyPredicates;

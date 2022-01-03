@@ -2128,13 +2128,16 @@ void AspCore2ProgramBuilder::rewritSourceProgram(){
                 terms = bodyLit->getTerms();
                 buildingBody.push_back(*bodyLit);
             }
+            bool notEqualCase =aggregate.isNegated(); 
                 
             if(aggregate.getComparisonType() == aspc::EQ){
                 aggregate.setCompareType(aspc::GTE);
                 aspc::ArithmeticRelationWithAggregate aggregate2(aggregate);
 
-                if(aggregate.isNegated()){
-                    //TODO
+                if(notEqualCase){
+                    aggregate.setNegated(false);
+                    aggregate.setPlusOne(true);
+                    aggregate2.setNegated(true);
                 }else{
                     
                     aggregate2.setNegated(true);
@@ -2169,18 +2172,39 @@ void AspCore2ProgramBuilder::rewritSourceProgram(){
             if(auxValPred!="")
                 auxValToRule[auxValPred]=preProgram.getRules().size()-1;
                 
-            if(bodyLit->getPredicateName()!=""){
-                buildingBody.push_back(*bodyLit);
-            }
-            for(auto pair : aggrIds){
-                buildingBody.push_back(aspc::Literal(pair.second,aspc::Atom(pair.first,terms)));
-            }
-            if(!r.isConstraint()){
-                buildingHead.push_back(r.getHead()[0]);
-                onRuleFirstRewriting();
+            
+            if(notEqualCase){
+                
+                for(auto pair : aggrIds){
+                    if(bodyLit->getPredicateName()!=""){
+                        buildingBody.push_back(*bodyLit);
+                    }
+                    buildingBody.push_back(aspc::Literal(pair.second,aspc::Atom(pair.first,terms)));
+                    if(!r.isConstraint()){
+                        //TODO: Handle rules with not equal
+                        std::cout<<"rule with not equal not supported yet"<<std::endl;
+                        // buildingHead.push_back(r.getHead()[0]);
+                        // onRuleFirstRewriting();
+                    }else{
+                        onConstraintFirstRewriting();
+                    }
+                }
+                
             }else{
-                onConstraintFirstRewriting();
+                if(bodyLit->getPredicateName()!=""){
+                    buildingBody.push_back(*bodyLit);
+                }
+                for(auto pair : aggrIds){
+                    buildingBody.push_back(aspc::Literal(pair.second,aspc::Atom(pair.first,terms)));
+                }
+                if(!r.isConstraint()){
+                    buildingHead.push_back(r.getHead()[0]);
+                    onRuleFirstRewriting();
+                }else{
+                    onConstraintFirstRewriting();
+                }
             }
+            
             if(bodyLit!=NULL){
                 delete bodyLit;
             }
