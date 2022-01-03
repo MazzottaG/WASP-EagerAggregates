@@ -697,9 +697,11 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "int currentDecisionLevel=-1;\n";
         *out << ind << "bool undefinedLoaded=false;\n";
     }
-
-    *out << ind << "tsl::hopscotch_map<int,int> actualSum;\n";
-    *out << ind << "tsl::hopscotch_map<int,int> possibleSum;\n";
+    *out << ind << "std::unordered_map<int,int> actualSum;\n";
+    *out << ind << "std::unordered_map<int,int> possibleSum;\n";
+    
+    // *out << ind << "tsl::hopscotch_map<int,int> actualSum;\n";
+    // *out << ind << "tsl::hopscotch_map<int,int> possibleSum;\n";
     *out << ind << "bool unRoll=false;\n";
     *out << ind << "unsigned conflictCount=0;\n";
 
@@ -2116,22 +2118,22 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         #endif
         *out << ind << "undefinedLoaded=true;\n";
         buildGenerator(builder);
-        *out << ind << "std::cout<<possibleSum[uaggr_id0_.getValuesVec({})[0]]<<std::endl;\n";
+        // *out << ind << "std::cout<<possibleSum[uaggr_id0_.getValuesVec({})[0]]<<std::endl;\n";
 
-        *out << ind << "std::cout<<possibleSum.size()<<std::endl;\n";
-       	*out << ind << "std::cout<<actualSum.size()<<std::endl;\n";
+        // *out << ind << "std::cout<<possibleSum.size()<<std::endl;\n";
+       	// *out << ind << "std::cout<<actualSum.size()<<std::endl;\n";
        	
-        *out << ind << "std::cout<<pauxVal0_.getValuesVec({}).size()<<std::endl;\n";
-       	*out << ind << "std::cout<<uaggr_set0_.getValuesSet({}).size()<<std::endl;\n";
-       	*out << ind << "std::cout<<uaggr_id0_.getValuesVec({}).size()<<std::endl;\n";
-       	*out << ind << "std::cout<<uaggr_id1_.getValuesVec({}).size()<<std::endl;\n";
-       	*out << ind << "std::cout<<ucosts_.getValuesVec({}).size()<<std::endl;\n";
+        // *out << ind << "std::cout<<pauxVal0_.getValuesVec({}).size()<<std::endl;\n";
+       	// *out << ind << "std::cout<<uaggr_set0_.getValuesSet({}).size()<<std::endl;\n";
+       	// *out << ind << "std::cout<<uaggr_id0_.getValuesVec({}).size()<<std::endl;\n";
+       	// *out << ind << "std::cout<<uaggr_id1_.getValuesVec({}).size()<<std::endl;\n";
+       	// *out << ind << "std::cout<<ucosts_.getValuesVec({}).size()<<std::endl;\n";
         
-        *out << ind << "std::cout<<uauxVal0_.getValuesVec({}).size()<<std::endl;\n";
-       	*out << ind << "std::cout<<paggr_set0_.getValuesSet({}).size()<<std::endl;\n";
-       	*out << ind << "std::cout<<paggr_id0_.getValuesVec({}).size()<<std::endl;\n";
-       	*out << ind << "std::cout<<paggr_id1_.getValuesVec({}).size()<<std::endl;\n";
-       	*out << ind << "std::cout<<pcosts_.getValuesVec({}).size()<<std::endl;\n";
+        // *out << ind << "std::cout<<uauxVal0_.getValuesVec({}).size()<<std::endl;\n";
+       	// *out << ind << "std::cout<<paggr_set0_.getValuesSet({}).size()<<std::endl;\n";
+       	// *out << ind << "std::cout<<paggr_id0_.getValuesVec({}).size()<<std::endl;\n";
+       	// *out << ind << "std::cout<<paggr_id1_.getValuesVec({}).size()<<std::endl;\n";
+       	// *out << ind << "std::cout<<pcosts_.getValuesVec({}).size()<<std::endl;\n";
 
         // *out << ind << "exit(180);\n";
         // std::unordered_map<std::string,std::string> aggrSetToAuxVal(builder->getAggrSetToAuxVal());
@@ -4795,6 +4797,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
         *out << --ind << "}//close decision level == -1\n";
         // std::cout<<"Gen -1"<<std::endl;
+        // *out << ind << "std::cout<<\"PossibleSumMap size: \"<<possibleSum.size()<<std::endl;\n";
+        // *out << ind << "std::cout<<\"ActualSumMap size: \"<<actualSum.size()<<std::endl;\n";
+
         *out << ind << "std::vector<int> propagated;\n";
         *out << ind++ << "while(!propagationStack.empty()){\n";
             *out << ind << "int startVar = propagationStack.back();\n";
@@ -4802,7 +4807,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind << "int uStartVar = startVar<0 ? -startVar : startVar;\n";
             *out << ind << "Tuple starter (*factory.getTupleFromInternalID(uStartVar));\n";
             *out << ind << "std::string minus = startVar < 0 ? \"not \" : \"\";\n";
-            *out << ind << "std::cout<<\"Starter \"<<minus;starter.print();\n";
+            // *out << ind << "std::cout<<\"Starter \"<<minus;starter.print();\n";
             // *out << ind << "starter.setNegated(startVar<0);\n";
             #ifdef TRACE_PROPAGATOR
             *out << ind << "std::cout<<\"Starter \"<<minus;starter.print();\n";
@@ -6095,6 +6100,8 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                 }
             }
             *out << --ind << "}//close true for\n";
+            // *out << ind << "std::cout << \"exit true for loop\"<<std::endl;\n";
+
             //OPTIMIZATION Add if !starter.isNegated
 
             // *out << ind << "std::cout<<\"Prop for false head\"<<std::endl;\n";
@@ -6102,6 +6109,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
             {
                 unsigned pars=0;
                 *out << ind << "const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesF->at(i));\n";
+                
                 std::unordered_set<std::string> boundVariables;
                 for(unsigned i = 0; i<aggrIdAtom->getAriety(); i++){
                     std::string term = aggrIdAtom->isVariableTermAt(i) || isInteger(aggrIdAtom->getTermAt(i)) ? aggrIdAtom->getTermAt(i) : "ConstantsManager::getInstance().mapConstant(\""+aggrIdAtom->getTermAt(i)+"\")"; 
@@ -6141,8 +6149,9 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                     *out << ind++ << "if(actSum >= "<<guard<<"){\n";
                 }else
                     *out << ind++ << "if(joinTuples->size() >= "<<guard<<"){\n";
-                    //*out << ind << "std::cout<<\"Conflitct on aggregate starting from false aggr id "<<r.getRuleId()<<"\"<<actualSum[aggrIdIt]<<std::endl;\n";
+                    // *out << ind << "std::cout<<\"Conflitct on aggregate starting from false aggr id "<<r.getRuleId()<<"\"<<actualSum[aggrIdIt]<<std::endl;\n";
                     if(fromStarter){
+
                         *out << ind << "int itProp = tuplesF->at(i);\n";
                         if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
                             *out << ind++ << "for(auto j =joinTuples->begin(); j != joinTuples->end(); j++){\n";
@@ -6166,14 +6175,16 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                 else
                     *out << -- ind << "}else if(joinTuples->size() == "<<guard<<" -1){\n";
                 ind++;
-                    //*out << ind << "std::cout << \"aggr propagation\"<<std::endl;\n";
+                    // *out << ind << "std::cout << \"aggr propagation\"<<std::endl;\n";
                     if(builder->isAggrSetPredicate(aggrSetPred->getPredicateName())){
                         if(aggregateRelation->getAggregate().isSum()){
                             *out << ind++ << "while(!joinTuplesU->empty()){\n";
                                 *out << ind << "int itProp = *joinTuplesU->begin();\n";
                                 *out << ind << "const Tuple* currentJoinTuple = factory.getTupleFromInternalID(itProp);\n";
                                 // *out << ind++ << "if(actSum+currentJoinTuple->at(0) >= "<<guard<<"){\n";
+                                *out << ind << "if(currentJoinTuple==NULL)std::cout<<\"NULL tuple to prop\"<<std::endl; else std::cout<<\"check tuple to prop\"<<std::endl;\n";
                                 *out << ind << "if(actSum < "<<guard<<"-currentJoinTuple->at(0))break;\n";
+
 
                         }else{
                             *out << ind++ << "while(!joinTuplesU->empty()){\n";
@@ -6206,9 +6217,11 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                         *out << --ind << "}\n";
                     }else{
                         if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
+
                             *out << ind++ << "for(auto index=joinTuplesU->begin(); index != joinTuplesU->end(); index++){\n";
                                 *out << ind << "const Tuple* currentJoinTuple = factory.getTupleFromInternalID(*index);\n";
-                                *out << ind << "int itProp = *index;\n";
+                                // *out << ind << "std::cout << \"aggr propagation first\"<<std::endl;\n";
+                            *out << ind << "int itProp = *index;\n";
                         }else{
                             *out << ind++ << "for(unsigned index=0; index<joinTuplesU->size(); index++){\n";
                                 *out << ind << "const Tuple* currentJoinTuple = factory.getTupleFromInternalID(joinTuplesU->at(index));\n";
@@ -6228,7 +6241,8 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                             *out << ind++ << "if(actSum < "<<guard<<"-currentJoinTuple->at("<<varIndex<<"))break;\n";
                         }
                             // *out << ind++ << "if(reasonForLiteral.count(-itProp) == 0 || reasonForLiteral[-itProp].get()==NULL || reasonForLiteral[-itProp].get()->empty()){\n";
-
+                            // *out << ind << "std::cout << \"aggr propagation\"<<std::endl;\n";
+                            
                             *out << ind++ << "if(shared_reason.get()->empty()){\n";
                             if(predicateToOrderdedAux.count(aggrSetPred->getPredicateName())!=0){
                                 *out << ind++ << "for(auto i = joinTuples->begin(); i != joinTuples->end(); i++){\n";
@@ -6261,6 +6275,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
             }
             *out << --ind << "}//close false for\n";
 
+            // *out << ind << "std::cout << \"exit false for loop\"<<std::endl;\n";
             *out << ind++ << "for(unsigned i = 0; i<tuplesU->size();){\n";
             {
                 unsigned pars=0;
@@ -6361,6 +6376,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
                 }
             }
             *out << --ind << "}//close undef for\n";
+            // *out << ind << "std::cout << \"exit aggr set if\"<<std::endl;\n";
         *out << --ind << "}//close aggr set starter\n";
     }
 }
@@ -6996,6 +7012,7 @@ void CompilationManager::buildGeneratorActualAndPossibleSum(AspCore2ProgramBuild
                 *out << ind << "auto itTrue = aggrSet->begin();\n";
                 *out << ind << "auto itUndef = aggrSetU->begin();\n";
                 // *out << ind << "std::cout<<\"update sums for aggrid \";aggr_id->print();\n";
+                *out << ind << "int& sum = possibleSum[aggr_id->getId()];\n";
                 *out << ind++ << "while(itTrue!=aggrSet->end() || itUndef != aggrSetU->end()){\n";
                 closingPars++;
                     *out << ind << "Tuple* tuple = NULL;\n";
@@ -7014,8 +7031,10 @@ void CompilationManager::buildGeneratorActualAndPossibleSum(AspCore2ProgramBuild
                             boundVars.insert(term);
                         }
                     }
-                    *out << ind << "int& sum = undefTuple ? possibleSum[aggr_id->getId()] : actualSum[aggr_id->getId()];\n";
                     *out << ind << "sum+="<<aggr->getAggregateVariables()[0]<<";\n";
+                    // *out << ind << "else actualSum[aggr_id->getId()]+="<<aggr->getAggregateVariables()[0]<<";\n";
+                    // *out << ind << "int& sum = undefTuple ? possibleSum[aggr_id->getId()] : actualSum[aggr_id->getId()];\n";
+                    // *out << ind << "sum+="<<aggr->getAggregateVariables()[0]<<";\n";
                 while (closingPars>0){
                     closingPars--;
                     *out << --ind << "}\n";
@@ -7097,6 +7116,7 @@ void CompilationManager::buildGenerator(AspCore2ProgramBuilder* builder){
     // std::cout << "Printing Sum Generation" << std::endl;
     buildAggrSetOrdering(builder);
     *out << ind << "std::cout << \"actual and possible sums\"<<std::endl;\n";
+    *out << ind << "std::cout << \"Factory size: \";factory.printSize();\n";
     buildGeneratorActualAndPossibleSum(builder);
     *out << ind << "std::cout << \"end\"<<std::endl;\n";
     #ifdef TRACE_PROPAGATOR
