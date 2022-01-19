@@ -110,7 +110,9 @@ long solv_time_e = 0;
 high_resolution_clock::time_point t1_e;
 high_resolution_clock::time_point t2_e = high_resolution_clock::now();
 #endif
-
+void EagerConstraintImpl::endPropagation(std::vector<int>& literalToPropagate){
+    executionManager.checkUnfoundedSet(literalToPropagate);
+}
 void EagerConstraintImpl::onAnswerSet(const std::vector<int>& answerSet){
 
     // std::unordered_map<int,string> watchedLiterals;

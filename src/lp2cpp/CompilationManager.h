@@ -117,6 +117,7 @@ private:
     unsigned buildGeneratorForExiteRule(const aspc::Rule& r,std::unordered_map<int, std::vector<aspc::Rule>>ruleToSubProgram,int ruleId,std::unordered_set<std::string> sumAggrSetPredicates,bool collect=false);
     unsigned printStarter(const aspc::Literal* body,std::unordered_set<std::string>& boundTerms);
     void buildAggrSetOrdering(const AspCore2ProgramBuilder* builder);
+    void buildUnfoundedInit(const std::vector<int>&,int, AspCore2ProgramBuilder*);
     std::ostream* out;
     
     std::set<std::string> bodyPredicates;

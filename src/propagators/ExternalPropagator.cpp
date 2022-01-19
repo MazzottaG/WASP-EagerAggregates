@@ -564,7 +564,6 @@ ExternalPropagator::endUnitPropagation(
     }    
     interpreter->callListMethod( method_plugins_onLitsTrue, input, output );
     trueLiterals.clear();
-    std::cout<<"endUnitPropagation"<<std::endl;
     computeReason( solver, output );  
 }
 
@@ -575,7 +574,6 @@ ExternalPropagator::endPropagation(
     assert( check_endPropagation && check_onLitTrue && !check_onLitsTrue );
     vector< int > output;
     interpreter->callListMethod( method_plugins_endPropagation, solver.getCurrentDecisionLevel(), output );
-    std::cout << "endPropagation"<<std::endl;
     computeReason( solver, output );
 }
 
@@ -642,6 +640,7 @@ ExternalPropagator::handleConflict(
         if( solver.glucoseHeuristic() )
             clause->setLbd( solver.computeLBD( *clause ) );
         assert( !solver.isUndefined( clause->getAt( 1 ) ) );
+        
         if( solver.getDecisionLevel( clause->getAt( 1 ) ) < solver.getCurrentDecisionLevel() )
         {
             solver.unroll( solver.getDecisionLevel( clause->getAt( 1 ) ) );

@@ -90,6 +90,7 @@ namespace aspc {
         virtual void handleConflict(int,std::vector<int>&);
         virtual void unRollToLevel(int);
         virtual void printInternalLiterals();
+        virtual void checkUnfoundedSets(std::vector<int>&,Executor*);
         virtual void setMinConflict(unsigned minConflict){Executor::minConflict=minConflict;}
         virtual void setMinHeapSize(unsigned minHeapSize){Executor::minHeapSize=minHeapSize;}
         virtual void setMaxHeapSize(unsigned maxHeapSize){Executor::maxHeapSize=maxHeapSize;}

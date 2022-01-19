@@ -740,6 +740,7 @@ void AspCore2ProgramBuilder::rewriteRule(int ruleIndex,bool addDomBody){
                 buildingBody.clear();
                 buildingBody.push_back(aspc::Literal(false,aspc::Atom(supPredicate,terms)));
                 buildingBody.push_back(aspc::Literal(true,originalHead));
+                predicateToSupportingRule[originalHead.getPredicateName()].push_back(original_program.getRules().size());                
                 onConstraint();
                 ruleToSubProgram[ruleIndex].push_back(original_program.getRules().back());
 
@@ -748,6 +749,7 @@ void AspCore2ProgramBuilder::rewriteRule(int ruleIndex,bool addDomBody){
                 buildingBody.push_back(originalBody);
                 buildingHead.push_back(aspc::Atom(supPredicate,terms));
             }
+            predicateToSupportingRule[buildingHead[0].getPredicateName()].push_back(original_program.getRules().size());                
             onRule();
             ruleToSubProgram[ruleIndex].push_back(original_program.getRules().back());
 
@@ -851,6 +853,7 @@ void AspCore2ProgramBuilder::rewriteRule(int ruleIndex,bool addDomBody){
             buildingBody.clear();
             buildingBody.push_back(aspc::Literal(false,aspc::Atom(supPredicate,terms)));
             buildingBody.push_back(aspc::Literal(true,originalHead));
+            predicateToSupportingRule[originalHead.getPredicateName()].push_back(original_program.getRules().size());
             onConstraint();
             ruleToSubProgram[ruleIndex].push_back(original_program.getRules().back());
 
@@ -860,6 +863,7 @@ void AspCore2ProgramBuilder::rewriteRule(int ruleIndex,bool addDomBody){
             buildingHead.push_back(aspc::Atom(supPredicate,terms));
         }
         //head:-aux
+        predicateToSupportingRule[buildingHead[0].getPredicateName()].push_back(original_program.getRules().size());
         onRule();
         ruleToSubProgram[ruleIndex].push_back(original_program.getRules().back());
 
@@ -1598,9 +1602,9 @@ std::vector<std::string> AspCore2ProgramBuilder::writeAggrIdRule(std::pair<bool,
 }
 void AspCore2ProgramBuilder::rewriteRuleWithCompletion(const aspc::Rule& r,int ruleId){
     // std::cout << "rewriting ";r.print();
-    if(!r.isConstraint()){
-        printingPredicate.insert(r.getHead()[0].getPredicateName());
-    }
+    // if(!r.isConstraint()){
+    //     printingPredicate.insert(r.getHead()[0].getPredicateName());
+    // }
     for(const aspc::Literal& l:r.getBodyLiterals()){
         buildingBody.push_back(aspc::Literal(l));
     }
@@ -2110,6 +2114,9 @@ aspc::Literal AspCore2ProgramBuilder::buildBodyRule(const aspc::Rule& r,const as
 }
 void AspCore2ProgramBuilder::rewritSourceProgram(){
     for(const aspc::Rule& r : program.getRules()){
+        if(!r.isConstraint()){
+            printingPredicate.insert(r.getHead()[0].getPredicateName());
+        }
         if(r.containsAggregate()){
             #ifdef TRACE_PROPAGATOR
             std::cout<<"Rewriting rule with aggregate ";r.print();
@@ -2337,6 +2344,9 @@ GraphWithTarjanAlgorithm& AspCore2ProgramBuilder::getGraphWithTarjanAlgorithm() 
 }
 const unordered_map<int, Vertex>& AspCore2ProgramBuilder::getSourceVertexByIDMap() const {
     return vertexByID;
+}
+const unordered_map<string, int>& AspCore2ProgramBuilder::getSourcePredicateIDsMap() const {
+    return predicateIDs;
 }
 
 const unordered_map<int, Vertex>& AspCore2ProgramBuilder::getVertexByIDMap() const {

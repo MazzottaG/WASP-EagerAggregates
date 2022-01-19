@@ -127,6 +127,8 @@ private:
     std::unordered_map<std::string,std::vector<aspc::Literal>> predsToHeads;
     std::vector<std::string> sups;
 
+    std::unordered_map<std::string,std::vector<unsigned>> predicateToSupportingRule;
+
     std::unordered_set<std::string> recursivePredicates;
     std::unordered_map<int,std::vector<aspc::Rule>> ruleToSubProgram;
     std::unordered_map<int,std::vector<std::pair<int,std::string>>> aggregateToAggrId;
@@ -335,6 +337,7 @@ public:
     const std::unordered_map<int, Vertex>& getVertexByIDMap() const;
     const std::unordered_map<int, Vertex>& getVertexByIDMapNoCompletion() {return vertexByIDNoCompletion;}
     const std::unordered_map<std::string, int>& getPredicateIDsMap() const;
+    const std::unordered_map<std::string, int>& getSourcePredicateIDsMap() const;
 
     void rewritSourceProgram();
     aspc::ArithmeticRelationWithAggregate buildAggrSetRule(const aspc::Rule&,std::string&);
@@ -345,6 +348,28 @@ public:
 
     std::vector<std::pair<int,std::string>> getAggrIdForAggregate(int ruleId){return aggregateToAggrId[ruleId];}
     std::unordered_map<int,std::vector<std::pair<int,std::string>>> getAggregateToAggrID(){return aggregateToAggrId;}
+
+    unordered_set<std::string> getSumPredicates(){
+        std::unordered_set<std::string> preds;
+        for(const aspc::Rule& r: preProgram.getRules()){
+            if(!r.isConstraint() && r.containsAggregate()){
+                preds.insert(r.getArithmeticRelationsWithAggregate()[0].getAggregate().getAggregateLiterals()[0].getPredicateName());
+            }
+        }
+        return preds;
+    }
+
+    std::vector<std::string> getSupportPredicateForHead(std::string pred){
+        return supportPredicates[pred];
+    }
+
+    std::vector<std::string> getAuxPredicates() const{
+        std::vector<std::string> auxPreds;
+        for(const auto& pair : auxPredicateToBody){
+            auxPreds.push_back(pair.first);
+        }
+        return auxPreds;
+    }
 };
 
 #endif	/* ASPCORE2PROGRAMBUILDER_H */

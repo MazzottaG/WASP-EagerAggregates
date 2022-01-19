@@ -369,6 +369,16 @@ Solver::solvePropagators(
         goto propagationLabel;
     if( !postPropagators.empty() )
         goto postPropagationLabel;    
+    #if defined(ENABLE_PYTHON) || defined(ENABLE_PERL) || defined(ENABLE_CPP_EAGER)
+    for( unsigned int i = 0; i < propagatorsAttachedToEndPropagation.size(); i++ )
+    {
+        propagatorsAttachedToEndPropagation[ i ]->endPropagation( *this );
+        if( conflictDetected() )
+            goto conflict;
+        else if( hasNextVariableToPropagate() )
+            goto propagationLabel;
+    }
+    #endif
     
     while( hasUndefinedLiterals() )
     {        
@@ -493,11 +503,11 @@ Solver::solvePropagators(
                     goto propagationLabel;
             }
         }                
-        
-        #if defined(ENABLE_PYTHON) || defined(ENABLE_PERL) || defined(ENABLE_CPP)
+        #if defined(ENABLE_PYTHON) || defined(ENABLE_PERL) || defined(ENABLE_CPP_EAGER)
         for( unsigned int i = 0; i < propagatorsAttachedToEndPropagation.size(); i++ )
         {
             propagatorsAttachedToEndPropagation[ i ]->endPropagation( *this );
+            stopPropagation=false;
             if( conflictDetected() )
                 goto conflict;
             else if( hasNextVariableToPropagate() )

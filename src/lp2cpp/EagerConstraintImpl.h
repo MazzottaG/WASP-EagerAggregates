@@ -52,6 +52,7 @@ public:
     virtual void addedVarName(int var, const std::string & atomString);
     virtual void onFact(int var);
     virtual void onAnswerSet(const std::vector<int>& answerSet);
+    virtual void endPropagation(std::vector<int>&);
     virtual void simplifyAtLevelZero(std::vector<int> & output);
     virtual const std::vector<unsigned int> & getVariablesToFreeze();
     virtual const std::vector<int> & getWatchedLiterals();
