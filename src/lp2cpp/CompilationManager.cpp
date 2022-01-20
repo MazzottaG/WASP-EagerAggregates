@@ -3691,9 +3691,10 @@ unsigned CompilationManager::exploreLiteral(const aspc::Literal* lit,std::unorde
             ind++;
                 std::string conditions="";
                 for(unsigned k: boundIndices){
-                    if(conditions!="")
+                    std::string term = lit->isVariableTermAt(k) || isInteger(lit->getTermAt(k)) ? lit->getTermAt(k) : "ConstantsManager::getInstance().mapConstant(\""+lit->getTermAt(k)+"\")";
+                    if(conditions!="")    
                         conditions+=" && ";
-                    conditions+="tupleU->at("+std::to_string(k)+") == "+lit->getTermAt(k);
+                    conditions+="tupleU->at("+std::to_string(k)+") == "+term;
                 }
                 if(conditions!="")
                     *out << ind++ << "if("<<conditions<<")\n";
@@ -5446,9 +5447,10 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
             printAtomVariables(&body->getAtom(),"starter",".",boundVariables,closingPars);
             *out << ind << "Tuple* head = factory.find({";
             for(unsigned k=0; k<head->getAriety(); k++){
+                std::string term = head->isVariableTermAt(k) || isInteger(head->getTermAt(k)) ? head->getTermAt(k) : "ConstantsManager::getInstance().mapConstant(\""+head->getTermAt(k)+"\")";
                 if(k>0)
                     *out << ",";
-                *out << head->getTermAt(k);
+                *out << term;
             }
             *out << "}, &_"<<head->getPredicateName()<<");\n";
             *out << ind << "std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();\n";
@@ -5666,9 +5668,10 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
             if(body->isBoundedLiteral(boundVariables)){
                 *out << ind << "Tuple* currentBody = factory.find({";
                 for(unsigned k=0; k<body->getAriety(); k++){
+                    std::string term = body->isVariableTermAt(k) || isInteger(body->getTermAt(k)) ? body->getTermAt(k) : "ConstantsManager::getInstance().mapConstant(\""+body->getTermAt(k)+"\")";
                     if(k>0)
                         *out << ",";
-                    *out << body->getTermAt(k);
+                    *out << term;
                 }
                 *out << "}, &_"<<body->getPredicateName()<<");\n";
                 *out << ind++ << "if(startVar > 0){\n";

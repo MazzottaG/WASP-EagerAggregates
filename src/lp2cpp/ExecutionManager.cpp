@@ -201,7 +201,7 @@ void ExecutionManager::compileDynamicLibrary(const string & executablePath, bool
 
     if (fileHasChanged || !fileManagement.exists(executorFile)) {
         string command = "cd " + executablePath + " && make -f DynamicLibraryMake -s";
-        // cout<<command<<endl;
+        cout<<command<<endl;
         int commandReturn = system(command.c_str());
         if (commandReturn) {
             throw std::runtime_error("Failed to execute command " + command);
