@@ -1074,12 +1074,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         #ifdef TRACE_PROPAGATOR
         *out << ind << "std::cout<<\"Conflict Reason\"<<std::endl;\n";
         *out << ind++ << "for(unsigned i =0; i<conflictReason.size();i++){\n";
-            *out << ind << "Tuple var = conflictReason[i] > 0 ?atomsTable[conflictReason[i]] : atomsTable[-conflictReason[i]];\n";
-            *out << ind++ << "if(conflictReason[i]<0)\n";
-                 *out << ind-- << "std::cout<<\"~\";\n";
-            *out << ind << "var.print();\n";
-             *out << ind << "std::cout<<std::endl;\n";
+            *out << ind << "Tuple* var = conflictReason[i] > 0 ? factory.getTupleFromWASPID(conflictReason[i]) : factory.getTupleFromWASPID(-conflictReason[i]);\n";
+            *out << ind << "std::cout << conflictReason[i] << \" \" << var->toString() << \" \";\n";
         *out << --ind << "}\n";
+        *out << ind << "std::cout<<std::endl;\n";
         *out << ind << "std::cout<<\"Conflict Handled\"<<std::endl;\n";
         #endif
     *out << --ind << "}\n";
@@ -1262,7 +1260,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         #ifdef TRACE_PROPAGATOR
         *out << ind << "std::cout<<\"True \" << minus << tuple->toString()<<std::endl;\n";
         #endif
-        *out << ind << "if(var<0) falseLits.push_back(var);\n";
+        *out << ind << "if(var<0) falseLits.push_back(-tuple->getId());\n";
         *out << ind << "std::unordered_map<const std::string*,int>::iterator sum_it;\n";
         *out << ind << "TruthStatus truth = var>0 ? True : False;\n";
         *out << ind << "const auto& insertResult = tuple->setStatus(truth);\n";
@@ -1363,6 +1361,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind-- << "std::cout<<\"Unable to find tuple \"<<var<<std::endl;\n";
         *out << ind++ << "else\n";
             *out << ind-- << "std::cout<<\"Undef \" <<var << \" \" << minus << tuple->toString()<<std::endl;\n";
+        #endif
+        #ifdef TRACE_ON
+
+            *out << ind << "if(!undefinedLoaded) tuple->print();\n";
         #endif
 
 #ifdef EAGER_DEBUG
@@ -1756,7 +1758,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 #ifdef TRACE_PROPAGATOR
                     *out << ind << "std::cout<<\"UnfoundedPropagatorForComponent"<<componentId<<"\"<<std::endl;\n";
                     *out << ind << "std::cout<<\"   Unfounded Set\"<<std::endl;\n";
-                    *out << ind << "for(int id : unfoundedSetForComponent"<<componentId<<"){std::cout<\"        \";factory.getTupleFromInternalID(id)->print();}\n";
+                    *out << ind << "for(int id : unfoundedSetForComponent"<<componentId<<"){std::cout<<\"        \";factory.getTupleFromInternalID(id)->print();}\n";
                     *out << ind << "std::cout<<\"   Computing Source Pointers\"<<std::endl;\n";
                     
                 #endif
@@ -2102,8 +2104,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 *out << ind << "else{\n";
                     *out << ind << "std::cout << \"   False Lits at current decision level\"<<std::endl;\n";
                     *out << ind++ << "for(int i=0;i<falseLits.size();i++){\n";
-                        *out << ind << "const Tuple* tuple = factory.getTupleFromInternalID(-falseLits[i]);\n";
-                        *out << ind << "std::cout << \"     ~\"<<tuple->toString()<<std::endl;\n";
+                        *out << ind << "Tuple* tuple = factory.getTupleFromInternalID(-falseLits[i]);\n";
+                        *out << ind << "if(tuple == NULL) std::cout << -falseLits[i]<<std::endl;\n";
+                        *out << ind << "std::cout << -falseLits[i] << \"     ~\"<<tuple->toString()<<std::endl;\n";
                     *out << --ind << "}\n";
                 *out << --ind << "}\n";
             #endif
@@ -6456,7 +6459,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                 }
             }
             #ifdef TRACE_PROPAGATOR
-                *out << ind << "std::cout<<\"Evaluate propagation\"<<std::endl;\n";
+                *out << ind << "std::cout<<\"Evaluate propagation "<<r.getRuleId()<<"\"<<std::endl;\n";
             #endif
             *out << ind++ << "if(tupleU != NULL){\n";
                 if(fromStarter){
@@ -6466,7 +6469,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                     #ifdef TRACE_PROPAGATOR
                         *out << ind << "std::cout<<\"compute reason for \"<<var<<std::endl;\n";
                         *out << ind << "if(reasonForLiteral.count(var) != 0) if(reasonForLiteral[var].get() == NULL)std::cout<<\"InMap But NULL\"<<std::endl; else std::cout<<\"InMap not null\"<<std::endl;\n";
-                        *out << ind << "if(reasonForLiteral[var].get() == NULL) std::cout<<\"NewReason\"<<std::endl;\n";
+                        *out << ind << "if(reasonForLiteral.count(var) == 0) std::cout<<\"NewReason\"<<std::endl;\n";
                     #endif
                     *out << ind << "std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();\n";
 
@@ -6490,7 +6493,11 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                                 *out << --ind << "}\n";
                             }
                         }
+                        
                         *out << ind << "auto itReason = reasonForLiteral.emplace(var,shared_reason);\n";
+                        #ifdef TRACE_PROPAGATOR
+                            *out << ind << "std::cout<<\"Saving reason of \"<<var<<std::endl;\n";
+                        #endif
                         *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                             *out << ind-- << "itReason.first->second=shared_reason;\n";
                         // *out << ind << "reasonForLiteral[var]=shared_reason;\n";
