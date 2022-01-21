@@ -512,7 +512,7 @@ inline void Executor::onLiteralTrue(int var) {
     unsigned uVar = var > 0 ? var : -var;
     Tuple* tuple = factory.getTupleFromWASPID(uVar);
     std::string minus = var < 0 ? "-" : "";
-    if(var<0) falseLits.push_back(var);
+    if(var<0) falseLits.push_back(-tuple->getId());
     std::unordered_map<const std::string*,int>::iterator sum_it;
     TruthStatus truth = var>0 ? True : False;
     const auto& insertResult = tuple->setStatus(truth);
@@ -1649,17 +1649,38 @@ bool propUndefined(const Tuple* tupleU,bool isNegated,std::vector<int>& stack,bo
     }
     return false;
 }
-void Executor::printInternalLiterals(){
+std::string Executor::printInternalLiterals(){
+    std::string trueConstraint = "";
     for(int internalId : pchain_.getValuesVec({})){
         std::cout << factory.getTupleFromInternalID(internalId)->toString()<<" ";
+        if(trueConstraint!="" && trueConstraint.back()!=',')
+            trueConstraint+=",";
+        trueConstraint+=factory.getTupleFromInternalID(internalId)->toString();
     }
     for(int internalId : porder1_.getValuesVec({})){
         std::cout << factory.getTupleFromInternalID(internalId)->toString()<<" ";
+        if(trueConstraint!="" && trueConstraint.back()!=',')
+            trueConstraint+=",";
+        trueConstraint+=factory.getTupleFromInternalID(internalId)->toString();
     }
     for(int internalId : porder_.getValuesVec({})){
         std::cout << factory.getTupleFromInternalID(internalId)->toString()<<" ";
+        if(trueConstraint!="" && trueConstraint.back()!=',')
+            trueConstraint+=",";
+        trueConstraint+=factory.getTupleFromInternalID(internalId)->toString();
     }
     std::cout << std::endl;
+    std::cout<<"MODEL_AS_CONSTRAINT"<<std::endl;
+    for(int internalId : fchain_.getValuesVec({})){
+        std::cout<<":-"<<factory.getTupleFromInternalID(internalId)->toString()<<"."<<std::endl;
+    }
+    for(int internalId : forder1_.getValuesVec({})){
+        std::cout<<":-"<<factory.getTupleFromInternalID(internalId)->toString()<<"."<<std::endl;
+    }
+    for(int internalId : forder_.getValuesVec({})){
+        std::cout<<":-"<<factory.getTupleFromInternalID(internalId)->toString()<<"."<<std::endl;
+    }
+    return trueConstraint;
 }
 void Executor::unRollToLevel(int decisionLevel){
     conflictCount++;

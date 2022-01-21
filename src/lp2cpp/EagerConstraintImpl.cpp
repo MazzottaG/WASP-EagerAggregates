@@ -122,7 +122,7 @@ void EagerConstraintImpl::onAnswerSet(const std::vector<int>& answerSet){
             // watchedLiterals[answerSet[i]]=VariableNames::getName(Literal::createLiteralFromInt(answerSet[i]).getVariable());
         }
     }
-    executionManager.printInternalLiterals();
+    solver->printConstraints(executionManager.printInternalLiterals());
 }
 void EagerConstraintImpl::onLiteralTrue(int var, int decisionLevel, std::vector<int> & propagatedLiterals) {
     // std::cout<<"Onlittrue "<<var<<std::endl;

@@ -89,7 +89,7 @@ namespace aspc {
         virtual int explainExternalLiteral(int,UnorderedSet<int>&,std::unordered_set<int>&,bool=false);
         virtual void handleConflict(int,std::vector<int>&);
         virtual void unRollToLevel(int);
-        virtual void printInternalLiterals();
+        virtual std::string printInternalLiterals();
         virtual void checkUnfoundedSets(std::vector<int>&,Executor*);
         virtual void setMinConflict(unsigned minConflict){Executor::minConflict=minConflict;}
         virtual void setMinHeapSize(unsigned minHeapSize){Executor::minHeapSize=minHeapSize;}

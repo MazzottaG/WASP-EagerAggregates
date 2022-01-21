@@ -179,6 +179,7 @@ class Solver
         inline void foundIncoherence();
         inline bool hasUndefinedLiterals();
         inline void printAnswerSet();
+        void printConstraints(string constraint) const;
         inline void printOptimizationValue( const Vector< uint64_t >& costs );
         inline void printCautiousConsequences( const Vector< Var >& answers );        
         inline void optimumFound();
@@ -1376,6 +1377,7 @@ Solver::printAnswerSet()
     for( unsigned int i = 0; i < externalPropagators.size(); i++ )
         externalPropagators[ i ]->onAnswerSet( *this );
 }
+
 
 void
 Solver::printOptimizationValue(

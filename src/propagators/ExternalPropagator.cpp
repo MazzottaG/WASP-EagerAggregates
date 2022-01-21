@@ -470,27 +470,7 @@ ExternalPropagator::onAnswerSet(
                 answerset.push_back( -i );
         }        
         interpreter->callVoidMethod( method_plugins_onAnswerSet, answerset );
-        #ifdef PRINTCONSTRAINT
-            std::cout<<"MODEL_AS_CONSTRAINT"<<std::endl;
-            std::string trueConstraint = "";
-            for( unsigned int i = 1; i <= solver.numberOfVariables(); i++ )
-            {
-                Literal lit = Literal::createLiteralFromInt(i);
-                if( !VariableNames::isHidden( lit.getVariable() ) ){
-                    if( solver.isTrue( i ) ){
-                        if(trueConstraint!="" && trueConstraint.back()!=',')
-                            trueConstraint+=",";
-                        trueConstraint+=VariableNames::getName( lit.getVariable() );
-                    }
-                    else{
-                        std::cout<<":-"<<VariableNames::getName( lit.getVariable() )<<"."<<std::endl;
-                        
-                    }
-                }
-            }
-            std::cout<<":-"<<trueConstraint<<"."<<std::endl;
-            std::cout<<"MODEL_AS_CONSTRAINT"<<std::endl;
-        #endif
+        
     }
 }
 

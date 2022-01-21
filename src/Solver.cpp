@@ -312,7 +312,27 @@ Solver::solveWithoutPropagators(
     }    
     return INCOHERENT;
 }
-
+void
+Solver::printConstraints(string trueConstraint) const
+{
+    for( unsigned int i = 1; i <= numberOfVariables(); i++ )
+    {
+        Literal lit = Literal::createLiteralFromInt(i);
+        if( !VariableNames::isHidden( lit.getVariable() ) ){
+            if( isTrue( i ) ){
+                if(trueConstraint!="" && trueConstraint.back()!=',')
+                    trueConstraint+=",";
+                trueConstraint+=VariableNames::getName( lit.getVariable() );
+            }
+            else{
+                std::cout<<":-"<<VariableNames::getName( lit.getVariable() )<<"."<<std::endl;
+                
+            }
+        }
+    }
+    std::cout<<":-"<<trueConstraint<<"."<<std::endl;
+    std::cout<<"MODEL_AS_CONSTRAINT"<<std::endl;
+}
 bool
 Solver::handlePropagatorFailure(
     ExternalPropagator* propagator )

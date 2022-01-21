@@ -81,7 +81,7 @@ public:
     bool postponedReason()const{return true;}
     void unRollToLevel(int decisionLevel){executor->unRollToLevel(decisionLevel);}
     void undefReceived(){executor->undefLiteralsReceived();}
-    void printInternalLiterals(){executor->printInternalLiterals();}
+    string printInternalLiterals(){ return executor->printInternalLiterals();}
     void checkUnfoundedSet(std::vector<int>& literalToPropagate){executor->checkUnfoundedSets(literalToPropagate,executor);}
     Reason* getPostponedeReason(Literal lit);
     virtual void onLearning( const Solver& solver, Learning* strategy, Literal lit );
