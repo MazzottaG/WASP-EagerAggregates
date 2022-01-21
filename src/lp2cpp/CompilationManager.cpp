@@ -2506,11 +2506,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     //     *out << ind << "solver->printConstraints(trueConstraint);\n";
     // *out << --ind << "}\n";
     *out << ind++ << "std::string Executor::printInternalLiterals(){\n";
-        #ifdef MODEL_CHECKER
-            *out << ind << "factory.printModelAsConstraint();\n";
-            *out << ind << "std::cout<<\"On answerset:\"<<reasonForLiteral.size()<<std::endl;\n";
-            *out << ind << "std::cout<<\"AtomsTable size: \"<<atomsTable.size()<<std::endl;\n";
-        #endif
         *out << ind << "std::string trueConstraint = \"\";\n";
         for(std::string pred : builder->getPrintingPredicates()){
             if(predicateToOrderdedAux.count(pred)!=0)
