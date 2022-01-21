@@ -2517,11 +2517,19 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 *out << ind++ << "for(int internalId : p"<<pred<<"_.getValuesSet({})){\n";
             else
                 *out << ind++ << "for(int internalId : p"<<pred<<"_.getValuesVec({})){\n";
-                *out << ind << "std::cout << factory.getTupleFromInternalID(internalId)->toString()<<\" \";\n";
+                    *out << ind << "Tuple* tuple = factory.getTupleFromInternalID(internalId);\n";
+                    *out << ind << "std::string tupleToString = \""<<pred<<"(\";\n";
+                    *out << ind++ << "for(unsigned k=0; k<tuple->size();k++){\n";
+                        *out << ind << "if(k>0) tupleToString+=\",\";\n";
+                        *out << ind << "tupleToString+=ConstantsManager::getInstance().unmapConstant(tuple->at(k));\n";
+                    *out << --ind << "}\n";
+                    *out << ind << "tupleToString+=\")\";\n";
+                    
+                *out << ind << "std::cout << tupleToString <<\" \";\n";
                 #ifdef PRINTCONSTRAINT
                 *out << ind++ << "if(trueConstraint!=\"\" && trueConstraint.back()!=',')\n";
                     *out << ind-- << "trueConstraint+=\",\";\n";
-                *out << ind << "trueConstraint+=factory.getTupleFromInternalID(internalId)->toString();\n";
+                *out << ind << "trueConstraint+=tupleToString;\n";
                 #endif
             *out << --ind << "}\n";
         }
@@ -2533,7 +2541,14 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     *out << ind++ << "for(int internalId : f"<<pred<<"_.getValuesSet({})){\n";
                 else
                     *out << ind++ << "for(int internalId : f"<<pred<<"_.getValuesVec({})){\n";
-                        *out << ind << "std::cout<<\":-\"<<factory.getTupleFromInternalID(internalId)->toString()<<\".\"<<std::endl;\n";
+                        *out << ind << "Tuple* tuple = factory.getTupleFromInternalID(internalId);\n";
+                        *out << ind << "std::string tupleToString = \""<<pred<<"(\";\n";
+                        *out << ind++ << "for(unsigned k=0; k<tuple->size();k++){\n";
+                            *out << ind << "if(k>0) tupleToString+=\",\";\n";
+                            *out << ind << "tupleToString+=ConstantsManager::getInstance().unmapConstant(tuple->at(k));\n";
+                        *out << --ind << "}\n";
+                        *out << ind << "tupleToString+=\")\";\n";
+                        *out << ind << "std::cout<<\":-\"<<tupleToString <<\".\"<<std::endl;\n";
                     *out << --ind << "}\n";
             }
             
