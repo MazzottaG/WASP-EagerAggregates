@@ -109,13 +109,30 @@ bool aspc::ArithmeticRelationWithAggregate::isBoundedValueAssignment(const std::
     return unassignedVariables == 1;
     
 }
+std::string aspc::ArithmeticRelationWithAggregate::getAssignedVariable(std::unordered_set<std::string> & set) const {
+    if(guard.isSingleTerm()){
+        if(isVariable(guard.getTerm1()) && set.count(guard.getTerm1())==0)
+            return guard.getTerm1();
+    }else{
+        if(isVariable(guard.getTerm1()) && set.count(guard.getTerm1())==0)
+            return guard.getTerm1();
+        else if(isVariable(guard.getTerm2()) && set.count(guard.getTerm2())==0)
+            return guard.getTerm2();
+    }
+    return "";
+}
 void aspc::ArithmeticRelationWithAggregate::addVariablesToSet(std::unordered_set<std::string> & set) const {
-    for (const std::string & v : guard.getAllTerms()) {
-        if (!set.count(v) && isVariable(v)) {
-            //set.insert(v);
+    for(const aspc::Literal& l : aggregate.getAggregateLiterals()){
+        l.addVariablesToSet(set);
+    }
+    for(const aspc::ArithmeticRelation& ineq: aggregate.getAggregateInequalities()){
+        ineq.addVariablesToSet(set);
+    }
+    for(std::string term: guard.getAllTerms()){
+        if(isVariable(term)){
+            set.insert(term);
         }
     }
-    
 }
 bool aspc::ArithmeticRelationWithAggregate::isPositiveLiteral() const {
     return false;

@@ -157,7 +157,7 @@ unsigned aspc::Literal::firstOccurrenceOfVariableInLiteral(const string & v) con
 }
 
 bool aspc::Literal::operator==(const aspc::Literal& right) const {
-    return this->atom == right.atom;
+    return this->atom == right.atom && negated == right.negated;
 
 }
 

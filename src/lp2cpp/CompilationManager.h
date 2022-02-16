@@ -43,7 +43,6 @@
 #include <set>
 #include "datastructures/BoundAnnotatedLiteral.h"
 #include "language/ArithmeticRelationWithAggregate.h"
-
 const int LAZY_MODE = 0; 
 const int EAGER_MODE = 1;
 
@@ -105,16 +104,18 @@ private:
     void printAtomVariables(const aspc::Atom* atom,std::string tupleName,string pointer,std::unordered_set<std::string>& boundVariables,unsigned& closingPars);
     bool printGetValues(std::string predicateName,std::vector<unsigned> boundIndices,std::string boundTerms,std::string mapPrefix,std::string name);
     void compileEagerSimpleRule(const aspc::Rule& r,bool fromStarter);
-    void buildGenerator(AspCore2ProgramBuilder* builder);
+    
+    void buildGenerator(AspCore2ProgramBuilder* builder,const aspc::Program& program);
     void buildGeneratorForRecursiveComponent(std::vector<int> component,AspCore2ProgramBuilder* builder);
     void buildGeneratorForNonRecursiveComponent(std::vector<int> component,AspCore2ProgramBuilder* builder);
     unsigned buildGeneratorForSimpleRule(const aspc::Literal* body,const aspc::Atom* head,std::string tupleName,std::unordered_set<std::string> sumAggrSetPredicates,bool asTrue=false);
     unsigned buildGeneratorForConstraint(aspc::Rule* joinRule,std::string tupleName,std::unordered_set<std::string>sumAggrSetPredicates,unsigned starterIndex,std::unordered_set<std::string> boundVars);
     unsigned buildLiteralSaving(const aspc::Atom* head,std::string tupleName,bool asTrue=false);
-    void buildAuxValGenerator(std::string predicate,int ruleId,const aspc::Program* sourceProgram);
-    void buildGeneratorActualAndPossibleSum(AspCore2ProgramBuilder* builder);
+    void buildAuxValGenerator(std::string predicate,int ruleId,aspc::EagerProgram* sourceProgram);
+    void buildGeneratorActualAndPossibleSum(AspCore2ProgramBuilder* builder,const aspc::Program& program);
     void findExitRuleForComponent(std::vector<int> component,AspCore2ProgramBuilder* builder, std::vector<int>& exitRules, std::vector<int>& rules,unordered_set<std::string>& stackPredicates);
-    unsigned buildGeneratorForExiteRule(const aspc::Rule& r,std::unordered_map<int, std::vector<aspc::Rule>>ruleToSubProgram,int ruleId,std::unordered_set<std::string> sumAggrSetPredicates,bool collect=false);
+    unsigned buildGeneratorForExiteRule(const aspc::Rule& r,std::vector<aspc::Rule>subprogram,int ruleId,std::unordered_set<std::string> sumAggrSetPredicates,bool collect=false);
+    unsigned buildGeneratorForRuleWithAggId(const aspc::Rule& r,AspCore2ProgramBuilder* builder,std::vector<aspc::Rule>subprogram,int ruleId,std::unordered_set<std::string> sumAggrSetPredicates,bool collect=false);
     unsigned printStarter(const aspc::Literal* body,std::unordered_set<std::string>& boundTerms);
     void buildAggrSetOrdering(const AspCore2ProgramBuilder* builder);
     void buildUnfoundedInit(const std::vector<int>&,int, AspCore2ProgramBuilder*);
@@ -172,6 +173,7 @@ private:
 
     std::unordered_map<std::string,unsigned> predicateToOrderdedAux;
     std::unordered_set<std::string> internalPredicates;
+    
     
 };
 

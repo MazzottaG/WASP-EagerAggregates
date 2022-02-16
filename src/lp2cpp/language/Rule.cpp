@@ -151,6 +151,7 @@ unsigned aspc::Rule::getBodySize() const {
 }
 void aspc::Rule::addBodyLiteral(aspc::Literal l){
     bodyLiterals.push_back(aspc::Literal(l));
+    formulas.push_back(new aspc::Literal(l));
 }
 vector<map<unsigned, pair<unsigned, unsigned> > > aspc::Rule::getJoinIndicesWithJoinOrder(const vector<unsigned>& order) const {
     vector<map<unsigned, pair<unsigned, unsigned> > > result(order.size() - 1);

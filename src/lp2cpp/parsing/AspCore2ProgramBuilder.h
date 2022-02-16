@@ -54,15 +54,68 @@
 #include "../language/Aggregate.h"
 #include "../../stl/UnorderedSet.h"
 #include "../utils/AggrSetPredicate.h"
+#include "../language/EagerProgram.h"
+#include "../utils/AssignedBody.h"
 
 class AspCore2ProgramBuilder : public DLV2::InputBuilder {
 private:
-    aspc::Program program;
-    aspc::Program preProgram;
     
-    aspc::Program original_program;
-    bool analyzeDependencyGraph=true;
-    std::vector<aspc::Rule> ruleWithoutCompletion;
+    //Input subprogram
+    aspc::Program program;
+    aspc::Program compilableProgram;
+    GraphWithTarjanAlgorithm graphWithTarjanAlgorithm;
+    std::unordered_map<std::string, int> predicateIDs;
+    std::unordered_map<int, Vertex> vertexByID;
+    
+    bool rewritten=false;
+    bool analyzeDependencyGraph=false;
+    
+
+    //Program after rewriting
+    aspc::EagerProgram rewrittenProgram;
+
+    //Predicate to domain predicate
+    std::unordered_set<std::string> domainPredicates; 
+    std::unordered_map<std::string,std::string> predicateToDomainPredicate;
+
+    //Value predicate for bound value assignement with aggregate
+    std::unordered_set<std::string> valuesPredicates; 
+    std::unordered_map<std::string,int> valuesPredicateToRule;
+
+    // Body predicate with assigned literals and ineqs
+    std::unordered_set<std::string> bodyPredicates; 
+    std::unordered_map<std::string,AssignedBody> bodyPredicateToAssignedBody;
+
+    // AggreSet predicate with assigned literals and ineqs
+    std::unordered_set<std::string> aggregateSetPredicates; 
+    std::unordered_map<std::string,AssignedBody> aggregateSetPredicateToAssignedBody;
+
+    //AggregateId to body predicate
+    std::unordered_set<std::string> aggIdPredicates; 
+    std::unordered_map<std::string,std::string> aggIdPredicateToBodyPredicate;
+
+    //Rewritten program after completion
+    aspc::EagerProgram programWithCompletion;
+    
+    //Rewritten rule to completion subprogram
+    std::vector<std::vector<int>> rewrittenRuleToCompletionSubProgram;
+    
+    //support predicates
+    std::unordered_set<std::string> supPredicates;
+    std::unordered_map<std::string,std::vector <std::string>> predicateToSupportPredicates;
+
+    //aux predicate
+    std::unordered_set<std::string> auxPredicates;
+
+    std::unordered_set<std::string> internalPredicates;
+
+    //Fake lazy program
+    aspc::EagerProgram endProgram;
+    
+    //Output literals
+    std::unordered_set<std::string> printingPredicate;
+
+
     
     bool buildingAggregate = false;
     std::string aggregateFunction="None";
@@ -88,52 +141,13 @@ private:
     std::vector<aspc::ArithmeticRelation> inequalities;
     std::vector<aspc::ArithmeticRelationWithAggregate> inequalitiesWithAggregate;
     std::string predicateName;
-    GraphWithTarjanAlgorithm graphWithTarjanAlgorithm;
-    GraphWithTarjanAlgorithm original_graphWithTarjanAlgorithm;
-    GraphWithTarjanAlgorithm graphWithTarjanAlgorithmNoCompletion;
-    std::set<int> internalPredicatesId;
 
-    std::unordered_map<std::string, int> predicateIDs;
-    std::unordered_map<int, Vertex> vertexByID;
-    
-    std::unordered_map<std::string, int> originalPredicateIDs;
-    std::unordered_map<int, Vertex> originalVertexByID;
-
-    std::unordered_map<std::string, int> predicateIDsNoCompletion;
-    std::unordered_set<int> predicateBodyNoCompletion;
-    std::unordered_map<int, Vertex> vertexByIDNoCompletion;
-    
-    std::unordered_map<std::string,std::vector<std::string>> auxLiteralTerms;
-    std::unordered_map<std::string,std::vector<aspc::Literal>> auxPredicateToBody;
-    std::unordered_map<std::string,std::vector<aspc::ArithmeticRelation>> auxPredicateToInequality;
-
-    std::unordered_set<std::string> bodyPredicates;
-    std::unordered_map<std::string,AggrSetPredicate> aggrSetPredicates;
-    // std::unordered_set<AggrSetPredicate> aggrSetPredicatesData;
-    std::unordered_set<std::string> aggrIdPredicates;
-
-    std::unordered_map<std::string, std::unordered_set<unsigned>> aggrSetToRule;
-    std::unordered_set<std::string> printingPredicate;
-    
-    std::unordered_map<std::string, std::string> auxPossibleSumToAggrSet;
-    std::unordered_map<std::string, int> auxValToRule;
-    std::unordered_map<std::string, std::string> aggrSetToAuxVal;
-    std::unordered_set<std::string> domPredicate;
-    std::unordered_map<std::string,aspc::Literal> domToBody;
-    std::unordered_map<std::string,std::vector<std::string>> domToTerms;
-
-    std::unordered_map<std::string,std::vector<int>> predsToRules;
-    std::unordered_map<std::string,std::vector<std::string>> supportPredicates;
-    std::unordered_map<std::string,std::vector<aspc::Literal>> predsToHeads;
-    std::vector<std::string> sups;
-
-    std::unordered_map<std::string,std::vector<unsigned>> predicateToSupportingRule;
-
-    std::unordered_set<std::string> recursivePredicates;
-    std::unordered_map<int,std::vector<aspc::Rule>> ruleToSubProgram;
-    std::unordered_map<int,std::vector<std::pair<int,std::string>>> aggregateToAggrId;
     void buildExpression();
     bool negatedTerm=false;
+    void buildCompilablePrograms();
+    void computeCompletion();
+    bool splitProgram(std::unordered_set<int>&,const std::vector<std::vector<int>>&);
+    void buildProgram();
 public:
     AspCore2ProgramBuilder();
 
@@ -228,130 +242,59 @@ public:
     virtual void onWeightAtLevels(int nWeight, int nLevel, int nTerm);
     
     aspc::Program & getProgram();
-    aspc::Program & getSourceProgram();
-    void analyzeInputProgram();
-    void labelComponents(std::unordered_set<unsigned>& labeledComponent,const std::vector<std::vector<int>>& scc);
-    void buildGraphNoCompletion();
-    void buildConstraintDuplicateHeads();
-    bool isPredicateBodyNoCompletion(int)const;
-    const aspc::Literal* getSupportingHead(std::string pred);
-    bool isSupPredicateForHead(std::string sup,std::string head);
-    std::vector<std::string> getSupPredicatesForHead(std::string head);
+    aspc::EagerProgram & getRewrittenProgram();
+    aspc::EagerProgram & getCompilingProgram();
+    
+    std::unordered_set<std::string> getInternalPredicates()const;
+    std::unordered_set<std::string> getDomainPredicates(){return domainPredicates;}
+    std::unordered_set<std::string> getValuesPredicates(){return valuesPredicates;}
     const  std::map<std::string, unsigned> & getArietyMap();
-    bool isInternalPredicateName(std::string predName) {
-        unsigned predId = predicateIDs[predName];
-        return internalPredicatesId.find(predId)!=internalPredicatesId.end();
+    bool isDomainPredicate(std::string predicate){
+        return domainPredicates.count(predicate)!=0;
     }
-    bool isInternalPredicate(int predId)const {
-        return internalPredicatesId.find(predId)!=internalPredicatesId.end();
+    bool isDomainPredicateForPredicate(std::string dom,std::string pred){
+        return predicateToDomainPredicate[pred]==dom;
     }
-    bool isDomPredicate(std::string predicate){
-        return domPredicate.count(predicate)!=0;
+    std::string getPredicateForDomainPredicate(std::string dom){
+        for(auto pair: predicateToDomainPredicate)
+            if(pair.second==dom)
+                return pair.first;
+        return "";
+    }
+    std::string getBodyPredicateForAggrId(std::string aggrId){
+        return aggIdPredicateToBodyPredicate[aggrId];
+    }
+    bool isAggregateIdPredicate(std::string predName){
+        return aggIdPredicates.count(predName)!=0;
     }
     const unordered_set<std::string> getPrintingPredicates(){return printingPredicate;}
-    
-    const std::unordered_map<std::string,std::vector<aspc::Literal>>& getAuxPredicateBody()const{
-        return auxPredicateToBody;
-    }
-    const std::vector<aspc::ArithmeticRelation>& getInequalitiesForAuxPredicate(std::string pred){
-        return auxPredicateToInequality[pred];
-    }
-    const std::unordered_map<std::string,std::vector<aspc::ArithmeticRelation>>& getAuxPredicateInequalities() const{
-        return auxPredicateToInequality;
-    }
-    const std::unordered_map<std::string,std::string>& getAggrSetToAuxVal() const{
-        return aggrSetToAuxVal;
-    }
-    const std::vector<aspc::Literal>& getBodyForAuxiliary(std::string aux){
-        std::vector<aspc::Literal> ordered_body;
-        if(auxPredicateToBody.find(aux)==auxPredicateToBody.end())
-            return ordered_body;
-        return auxPredicateToBody[aux];
-    }
-    const std::vector<string>& getAuxPredicateTerms(std::string auxPredicate){
-        return auxLiteralTerms[auxPredicate];
-    }
+    aspc::EagerProgram& getEndProgram(){return endProgram;}
     bool isAuxPredicate(std::string predicate){
-        return auxPredicateToBody.count(predicate)!=0;
+        return auxPredicates.count(predicate)!=0;
     }
-    std::string getAssignedAggrSet(std::string auxVal){
-        return auxPossibleSumToAggrSet[auxVal];
-    }
-    bool isAuxValPred(std::string predicate){
-        return auxPossibleSumToAggrSet.count(predicate)!=0;
+    bool isValuePredicate(std::string predicate){
+        return valuesPredicates.count(predicate)!=0;
     }
     int getRuleForAuxVal(std::string predicate){
-        return auxValToRule[predicate];
+        return valuesPredicateToRule[predicate];
     }
     bool isBodyPredicate(std::string predicate){
         return bodyPredicates.count(predicate)!=0;
     }
-    const std::vector<aspc::Rule>& getRuleWithoutCompletion()const{return ruleWithoutCompletion;}
-    // const std::unordered_map<std::string,AggrSetPredicate>& getAggrSetPredicate(){
-    //     return aggrSetPredicates;
-    // }
+    std::vector<aspc::Rule> getRuleWithoutCompletion()const{return endProgram.getRules();}
     bool isAggrSetPredicate(std::string predicate){
-        return aggrSetPredicates.count(predicate)!=0;
+        return aggregateSetPredicates.count(predicate)!=0;
     }
-    bool isAggrIdPredicate(std::string predicate){
-        return aggrIdPredicates.count(predicate)!=0;
-    }
-    void rewriteRule(int,bool=false);
 
-    void rewriteConstraint(const aspc::Rule& r);
-    void rewriteRuleWithAggregate(const aspc::Rule& r);
-    void rewriteRuleWithCompletion(const aspc::Rule& r,int);
-    std::pair<bool,std::pair<std::string,AggrSetPredicate>> buildAggregateSet(std::unordered_set<std::string> bodyVariables,const aspc::ArithmeticRelationWithAggregate& aggregareRelation,std::string domPred,std::vector<std::string>domTerms,int ruleId);
-    std::pair<bool,std::pair<std::string,AggrSetPredicate>> buildBody(std::unordered_set<std::string> aggregateBodyVariables,const aspc::Rule& r,std::string auxValPred,std::vector<std::string> auxValTerm,int ruleId);
-    std::vector<std::string> writeAggrIdRule(std::pair<bool,std::pair<std::string,AggrSetPredicate>> body,std::pair<bool,std::pair<std::string,AggrSetPredicate>> aggrSet,const aspc::Rule& r);
     void clearData();
-    std::vector<aspc::Literal> rewriteAggregate(std::vector<aspc::Literal>& ,const std::unordered_set<string>& ,const aspc::ArithmeticRelationWithAggregate&,bool=false);
-    void addManualDependecy();
-    aspc::Literal* getAssociatedBodyPred(const std::string& domPred){if(domToBody.count(domPred)==0) return NULL;return &domToBody[domPred];}
-    std::vector<std::string> getDomTerms(const std::string& domPred){if(domToTerms.count(domPred)==0) return std::vector<std::string>();return domToTerms[domPred];}
-    const std::unordered_map<int,std::vector<aspc::Rule>>&  getSubPrograms();
-//    const void printSCC(){
-//        std::vector<std::vector<int> > SCC = graphWithTarjanAlgorithm.SCC();
-//        for(int i = 0;i< SCC.size();i++)
-//        {
-//            cout<< "componente "<< i <<endl;
-//            for(int j = 0;j< SCC[i].size();j++)
-//            {
-//                std::unordered_map<int, Vertex>::iterator it = vertexByID.find(SCC[i][j]);
-//                Vertex current = it->second;
-//                cout<< current.id << "  " << current.name<<endl;
-//                for(int c = 0; c< current.rules.size();c++)
-//                    getProgram().getRule(current.rules[c]).print();
-//            }
-//        }
-//    }
+    const std::vector<std::vector<int>>&  getSubPrograms();
+    std::vector<aspc::Rule>  getSubProgramsForRule(int id);
     void clearAggregateFields();
-    bool isLazyPredicate(std::string pred){
-        return predicateIDsNoCompletion.count(pred)!=0;
-    }
-    GraphWithTarjanAlgorithm& getSourceGraphWithTarjanAlgorithm();
     GraphWithTarjanAlgorithm& getGraphWithTarjanAlgorithm();
-    GraphWithTarjanAlgorithm& getGraphWithTarjanAlgorithmNoCompletion(){return graphWithTarjanAlgorithmNoCompletion;}
-    void normalizeArithmeticRelationsWithAggregate();
-    const std::unordered_map<int, Vertex>& getSourceVertexByIDMap() const;
-    const std::unordered_map<int, Vertex>& getVertexByIDMap() const;
-    const std::unordered_map<int, Vertex>& getVertexByIDMapNoCompletion() {return vertexByIDNoCompletion;}
-    const std::unordered_map<std::string, int>& getPredicateIDsMap() const;
-    const std::unordered_map<std::string, int>& getSourcePredicateIDsMap() const;
-
-    void rewritSourceProgram();
-    aspc::ArithmeticRelationWithAggregate buildAggrSetRule(const aspc::Rule&,std::string&);
-    aspc::Literal buildBodyRule(const aspc::Rule&,const aspc::ArithmeticRelationWithAggregate&,std::string&);
-    
-    void onRuleFirstRewriting();
-    void onConstraintFirstRewriting();
-
-    std::vector<std::pair<int,std::string>> getAggrIdForAggregate(int ruleId){return aggregateToAggrId[ruleId];}
-    std::unordered_map<int,std::vector<std::pair<int,std::string>>> getAggregateToAggrID(){return aggregateToAggrId;}
 
     unordered_set<std::string> getSumPredicates(){
         std::unordered_set<std::string> preds;
-        for(const aspc::Rule& r: preProgram.getRules()){
+        for(const aspc::Rule& r: rewrittenProgram.getRules()){
             if(!r.isConstraint() && r.containsAggregate()){
                 preds.insert(r.getArithmeticRelationsWithAggregate()[0].getAggregate().getAggregateLiterals()[0].getPredicateName());
             }
@@ -360,16 +303,9 @@ public:
     }
 
     std::vector<std::string> getSupportPredicateForHead(std::string pred){
-        return supportPredicates[pred];
+        return predicateToSupportPredicates[pred];
     }
 
-    std::vector<std::string> getAuxPredicates() const{
-        std::vector<std::string> auxPreds;
-        for(const auto& pair : auxPredicateToBody){
-            auxPreds.push_back(pair.first);
-        }
-        return auxPreds;
-    }
 };
 
 #endif	/* ASPCORE2PROGRAMBUILDER_H */
