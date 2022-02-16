@@ -31,6 +31,13 @@
 #include "GraphWithTarjanAlgorithm.h"
 
 using namespace std;
+
+void GraphWithTarjanAlgorithm::addNode(unsigned int v) {
+    if (v >= adj.size())
+        for (unsigned int i = adj.size(); i <= v; i++)
+            adj.push_back(list<int>());
+}
+
 void GraphWithTarjanAlgorithm::addEdge(unsigned int v, unsigned int w) {
     if (v >= adj.size() || w >= adj.size()) {
         if (v >= w)

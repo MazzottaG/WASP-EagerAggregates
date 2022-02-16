@@ -956,6 +956,8 @@ void AspCore2ProgramBuilder::buildCompilablePrograms(){
                         aggIdPredicateToBodyPredicate[aggIdPredicateNameGTE]=bodyPredicateName;
                         buildingBody.push_back(aspc::Literal(false,aspc::Atom(bodyPredicateName,assignedBody.getTerms())));
                         rewrittenProgram.addGeneratorDependecy(aggIdPredicateNameGTE,bodyPredicateName);
+                    }else{
+                        rewrittenProgram.addGeneratorNode(aggIdPredicateNameGTE);
                     }
                     aggIdPredicates.insert(aggIdPredicateNameGTE);
                     buildingHead.push_back(aspc::Atom(aggIdPredicateNameGTE,assignedBody.getTerms()));
@@ -980,6 +982,8 @@ void AspCore2ProgramBuilder::buildCompilablePrograms(){
                         aggIdPredicateToBodyPredicate[aggIdPredicateNameLTE]=bodyPredicateName;
                         buildingBody.push_back(aspc::Literal(false,aspc::Atom(bodyPredicateName,assignedBody.getTerms())));
                         rewrittenProgram.addGeneratorDependecy(aggIdPredicateNameLTE,bodyPredicateName);
+                    }else{
+                        rewrittenProgram.addGeneratorNode(aggIdPredicateNameLTE);
                     }
                     aggIdPredicates.insert(aggIdPredicateNameLTE);
                     buildingHead.push_back(aspc::Atom(aggIdPredicateNameLTE,assignedBody.getTerms()));
@@ -1024,6 +1028,8 @@ void AspCore2ProgramBuilder::buildCompilablePrograms(){
                         aggIdPredicateToBodyPredicate[aggIdPredicateName]=bodyPredicateName;
                         buildingBody.push_back(aspc::Literal(false,aspc::Atom(bodyPredicateName,assignedBody.getTerms())));
                         rewrittenProgram.addGeneratorDependecy(aggIdPredicateName,bodyPredicateName);
+                    }else{
+                        rewrittenProgram.addGeneratorNode(aggIdPredicateName);
                     }
                     aggIdPredicates.insert(aggIdPredicateName);
                     buildingHead.push_back(aspc::Atom(aggIdPredicateName,assignedBody.getTerms()));
@@ -1264,11 +1270,8 @@ void AspCore2ProgramBuilder::buildProgram(){
 }
 aspc::Program & AspCore2ProgramBuilder::getProgram() {
     if(!rewritten){
-        std::cout<<"First Rule Rewriting"<<std::endl;
         buildCompilablePrograms();
-        std::cout<<"Completion"<<std::endl;
         computeCompletion();
-        std::cout<<"Building program to compile"<<std::endl;
         buildProgram();
         rewritten=true;
         // programWithCompletion.print();

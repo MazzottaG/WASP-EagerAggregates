@@ -53,6 +53,13 @@ class GeneratorGraph{
         std::unordered_map<std::string, int> predicateIDs;
         std::unordered_map<int, std::string> predicateByID;
     public:
+        void addNode(std::string pred){
+            if(predicateIDs.count(pred)==0){
+                predicateByID[predicateIDs.size()]=pred;
+                predicateIDs[pred]=predicateIDs.size();
+            }
+            generatorDG.addNode(predicateIDs[pred]);
+        }
         void addDependency(std::string head,std::string body){
             if(predicateIDs.count(head)==0){
                 predicateByID[predicateIDs.size()]=head;
@@ -100,6 +107,7 @@ class GeneratorGraph{
         void printComponent()const;
         void addGeneratorDependenciesForRule(const aspc::Rule& r){genGraph.addRuleDependencies(r);}
         void addGeneratorDependecy(std::string head,std::string body){genGraph.addDependency(head,body);}
+        void addGeneratorNode(std::string pred){genGraph.addNode(pred);}
         GraphWithTarjanAlgorithm& getGeneratorDG(){return genGraph.getDG();}
         std::string getGenPredicateName(int predId){return genGraph.getPredicateName(predId);}
         int getGeneratorPredicateId(std::string pred){return genGraph.getPredicateId(pred);}

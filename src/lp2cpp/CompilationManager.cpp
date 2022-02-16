@@ -2022,6 +2022,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::cout<<\"Undef received\"<<std::endl;\n";
         #endif
         *out << ind << "undefinedLoaded=true;\n";
+        *out << ind << "std::cout<<\"Undef received\"<<std::endl;\n";
         buildGenerator(builder,program);
 
         // *out << ind++ << "{\n";
@@ -5714,6 +5715,7 @@ void CompilationManager::buildGeneratorActualAndPossibleSum(AspCore2ProgramBuild
                 *out << ind << "auto itTrue = aggrSet->begin();\n";
                 *out << ind << "auto itUndef = aggrSetU->begin();\n";
                 *out << ind << "int& sum = possibleSum[aggr_id->getId()];\n";
+
                 *out << ind++ << "while(itTrue!=aggrSet->end() || itUndef != aggrSetU->end()){\n";
                 closingPars++;
                     *out << ind << "Tuple* tuple = NULL;\n";
@@ -5806,6 +5808,7 @@ void CompilationManager::buildGenerator(AspCore2ProgramBuilder* builder,const as
             }
         }
         if(recursive){
+            for(int predId :scc[componentId])
             buildGeneratorForRecursiveComponent(scc[componentId],builder);
         }
         else{
