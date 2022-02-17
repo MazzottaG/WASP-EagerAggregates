@@ -1596,13 +1596,13 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 *out << ind++ << "for(int id : unfoundedSetForComponent"<<componentId<<"){\n";
                     *out << ind << "Tuple* starter = factory.getTupleFromInternalID(id);\n";
 
-                    #ifdef TRACE_PROPATATOR
+                    #ifdef TRACE_PROPAGATOR
                     *out << ind << "if(founded.count(id)!=0) std::cout<<\"      Literal already founded \"<<starter->toString()<<std::endl;\n";
                     #endif
 
                     *out << ind << "if(founded.count(id)!=0) continue;\n";
 
-                    #ifdef TRACE_PROPATATOR
+                    #ifdef TRACE_PROPAGATOR
                     *out << ind << "std::cout<<\"      Searching SP for \"<<starter->toString()<<std::endl;\n";
                     #endif
 
@@ -1721,7 +1721,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         *out << ind++ << "if(oldSP!=sourcePointers"<<componentId<<".end())\n";
                                             *out << ind-- << "supportedLiterals"<<componentId<<"[oldSP->second].erase(starter->getId());\n";
                                         
-                                        #ifdef TRACE_PROPATATOR
+                                        #ifdef TRACE_PROPAGATOR
                                             *out << ind << "std::cout<<\"           SP found \"<<body->toString()<<std::endl;\n";
                                         #endif
                                         *out << ind << "sourcePointers"<<componentId<<"[starter->getId()]=body->getId();\n";
@@ -1742,7 +1742,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     }
                 *out << --ind << "} //close unfounded for\n";
                 *out << ind << "for(int lit : founded) unfoundedSetForComponent"<<componentId<<".erase(lit);\n";
-                #ifdef TRACE_PROPATATOR
+                *out << ind << "std::cout << \"Unfounded size: \"<<unfoundedSetForComponent"<<componentId<<".size()<<std::endl;\n";
+                #ifdef TRACE_PROPAGATOR
                     *out << ind << "if(unfoundedSetForComponent"<<componentId<<".empty()) std::cout << \"   No Unfounded\"<<std::endl;\n";
                     *out << ind++ << "else{\n";
                         *out << ind << "std::cout<<\"   Unfounded Literals\"<<std::endl;\n";
@@ -1757,14 +1758,14 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     *out << ind << "int conflictDetected=0;\n";
                     *out << ind << "std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();\n";
                     *out << ind << "std::vector<int> propLiterals({currentDecisionLevel});\n";
-                    #ifdef TRACE_PROPATATOR
+                    #ifdef TRACE_PROPAGATOR
                         *out << ind << "std::cout << \" Computing Reason \"<<std::endl;\n";
                     #endif
                     *out << ind++ << "for(int lit : unfoundedSetForComponent"<<componentId<<"){\n";
                         *out << ind << "Tuple* starter = factory.getTupleFromInternalID(lit);\n";
                         *out << ind << "if(starter == NULL) continue;\n";
-                        *out << ind++ << "if(currentDecisionLevel > 0){\n";
-                            #ifdef TRACE_PROPATATOR
+                        *out << ind++ << "if(currentDecisionLevel >= 0){\n";
+                            #ifdef TRACE_PROPAGATOR
                                 *out << ind << "std::cout << \"     Searching False Body for \"<<starter->toString()<<std::endl;\n";
                             #endif
                             bool addElse=false;
@@ -1863,7 +1864,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                         *out << ind++ << "if(tuple!=NULL){\n";
                                                         closinPars++;
                                                 }
-                                                #ifdef TRACE_PROPATATOR
+                                                #ifdef TRACE_PROPAGATOR
                                                     *out << ind << "std::cout << \"         Add To Reason ~\"<<tuple->toString()<<std::endl;\n";
                                                 #endif
                                                 *out << ind << "shared_reason.get()->insert(-tuple->getId());\n";
@@ -1884,7 +1885,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         
                     *out << --ind << "}\n";
                     *out << ind++ << "if(conflictDetected!=0) {\n";
-                        #ifdef TRACE_PROPATATOR
+                        #ifdef TRACE_PROGATATOR
                             *out << ind << "std::cout << \" Conflict detected:  Unfounded literal already true\"<<tuple->toString()<<std::endl;\n";
                         #endif
                         *out << ind << "executor->handleConflict(conflictDetected,literalToPropagate);\n";
