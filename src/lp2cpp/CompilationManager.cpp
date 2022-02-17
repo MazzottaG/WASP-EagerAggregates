@@ -1181,10 +1181,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "auto reas = reasonForLiteral.find(internalVar);\n";
         *out << ind << "if(reas!=reasonForLiteral.end())reas->second.get()->clear();\n";
         *out << ind << "std::string minus = var < 0 ? \"-\" : \"\";\n";
-        *out << ind++ << "if(tuple == NULL)\n";
-            *out << ind-- << "std::cout<<\"Unable to find tuple \"<<var<<std::endl;\n";
-        *out << ind++ << "else\n";
-            *out << ind-- << "std::cout<<\"Undef \" <<var << \" \" << minus << tuple->toString()<<std::endl;\n";
+        
         #ifdef TRACE_PROPAGATOR
         *out << ind++ << "if(tuple == NULL)\n";
             *out << ind-- << "std::cout<<\"Unable to find tuple \"<<var<<std::endl;\n";
@@ -2431,12 +2428,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         std::vector<aspc::Rule> lazyRules = lazy.getRules();
         for(int component=sccNoCompletion.size()-1; component>=0 ; component--){
             std::unordered_set<std::string> componentPredicateNames;
-            std::cout << "Component " <<component << std::endl;
             for(int predId : sccNoCompletion[component]){
                 componentPredicateNames.insert(lazy.getPredicateName(predId));
-                std::cout << lazy.getPredicateName(predId) << " ";
             }
-            std::cout << std::endl;
             std::vector<int> exitRules;
             std::vector<int> recursiveRules;
             for(int ruleId=0;ruleId<lazyRules.size();ruleId++){

@@ -361,10 +361,6 @@ inline void Executor::onLiteralUndef(int var) {
     auto reas = reasonForLiteral.find(internalVar);
     if(reas!=reasonForLiteral.end())reas->second.get()->clear();
     std::string minus = var < 0 ? "-" : "";
-    if(tuple == NULL)
-        std::cout<<"Unable to find tuple "<<var<<std::endl;
-    else
-        std::cout<<"Undef " <<var << " " << minus << tuple->toString()<<std::endl;
     const auto& insertResult = tuple->setStatus(Undef);
     if (insertResult.second) {
         factory.removeFromCollisionsList(tuple->getId());

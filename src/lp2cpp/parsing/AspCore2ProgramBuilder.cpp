@@ -575,15 +575,9 @@ bool AspCore2ProgramBuilder::splitProgram(std::unordered_set<int>& fakeLazyRuleI
         //find fake lazy subProgram
         std::unordered_map<int,int> predicateToComponent;
         for(int component = 0 ; component < scc.size(); component++){
-            std::cout << "Component "<<component<<": ";
             for( int predicateId : scc[component]){
                 predicateToComponent[predicateId]=component;
-                auto it = vertexByID.find(predicateId);
-                if(it!=vertexByID.end()){
-                    std::cout << it->second.name<<" ";
-                }
             }
-            std::cout << std::endl;
         }
         std::vector<int> stackComponents;
         std::unordered_set<int> labeledComponents;
@@ -598,7 +592,6 @@ bool AspCore2ProgramBuilder::splitProgram(std::unordered_set<int>& fakeLazyRuleI
                         if(labeledComponents.count(component) == 0){
                             labeledComponents.insert(component);
                             stackComponents.push_back(component);
-                            std::cout << "Labeled at level 0" << component<<std::endl;
                         }            
 
                     }
@@ -1315,8 +1308,8 @@ aspc::Program & AspCore2ProgramBuilder::getProgram() {
         rewritten=true;
         // programWithCompletion.print();
         // std::cout << "\n\n"<<std::endl;
-        rewrittenProgram.print();
-        std::cout << "\n\n"<<std::endl;
+        // rewrittenProgram.print();
+        // std::cout << "\n\n"<<std::endl;
     }
 
     return compilableProgram;
