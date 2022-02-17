@@ -305,7 +305,8 @@ public:
     std::vector<std::string> getSupportPredicateForHead(std::string pred){
         return predicateToSupportPredicates[pred];
     }
-
+    std::set<std::string> getBodyPredicates()const {return program.getBodyPredicates();}
+    std::set<std::string> getHeadPredicates()const {return program.getHeadPredicates();}
 };
 
 #endif	/* ASPCORE2PROGRAMBUILDER_H */

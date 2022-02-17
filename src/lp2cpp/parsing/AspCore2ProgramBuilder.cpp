@@ -575,22 +575,30 @@ bool AspCore2ProgramBuilder::splitProgram(std::unordered_set<int>& fakeLazyRuleI
         //find fake lazy subProgram
         std::unordered_map<int,int> predicateToComponent;
         for(int component = 0 ; component < scc.size(); component++){
+            std::cout << "Component "<<component<<": ";
             for( int predicateId : scc[component]){
                 predicateToComponent[predicateId]=component;
+                auto it = vertexByID.find(predicateId);
+                if(it!=vertexByID.end()){
+                    std::cout << it->second.name<<" ";
+                }
             }
+            std::cout << std::endl;
         }
         std::vector<int> stackComponents;
         std::unordered_set<int> labeledComponents;
         for(int i=0; i < rules.size(); i++){
             if(rules[i].isConstraint()){
+                // rules[i].print();
                 for(const aspc::Literal& l : rules[i].getBodyLiterals()){
                     // l.print();
                     auto it = predicateIDs.find(l.getPredicateName());
-                    if(it!=predicateIDs.end()){
+                    if(it!=predicateIDs.end() && predicateToComponent.count(it->second)!=0){
                         int component = predicateToComponent[it->second];
                         if(labeledComponents.count(component) == 0){
                             labeledComponents.insert(component);
                             stackComponents.push_back(component);
+                            std::cout << "Labeled at level 0" << component<<std::endl;
                         }            
 
                     }
@@ -644,10 +652,13 @@ void AspCore2ProgramBuilder::buildCompilablePrograms(){
     
     auto rules = program.getRules();
     for(int ruleIndex : fakeLazyRuleIndices){
-        endProgram.addRule(rules[ruleIndex]);
+        endProgram.addRule(rules[ruleIndex],true);
     }
     for(int i=0; i < rules.size(); i++){
         if(fakeLazyRuleIndices.count(i)==0){
+            if(!rules[i].isConstraint()){
+                printingPredicate.insert(rules[i].getHead()[0].getPredicateName());
+            }
             if(!rules[i].containsAggregate()){
                 rewrittenProgram.addRule(rules[i]);
                 rewrittenProgram.addGeneratorDependenciesForRule(rules[i]);
@@ -938,6 +949,7 @@ void AspCore2ProgramBuilder::buildCompilablePrograms(){
                 //build aggr_id rules
                 if(aggregateRelation->getComparisonType() == aspc::EQ){
                     clearData();
+                    aspc::ComparisonType first = aggregateRelation->isNegated() ? aspc::GT : aspc::GTE;
                     inequalitiesWithAggregate.push_back(
                         aspc::ArithmeticRelationWithAggregate(
                             false,
@@ -947,7 +959,7 @@ void AspCore2ProgramBuilder::buildCompilablePrograms(){
                                 {},
                                 aggregateRelation->getAggregate().getAggregateVariables(),
                                 aggregateRelation->getAggregate().getAggregateFunction()),
-                                aspc::GTE,
+                                first,
                                 false
                         )
                     );
@@ -964,6 +976,8 @@ void AspCore2ProgramBuilder::buildCompilablePrograms(){
                     aspc::Rule aggIdRuleGTE(buildingHead,buildingBody,{},inequalitiesWithAggregate,true,false);
                     rewrittenProgram.addRule(aggIdRuleGTE);
                     clearData();
+                    aspc::ComparisonType second = aggregateRelation->isNegated() ? aspc::LT : aspc::LTE;
+                    
                     inequalitiesWithAggregate.push_back(
                         aspc::ArithmeticRelationWithAggregate(
                             false,
@@ -973,7 +987,7 @@ void AspCore2ProgramBuilder::buildCompilablePrograms(){
                                 {},
                                 aggregateRelation->getAggregate().getAggregateVariables(),
                                 aggregateRelation->getAggregate().getAggregateFunction()),
-                                aspc::LTE,
+                                second,
                                 false
                         )
                     );
@@ -997,16 +1011,41 @@ void AspCore2ProgramBuilder::buildCompilablePrograms(){
                     }
                     
                     clearData();
-                    for(const aspc::Atom& head : rules[i].getHead())
+                    if(aggregateRelation->isNegated()){
+
+                        for(const aspc::Atom& head : rules[i].getHead())
+                            buildingHead.push_back(head);
+                        if(bodyPredicateName!=""){
+                            buildingBody.push_back(aspc::Literal(false,aspc::Atom(bodyPredicateName,assignedBody.getTerms())));
+                            rewrittenProgram.addGeneratorDependecy(buildingHead[0].getPredicateName(),bodyPredicateName);
+                        }
+                        buildingBody.push_back(aspc::Literal(false,aspc::Atom(aggIdPredicateNameGTE,assignedBody.getTerms())));
+                        aspc::Rule ruleGT (buildingHead,buildingBody,{},true);
+                        rewrittenProgram.addRule(ruleGT);
+                        clearData();
+
+                        for(const aspc::Atom& head : rules[i].getHead())
+                            buildingHead.push_back(head);
+                        if(bodyPredicateName!=""){
+                            buildingBody.push_back(aspc::Literal(false,aspc::Atom(bodyPredicateName,assignedBody.getTerms())));
+                            rewrittenProgram.addGeneratorDependecy(buildingHead[0].getPredicateName(),bodyPredicateName);
+                        }
+                        buildingBody.push_back(aspc::Literal(true,aspc::Atom(aggIdPredicateNameLTE,assignedBody.getTerms())));
+                        aspc::Rule ruleLT (buildingHead,buildingBody,{},true);
+                        rewrittenProgram.addRule(ruleLT);
+                    }else{
+                        for(const aspc::Atom& head : rules[i].getHead())
                         buildingHead.push_back(head);
-                    if(bodyPredicateName!=""){
-                        buildingBody.push_back(aspc::Literal(false,aspc::Atom(bodyPredicateName,assignedBody.getTerms())));
-                        rewrittenProgram.addGeneratorDependecy(buildingHead[0].getPredicateName(),bodyPredicateName);
+                        if(bodyPredicateName!=""){
+                            buildingBody.push_back(aspc::Literal(false,aspc::Atom(bodyPredicateName,assignedBody.getTerms())));
+                            rewrittenProgram.addGeneratorDependecy(buildingHead[0].getPredicateName(),bodyPredicateName);
+                        }
+                        buildingBody.push_back(aspc::Literal(false,aspc::Atom(aggIdPredicateNameGTE,assignedBody.getTerms())));
+                        buildingBody.push_back(aspc::Literal(true,aspc::Atom(aggIdPredicateNameLTE,assignedBody.getTerms())));
+                        aspc::Rule rule (buildingHead,buildingBody,{},true);
+                        rewrittenProgram.addRule(rule);
                     }
-                    buildingBody.push_back(aspc::Literal(false,aspc::Atom(aggIdPredicateNameGTE,assignedBody.getTerms())));
-                    buildingBody.push_back(aspc::Literal(true,aspc::Atom(aggIdPredicateNameLTE,assignedBody.getTerms())));
-                    aspc::Rule rule (buildingHead,buildingBody,{},true);
-                    rewrittenProgram.addRule(rule);
+                    
                 }else{
                     clearData();
                     inequalitiesWithAggregate.push_back(
@@ -1276,8 +1315,8 @@ aspc::Program & AspCore2ProgramBuilder::getProgram() {
         rewritten=true;
         // programWithCompletion.print();
         // std::cout << "\n\n"<<std::endl;
-        // rewrittenProgram.print();
-        // std::cout << "\n\n"<<std::endl;
+        rewrittenProgram.print();
+        std::cout << "\n\n"<<std::endl;
     }
 
     return compilableProgram;

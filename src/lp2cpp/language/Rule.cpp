@@ -276,6 +276,62 @@ void aspc::Rule::bodyReordering() {
     // }
     bodyReordering(starters);
 }
+void aspc::Rule::orderBodyFormulasFromStarter(unsigned starter, std::vector<unsigned>& orderedBodyFormulas)const{
+    std::unordered_set<std::string> boundVariables;
+    std::unordered_set<unsigned> selectedFormulas;
+    formulas[starter]->addVariablesToSet(boundVariables);
+    while(orderedBodyFormulas.size()<formulas.size()-1){
+        unsigned selectedIndex=-1;
+        bool isPositiveLiteralSelected=false;
+        bool isBoundedValueAssignmentSelected=false;
+        bool isAggregateRelationSelected=false;
+        for(unsigned i=0; i<formulas.size();i++){
+            if(i==starter)
+                continue;
+            if(selectedFormulas.count(i)==0){
+                const aspc::Formula* f = formulas[i];
+                if(!f->containsAggregate()){
+                    if(f->isBoundedRelation(boundVariables) || f->isBoundedLiteral(boundVariables)){
+                        selectedIndex=i;
+                        break;
+                    }else if(f->isBoundedValueAssignment(boundVariables)){
+                        if(!isBoundedValueAssignmentSelected){
+                            isBoundedValueAssignmentSelected=true;
+                            selectedIndex=i;
+                        }
+                    }else if(f->isPositiveLiteral()){
+                        if(!isPositiveLiteralSelected && !isBoundedValueAssignmentSelected){
+                            selectedIndex=i;
+                            isPositiveLiteralSelected=true;
+                        }
+                    }
+                }else if(f->isBoundedValueAssignment(boundVariables) || f->isBoundedRelation(boundVariables)){
+                    if(!isPositiveLiteralSelected && !isBoundedValueAssignmentSelected && !isAggregateRelationSelected){
+                        selectedIndex=i;
+                        isAggregateRelationSelected=true;
+                    }
+                }
+                
+            }
+        }
+        if(selectedIndex==-1){
+            std::cout << "Error:\tUnable to order rule ";print();
+            exit(180);
+        }
+        selectedFormulas.insert(selectedIndex);
+        orderedBodyFormulas.push_back(selectedIndex);
+        formulas[selectedIndex]->addVariablesToSet(boundVariables);
+    }
+    // for(unsigned i=0; i<formulas.size();i++){
+    //     if(formulas[i]->containsAggregate()){
+    //         if(selectedFormulas.count(i)==0){
+    //             selectedFormulas.insert(i);
+    //             orderedBodyFormulas.push_back(i);
+    //         }
+    //     }
+    // }
+    
+}
 void aspc::Rule::orderBodyFormulas(std::vector<unsigned>& orderedBodyFormulas)const{
     std::unordered_set<std::string> boundVariables;
     std::unordered_set<unsigned> selectedFormulas;
@@ -283,6 +339,7 @@ void aspc::Rule::orderBodyFormulas(std::vector<unsigned>& orderedBodyFormulas)co
         unsigned selectedIndex=-1;
         bool isPositiveLiteralSelected=false;
         bool isBoundedValueAssignmentSelected=false;
+        bool isAggregateRelationSelected=false;
         for(unsigned i=0; i<formulas.size();i++){
             if(selectedFormulas.count(i)==0){
                 const aspc::Formula* f = formulas[i];
@@ -301,24 +358,31 @@ void aspc::Rule::orderBodyFormulas(std::vector<unsigned>& orderedBodyFormulas)co
                             isPositiveLiteralSelected=true;
                         }
                     }
+                }else if(f->isBoundedValueAssignment(boundVariables) || f->isBoundedRelation(boundVariables)){
+                    if(!isPositiveLiteralSelected && !isBoundedValueAssignmentSelected && !isAggregateRelationSelected){
+                        selectedIndex=i;
+                        isAggregateRelationSelected=true;
+                    }
                 }
                 
             }
         }
-        if(selectedIndex==-1)
-            break;
+        if(selectedIndex==-1){
+            std::cout << "Error:\tUnable to order rule ";print();
+            exit(180);
+        }
         selectedFormulas.insert(selectedIndex);
         orderedBodyFormulas.push_back(selectedIndex);
         formulas[selectedIndex]->addVariablesToSet(boundVariables);
     }
-    for(unsigned i=0; i<formulas.size();i++){
-        if(formulas[i]->containsAggregate()){
-            if(selectedFormulas.count(i)==0){
-                selectedFormulas.insert(i);
-                orderedBodyFormulas.push_back(i);
-            }
-        }
-    }
+    // for(unsigned i=0; i<formulas.size();i++){
+    //     if(formulas[i]->containsAggregate()){
+    //         if(selectedFormulas.count(i)==0){
+    //             selectedFormulas.insert(i);
+    //             orderedBodyFormulas.push_back(i);
+    //         }
+    //     }
+    // }
     
 }
 void aspc::Rule::addArithmeticRelationsWithAggregate(ArithmeticRelationWithAggregate r){

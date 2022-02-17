@@ -88,8 +88,8 @@ class GeneratorGraph{
     public:
         EagerProgram();
         virtual ~EagerProgram();
-        void addRule(const aspc::Rule & r);
-        void addDependencies(const aspc::Rule& r);
+        void addRule(const aspc::Rule & r,bool saveAggregateDependencies=false);
+        void addDependencies(const aspc::Rule& r,bool saveAggregateDependencies=false);
 
         const std::vector<std::vector<int>>& positiveSCC();
         const std::vector<std::vector<int>>& SCC();

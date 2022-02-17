@@ -49,7 +49,7 @@ aspc::EagerProgram::~EagerProgram() {
 
 }
 
-void aspc::EagerProgram::addRule(const Rule & r) {
+void aspc::EagerProgram::addRule(const Rule & r,bool saveAggregateDependencies) {
     rules.push_back(r);
     
     //adding edges to dependency graph
@@ -87,12 +87,12 @@ void aspc::EagerProgram::addRule(const Rule & r) {
             }
         }
     }
-    if(!r.isConstraint()) addDependencies(r);
+    if(!r.isConstraint()) addDependencies(r,saveAggregateDependencies);
 }
 
-void aspc::EagerProgram::addDependencies(const aspc::Rule& r){
+void aspc::EagerProgram::addDependencies(const aspc::Rule& r,bool saveAggregateDependencies){
     
-    if(!r.containsAggregate()){
+    if(!r.containsAggregate()||saveAggregateDependencies){
         for (const aspc::Atom& a : r.getHead()) {
             int currentHeadId = predicateIDs.size();
             unordered_map<string, int>::iterator i = predicateIDs.find(a.getPredicateName());
@@ -107,16 +107,16 @@ void aspc::EagerProgram::addDependencies(const aspc::Rule& r){
                 DG.addEdge(currentBodyId, currentHeadId);
             }
             
-            // for(const aspc::ArithmeticRelationWithAggregate& aggrRelation: r.getArithmeticRelationsWithAggregate()){
-            //     for (const aspc::Literal& l : aggrRelation.getAggregate().getAggregateLiterals()) {
-            //         int currentBodyId = predicateIDs.size();
-            //         unordered_map<string, int>::iterator i = predicateIDs.find(l.getPredicateName());
-            //         currentBodyId = i->second;
-            //         if(l.isPositiveLiteral())
-            //             positiveDG.addEdge(currentBodyId, currentHeadId);
-            //         DG.addEdge(currentBodyId, currentHeadId);
-            //     }
-            // }
+            for(const aspc::ArithmeticRelationWithAggregate& aggrRelation: r.getArithmeticRelationsWithAggregate()){
+                for (const aspc::Literal& l : aggrRelation.getAggregate().getAggregateLiterals()) {
+                    int currentBodyId = predicateIDs.size();
+                    unordered_map<string, int>::iterator i = predicateIDs.find(l.getPredicateName());
+                    currentBodyId = i->second;
+                    if(l.isPositiveLiteral())
+                        positiveDG.addEdge(currentBodyId, currentHeadId);
+                    DG.addEdge(currentBodyId, currentHeadId);
+                }
+            }
         }
     }
 }

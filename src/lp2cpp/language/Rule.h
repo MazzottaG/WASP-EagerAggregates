@@ -84,6 +84,7 @@ namespace aspc {
         bool isConstraint() const;
         std::pair<int, int> findFirstOccurrenceOfVariableByStarter(const std::string & var, unsigned starter) const;
         void orderBodyFormulas(std::vector<unsigned>& )const;
+        void orderBodyFormulasFromStarter(unsigned starter, std::vector<unsigned>& orderedBodyFormulas)const;
         void bodyReordering();
         void bodyReordering(const std::vector<unsigned> & starters);
         void printOrderedBodies() const;
