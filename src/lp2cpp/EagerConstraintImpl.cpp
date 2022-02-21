@@ -122,7 +122,10 @@ void EagerConstraintImpl::onAnswerSet(const std::vector<int>& answerSet){
             // watchedLiterals[answerSet[i]]=VariableNames::getName(Literal::createLiteralFromInt(answerSet[i]).getVariable());
         }
     }
-    solver->printConstraints(executionManager.printInternalLiterals());
+    std::string modelAsConstraint = executionManager.printInternalLiterals();
+    #ifdef PRINTCONSTRAINT
+        solver->printConstraints(modelAsConstraint);
+    #endif
 }
 void EagerConstraintImpl::onLiteralTrue(int var, int decisionLevel, std::vector<int> & propagatedLiterals) {
     // std::cout<<"Onlittrue "<<var<<std::endl;
@@ -178,7 +181,6 @@ void EagerConstraintImpl::onLiteralTrue(int var, int decisionLevel, std::vector<
 };
 
 void EagerConstraintImpl::onLiteralsUndefined(const std::vector<int> & params) {
-    // std::cout << "Literals undef at level "<<params[0]<<std::endl;
 
 #ifdef EAGER_DEBUG
     std::cout << "on literals undef at decision level" << params[0] << std::endl;
@@ -194,7 +196,7 @@ void EagerConstraintImpl::onLiteralsUndefined(const std::vector<int> & params) {
         //        }
     }
     executionManager.unRollToLevel(params[0]);
-    executionManager.undefReceived();
+    // executionManager.undefReceived();
 }
 
 void EagerConstraintImpl::getReasonForLiteral(int lit, std::vector<int> & reason) {

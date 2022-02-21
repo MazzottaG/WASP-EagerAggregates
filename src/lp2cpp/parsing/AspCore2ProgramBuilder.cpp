@@ -858,17 +858,23 @@ void AspCore2ProgramBuilder::buildCompilablePrograms(){
                     }
                 }
                 for(const aspc::ArithmeticRelation& ineq : aggregateRelation->getAggregate().getAggregateInequalities()){
-                    for(const aspc::ArithmeticExpression& exp : {ineq.getLeft(),ineq.getRight()}){
-                        for(std::string term : exp.getAllTerms()){
-                            if(positiveAggrVars.count(term)==0){
-                                neededDomBodyPredicate=true;
-                                break;
-                            }
-                        }
-                        if(neededDomBodyPredicate) break;
+                    if(!ineq.isBoundedRelation(positiveAggrVars)){
+                        neededDomBodyPredicate=true;
+                        break;
                     }
-                    if(neededDomBodyPredicate) break;
                 }
+                // for(const aspc::ArithmeticRelation& ineq : aggregateRelation->getAggregate().getAggregateInequalities()){
+                //     for(const aspc::ArithmeticExpression& exp : {ineq.getLeft(),ineq.getRight()}){
+                //         for(std::string term : exp.getAllTerms()){
+                //             if(positiveAggrVars.count(term)==0){
+                //                 neededDomBodyPredicate=true;
+                //                 break;
+                //             }
+                //         }
+                //         if(neededDomBodyPredicate) break;
+                //     }
+                //     if(neededDomBodyPredicate) break;
+                // }
                 if(neededDomBodyPredicate){
                     std::string domBodyPredicate="";
                     if(predicateToDomainPredicate.count(bodyPredicateName)==0){
@@ -1302,9 +1308,13 @@ void AspCore2ProgramBuilder::buildProgram(){
 }
 aspc::Program & AspCore2ProgramBuilder::getProgram() {
     if(!rewritten){
+        std::cout << "buildCompilablePrograms" << std::endl;
         buildCompilablePrograms();
+        std::cout << "computeCompletion" << std::endl;
         computeCompletion();
+        std::cout << "buildProgram" << std::endl;
         buildProgram();
+        std::cout << "rewritten" << std::endl;
         rewritten=true;
         // programWithCompletion.print();
         // std::cout << "\n\n"<<std::endl;

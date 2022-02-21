@@ -330,7 +330,8 @@ Solver::printConstraints(string trueConstraint) const
             }
         }
     }
-    std::cout<<":-"<<trueConstraint<<"."<<std::endl;
+    if(trueConstraint!="")
+        std::cout<<":-"<<trueConstraint<<"."<<std::endl;
     std::cout<<"MODEL_AS_CONSTRAINT"<<std::endl;
 }
 bool

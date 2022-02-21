@@ -479,6 +479,7 @@ class Solver
 //        inline void simplifyOptimizationLiterals();
         
         inline void addedVarName( Var var );
+        inline void addedVars();
         inline void onStartingSolver()
         {
             for( unsigned int i = 0; i < externalPropagators.size(); i++ )
@@ -822,7 +823,14 @@ Solver::addedVarName(
         externalPropagators[ i ]->addedVarName( var, VariableNames::getName( var ) );
     
 }
+void
+Solver::addedVars()
+{
 
+    for( unsigned int i = 0; i < externalPropagators.size(); i++ )
+        externalPropagators[ i ]->addedVars();
+    
+}
 unsigned int
 Solver::solve()
 {

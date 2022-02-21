@@ -248,6 +248,7 @@ public:
     std::unordered_set<std::string> getInternalPredicates()const;
     std::unordered_set<std::string> getDomainPredicates(){return domainPredicates;}
     std::unordered_set<std::string> getValuesPredicates(){return valuesPredicates;}
+    std::vector<aspc::Atom> getFacts()const{return program.getFacts();}
     const  std::map<std::string, unsigned> & getArietyMap();
     bool isDomainPredicate(std::string predicate){
         return domainPredicates.count(predicate)!=0;

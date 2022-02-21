@@ -1054,7 +1054,7 @@ GringoNumericFormat::readAtomsTable(
 
     }
 
-    
+    solver.addedVars();
     if( wasp::Options::printAtomTable )
         cout << "% Atoms table: end" << endl; 
 }

@@ -71,6 +71,7 @@ public:
     void onLiteralUndef(int var);
     void notifyStartingSolver()const{executor->undefLiteralsReceived();}
     void addedVarName(int var, const std::string & literalString);
+    void callGenerator(){executor->undefLiteralsReceived();}
     const std::unordered_map<int, std::vector<int> > & getPropagatedLiteralsAndReasons() const;
     // const std::vector<int> & getPropagatedLiterals() const;
     // std::vector<int> & getPropagatedLiteralsAndClear();

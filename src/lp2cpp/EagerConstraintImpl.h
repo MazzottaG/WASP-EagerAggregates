@@ -54,6 +54,7 @@ public:
     virtual void onAnswerSet(const std::vector<int>& answerSet);
     virtual void endPropagation(std::vector<int>&);
     virtual void simplifyAtLevelZero(std::vector<int> & output);
+    virtual void callGenerator(){executionManager.callGenerator();}
     virtual const std::vector<unsigned int> & getVariablesToFreeze();
     virtual const std::vector<int> & getWatchedLiterals();
     virtual const std::string & getFilepath() const;

@@ -279,8 +279,10 @@ void aspc::Rule::bodyReordering() {
 void aspc::Rule::orderBodyFormulasFromStarter(unsigned starter, std::vector<unsigned>& orderedBodyFormulas)const{
     std::unordered_set<std::string> boundVariables;
     std::unordered_set<unsigned> selectedFormulas;
-    formulas[starter]->addVariablesToSet(boundVariables);
-    while(orderedBodyFormulas.size()<formulas.size()-1){
+    if(starter<formulas.size())
+        formulas[starter]->addVariablesToSet(boundVariables);
+    int size = formulas.size()==starter ? formulas.size() : formulas.size()-1;
+    while(orderedBodyFormulas.size()<size){
         unsigned selectedIndex=-1;
         bool isPositiveLiteralSelected=false;
         bool isBoundedValueAssignmentSelected=false;

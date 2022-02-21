@@ -42,6 +42,7 @@ ExternalPropagator::ExternalPropagator()
     interpreter = NULL;
     fn = NULL;
     check_addedVarName = false;
+    check_addedVars = false;
     check_onFact = false;
     check_onAtomElimination = false;
     check_simplifyAtLevelZero = false;
@@ -84,6 +85,7 @@ ExternalPropagator::ExternalPropagator(
         WaspErrorMessage::errorGeneric( "Unsupported interpreter" );
 
     check_addedVarName = interpreter->checkMethod( method_plugins_addedVarName );
+    check_addedVars = interpreter->checkMethod( method_plugins_addedVars );
     check_onFact = interpreter->checkMethod( method_plugins_onFact );
     check_onAtomElimination = interpreter->checkMethod( method_plugins_onVariableElimination );
     check_simplifyAtLevelZero = interpreter->checkMethod( method_plugins_simplifyAtLevelZero );
@@ -418,6 +420,16 @@ ExternalPropagator::addedVarName(
         interpreter->addElementInMap( attribute_plugins_atomNames, name, var ); 
     if( check_addedVarName )
         interpreter->callVoidMethod( method_plugins_addedVarName, var, name );
+}
+
+void
+ExternalPropagator::addedVars()
+{
+    if( check_addedVars ){
+        std::vector<int>input;
+        std::vector<int>output;
+        interpreter->callListMethod( method_plugins_addedVars ,input,output);
+    }
 }
 
 void 
