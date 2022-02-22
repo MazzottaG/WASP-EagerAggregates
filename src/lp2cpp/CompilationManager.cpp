@@ -2036,7 +2036,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 *out << ind << "falseLits.pop_back();\n";
                 *out << ind << "if(current <= 0) continue;\n";
                     #ifdef TRACE_PROPAGATOR
-                        *out << ind << "const Tuple* tuple = factory.getTupleFromInternalID(-current);\n";
+                        *out << ind << "const Tuple* tuple = factory.getTupleFromInternalID(current);\n";
                         *out << ind << "std::cout<<\"   Searching Literal supported by \"<<tuple->toString()<<\" \";\n";
                     #endif
                     for(int componentId : recursiveComponent){
@@ -2052,8 +2052,15 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         *out << ind++ << "if(!removingLit->isFalse() && unfoundeRemovingLit!=predsToUnfoundedSet.end() && unfoundeRemovingLit->second->count(removingLit->getId())==0)\n";
                                             *out << ind-- << "std::cout<<\"       New Unfounded Literal \"<<removingLit->toString()<<\" \";\n";
                                     #endif
-                                    *out << ind++ << "if(!removingLit->isFalse() && unfoundeRemovingLit!=predsToUnfoundedSet.end() && unfoundeRemovingLit->second->count(removingLit->getId())==0)\n";
-                                        *out << ind-- << "falseLits.push_back(-removingLit->getId());\n";
+                                    *out << ind++ << "if(!removingLit->isFalse() && unfoundeRemovingLit!=predsToUnfoundedSet.end() && unfoundeRemovingLit->second->count(removingLit->getId())==0){\n";
+                                        *out << ind << "auto it = predsToUnfoundedSet.find(removingLit->getPredicateName());\n";
+                                        *out << ind++ << "if(it!=predsToUnfoundedSet.end())\n";
+                                            *out << ind-- << "it->second->insert(removingLit->getId());\n";
+                                        #ifdef TRACE_PROPAGATOR
+                                            *out << ind << "std::cout<<\"   Adding to Unfounded Set \"<<tuple->toString()<<\" \";\n";
+                                        #endif
+                                        *out << ind << "falseLits.push_back(-removingLit->getId());\n";
+                                    *out << --ind << "}//close if\n";
                                 *out << --ind << "}//close for\n";
                             *out << --ind << "}//close if\n";
 

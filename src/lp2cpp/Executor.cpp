@@ -577,8 +577,12 @@ void checkFoundness(){
                 for(int lit : supported->second){
                     Tuple* removingLit = factory.getTupleFromInternalID(lit);
                     auto unfoundeRemovingLit = predsToUnfoundedSet.find(removingLit->getPredicateName());
-                    if(!removingLit->isFalse() && unfoundeRemovingLit!=predsToUnfoundedSet.end() && unfoundeRemovingLit->second->count(removingLit->getId())==0)
+                    if(!removingLit->isFalse() && unfoundeRemovingLit!=predsToUnfoundedSet.end() && unfoundeRemovingLit->second->count(removingLit->getId())==0){
+                        auto it = predsToUnfoundedSet.find(removingLit->getPredicateName());
+                        if(it!=predsToUnfoundedSet.end())
+                            it->second->insert(removingLit->getId());
                         falseLits.push_back(-removingLit->getId());
+                    }//close if
                 }//close for
             }//close if
             auto supAux = supportedAux2.find(current);
