@@ -184,6 +184,9 @@ class TupleFactory{
                     first=false;
             }
         }
+        unsigned size(){
+            return storage.size();
+        }
         void printSize(){
             std::cout<<storage.size()<<std::endl;
         }
