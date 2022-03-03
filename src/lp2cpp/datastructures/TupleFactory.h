@@ -26,20 +26,17 @@
 #include <bitset>
 #include <cmath>
 
+const unsigned termsBit = (2*sizeof(int)*CHAR_BIT) - sizeof(int)/2*CHAR_BIT; 
+const size_t maskTerms = (std::pow(2,termsBit)-1);
+    
 struct TuplePointerHash {
-    const unsigned termsBit = (2*sizeof(int)*CHAR_BIT) - sizeof(int)/2*CHAR_BIT; 
-    const std::bitset<64> maskTerms = (std::pow(2,termsBit)-1);
     inline std::size_t operator()(const TupleLight* v) const {
         std::size_t seed = 0;
         for (int i=0; i < v->size(); i++) {
             seed ^= v->at(i) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         }
         std::size_t pointer = reinterpret_cast<size_t>(v->getPredicateName());
-        std::bitset<64> pointerPredicate = pointer;
-        std::bitset<64> bitsetTerms = seed;
-        std::bitset<64> p = (pointerPredicate << termsBit) | (maskTerms & bitsetTerms);
-        
-        return p.to_ulong();
+        return (pointer << termsBit) | (maskTerms & seed);
     }
 };
 
@@ -209,56 +206,56 @@ class TupleFactory{
             aggregateSetToIndex.emplace(pred,index);
         }
         float loadFactor()const{
-            std::cout << "STATS FACTORY Bucket count: "<<tupleToInternalVar.bucket_count() << std::endl;
-            std::cout << "STATS FACTORY Total Tuple Count: "<<tupleToInternalVar.size() << std::endl;
-            std::vector<int> buckets;
-            buckets.resize(tupleToInternalVar.bucket_count());
-            for(TupleLight* t : tupleToInternalVar){
-                buckets[tupleToInternalVar.bucket(t)]++;
-            }
-            int sum=0;
-            int count=0;
-            int min=0;
-            int min_bucket=0;
-            int max=0;
-            int max_bucket=0;
-            for(int i=0; i<tupleToInternalVar.bucket_count(); i++){
-                if(buckets[i] > 0){
-                    sum+=buckets[i];
-                    count++;
-                    if(buckets[i]<min || min==0){
-                        min=buckets[i];
-                        min_bucket=i;
-                    }
-                    if(buckets[i]>max){
-                        max=buckets[i];
-                        max_bucket=i;
-                    }
-                }
-            }
-            int avg=sum/count;
-            int avg_bucket=0;
-            for(int i=0; i<tupleToInternalVar.bucket_count(); i++){
-                if(buckets[i] > avg - 5 && buckets[i] < avg + 5){
-                    avg_bucket=i;
-                    break;
-                }
-            }
-            // std::cout << "Min Bucket: "<<min_bucket<<std::endl;
+            // std::cout << "STATS FACTORY Bucket count: "<<tupleToInternalVar.bucket_count() << std::endl;
+            // std::cout << "STATS FACTORY Total Tuple Count: "<<tupleToInternalVar.size() << std::endl;
+            // std::vector<int> buckets;
+            // buckets.resize(tupleToInternalVar.bucket_count());
             // for(TupleLight* t : tupleToInternalVar){
-            //     if(tupleToInternalVar.bucket(t) == min_bucket)
+            //     buckets[tupleToInternalVar.bucket(t)]++;
+            // }
+            // int sum=0;
+            // int count=0;
+            // int min=0;
+            // int min_bucket=0;
+            // int max=0;
+            // int max_bucket=0;
+            // for(int i=0; i<tupleToInternalVar.bucket_count(); i++){
+            //     if(buckets[i] > 0){
+            //         sum+=buckets[i];
+            //         count++;
+            //         if(buckets[i]<min || min==0){
+            //             min=buckets[i];
+            //             min_bucket=i;
+            //         }
+            //         if(buckets[i]>max){
+            //             max=buckets[i];
+            //             max_bucket=i;
+            //         }
+            //     }
+            // }
+            // int avg=sum/count;
+            // int avg_bucket=0;
+            // for(int i=0; i<tupleToInternalVar.bucket_count(); i++){
+            //     if(buckets[i] > avg - 5 && buckets[i] < avg + 5){
+            //         avg_bucket=i;
+            //         break;
+            //     }
+            // }
+            // // std::cout << "Min Bucket: "<<min_bucket<<std::endl;
+            // // for(TupleLight* t : tupleToInternalVar){
+            // //     if(tupleToInternalVar.bucket(t) == min_bucket)
+            // //         t->print();
+            // // }
+            // std::cout << "Avg Bucket: "<<avg_bucket<<" "<<buckets[avg_bucket]<<std::endl;
+            // for(TupleLight* t : tupleToInternalVar){
+            //     if(tupleToInternalVar.bucket(t) == avg_bucket)
             //         t->print();
             // }
-            std::cout << "Avg Bucket: "<<avg_bucket<<" "<<buckets[avg_bucket]<<std::endl;
-            for(TupleLight* t : tupleToInternalVar){
-                if(tupleToInternalVar.bucket(t) == avg_bucket)
-                    t->print();
-            }
-            std::cout << "STATS FACTORY Not Empty buckets count: "<< count <<std::endl;
-            std::cout << "STATS FACTORY Empty buckets percentage: "<<100-(100*count/tupleToInternalVar.bucket_count())<<std::endl;
-            std::cout << "STATS FACTORY Min load for non empty buckets: "<<min<<std::endl;
-            std::cout << "STATS FACTORY Average load for non empty buckets: "<<avg<<std::endl;
-            std::cout << "STATS FACTORY Max load for non empty buckets: "<<max<<std::endl;
+            // std::cout << "STATS FACTORY Not Empty buckets count: "<< count <<std::endl;
+            // std::cout << "STATS FACTORY Empty buckets percentage: "<<100-(100*count/tupleToInternalVar.bucket_count())<<std::endl;
+            // std::cout << "STATS FACTORY Min load for non empty buckets: "<<min<<std::endl;
+            // std::cout << "STATS FACTORY Average load for non empty buckets: "<<avg<<std::endl;
+            // std::cout << "STATS FACTORY Max load for non empty buckets: "<<max<<std::endl;
             
             return tupleToInternalVar.load_factor();
         }
