@@ -1601,15 +1601,17 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                             *out << ind << "Tuple* tuple"<<fIndex<<" = NULL;\n";
                                                             *out << ind << "if(i<tuples->size()) tuple"<<fIndex<<" = factory.getTupleFromInternalID(tuples->at(i));\n";
                                                             *out << ind << "else tuple"<<fIndex<<" = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));\n";
-
+                                                            std::unordered_set<std::string> previousBound(boundTerms);
                                                             for(unsigned k = 0; k < lit->getAriety(); k++){
                                                                 std::string term = lit->isVariableTermAt(k) || isInteger(lit->getTermAt(k)) ? lit->getTermAt(k) : "ConstantsManager::getInstance().mapConstant(\""+lit->getTermAt(k)+"\")";
                                                                 if(lit->isVariableTermAt(k) && boundTerms.count(lit->getTermAt(k))==0){
                                                                     *out << ind << "int " << term << "=tuple"<<fIndex<<"->at("<<k<<");\n";
                                                                     boundTerms.insert(term);
                                                                 }else{
-                                                                    *out << ind++ << "if(" << term << " == tuple"<<fIndex<<"->at("<<k<<")){\n";
-                                                                    closinPars++;
+                                                                    if(previousBound.count(term)==0){
+                                                                        *out << ind++ << "if(" << term << " == tuple"<<fIndex<<"->at("<<k<<")){\n";
+                                                                        closinPars++;
+                                                                    }
                                                                 }
                                                             }
 
@@ -2074,7 +2076,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                             *out << ind++ << "for(int i=0;i < supported.size(); i++){\n";
                                 *out << ind << "int lit = supported[i];\n";
                                 *out << ind << "Tuple* removingLit = factory.getTupleFromInternalID(lit);\n";
-                                *out << ind++ << "if(removingLit->isFalse()){supported[saving++]=supported[i]; continue;}\n";
+                                *out << ind << "if(removingLit->isFalse()){supported[saving++]=supported[i]; continue;}\n";
                                 *out << ind++ << "if(unfoundedSetForComponent"<<componentId<<".count(lit)==0){\n";
                                     *out << ind << "unfoundedSetForComponent"<<componentId<<".insert(lit);\n";
                                     #ifdef TRACE_PROPAGATOR
@@ -2482,7 +2484,14 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         }
         *out << --ind <<"}\n";
     }
+    // *out << ind << "int TupleLight::countPredSize;\n";
+    // *out << ind << "int TupleLight::countFor;\n";
+    // *out << ind << "int TupleLight::countTrue;\n";
     *out << ind++ << "std::string Executor::printInternalLiterals(){\n";
+        // *out << ind << "std::cout << \"Count if: \" <<TupleLight::countPredSize<<std::endl;\n";
+        // *out << ind << "std::cout << \"Count for: \" <<TupleLight::countFor<<std::endl;\n";
+        // *out << ind << "std::cout << \"Count true: \" <<TupleLight::countTrue<<std::endl;\n";
+        // *out << ind << "std::cout << \"Load Factor: \" <<factory.loadFactor()<<std::endl;\n";
         *out << ind << "std::string trueConstraint = \"\";\n";
         for(std::string pred : builder->getPrintingPredicates()){
             //predicate that appears in the head of some eager rules
@@ -2507,6 +2516,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << --ind << "}\n";
         }
         *out << ind << "std::cout << std::endl;\n";
+
         #ifdef PRINTCONSTRAINT
             *out << ind << "std::cout<<\"MODEL_AS_CONSTRAINT\"<<std::endl;\n";
             for(std::string pred : builder->getPrintingPredicates()){
