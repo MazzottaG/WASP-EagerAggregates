@@ -34,13 +34,12 @@ struct TuplePointerHash {
         for (int i=0; i < v->size(); i++) {
             seed ^= v->at(i) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         }
-        return seed;
-        // std::size_t pointer = reinterpret_cast<size_t>(v->getPredicateName());
-        // std::bitset<64> pointerPredicate = pointer;
-        // std::bitset<64> bitsetTerms = seed;
-        // std::bitset<64> p = (pointerPredicate << termsBit) | (maskTerms & bitsetTerms);
+        std::size_t pointer = reinterpret_cast<size_t>(v->getPredicateName());
+        std::bitset<64> pointerPredicate = pointer;
+        std::bitset<64> bitsetTerms = seed;
+        std::bitset<64> p = (pointerPredicate << termsBit) | (maskTerms & bitsetTerms);
         
-        // return p.to_ulong();
+        return p.to_ulong();
     }
 };
 
