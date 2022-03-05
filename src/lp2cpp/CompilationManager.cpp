@@ -2029,13 +2029,13 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 // *out << ind << "std::cout << \"time \" << duration_e / 1000 << endl;\n";
                 #ifdef TRACE_PROPAGATOR
                     *out << ind << "std::cout << \"Supported Literals\" <<std::endl;\n";
-                    *out << ind++ << "for(int lit =1;lit<supportedLiterals1.size();lit++){\n";
-                        *out << ind++ << "if(!supportedLiterals1[lit].empty()){\n";
-                            *out << ind << "std::cout << factory.getTupleFromInternalID(lit)->toString() << \" -> [\";\n";
-                            *out << ind << "for(int l : supportedLiterals1[lit]) std::cout << factory.getTupleFromInternalID(l)->toString() << \" \";\n";
-                            *out << ind << "std::cout << std::endl;\n";
-                        *out << --ind << "}\n";
-                    *out << --ind << "}\n";
+                    // *out << ind++ << "for(int lit =1;lit<supportedLiterals1.size();lit++){\n";
+                    //     *out << ind++ << "if(!supportedLiterals1[lit].empty()){\n";
+                    //         *out << ind << "std::cout << factory.getTupleFromInternalID(lit)->toString() << \" -> [\";\n";
+                    //         *out << ind << "for(int l : supportedLiterals1[lit]) std::cout << factory.getTupleFromInternalID(l)->toString() << \" \";\n";
+                    //         *out << ind << "std::cout << std::endl;\n";
+                    //     *out << --ind << "}\n";
+                    // *out << --ind << "}\n";
                 #endif
             *out << --ind << "}// close unfoundedPropagatorForComponent\n";
         }
@@ -6346,6 +6346,15 @@ void CompilationManager::buildAggrSetOrdering(const AspCore2ProgramBuilder* buil
 }
 void CompilationManager::buildGenerator(AspCore2ProgramBuilder* builder,const aspc::Program& program){
 
+    // *out << ind << "std::cout << (std::bitset<64>)reinterpret_cast<size_t>(&_agg_id_0) << std::endl;\n";
+    // *out << ind << "std::cout << (std::bitset<64>)reinterpret_cast<size_t>(&_agg_id_1) << std::endl;\n";
+    // *out << ind << "std::cout << (std::bitset<64>)reinterpret_cast<size_t>(&_aux_0) << std::endl;\n";
+    // *out << ind << "std::cout << (std::bitset<64>)reinterpret_cast<size_t>(&_inPath) << std::endl;\n";
+    // *out << ind << "std::cout << (std::bitset<64>)reinterpret_cast<size_t>(&_node) << std::endl;\n";
+    // *out << ind << "std::cout << (std::bitset<64>)reinterpret_cast<size_t>(&_reached) << std::endl;\n";
+    // *out << ind << "std::cout << (std::bitset<64>)reinterpret_cast<size_t>(&_start) << std::endl;\n";
+    // *out << ind << "std::cout << (std::bitset<64>)reinterpret_cast<size_t>(&_sup_0) << std::endl;\n";
+    // *out << ind << "std::cout << (std::bitset<64>)reinterpret_cast<size_t>(&_sup_1) << std::endl;\n";
     //Graph with aggregate rewriting predicates
     aspc::EagerProgram& rewrittenProgram = builder->getRewrittenProgram();
     GraphWithTarjanAlgorithm& graph = rewrittenProgram.getGeneratorDG();

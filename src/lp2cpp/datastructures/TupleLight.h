@@ -221,6 +221,17 @@ public:
         }
         std::cout << ")." <<std::endl;
     }
+    void printAsObject() const {
+        std::string sign = status == True ? "not" : "";
+        std::cout << "TupleLight" << id << "({";
+        for (unsigned i = 0; i < size_; i++) {
+            if (i > 0) {
+                std::cout << ",";
+            }
+            std::cout << operator[](i);
+        }
+        std::cout << ",&_"<<*predicateName<<");" <<std::endl;
+    }
     int getWaspID()const{
         return waspID;
     }
