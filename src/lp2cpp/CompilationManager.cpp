@@ -1668,6 +1668,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
             *out << ind++ << "void unfoundedPropagatorForComponent"<<componentId<<"(std::vector<int>& literalToPropagate,Executor* executor){\n";
                 *out << ind << "std::unordered_set<int> founded;\n";
+                *out << ind << "currentDecisionLevel=executor->getCurrentDecisionLevel();\n";
                 #ifdef TRACE_PROPAGATOR
                     *out << ind << "std::cout<<\"UnfoundedPropagatorForComponent"<<componentId<<"\"<<std::endl;\n";
                     *out << ind << "std::cout<<\"   Unfounded Set\"<<std::endl;\n";
@@ -1684,7 +1685,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     *out << ind << "if(founded.count(id)!=0) std::cout<<\"      Literal already founded \"<<starter->toString()<<std::endl;\n";
                     #endif
 
-                    *out << ind << "if(founded.count(id)!=0) continue;\n";
+                    *out << ind << "if(starter->isFalse() || founded.count(id)!=0) continue;\n";
                     *out << ind++ << "if(eagerFacts.count(id)!=0){\n";
                         *out << ind << "founded.insert(starter->getId());\n";
                         *out << ind << "propFoundnessForComponent"<<componentId<<"(founded,id);\n";
@@ -1847,7 +1848,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     #endif
                     *out << ind++ << "for(int lit : unfoundedSetForComponent"<<componentId<<"){\n";
                         *out << ind << "Tuple* starter = factory.getTupleFromInternalID(lit);\n";
-                        *out << ind << "if(starter == NULL) continue;\n";
+                        *out << ind << "if(starter == NULL || starter->isFalse()) continue;\n";
 
                         *out << ind << "auto oldSP = sourcePointers"<<componentId<<".find(lit);\n";
                         *out << ind++ << "if(oldSP!=sourcePointers"<<componentId<<".end()){\n";
@@ -1862,7 +1863,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         #ifdef TRACE_PROPAGATOR
                         *out << ind << "else std::cout << \"No SP for : \"<<starter->toString()<<std::endl;\n";
                         #endif
-                        *out << ind++ << "if(currentDecisionLevel >= 0){\n";
                             #ifdef TRACE_PROPAGATOR
                                 *out << ind << "std::cout << \"     Searching False Body for \"<<starter->toString()<<std::endl;\n";
                             #endif
@@ -1910,12 +1910,14 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                 addElse=true;
                                                 *out << ind++ <<printElse<< "if(starter->getPredicateName() == &_"<<head->getPredicateName()<<"){\n";
                                                 std::unordered_set<std::string> boundTerms;
-                                                unsigned closinPars =1;
                                                 if(head->getPredicateName()==predName){
                                                     *out << ind << "if(starter->isTrue() && conflictDetected==0) conflictDetected=-lit;\n";
-                                                    *out << ind << "reasonForLiteral[-lit]=shared_reason;\n";
                                                     *out << ind << "propLiterals.push_back(-lit);\n";
                                                 }
+                                                *out << ind++ << "if(currentDecisionLevel > 0){\n";
+                                                    *out << ind << "reasonForLiteral[-lit]=shared_reason;\n";
+                                                unsigned closinPars =2;
+                                                
                                                 for(unsigned k = 0; k < head->getAriety(); k++){
                                                     std::string term = head->isVariableTermAt(k) || isInteger(head->getTermAt(k)) ? head->getTermAt(k) : "ConstantsManager::getInstance().mapConstant(\""+head->getTermAt(k)+"\")";
                                                     if(head->isVariableTermAt(k) && boundTerms.count(head->getTermAt(k))==0){
@@ -1979,7 +1981,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                             }
                             // *out << ind << "else{ continue; }\n";
 
-                        *out << --ind << "}\n";
 
                     *out << --ind << "}\n";
                     *out << ind++ << "if(conflictDetected!=0) {\n";
@@ -1987,8 +1988,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                             *out << ind << "std::cout << \" Conflict detected:  Unfounded literal already true\"<<tuple->toString()<<std::endl;\n";
                         #endif
                         *out << ind << "executor->handleConflict(conflictDetected,literalToPropagate);\n";
-                        *out << ind << "for(int i=1; i<propLiterals.size(); i++) reasonForLiteral[propLiterals[i]]->clear();\n";
-                    *out << --ind << "}else{\n";
+                        *out << ind << "if(currentDecisionLevel > 0) for(int i=1; i<propLiterals.size(); i++) reasonForLiteral[propLiterals[i]]->clear();\n";
+                    *out << --ind << "}else if(propLiterals.size()>1){\n";
                     ind++;
                         *out << ind << "executor->executeProgramOnFacts(propLiterals,literalToPropagate,true);\n";
                     *out << --ind << "}\n";
@@ -2130,7 +2131,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "undefinedLoaded=true;\n";
         *out << ind << "std::cout<<\"Undef received\"<<std::endl;\n";
         buildGenerator(builder,program);
-
         // *out << ind++ << "{\n";
             // *out << ind << "for(int id: urange_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
             // *out << ind << "for(int id: prange_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
@@ -3257,7 +3257,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         //facts[0] is the decision level for eager mode (-1 is facts level)
         *out << ind << "int decisionLevel = facts[0];\n";
 
-        *out << ind << "currentDecisionLevel=decisionLevel;\n";
+        *out << ind << "currentDecisionLevel=solver->getCurrentDecisionLevel();\n";
+
         #ifdef TRACE_PROPAGATOR
             *out << ind << "std::cout<<\"Execute program on facts: decision level \"<<decisionLevel<<std::endl;\n";
             *out << ind << "std::cout<<\"Current Decision Level: \"<<currentDecisionLevel<<std::endl;\n";
@@ -3305,13 +3306,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     if (mode == LAZY_MODE) {
     } else {
-        *out << ind++ << "if(decisionLevel==-1) {\n";
+        *out << ind++ << "if(decisionLevel == -1) {\n";
             #ifdef TRACE_PROPAGATOR
                 *out << ind << "std::cout<<\"level -1\"<<std::endl;\n";
             #endif
-
-            *out << ind++ << "if(!undefinedLoaded)\n";
-                *out << ind-- << "undefLiteralsReceived();\n";
 
             std::unordered_set<unsigned> compiledRuleIndices;
             while(compiledRuleIndices.size()<program.getRulesSize()){
@@ -3354,7 +3352,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind << "std::cout<<\"PossibleSumMap size: \"<<possibleSum.size()<<std::endl;\n";
             *out << ind << "std::cout<<\"ActualSumMap size: \"<<actualSum.size()<<std::endl;\n";
         #endif
-
         *out << ind << "std::vector<int> propagated;\n";
         *out << ind++ << "while(!propagationStack.empty()){\n";
             *out << ind << "int startVar = propagationStack.back();\n";

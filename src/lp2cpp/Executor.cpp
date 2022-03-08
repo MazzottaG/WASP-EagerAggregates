@@ -496,7 +496,7 @@ void Executor::unRollToLevel(int decisionLevel){
 void Executor::executeProgramOnFacts(const std::vector<aspc::Literal*> & facts) {}
 void Executor::executeProgramOnFacts(const std::vector<int> & facts,std::vector<int>& propagatedLiterals,bool fromPropagator) {
     int decisionLevel = facts[0];
-    currentDecisionLevel=decisionLevel;
+    currentDecisionLevel=solver->getCurrentDecisionLevel();
     clearPropagations();
     std::vector<int> propagationStack;
     for(unsigned i=1;i<facts.size();i++) {
@@ -510,9 +510,7 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts,std::vector<
             propUndefined(factory.getTupleFromInternalID(factVar),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
         }
     }
-    if(decisionLevel==-1) {
-        if(!undefinedLoaded)
-            undefLiteralsReceived();
+    if(decisionLevel == -1) {
     }//close decision level == -1
     std::vector<int> propagated;
     while(!propagationStack.empty()){

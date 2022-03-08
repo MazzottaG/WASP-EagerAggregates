@@ -124,6 +124,7 @@ namespace aspc {
         }
         const UnorderedSet<int>& getConflictReason()const {return conflictReason;}
         void clearConflictReason(){conflictReason.clear();}
+        int getCurrentDecisionLevel()const {return solver->getCurrentDecisionLevel();}
         
     private:
         unsigned minConflict;

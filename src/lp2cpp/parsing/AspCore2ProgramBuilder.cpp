@@ -1320,6 +1320,7 @@ aspc::Program & AspCore2ProgramBuilder::getProgram() {
         // std::cout << "\n\n"<<std::endl;
         // rewrittenProgram.print();
         // std::cout << "\n\n"<<std::endl;
+        // exit(0);
     }
 
     return compilableProgram;
