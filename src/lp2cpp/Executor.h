@@ -86,7 +86,7 @@ namespace aspc {
         virtual void clear();
         virtual void clearPropagations();
         virtual void explainAggrLiteral(int,UnorderedSet<int>&);
-        virtual int explainExternalLiteral(int,UnorderedSet<int>&,std::unordered_set<int>&,bool=false);
+        virtual int explainExternalLiteral(int,UnorderedSet<int>&,bool=false);
         virtual void handleConflict(int,std::vector<int>&);
         virtual void unRollToLevel(int);
         virtual std::string printInternalLiterals();
@@ -125,6 +125,7 @@ namespace aspc {
         const UnorderedSet<int>& getConflictReason()const {return conflictReason;}
         void clearConflictReason(){conflictReason.clear();}
         int getCurrentDecisionLevel()const {return solver->getCurrentDecisionLevel();}
+        int getFactorySize()const;
         
     private:
         unsigned minConflict;
@@ -140,6 +141,7 @@ namespace aspc {
         //std::unordered_map<aspc::Literal, std::vector<aspc::Literal>, LiteralHash> propagatedLiteralsAndReasons;
         std::vector<std::string> bodyLiterals;
         PropComparator propComparison;  
+        int explainLevel;
         
     };
 }

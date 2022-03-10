@@ -123,20 +123,22 @@ void Executor::handleConflict(int literal,std::vector<int>& propagatedLiterals){
         return;
     }
 
-    std::unordered_set<int> visitedLiterals;
+    std::vector<int> visitedLiterals(2*factory.size());
     Tuple* l = literal>0 ? factory.getTupleFromInternalID(literal) : factory.getTupleFromInternalID(-literal);
     explainExternalLiteral(literal,conflictReason,visitedLiterals,true);
     explainExternalLiteral(-literal,conflictReason,visitedLiterals,true);
     propagatedLiterals.push_back(1);
     reasonForLiteral[literal].get()->clear();
 }
-int Executor::explainExternalLiteral(int var,UnorderedSet<int>& reas,std::unordered_set<int>& visitedLiteral,bool propagatorCall){
+int Executor::explainExternalLiteral(int var,UnorderedSet<int>& reas,std::vector<int>& visitedLiteral,bool propagatorCall){
+    int literalsCount = factory.size();
     if(!propagatorCall){
         int uVar = var>0 ? var : -var;
         Tuple* waspTuple = factory.getTupleFromWASPID(uVar);
         if(waspTuple==NULL) std::cout << "WARNING: Unable to find tuple from wasp id in explainExternalLiteral"<<std::endl;
         int internalVar = waspTuple->getId();
         var = var>0 ? internalVar : -internalVar;
+        visitedLiteral.resize(2*literalsCount);
     }
     std::vector<int> stack;
     stack.push_back(var);
@@ -148,15 +150,16 @@ int Executor::explainExternalLiteral(int var,UnorderedSet<int>& reas,std::unorde
         unsigned currentReasonSize= itReason != reasonForLiteral.end() ? currentReas->size() : 0;
         for(unsigned i = 0; i<currentReasonSize; i++){
             int reasonLiteral=currentReas->at(i);
-            if(visitedLiteral.count(reasonLiteral) == 0){
+            int& visitCount = reasonLiteral>=0 ? visitedLiteral[reasonLiteral] : visitedLiteral[literalsCount-reasonLiteral];
+            if(visitCount == 0){
+                visitCount++;
                 Tuple* literal = reasonLiteral>0 ? factory.getTupleFromInternalID(reasonLiteral):factory.getTupleFromInternalID(-reasonLiteral);
                 if(literal==NULL) std::cout << "WARNING: Unable to find tuple in reason "<<reasonLiteral<<std::endl;
-                visitedLiteral.insert(reasonLiteral);
                 if(literal->getWaspID()==0){
                     stack.push_back(reasonLiteral);
                 }else{
-                    int sign = reasonLiteral>0 ? 1 : -1;
-                    reas.insert(sign * literal->getWaspID());
+                    int signedLit = reasonLiteral>0 ? literal->getWaspID() : -literal->getWaspID();
+                    reas.insert(signedLit);
                 }
             }
         }
@@ -271,6 +274,7 @@ bool compTuple(const int& l1,const int& l2){
     return w==0 ? l1 > l2 : w > 0;
 }
 std::unordered_map<const std::string*,std::unordered_set<int>*> predsToUnfoundedSet;
+std::vector<int> foundnessFactory;
 void checkFoundness(){
     while(!falseLits.empty()){
         int starter = falseLits.back();
@@ -286,6 +290,7 @@ void Executor::undefLiteralsReceived()const{
         return;
     undefinedLoaded=true;
     std::cout<<"Undef received"<<std::endl;
+    foundnessFactory.resize(factory.size());
 }
 inline void Executor::addedVarName(int var, const std::string & atom) {
     std::vector<int> terms;
