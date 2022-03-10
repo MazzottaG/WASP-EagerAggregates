@@ -57,6 +57,7 @@ const std::string _offline = "offline";
 const std::string _node = "node";
 std::unordered_map<int,std::vector<int>> levelToIntLiterals;
 std::unordered_map<int,std::shared_ptr<VectorAsSet<int>>> reasonForLiteral;
+std::vector<int> visitedExplainLiteral;
 std::unordered_set<int> eagerFacts;
 int currentDecisionLevel=-1;
 bool undefinedLoaded=false;
@@ -123,14 +124,14 @@ void Executor::handleConflict(int literal,std::vector<int>& propagatedLiterals){
         return;
     }
 
-    std::vector<int> visitedLiterals(2*factory.size());
+    explainLevel++;
     Tuple* l = literal>0 ? factory.getTupleFromInternalID(literal) : factory.getTupleFromInternalID(-literal);
-    explainExternalLiteral(literal,conflictReason,visitedLiterals,true);
-    explainExternalLiteral(-literal,conflictReason,visitedLiterals,true);
+    explainExternalLiteral(literal,conflictReason,true);
+    explainExternalLiteral(-literal,conflictReason,true);
     propagatedLiterals.push_back(1);
     reasonForLiteral[literal].get()->clear();
 }
-int Executor::explainExternalLiteral(int var,UnorderedSet<int>& reas,std::vector<int>& visitedLiteral,bool propagatorCall){
+int Executor::explainExternalLiteral(int var,UnorderedSet<int>& reas,bool propagatorCall){
     int literalsCount = factory.size();
     if(!propagatorCall){
         int uVar = var>0 ? var : -var;
@@ -138,7 +139,7 @@ int Executor::explainExternalLiteral(int var,UnorderedSet<int>& reas,std::vector
         if(waspTuple==NULL) std::cout << "WARNING: Unable to find tuple from wasp id in explainExternalLiteral"<<std::endl;
         int internalVar = waspTuple->getId();
         var = var>0 ? internalVar : -internalVar;
-        visitedLiteral.resize(2*literalsCount);
+        explainLevel++;
     }
     std::vector<int> stack;
     stack.push_back(var);
@@ -150,9 +151,9 @@ int Executor::explainExternalLiteral(int var,UnorderedSet<int>& reas,std::vector
         unsigned currentReasonSize= itReason != reasonForLiteral.end() ? currentReas->size() : 0;
         for(unsigned i = 0; i<currentReasonSize; i++){
             int reasonLiteral=currentReas->at(i);
-            int& visitCount = reasonLiteral>=0 ? visitedLiteral[reasonLiteral] : visitedLiteral[literalsCount-reasonLiteral];
-            if(visitCount == 0){
-                visitCount++;
+            int& visitCount = reasonLiteral>=0 ? visitedExplainLiteral[reasonLiteral] : visitedExplainLiteral[literalsCount-reasonLiteral];
+            if(visitCount != explainLevel){
+                visitCount=explainLevel;
                 Tuple* literal = reasonLiteral>0 ? factory.getTupleFromInternalID(reasonLiteral):factory.getTupleFromInternalID(-reasonLiteral);
                 if(literal==NULL) std::cout << "WARNING: Unable to find tuple in reason "<<reasonLiteral<<std::endl;
                 if(literal->getWaspID()==0){
@@ -285,12 +286,13 @@ void checkFoundness(){
 void Executor::checkUnfoundedSets(std::vector<int>& literalsToPropagate,Executor* executor){
     checkFoundness();
 }
-void Executor::undefLiteralsReceived()const{
+void Executor::undefLiteralsReceived(){
     if(undefinedLoaded)
         return;
     undefinedLoaded=true;
     std::cout<<"Undef received"<<std::endl;
-    foundnessFactory.resize(factory.size());
+    visitedExplainLiteral.resize(2*factory.size());
+    explainLevel=1;
 }
 inline void Executor::addedVarName(int var, const std::string & atom) {
     std::vector<int> terms;
@@ -482,10 +484,10 @@ void Executor::unRollToLevel(int decisionLevel){
     while(currentDecisionLevel > decisionLevel){
         while(!levelToIntLiterals[currentDecisionLevel].empty()){
             int var = levelToIntLiterals[currentDecisionLevel].back();
-            levelToIntLiterals[currentDecisionLevel].pop_back();
-            reasonForLiteral[var].get()->clear();
             int uVar = var>0 ? var : -var;
             Tuple* tuple = factory.getTupleFromInternalID(uVar);
+            levelToIntLiterals[currentDecisionLevel].pop_back();
+            reasonForLiteral[var].get()->clear();
             const auto& insertResult = tuple->setStatus(Undef);
             if (insertResult.second) {
                 factory.removeFromCollisionsList(tuple->getId());

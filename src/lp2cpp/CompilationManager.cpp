@@ -968,13 +968,13 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind << "std::cout<<\"Explain \"<<literal<<\" \";l->print();std::cout<<std::endl;\n";
         #endif
 
-        *out << ind << "explainExternalLiteral(literal,conflictReason,visitedLiterals,true);\n";
+        *out << ind << "explainExternalLiteral(literal,conflictReason,true);\n";
 
         #ifdef TRACE_PROPAGATOR
             *out << ind << "std::cout<<\"Explain \"<<-literal<<\" \";l->print();std::cout<<std::endl;\n";
         #endif
 
-        *out << ind << "explainExternalLiteral(-literal,conflictReason,visitedLiterals,true);\n";
+        *out << ind << "explainExternalLiteral(-literal,conflictReason,true);\n";
         *out << ind << "propagatedLiterals.push_back(1);\n";
         *out << ind << "reasonForLiteral[literal].get()->clear();\n";
 
@@ -2127,7 +2127,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     // std::cout << "Unfounded Procedures Built"<<std::endl;
     // std::cout << "Building Generator"<<std::endl;
 
-    *out << ind++ << "void Executor::undefLiteralsReceived()const{\n";
+    *out << ind++ << "void Executor::undefLiteralsReceived(){\n";
         // *out << ind << "exit(180);\n";
         *out << ind++ << "if(undefinedLoaded)\n";
             *out << ind-- << "return;\n";
@@ -2138,7 +2138,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "undefinedLoaded=true;\n";
         *out << ind << "std::cout<<\"Undef received\"<<std::endl;\n";
         buildGenerator(builder,program);
-        *out << ind << "visitedExplainLiteral.resize(factory.size());\n";
+        *out << ind << "visitedExplainLiteral.resize(2*factory.size());\n";
         *out << ind << "explainLevel=1;\n";
         // *out << ind++ << "{\n";
             // *out << ind << "for(int id: urange_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
@@ -3171,10 +3171,16 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             #endif
             *out << ind++ << "while(!levelToIntLiterals[currentDecisionLevel].empty()){\n";
                 *out << ind << "int var = levelToIntLiterals[currentDecisionLevel].back();\n";
-                *out << ind << "levelToIntLiterals[currentDecisionLevel].pop_back();\n";
-                *out << ind << "reasonForLiteral[var].get()->clear();\n";
                 *out << ind << "int uVar = var>0 ? var : -var;\n";
                 *out << ind << "Tuple* tuple = factory.getTupleFromInternalID(uVar);\n";
+               
+                *out << ind << "levelToIntLiterals[currentDecisionLevel].pop_back();\n";
+                 #ifdef TRACE_PROPAGATOR 
+                    *out << ind << "std:: cout << var << tuple->toString()<<std::endl;\n";
+                    *out << ind << "if(reasonForLiteral[var].get() == NULL) std::cout << \"NULL reason\"<<std::endl; else std::cout << \"ReasonFound\"<<reasonForLiteral[var].get()<<std::endl;\n";
+                #endif
+                *out << ind << "reasonForLiteral[var].get()->clear();\n";
+                
                 *out << ind << "const auto& insertResult = tuple->setStatus(Undef);\n";
                 *out << ind++ << "if (insertResult.second) {\n";
                     *out << ind << "factory.removeFromCollisionsList(tuple->getId());\n";
@@ -3241,7 +3247,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << --ind << "}\n";
         *out << ind << "clearConflictReason();\n";
         *out << ind << "falseLits.clear();\n";
-
+        #ifdef TRACE_PROPAGATOR
+        *out << ind << "std::cout <<\"Unroll Completed\"<<std::endl;\n";
+        #endif
         //*out << ind << "trace_msg(eagerprop,2,\"Unrolling ended\");\n";
 
     *out << --ind << "}\n";
