@@ -676,7 +676,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             }
         }
     }
-
+    
     if(mode == EAGER_MODE){
         *out << ind << "std::unordered_map<int,std::vector<int>> levelToIntLiterals;\n";
         *out << ind << "std::unordered_map<int,std::shared_ptr<VectorAsSet<int>>> reasonForLiteral;\n";
@@ -5936,8 +5936,9 @@ unsigned CompilationManager::buildGeneratorForConstraint(aspc::Rule* joinRule,st
 }
 void CompilationManager::buildAuxValGenerator(std::string predicate,int ruleId,aspc::EagerProgram* sourceProgram){
 
-    const aspc::Aggregate* aggr = &sourceProgram->getRules()[ruleId].getArithmeticRelationsWithAggregate()[0].getAggregate();
-    const aspc::Atom* head=&sourceProgram->getRules()[ruleId].getHead()[0];
+    aspc::Rule referenceRule(sourceProgram->getRules()[ruleId]);
+    const aspc::Aggregate* aggr = &referenceRule.getArithmeticRelationsWithAggregate()[0].getAggregate();
+    const aspc::Atom* head=&referenceRule.getHead()[0];
     const aspc::Literal* body=&aggr->getAggregateLiterals()[0];
     std::string structType = aggr->isSum() ? "IndexedSet*" : "std::vector<int>*";
     std::string valuesType = aggr->isSum() ? "Set" : "Vec";
@@ -6189,7 +6190,6 @@ void CompilationManager::buildGeneratorForNonRecursiveComponent(std::vector<int>
         *out << --ind << "}\n";
     }
     std::string predName = rewrittenProgram->getGenPredicateName(component[0]);
-    // std::cout << "non recursive " <<vertex->second.name<< std::endl;
     if(builder->isValuePredicate(predName)){
         buildAuxValGenerator(predName,builder->getRuleForAuxVal(predName),rewrittenProgram);
     }else if(builder->isDomainPredicate(predName)){
