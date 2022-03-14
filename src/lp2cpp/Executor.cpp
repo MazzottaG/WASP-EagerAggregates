@@ -51,16 +51,18 @@ typedef TupleLight Tuple;
 template<size_t S>
 using AuxMap = AuxiliaryMapSmart<S> ;
 typedef std::vector<const Tuple* > Tuples;
-const std::string _agg_id_0 = "agg_id_0";
-const std::string _agg_id_1 = "agg_id_1";
-const std::string _agg_set_0 = "agg_set_0";
-const std::string _assign = "assign";
 const std::string _aux_0 = "aux_0";
-const std::string _aux_val0 = "aux_val0";
-const std::string _body_0 = "body_0";
-const std::string _component = "component";
-const std::string _costs = "costs";
-const std::string _user = "user";
+const std::string _aux_1 = "aux_1";
+const std::string _move = "move";
+const std::string _on = "on";
+const std::string _on0 = "on0";
+const std::string _onG = "onG";
+const std::string _steps = "steps";
+const std::string _sup_0 = "sup_0";
+const std::string _sup_1 = "sup_1";
+const std::string _sup_2 = "sup_2";
+const std::string _time = "time";
+const std::string _where = "where";
 std::unordered_map<int,std::vector<int>> levelToIntLiterals;
 std::unordered_map<int,std::shared_ptr<VectorAsSet<int>>> reasonForLiteral;
 std::vector<int> visitedExplainLiteral;
@@ -112,72 +114,87 @@ const std::string* parseTuple(const std::string & literalString,std::vector<int>
     return stringToUniqueStringPointer[predicateName];
 }
 //only ground lit function calls are not known a priori
-AuxMap<0> paux_val0_({});
-AuxMap<0> uaux_val0_({});
-AuxMap<0> faux_val0_({});
-AuxMap<64> paux_0_0_1_({0,1});
-AuxMap<64> uaux_0_0_1_({0,1});
-AuxMap<64> faux_0_0_1_({0,1});
+AuxMap<32> psup_0_0_({0});
+AuxMap<32> usup_0_0_({0});
+AuxMap<32> fsup_0_0_({0});
+AuxMap<0> psup_0_({});
+AuxMap<0> usup_0_({});
+AuxMap<0> fsup_0_({});
+AuxMap<0> pon_({});
+AuxMap<0> uon_({});
+AuxMap<0> fon_({});
+AuxMap<0> pon0_({});
+AuxMap<0> uon0_({});
+AuxMap<0> fon0_({});
+AuxMap<0> psup_1_({});
+AuxMap<0> usup_1_({});
+AuxMap<0> fsup_1_({});
+AuxMap<96> paux_0_0_1_2_({0,1,2});
+AuxMap<96> uaux_0_0_1_2_({0,1,2});
+AuxMap<96> faux_0_0_1_2_({0,1,2});
 AuxMap<0> paux_0_({});
 AuxMap<0> uaux_0_({});
 AuxMap<0> faux_0_({});
-AuxMap<0> pbody_0_({});
-AuxMap<0> ubody_0_({});
-AuxMap<0> fbody_0_({});
-AuxMap<0> puser_({});
-AuxMap<0> uuser_({});
-AuxMap<0> fuser_({});
-AuxMap<96> paux_0_0_2_3_({0,2,3});
-AuxMap<96> uaux_0_0_2_3_({0,2,3});
-AuxMap<96> faux_0_0_2_3_({0,2,3});
-AuxMap<32> paux_0_1_({1});
-AuxMap<32> uaux_0_1_({1});
-AuxMap<32> faux_0_1_({1});
-AuxMap<0> pagg_set_0_({});
-AuxMap<0> uagg_set_0_({});
-AuxMap<0> fagg_set_0_({});
-AuxMap<0> passign_({});
-AuxMap<0> uassign_({});
-AuxMap<0> fassign_({});
-AuxMap<64> pagg_set_0_1_2_({1,2});
-AuxMap<64> uagg_set_0_1_2_({1,2});
-AuxMap<64> fagg_set_0_1_2_({1,2});
-AuxMap<0> pcomponent_({});
-AuxMap<0> ucomponent_({});
-AuxMap<0> fcomponent_({});
-AuxMap<64> pagg_set_0_0_1_({0,1});
-AuxMap<64> uagg_set_0_0_1_({0,1});
-AuxMap<64> fagg_set_0_0_1_({0,1});
-AuxMap<32> pcomponent_0_({0});
-AuxMap<32> ucomponent_0_({0});
-AuxMap<32> fcomponent_0_({0});
-AuxMap<32> passign_0_({0});
-AuxMap<32> uassign_0_({0});
-AuxMap<32> fassign_0_({0});
-AuxMap<0> pagg_id_0_({});
-AuxMap<0> uagg_id_0_({});
-AuxMap<0> fagg_id_0_({});
-AuxMap<32> pagg_id_0_0_({0});
-AuxMap<32> uagg_id_0_0_({0});
-AuxMap<32> fagg_id_0_0_({0});
-AuxMap<32> pagg_set_0_2_({2});
-AuxMap<32> uagg_set_0_2_({2});
-AuxMap<32> fagg_set_0_2_({2});
-AuxMap<0> pagg_id_1_({});
-AuxMap<0> uagg_id_1_({});
-AuxMap<0> fagg_id_1_({});
-AuxMap<32> pagg_id_1_0_({0});
-AuxMap<32> uagg_id_1_0_({0});
-AuxMap<32> fagg_id_1_0_({0});
-AuxMap<0> pcosts_({});
-AuxMap<0> ucosts_({});
-AuxMap<0> fcosts_({});
-AuxMap<32> pcosts_0_({0});
-AuxMap<32> ucosts_0_({0});
-AuxMap<32> fcosts_0_({0});
-AuxMap<32> puser_0_({0});
-AuxMap<32> uuser_0_({0});
-AuxMap<32> fuser_0_({0});
+AuxMap<0> pmove_({});
+AuxMap<0> umove_({});
+AuxMap<0> fmove_({});
+AuxMap<64> paux_0_2_3_({2,3});
+AuxMap<64> uaux_0_2_3_({2,3});
+AuxMap<64> faux_0_2_3_({2,3});
+AuxMap<0> pwhere_({});
+AuxMap<0> uwhere_({});
+AuxMap<0> fwhere_({});
+AuxMap<64> paux_0_1_3_({1,3});
+AuxMap<64> uaux_0_1_3_({1,3});
+AuxMap<64> faux_0_1_3_({1,3});
+AuxMap<32> pwhere_0_({0});
+AuxMap<32> uwhere_0_({0});
+AuxMap<32> fwhere_0_({0});
+AuxMap<32> pmove_0_({0});
+AuxMap<32> umove_0_({0});
+AuxMap<32> fmove_0_({0});
+AuxMap<0> psup_2_({});
+AuxMap<0> usup_2_({});
+AuxMap<0> fsup_2_({});
+AuxMap<96> paux_1_0_1_2_({0,1,2});
+AuxMap<96> uaux_1_0_1_2_({0,1,2});
+AuxMap<96> faux_1_0_1_2_({0,1,2});
+AuxMap<0> paux_1_({});
+AuxMap<0> uaux_1_({});
+AuxMap<0> faux_1_({});
+AuxMap<0> ptime_({});
+AuxMap<0> utime_({});
+AuxMap<0> ftime_({});
+AuxMap<32> paux_1_3_({3});
+AuxMap<32> uaux_1_3_({3});
+AuxMap<32> faux_1_3_({3});
+AuxMap<0> psteps_({});
+AuxMap<0> usteps_({});
+AuxMap<0> fsteps_({});
+AuxMap<32> paux_1_4_({4});
+AuxMap<32> uaux_1_4_({4});
+AuxMap<32> faux_1_4_({4});
+AuxMap<96> paux_1_1_2_3_({1,2,3});
+AuxMap<96> uaux_1_1_2_3_({1,2,3});
+AuxMap<96> faux_1_1_2_3_({1,2,3});
+AuxMap<64> paux_1_2_3_({2,3});
+AuxMap<64> uaux_1_2_3_({2,3});
+AuxMap<64> faux_1_2_3_({2,3});
+AuxMap<32> pon_0_({0});
+AuxMap<32> uon_0_({0});
+AuxMap<32> fon_0_({0});
+AuxMap<64> pon_0_2_({0,2});
+AuxMap<64> uon_0_2_({0,2});
+AuxMap<64> fon_0_2_({0,2});
+AuxMap<0> ponG_({});
+AuxMap<0> uonG_({});
+AuxMap<0> fonG_({});
+AuxMap<32> ponG_0_({0});
+AuxMap<32> uonG_0_({0});
+AuxMap<32> fonG_0_({0});
+AuxMap<64> pon_0_1_({0,1});
+AuxMap<64> uon_0_1_({0,1});
+AuxMap<64> fon_0_1_({0,1});
 void Executor::handleConflict(int literal,std::vector<int>& propagatedLiterals){
     if(currentDecisionLevel <= 0){
         propagatedLiterals.push_back(1);
@@ -242,135 +259,162 @@ void Executor::executeFromFile(const char* filename) {
 }
 
 inline void insertFalse(const std::pair<const TupleLight *, bool>& insertResult){
-    if(insertResult.first->getPredicateName() == &_component){
-        fcomponent_.insert2Vec(*insertResult.first);
-        fcomponent_0_.insert2Vec(*insertResult.first);
+    if(insertResult.first->getPredicateName() == &_aux_1){
+        faux_1_.insert2Vec(*insertResult.first);
+        faux_1_0_1_2_.insert2Vec(*insertResult.first);
+        faux_1_1_2_3_.insert2Vec(*insertResult.first);
+        faux_1_2_3_.insert2Vec(*insertResult.first);
+        faux_1_3_.insert2Vec(*insertResult.first);
+        faux_1_4_.insert2Vec(*insertResult.first);
     }
-    else if(insertResult.first->getPredicateName() == &_assign){
-        fassign_.insert2Vec(*insertResult.first);
-        fassign_0_.insert2Vec(*insertResult.first);
+    else if(insertResult.first->getPredicateName() == &_sup_2){
+        fsup_2_.insert2Vec(*insertResult.first);
     }
-    else if(insertResult.first->getPredicateName() == &_agg_set_0){
-        fagg_set_0_.insert2Set(*insertResult.first);
-        fagg_set_0_0_1_.insert2Set(*insertResult.first);
-        fagg_set_0_1_2_.insert2Set(*insertResult.first);
-        fagg_set_0_2_.insert2Set(*insertResult.first);
-    }
-    else if(insertResult.first->getPredicateName() == &_user){
-        fuser_.insert2Vec(*insertResult.first);
-        fuser_0_.insert2Vec(*insertResult.first);
-    }
-    else if(insertResult.first->getPredicateName() == &_agg_id_1){
-        fagg_id_1_.insert2Vec(*insertResult.first);
-        fagg_id_1_0_.insert2Vec(*insertResult.first);
-    }
-    else if(insertResult.first->getPredicateName() == &_body_0){
-        fbody_0_.insert2Vec(*insertResult.first);
-    }
-    else if(insertResult.first->getPredicateName() == &_costs){
-        fcosts_.insert2Vec(*insertResult.first);
-        fcosts_0_.insert2Vec(*insertResult.first);
+    else if(insertResult.first->getPredicateName() == &_where){
+        fwhere_.insert2Vec(*insertResult.first);
+        fwhere_0_.insert2Vec(*insertResult.first);
     }
     else if(insertResult.first->getPredicateName() == &_aux_0){
         faux_0_.insert2Vec(*insertResult.first);
-        faux_0_0_1_.insert2Vec(*insertResult.first);
-        faux_0_0_2_3_.insert2Vec(*insertResult.first);
-        faux_0_1_.insert2Vec(*insertResult.first);
+        faux_0_0_1_2_.insert2Vec(*insertResult.first);
+        faux_0_1_3_.insert2Vec(*insertResult.first);
+        faux_0_2_3_.insert2Vec(*insertResult.first);
     }
-    else if(insertResult.first->getPredicateName() == &_agg_id_0){
-        fagg_id_0_.insert2Vec(*insertResult.first);
-        fagg_id_0_0_.insert2Vec(*insertResult.first);
+    else if(insertResult.first->getPredicateName() == &_move){
+        fmove_.insert2Vec(*insertResult.first);
+        fmove_0_.insert2Vec(*insertResult.first);
     }
-    else if(insertResult.first->getPredicateName() == &_aux_val0){
-        faux_val0_.insert2Vec(*insertResult.first);
+    else if(insertResult.first->getPredicateName() == &_sup_1){
+        fsup_1_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == &_on0){
+        fon0_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == &_onG){
+        fonG_.insert2Vec(*insertResult.first);
+        fonG_0_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == &_on){
+        fon_.insert2Vec(*insertResult.first);
+        fon_0_.insert2Vec(*insertResult.first);
+        fon_0_1_.insert2Vec(*insertResult.first);
+        fon_0_2_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == &_steps){
+        fsteps_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == &_time){
+        ftime_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == &_sup_0){
+        fsup_0_.insert2Vec(*insertResult.first);
+        fsup_0_0_.insert2Vec(*insertResult.first);
     }
 }
 inline void insertTrue(const std::pair<const TupleLight *, bool>& insertResult){
-    if(insertResult.first->getPredicateName() == &_component){
-        pcomponent_.insert2Vec(*insertResult.first);
-        pcomponent_0_.insert2Vec(*insertResult.first);
+    if(insertResult.first->getPredicateName() == &_aux_1){
+        paux_1_.insert2Vec(*insertResult.first);
+        paux_1_0_1_2_.insert2Vec(*insertResult.first);
+        paux_1_1_2_3_.insert2Vec(*insertResult.first);
+        paux_1_2_3_.insert2Vec(*insertResult.first);
+        paux_1_3_.insert2Vec(*insertResult.first);
+        paux_1_4_.insert2Vec(*insertResult.first);
     }
-    else if(insertResult.first->getPredicateName() == &_assign){
-        passign_.insert2Vec(*insertResult.first);
-        passign_0_.insert2Vec(*insertResult.first);
+    else if(insertResult.first->getPredicateName() == &_sup_2){
+        psup_2_.insert2Vec(*insertResult.first);
     }
-    else if(insertResult.first->getPredicateName() == &_agg_set_0){
-        pagg_set_0_.insert2Set(*insertResult.first);
-        pagg_set_0_0_1_.insert2Set(*insertResult.first);
-        pagg_set_0_1_2_.insert2Set(*insertResult.first);
-        pagg_set_0_2_.insert2Set(*insertResult.first);
-    }
-    else if(insertResult.first->getPredicateName() == &_user){
-        puser_.insert2Vec(*insertResult.first);
-        puser_0_.insert2Vec(*insertResult.first);
-    }
-    else if(insertResult.first->getPredicateName() == &_agg_id_1){
-        pagg_id_1_.insert2Vec(*insertResult.first);
-        pagg_id_1_0_.insert2Vec(*insertResult.first);
-    }
-    else if(insertResult.first->getPredicateName() == &_body_0){
-        pbody_0_.insert2Vec(*insertResult.first);
-    }
-    else if(insertResult.first->getPredicateName() == &_costs){
-        pcosts_.insert2Vec(*insertResult.first);
-        pcosts_0_.insert2Vec(*insertResult.first);
+    else if(insertResult.first->getPredicateName() == &_where){
+        pwhere_.insert2Vec(*insertResult.first);
+        pwhere_0_.insert2Vec(*insertResult.first);
     }
     else if(insertResult.first->getPredicateName() == &_aux_0){
         paux_0_.insert2Vec(*insertResult.first);
-        paux_0_0_1_.insert2Vec(*insertResult.first);
-        paux_0_0_2_3_.insert2Vec(*insertResult.first);
-        paux_0_1_.insert2Vec(*insertResult.first);
+        paux_0_0_1_2_.insert2Vec(*insertResult.first);
+        paux_0_1_3_.insert2Vec(*insertResult.first);
+        paux_0_2_3_.insert2Vec(*insertResult.first);
     }
-    else if(insertResult.first->getPredicateName() == &_agg_id_0){
-        pagg_id_0_.insert2Vec(*insertResult.first);
-        pagg_id_0_0_.insert2Vec(*insertResult.first);
+    else if(insertResult.first->getPredicateName() == &_move){
+        pmove_.insert2Vec(*insertResult.first);
+        pmove_0_.insert2Vec(*insertResult.first);
     }
-    else if(insertResult.first->getPredicateName() == &_aux_val0){
-        paux_val0_.insert2Vec(*insertResult.first);
+    else if(insertResult.first->getPredicateName() == &_sup_1){
+        psup_1_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == &_on0){
+        pon0_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == &_onG){
+        ponG_.insert2Vec(*insertResult.first);
+        ponG_0_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == &_on){
+        pon_.insert2Vec(*insertResult.first);
+        pon_0_.insert2Vec(*insertResult.first);
+        pon_0_1_.insert2Vec(*insertResult.first);
+        pon_0_2_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == &_steps){
+        psteps_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == &_time){
+        ptime_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == &_sup_0){
+        psup_0_.insert2Vec(*insertResult.first);
+        psup_0_0_.insert2Vec(*insertResult.first);
     }
 }
 inline void insertUndef(const std::pair<const TupleLight *, bool>& insertResult){
-    if(insertResult.first->getPredicateName() == &_component){
-        ucomponent_.insert2Vec(*insertResult.first);
-        ucomponent_0_.insert2Vec(*insertResult.first);
+    if(insertResult.first->getPredicateName() == &_aux_1){
+        uaux_1_.insert2Vec(*insertResult.first);
+        uaux_1_0_1_2_.insert2Vec(*insertResult.first);
+        uaux_1_1_2_3_.insert2Vec(*insertResult.first);
+        uaux_1_2_3_.insert2Vec(*insertResult.first);
+        uaux_1_3_.insert2Vec(*insertResult.first);
+        uaux_1_4_.insert2Vec(*insertResult.first);
     }
-    else if(insertResult.first->getPredicateName() == &_assign){
-        uassign_.insert2Vec(*insertResult.first);
-        uassign_0_.insert2Vec(*insertResult.first);
+    else if(insertResult.first->getPredicateName() == &_sup_2){
+        usup_2_.insert2Vec(*insertResult.first);
     }
-    else if(insertResult.first->getPredicateName() == &_agg_set_0){
-        uagg_set_0_.insert2Set(*insertResult.first);
-        uagg_set_0_0_1_.insert2Set(*insertResult.first);
-        uagg_set_0_1_2_.insert2Set(*insertResult.first);
-        uagg_set_0_2_.insert2Set(*insertResult.first);
-    }
-    else if(insertResult.first->getPredicateName() == &_user){
-        uuser_.insert2Vec(*insertResult.first);
-        uuser_0_.insert2Vec(*insertResult.first);
-    }
-    else if(insertResult.first->getPredicateName() == &_agg_id_1){
-        uagg_id_1_.insert2Vec(*insertResult.first);
-        uagg_id_1_0_.insert2Vec(*insertResult.first);
-    }
-    else if(insertResult.first->getPredicateName() == &_body_0){
-        ubody_0_.insert2Vec(*insertResult.first);
-    }
-    else if(insertResult.first->getPredicateName() == &_costs){
-        ucosts_.insert2Vec(*insertResult.first);
-        ucosts_0_.insert2Vec(*insertResult.first);
+    else if(insertResult.first->getPredicateName() == &_where){
+        uwhere_.insert2Vec(*insertResult.first);
+        uwhere_0_.insert2Vec(*insertResult.first);
     }
     else if(insertResult.first->getPredicateName() == &_aux_0){
         uaux_0_.insert2Vec(*insertResult.first);
-        uaux_0_0_1_.insert2Vec(*insertResult.first);
-        uaux_0_0_2_3_.insert2Vec(*insertResult.first);
-        uaux_0_1_.insert2Vec(*insertResult.first);
+        uaux_0_0_1_2_.insert2Vec(*insertResult.first);
+        uaux_0_1_3_.insert2Vec(*insertResult.first);
+        uaux_0_2_3_.insert2Vec(*insertResult.first);
     }
-    else if(insertResult.first->getPredicateName() == &_agg_id_0){
-        uagg_id_0_.insert2Vec(*insertResult.first);
-        uagg_id_0_0_.insert2Vec(*insertResult.first);
+    else if(insertResult.first->getPredicateName() == &_move){
+        umove_.insert2Vec(*insertResult.first);
+        umove_0_.insert2Vec(*insertResult.first);
     }
-    else if(insertResult.first->getPredicateName() == &_aux_val0){
-        uaux_val0_.insert2Vec(*insertResult.first);
+    else if(insertResult.first->getPredicateName() == &_sup_1){
+        usup_1_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == &_on0){
+        uon0_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == &_onG){
+        uonG_.insert2Vec(*insertResult.first);
+        uonG_0_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == &_on){
+        uon_.insert2Vec(*insertResult.first);
+        uon_0_.insert2Vec(*insertResult.first);
+        uon_0_1_.insert2Vec(*insertResult.first);
+        uon_0_2_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == &_steps){
+        usteps_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == &_time){
+        utime_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == &_sup_0){
+        usup_0_.insert2Vec(*insertResult.first);
+        usup_0_0_.insert2Vec(*insertResult.first);
     }
 }
 inline void Executor::onLiteralTrue(const aspc::Literal* l) {
@@ -432,756 +476,1266 @@ bool compTuple(const int& l1,const int& l2){
 }
 std::unordered_map<const std::string*,std::unordered_set<int>*> predsToUnfoundedSet;
 std::vector<int> foundnessFactory;
-void checkFoundness(){
-    while(!falseLits.empty()){
-        int starter = falseLits.back();
-        int current = starter >= 0 ? starter : -starter;
-        falseLits.pop_back();
-    }//close while
+std::vector<std::vector<int>> supportedAux0;
+std::vector<std::vector<int>> supportedLiterals0;
+std::unordered_map<int,int> sourcePointers0;
+std::vector<int> unfoundedSetForComponent0;
+void propFoundnessForComponent0(int foundedLiteral){
+    std::vector<int> foundedStack({foundedLiteral});
+    while(!foundedStack.empty()){
+        Tuple* starter = factory.getTupleFromInternalID(foundedStack.back());
+        foundedStack.pop_back();
+        if(starter->getPredicateName() == &_sup_2){
+            int TP1=starter->at(0);
+            int N=starter->at(1);
+            int N1=starter->at(2);
+            Tuple* head = factory.find({TP1,N,N1},&_on);
+            if(head!=NULL && !head->isFalse() && foundnessFactory[head->getId()]<0){
+                supportedLiterals0[starter->getId()].push_back(head->getId());
+                sourcePointers0[head->getId()] = starter->getId();
+                foundedStack.push_back(head->getId());
+                foundnessFactory[head->getId()]=1;
+            }
+        }
+        if(starter->getPredicateName() == &_aux_1){
+            int TP1=starter->at(0);
+            int N=starter->at(1);
+            int N1=starter->at(2);
+            int T=starter->at(3);
+            int K=starter->at(4);
+            Tuple* head = factory.find({TP1,N,N1},&_sup_2);
+            if(head!=NULL && !head->isFalse() && foundnessFactory[head->getId()]<0){
+                supportedLiterals0[starter->getId()].push_back(head->getId());
+                sourcePointers0[head->getId()] = starter->getId();
+                foundedStack.push_back(head->getId());
+                foundnessFactory[head->getId()]=1;
+            }
+        }
+        if(starter->getPredicateName() == &_time){
+            int T=starter->at(0);
+            int TP1 = T + 1;
+            const std::vector<int>* tuples = &psteps_.getValuesVec({});
+            const std::vector<int>* tuplesU = &usteps_.getValuesVec({});
+            for(unsigned i=0; i<tuples->size()+tuplesU->size();i++){
+                Tuple* tuple2 = NULL;
+                if(i<tuples->size()) tuple2 = factory.getTupleFromInternalID(tuples->at(i));
+                else tuple2 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                int K=tuple2->at(0);
+                if(T < K){
+                    const std::vector<int>* tuples = &pon_0_.getValuesVec({T});
+                    const std::vector<int>* tuplesU = &uon_0_.getValuesVec({T});
+                    for(unsigned i=0; i<tuples->size()+tuplesU->size();i++){
+                        Tuple* tuple4 = NULL;
+                        if(i<tuples->size()) tuple4 = factory.getTupleFromInternalID(tuples->at(i));
+                        else tuple4 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                        int N=tuple4->at(1);
+                        int N1=tuple4->at(2);
+                        if(foundnessFactory[tuple4->getId()]>=0){
+                            Tuple* tuple5 = factory.find({T,N1},&_move);
+                            if(tuple5==NULL || !tuple5->isTrue()){
+                                Tuple* head = factory.find({TP1,N,N1,T,K},&_aux_1);
+                                if(head!=NULL && !head->isFalse() && foundnessFactory[head->getId()]<0){
+                                    foundedStack.push_back(head->getId());
+                                    foundnessFactory[head->getId()]=1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if(starter->getPredicateName() == &_steps){
+            int K=starter->at(0);
+            const std::vector<int>* tuples = &ptime_.getValuesVec({});
+            const std::vector<int>* tuplesU = &utime_.getValuesVec({});
+            for(unsigned i=0; i<tuples->size()+tuplesU->size();i++){
+                Tuple* tuple1 = NULL;
+                if(i<tuples->size()) tuple1 = factory.getTupleFromInternalID(tuples->at(i));
+                else tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                int T=tuple1->at(0);
+                if(T < K){
+                    int TP1 = T + 1;
+                    const std::vector<int>* tuples = &pon_0_.getValuesVec({T});
+                    const std::vector<int>* tuplesU = &uon_0_.getValuesVec({T});
+                    for(unsigned i=0; i<tuples->size()+tuplesU->size();i++){
+                        Tuple* tuple4 = NULL;
+                        if(i<tuples->size()) tuple4 = factory.getTupleFromInternalID(tuples->at(i));
+                        else tuple4 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                        int N=tuple4->at(1);
+                        int N1=tuple4->at(2);
+                        if(foundnessFactory[tuple4->getId()]>=0){
+                            Tuple* tuple5 = factory.find({T,N1},&_move);
+                            if(tuple5==NULL || !tuple5->isTrue()){
+                                Tuple* head = factory.find({TP1,N,N1,T,K},&_aux_1);
+                                if(head!=NULL && !head->isFalse() && foundnessFactory[head->getId()]<0){
+                                    foundedStack.push_back(head->getId());
+                                    foundnessFactory[head->getId()]=1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if(starter->getPredicateName() == &_on){
+            int T=starter->at(0);
+            int N=starter->at(1);
+            int N1=starter->at(2);
+            int TP1 = T + 1;
+            Tuple* tuple2 = factory.find({T},&_time);
+            if(tuple2!=NULL && !tuple2->isFalse()){
+                Tuple* tuple3 = factory.find({T,N1},&_move);
+                if(tuple3==NULL || !tuple3->isTrue()){
+                    const std::vector<int>* tuples = &psteps_.getValuesVec({});
+                    const std::vector<int>* tuplesU = &usteps_.getValuesVec({});
+                    for(unsigned i=0; i<tuples->size()+tuplesU->size();i++){
+                        Tuple* tuple4 = NULL;
+                        if(i<tuples->size()) tuple4 = factory.getTupleFromInternalID(tuples->at(i));
+                        else tuple4 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                        int K=tuple4->at(0);
+                        if(T < K){
+                            Tuple* head = factory.find({TP1,N,N1,T,K},&_aux_1);
+                            if(head!=NULL && !head->isFalse() && foundnessFactory[head->getId()]<0){
+                                foundedStack.push_back(head->getId());
+                                foundnessFactory[head->getId()]=1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }//close while 
 }//close function
-void Executor::checkUnfoundedSets(std::vector<int>& literalsToPropagate,Executor* executor){
-    checkFoundness();
-}
-void Executor::undefLiteralsReceived(){
-    if(undefinedLoaded)
-        return;
-    undefinedLoaded=true;
-    std::cout<<"Undef received"<<std::endl;
-    std::cout<<"Component 8"<<std::endl;
-    std::cout<<"Component 7"<<std::endl;
-    std::cout<<"Component 6"<<std::endl;
-    {
-        const std::vector<int>* tuples = &passign_.getValuesVec({});
-        const std::vector<int>* tuplesU = &uassign_.getValuesVec({});
-        for(unsigned i = 0; i < tuples->size() + tuplesU->size(); i++){
-            Tuple* tuple0 = NULL;
-            if(i<tuples->size()) tuple0=factory.getTupleFromInternalID(tuples->at(i));
-            else tuple0=factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-            int C = tuple0->at(0);
-            int U = tuple0->at(1);
-            const std::vector<int>* tuples = &pcomponent_0_.getValuesVec({C});
-            const std::vector<int>* tuplesU = &ucomponent_0_.getValuesVec({C});
-            for(unsigned i = 0; i < tuples->size() + tuplesU->size(); i++){
-                Tuple* tuple1 = NULL;
-                if(i<tuples->size()) tuple1=factory.getTupleFromInternalID(tuples->at(i));
-                else tuple1=factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                if(tuple1->at(0) == C){
-                    int P = tuple1->at(1);
-                    Tuple* saving1 = factory.addNewInternalTuple({P,C,U},&_agg_set_0);
-                    const auto& insertResult = saving1->setStatus(Undef);
-                    if(insertResult.second){
-                        factory.removeFromCollisionsList(saving1->getId());
-                        insertUndef(insertResult);
+void unfoundedPropagatorForComponent0(std::vector<int>& literalToPropagate,Executor* executor){
+    currentDecisionLevel=executor->getCurrentDecisionLevel();
+    int unfoundedCount=0;
+    for(int id : unfoundedSetForComponent0){
+        Tuple* starter = factory.getTupleFromInternalID(id);
+        if(starter->isFalse() || foundnessFactory[id]>=0) continue;
+        if(eagerFacts.count(id)!=0){
+            foundnessFactory[starter->getId()]=1;
+            propFoundnessForComponent0(id);
+            continue;
+        }
+        bool spFound=false;
+        if(!spFound && starter->getPredicateName() == &_on && foundnessFactory[starter->getId()]<0){
+            if(0 == starter->at(0)){
+                int N1=starter->at(1);
+                int N=starter->at(2);
+                Tuple* body = factory.find({0,N1,N},&_sup_0);
+                if(body!=NULL && !body->isFalse()){
+                    sourcePointers0[starter->getId()]=body->getId();
+                    supportedLiterals0[body->getId()].push_back(starter->getId());
+                    foundnessFactory[starter->getId()]=1;
+                    propFoundnessForComponent0(starter->getId());
+                    spFound=true;
+                }
+            }
+        }
+        if(!spFound && starter->getPredicateName() == &_on && foundnessFactory[starter->getId()]<0){
+            int TP1=starter->at(0);
+            int N1=starter->at(1);
+            int N=starter->at(2);
+            Tuple* body = factory.find({TP1,N1,N},&_sup_1);
+            if(body!=NULL && !body->isFalse()){
+                sourcePointers0[starter->getId()]=body->getId();
+                supportedLiterals0[body->getId()].push_back(starter->getId());
+                foundnessFactory[starter->getId()]=1;
+                propFoundnessForComponent0(starter->getId());
+                spFound=true;
+            }
+        }
+        if(!spFound && starter->getPredicateName() == &_on && foundnessFactory[starter->getId()]<0){
+            int TP1=starter->at(0);
+            int N=starter->at(1);
+            int N1=starter->at(2);
+            Tuple* body = factory.find({TP1,N,N1},&_sup_2);
+            if(body!=NULL && !body->isFalse()){
+                if(foundnessFactory[body->getId()]>=0){
+                    sourcePointers0[starter->getId()]=body->getId();
+                    supportedLiterals0[body->getId()].push_back(starter->getId());
+                    foundnessFactory[starter->getId()]=1;
+                    propFoundnessForComponent0(starter->getId());
+                    spFound=true;
+                }
+            }
+        }
+        if(!spFound && starter->getPredicateName() == &_sup_2 && foundnessFactory[starter->getId()]<0){
+            int TP1=starter->at(0);
+            int N=starter->at(1);
+            int N1=starter->at(2);
+            const std::vector<int>* tuples = &paux_1_0_1_2_.getValuesVec({TP1,N,N1});
+            const std::vector<int>* tuplesU = &uaux_1_0_1_2_.getValuesVec({TP1,N,N1});
+            for(unsigned i=0; !spFound && i<tuples->size()+tuplesU->size();i++){
+                Tuple* body = NULL;
+                if(i<tuples->size()) body = factory.getTupleFromInternalID(tuples->at(i));
+                else body = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                if(body!=NULL){
+                    if(foundnessFactory[body->getId()]>=0){
+                        sourcePointers0[starter->getId()]=body->getId();
+                        supportedLiterals0[body->getId()].push_back(starter->getId());
+                        foundnessFactory[starter->getId()]=1;
+                        propFoundnessForComponent0(starter->getId());
+                        spFound=true;
                     }
                 }
             }
         }
-    }
-    std::cout<<"Component 5"<<std::endl;
-    {
-        std::map<std::vector<int>,std::vector<int>> possibleSumValues;
-        std::map<std::vector<int>,std::unordered_set<int>> possibleSumValuesSet;
-        const IndexedSet* tuples = &pagg_set_0_.getValuesSet({});
-        const IndexedSet* tuplesU = &uagg_set_0_.getValuesSet({});
-        auto itTrue = tuples->begin();
-        auto itUndef = tuplesU->begin();
-        while(itTrue!=tuples->end() || itUndef != tuplesU->end()){
-            Tuple* tuple = NULL;
-            if(itTrue!=tuples->end()){ tuple=factory.getTupleFromInternalID(*itTrue);itTrue++;}
-            else{ tuple=factory.getTupleFromInternalID(*itUndef);itUndef++;}
-            int P = tuple->at(0);
-            int C = tuple->at(1);
-            int U = tuple->at(2);
-            std::vector<int> sharedVars({U});
-            if(possibleSumValues[sharedVars].empty()){ // init with 0
-                possibleSumValues[sharedVars].push_back(0);
-                possibleSumValuesSet[sharedVars].insert(0);
-                Tuple* auxVal = factory.addNewInternalTuple({0},&_aux_val0);
-                const auto& insertResult = auxVal->setStatus(True);
-                if(insertResult.second){
-                    factory.removeFromCollisionsList(auxVal->getId());
-                    insertTrue(insertResult);
+        if(!spFound) unfoundedSetForComponent0[unfoundedCount++]=id;
+        } //close unfounded for
+        unfoundedSetForComponent0.resize(unfoundedCount);
+        if(!unfoundedSetForComponent0.empty()){
+            int conflictDetected=0;
+            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+            std::vector<int> propLiterals({currentDecisionLevel});
+            for(int lit : unfoundedSetForComponent0){
+                Tuple* starter = factory.getTupleFromInternalID(lit);
+                if(starter == NULL || starter->isFalse() || foundnessFactory[lit]>=0) continue;
+                foundnessFactory[lit]=1;
+                bool propagated=false;
+                bool reasonStored=false;
+                auto oldSP = sourcePointers0.find(lit);
+                if(oldSP!=sourcePointers0.end()){
+                    supportedLiterals0[oldSP->second].push_back(lit);
                 }
-            }//closing init with 0
-            unsigned actualSumCount=possibleSumValues[sharedVars].size();
-            for(unsigned k = 0; k < actualSumCount; k++){
-                int currentSum = possibleSumValues[sharedVars][k]+P;
-                if(possibleSumValuesSet[sharedVars].count(currentSum)==0){
-                    possibleSumValues[sharedVars].push_back(currentSum);
-                    possibleSumValuesSet[sharedVars].insert(currentSum);
-                    Tuple* auxVal = factory.addNewInternalTuple({currentSum},&_aux_val0);
-                    const auto& insertResult = auxVal->setStatus(True);
+                if(starter->getPredicateName() == &_on){
+                    if(starter->isTrue() && conflictDetected==0) conflictDetected=-lit;
+                    if(!propagated){
+                        propLiterals.push_back(-lit);
+                        propagated=true;
+                    }
+                    if(currentDecisionLevel > 0){
+                        if(!reasonStored){reasonForLiteral[-lit]=shared_reason; reasonStored=true;}
+                        if(0 == starter->at(0)){
+                            int N1=starter->at(1);
+                            int N=starter->at(2);
+                            Tuple* tuple = factory.find({0,N1,N},&_sup_0);
+                            if(tuple!=NULL && tuple->isFalse()){
+                                shared_reason.get()->insert(-tuple->getId());
+                            }
+                        }
+                    }
+                }
+                if(starter->getPredicateName() == &_on){
+                    if(starter->isTrue() && conflictDetected==0) conflictDetected=-lit;
+                    if(!propagated){
+                        propLiterals.push_back(-lit);
+                        propagated=true;
+                    }
+                    if(currentDecisionLevel > 0){
+                        if(!reasonStored){reasonForLiteral[-lit]=shared_reason; reasonStored=true;}
+                        int TP1=starter->at(0);
+                        int N1=starter->at(1);
+                        int N=starter->at(2);
+                        Tuple* tuple = factory.find({TP1,N1,N},&_sup_1);
+                        if(tuple!=NULL && tuple->isFalse()){
+                            shared_reason.get()->insert(-tuple->getId());
+                        }
+                    }
+                }
+                if(starter->getPredicateName() == &_on){
+                    if(starter->isTrue() && conflictDetected==0) conflictDetected=-lit;
+                    if(!propagated){
+                        propLiterals.push_back(-lit);
+                        propagated=true;
+                    }
+                    if(currentDecisionLevel > 0){
+                        if(!reasonStored){reasonForLiteral[-lit]=shared_reason; reasonStored=true;}
+                        int TP1=starter->at(0);
+                        int N=starter->at(1);
+                        int N1=starter->at(2);
+                        Tuple* tuple = factory.find({TP1,N,N1},&_sup_2);
+                        if(tuple!=NULL && tuple->isFalse()){
+                            shared_reason.get()->insert(-tuple->getId());
+                        }
+                    }
+                }
+                if(starter->getPredicateName() == &_sup_2){
+                    if(currentDecisionLevel > 0){
+                        if(!reasonStored){reasonForLiteral[-lit]=shared_reason; reasonStored=true;}
+                        int TP1=starter->at(0);
+                        int N=starter->at(1);
+                        int N1=starter->at(2);
+                        const std::vector<int>* tuplesF = &faux_1_0_1_2_.getValuesVec({TP1,N,N1});
+                        for(unsigned i=0; i<tuplesF->size();i++){
+                            Tuple* tuple = factory.getTupleFromInternalID(tuplesF->at(i));
+                            if(tuple!=NULL){
+                                shared_reason.get()->insert(-tuple->getId());
+                            }
+                        }
+                    }
+                }
+            }
+            if(conflictDetected!=0) {
+                executor->handleConflict(conflictDetected,literalToPropagate);
+                if(currentDecisionLevel > 0) for(int i=1; i<propLiterals.size(); i++) reasonForLiteral[propLiterals[i]]->clear();
+            }else if(propLiterals.size()>1){
+                executor->executeProgramOnFacts(propLiterals,literalToPropagate,true);
+            }
+            unfoundedSetForComponent0.clear();
+        }//close if empty unfounded set
+    }// close unfoundedPropagatorForComponent
+    void checkFoundness(){
+        while(!falseLits.empty()){
+            int starter = falseLits.back();
+            int current = starter >= 0 ? starter : -starter;
+            falseLits.pop_back();
+            {
+                std::vector<int>& supported = supportedLiterals0[current];
+                int saving=0;
+                for(int i=0;i < supported.size(); i++){
+                    int lit = supported[i];
+                    Tuple* removingLit = factory.getTupleFromInternalID(lit);
+                    if(removingLit->isFalse()){supported[saving++]=supported[i]; continue;}
+                    if(foundnessFactory[lit]>=0){
+                        foundnessFactory[lit]=-1;
+                        unfoundedSetForComponent0.push_back(lit);
+                        falseLits.push_back(lit);
+                    }//close if
+                }//close for
+                supported.resize(saving);
+                if(current < supportedAux0.size()){
+                    std::vector<int>& supAux = supportedAux0[current];
+                    for(int lit : supAux){
+                        Tuple* removingLit = factory.getTupleFromInternalID(lit);
+                        if(!removingLit->isFalse() && foundnessFactory[lit]>=0){
+                            foundnessFactory[lit]=-1;
+                            unfoundedSetForComponent0.push_back(lit);
+                            falseLits.push_back(lit);
+                        }//close if
+                    }//close for
+                }
+            }//close local scope
+        }//close while
+    }//close function
+    void Executor::checkUnfoundedSets(std::vector<int>& literalsToPropagate,Executor* executor){
+        checkFoundness();
+        unfoundedPropagatorForComponent0(literalsToPropagate,executor);
+    }
+    void Executor::undefLiteralsReceived(){
+        if(undefinedLoaded)
+            return;
+        undefinedLoaded=true;
+        std::cout<<"Undef received"<<std::endl;
+        std::cout<<"Component 5"<<std::endl;
+        std::cout<<"Component 4"<<std::endl;
+        std::cout<<"Component 3"<<std::endl;
+        std::cout<<"Component 2"<<std::endl;
+        std::cout<<"Component 1"<<std::endl;
+        std::cout<<"Component 0"<<std::endl;
+        //---------------------------------Recursive Component---------------------------------
+        {
+            std::vector<int> generationStack;
+            {
+                const std::vector<int>* tuples = &pon0_.getValuesVec({});
+                const std::vector<int>* tuplesU = &uon0_.getValuesVec({});
+                for(unsigned i = 0; i < tuples->size() + tuplesU->size(); i++){
+                    Tuple* tuple = NULL;
+                    if(i<tuples->size()) tuple=factory.getTupleFromInternalID(tuples->at(i));
+                    else tuple=factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                    int N = tuple->at(0);
+                    int N1 = tuple->at(1);
+                    Tuple* saving2 = factory.addNewInternalTuple({0,N1,N},&_sup_0);
+                    const auto& insertResult = saving2->setStatus(Undef);
                     if(insertResult.second){
-                        factory.removeFromCollisionsList(auxVal->getId());
+                        factory.removeFromCollisionsList(saving2->getId());
+                        insertUndef(insertResult);
+                        Tuple* saving0 = factory.addNewInternalTuple({0,N1,N},&_on);
+                        const auto& insertResult = saving0->setStatus(Undef);
+                        if(insertResult.second){
+                            factory.removeFromCollisionsList(saving0->getId());
+                            insertUndef(insertResult);
+                            generationStack.push_back(saving0->getId());
+                        }
+                    }
+                }
+            }
+            {
+                const std::vector<int>* tuples = &pmove_.getValuesVec({});
+                const std::vector<int>* tuplesU = &umove_.getValuesVec({});
+                for(unsigned i = 0; i < tuples->size() + tuplesU->size(); i++){
+                    Tuple* tuple0 = NULL;
+                    if(i<tuples->size()) tuple0=factory.getTupleFromInternalID(tuples->at(i));
+                    else tuple0=factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                    int T = tuple0->at(0);
+                    int N = tuple0->at(1);
+                    int TP1 = T + 1;
+                    const std::vector<int>* tuples = &pwhere_0_.getValuesVec({T});
+                    const std::vector<int>* tuplesU = &uwhere_0_.getValuesVec({T});
+                    for(unsigned i = 0; i < tuples->size() + tuplesU->size(); i++){
+                        Tuple* tuple2 = NULL;
+                        if(i<tuples->size()) tuple2=factory.getTupleFromInternalID(tuples->at(i));
+                        else tuple2=factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                        if(tuple2->at(0) == T){
+                            int N1 = tuple2->at(1);
+                            Tuple* saving3 = factory.addNewInternalTuple({TP1,N1,N,T},&_aux_0);
+                            const auto& insertResult = saving3->setStatus(Undef);
+                            if(insertResult.second){
+                                factory.removeFromCollisionsList(saving3->getId());
+                                insertUndef(insertResult);
+                                Tuple* saving1 = factory.addNewInternalTuple({TP1,N1,N},&_sup_1);
+                                const auto& insertResult = saving1->setStatus(Undef);
+                                if(insertResult.second){
+                                    factory.removeFromCollisionsList(saving1->getId());
+                                    insertUndef(insertResult);
+                                    Tuple* saving0 = factory.addNewInternalTuple({TP1,N1,N},&_on);
+                                    const auto& insertResult = saving0->setStatus(Undef);
+                                    if(insertResult.second){
+                                        factory.removeFromCollisionsList(saving0->getId());
+                                        insertUndef(insertResult);
+                                        generationStack.push_back(saving0->getId());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            while(!generationStack.empty()){
+                Tuple* starter = factory.getTupleFromInternalID(generationStack.back());
+                generationStack.pop_back();
+                if(starter->getPredicateName() == &_on){
+                    int T = starter->at(0);
+                    int N = starter->at(1);
+                    int N1 = starter->at(2);
+                    int TP1 = T + 1;
+                    Tuple* tuple2 = factory.find({T},&_time);
+                    if(tuple2!=NULL && !tuple2->isFalse()){
+                        Tuple* tuple3 = factory.find({T,N1},&_move);
+                        if(tuple3==NULL || !tuple3->isTrue()){
+                            const std::vector<int>* tuples = &psteps_.getValuesVec({});
+                            const std::vector<int>* tuplesU = &usteps_.getValuesVec({});
+                            for(unsigned i = 0; i < tuples->size() + tuplesU->size(); i++){
+                                Tuple* tuple4 = NULL;
+                                if(i<tuples->size()) tuple4=factory.getTupleFromInternalID(tuples->at(i));
+                                else tuple4=factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                                int K = tuple4->at(0);
+                                if(T < K){
+                                    Tuple* saving2 = factory.addNewInternalTuple({TP1,N,N1,T,K},&_aux_1);
+                                    const auto& insertResult = saving2->setStatus(Undef);
+                                    if(insertResult.second){
+                                        factory.removeFromCollisionsList(saving2->getId());
+                                        insertUndef(insertResult);
+                                        if(supportedAux0.size() < factory.size())
+                                            supportedAux0.resize(factory.size());
+                                        supportedAux0[starter->getId()].push_back(saving2->getId());
+                                        Tuple* saving1 = factory.addNewInternalTuple({TP1,N,N1},&_sup_2);
+                                        const auto& insertResult = saving1->setStatus(Undef);
+                                        if(insertResult.second){
+                                            factory.removeFromCollisionsList(saving1->getId());
+                                            insertUndef(insertResult);
+                                            Tuple* saving0 = factory.addNewInternalTuple({TP1,N,N1},&_on);
+                                            const auto& insertResult = saving0->setStatus(Undef);
+                                            if(insertResult.second){
+                                                factory.removeFromCollisionsList(saving0->getId());
+                                                insertUndef(insertResult);
+                                                generationStack.push_back(saving0->getId());
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }//close local scope
+        //---------------------------------Recursive Component---------------------------------
+        foundnessFactory.resize(factory.size());
+        {
+            const std::vector<int>* tuples = &pon_.getValuesVec({});
+            const std::vector<int>* tuplesU = &uon_.getValuesVec({});
+            for(unsigned i=0; i<tuples->size()+tuplesU->size(); i++){
+                int lit = i<tuples->size() ? tuples->at(i) : tuplesU->at(i-tuples->size());
+                int& founded = foundnessFactory[lit];
+                if(founded == 0) {founded=-1;unfoundedSetForComponent0.push_back(lit);}
+            }
+        }
+        {
+            const std::vector<int>* tuples = &psup_2_.getValuesVec({});
+            const std::vector<int>* tuplesU = &usup_2_.getValuesVec({});
+            for(unsigned i=0; i<tuples->size()+tuplesU->size(); i++){
+                int lit = i<tuples->size() ? tuples->at(i) : tuplesU->at(i-tuples->size());
+                int& founded = foundnessFactory[lit];
+                if(founded == 0) {founded=-1;unfoundedSetForComponent0.push_back(lit);}
+            }
+        }
+        {
+            const std::vector<int>* tuples = &paux_1_.getValuesVec({});
+            const std::vector<int>* tuplesU = &uaux_1_.getValuesVec({});
+            for(unsigned i=0; i<tuples->size()+tuplesU->size(); i++){
+                int lit = i<tuples->size() ? tuples->at(i) : tuplesU->at(i-tuples->size());
+                int& founded = foundnessFactory[lit];
+                if(founded == 0) {founded=-1;unfoundedSetForComponent0.push_back(lit);}
+            }
+        }
+        supportedLiterals0.resize(factory.size());
+        visitedExplainLiteral.resize(2*factory.size());
+        explainLevel=1;
+    }
+    inline void Executor::addedVarName(int var, const std::string & atom) {
+        std::vector<int> terms;
+        const std::string* predicate = parseTuple(atom,terms);
+        Tuple* t = factory.addNewTuple(terms,predicate,var);
+    }
+    void Executor::clearPropagations() {
+        propagatedLiteralsAndReasons.clear();
+    }
+    void Executor::clear() {
+        failedConstraints.clear();
+    }
+    void Executor::init() {
+        stringToUniqueStringPointer["aux_0"] = &_aux_0;
+        stringToUniqueStringPointer["aux_1"] = &_aux_1;
+        stringToUniqueStringPointer["move"] = &_move;
+        stringToUniqueStringPointer["on"] = &_on;
+        stringToUniqueStringPointer["on0"] = &_on0;
+        stringToUniqueStringPointer["onG"] = &_onG;
+        stringToUniqueStringPointer["steps"] = &_steps;
+        stringToUniqueStringPointer["sup_0"] = &_sup_0;
+        stringToUniqueStringPointer["sup_1"] = &_sup_1;
+        stringToUniqueStringPointer["sup_2"] = &_sup_2;
+        stringToUniqueStringPointer["time"] = &_time;
+        stringToUniqueStringPointer["where"] = &_where;
+    }
+    bool propUndefined(const Tuple* tupleU,bool isNegated,std::vector<int>& stack,bool asNegative,std::vector<int> & propagatedLiterals,std::unordered_set<int> & remainingPropagatingLiterals,const Solver* solver,PropComparator& propComparison,unsigned minConflict, unsigned minHeapSize, unsigned maxHeapSize, unsigned heapSize){
+        if(tupleU->getWaspID() == 0){
+            bool propagated=false;
+            Tuple* realTupleU=factory.find(*tupleU);
+            if(isNegated == asNegative){
+                if(realTupleU->isFalse()){
+                    return true;
+                }else if(realTupleU->isUndef()){
+                    const auto& insertResult = realTupleU->setStatus(True);
+                    if (insertResult.second) {
+                        factory.removeFromCollisionsList(realTupleU->getId());
                         insertTrue(insertResult);
+                        propagated = true;
+                    }
+                }
+            }else{
+                if(realTupleU->isTrue()){
+                    return true;
+                }else if(realTupleU->isUndef()){
+                    const auto& insertResult = realTupleU->setStatus(False);
+                    if (insertResult.second) {
+                        factory.removeFromCollisionsList(realTupleU->getId());
+                        falseLits.push_back(-realTupleU->getId());
+                        insertFalse(insertResult);
+                        propagated = true;
+                    }
+                }
+            }
+            if(propagated){
+                int it = tupleU->getId();
+                int sign = isNegated != asNegative ? -1 : 1;
+                stack.push_back(sign*it);
+                levelToIntLiterals[currentDecisionLevel].push_back(sign*it);
+            }
+        }else{
+            int it = tupleU->getWaspID();
+            int sign = isNegated == asNegative ? 1 : -1;
+            if(remainingPropagatingLiterals.count(it*sign)==0){
+                remainingPropagatingLiterals.insert(it*sign);
+                propagatedLiterals.push_back(it*sign);
+                if(conflictCount > minConflict){
+                    if(propagatedLiterals.size() > heapSize){
+                        int heapMinimum = propagatedLiterals.front();
+                        Activity heapMinimumWeight = solver->getActivityForLiteral(heapMinimum);
+                        Activity currentWeight = solver->getActivityForLiteral(propagatedLiterals.back());
+                        if(currentWeight > heapMinimumWeight){
+                            std::pop_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+heapSize,propComparison);
+                            std::swap(propagatedLiterals[heapSize-1],propagatedLiterals[propagatedLiterals.size()-1]);
+                            std::push_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+heapSize,propComparison);
+                        }
+                    }else{
+                        std::push_heap(propagatedLiterals.begin(),propagatedLiterals.end(),propComparison);
                     }
                 }
             }
         }
+        return false;
     }
-    std::cout<<"Component 4"<<std::endl;
-    std::cout<<"Component 3"<<std::endl;
-    {
-        const std::vector<int>* tuples = &puser_.getValuesVec({});
-        const std::vector<int>* tuplesU = &uuser_.getValuesVec({});
-        for(unsigned i = 0; i < tuples->size() + tuplesU->size(); i++){
-            Tuple* tuple0 = NULL;
-            if(i<tuples->size()) tuple0=factory.getTupleFromInternalID(tuples->at(i));
-            else tuple0=factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-            int U = tuple0->at(0);
-            int MIN = tuple0->at(1);
-            int MAX = tuple0->at(2);
-            const std::vector<int>* tuples = &paux_val0_.getValuesVec({});
-            const std::vector<int>* tuplesU = &uaux_val0_.getValuesVec({});
-            for(unsigned i = 0; i < tuples->size() + tuplesU->size(); i++){
-                Tuple* tuple1 = NULL;
-                if(i<tuples->size()) tuple1=factory.getTupleFromInternalID(tuples->at(i));
-                else tuple1=factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                int Cost = tuple1->at(0);
-                Tuple* saving2 = factory.addNewInternalTuple({U,Cost,MIN,MAX},&_aux_0);
-                const auto& insertResult = saving2->setStatus(Undef);
-                if(insertResult.second){
-                    factory.removeFromCollisionsList(saving2->getId());
+    inline void clearFalse(){
+    }
+    inline void clearTrue(){
+    }
+    inline void clearUndef(){
+    }
+    std::string Executor::printInternalLiterals(){
+        std::string trueConstraint = "";
+        for(int internalId : pon_.getValuesVec({})){
+            Tuple* tuple = factory.getTupleFromInternalID(internalId);
+            std::string tupleToString = tuple->size() > 0 ? "on(" : "on";
+            for(unsigned k=0; k<tuple->size();k++){
+                if(k>0) tupleToString+=",";
+                tupleToString+=ConstantsManager::getInstance().unmapConstant(tuple->at(k));
+            }
+            tupleToString+= tuple->size() > 0 ? ")" : "";
+            std::cout << tupleToString <<" ";
+        }
+        std::cout << std::endl;
+        TupleFactory lazyFactory;
+        clearUndef();
+        clearTrue();
+        clearFalse();
+        return trueConstraint;
+    }
+    void Executor::unRollToLevel(int decisionLevel){
+        conflictCount++;
+        for(int literealToProp : remainingPropagatingLiterals){
+            int var = literealToProp > 0 ? literealToProp : -literealToProp;
+            Tuple* literalNotPropagated = factory.getTupleFromWASPID(var);
+            int internalLit = literealToProp > 0 ? literalNotPropagated->getId() : -literalNotPropagated->getId();
+            if(literalNotPropagated!=NULL)
+                reasonForLiteral[internalLit].get()->clear();
+        }
+        remainingPropagatingLiterals.clear();
+        while(currentDecisionLevel > decisionLevel){
+            while(!levelToIntLiterals[currentDecisionLevel].empty()){
+                int var = levelToIntLiterals[currentDecisionLevel].back();
+                int uVar = var>0 ? var : -var;
+                Tuple* tuple = factory.getTupleFromInternalID(uVar);
+                levelToIntLiterals[currentDecisionLevel].pop_back();
+                reasonForLiteral[var].get()->clear();
+                const auto& insertResult = tuple->setStatus(Undef);
+                if (insertResult.second) {
+                    factory.removeFromCollisionsList(tuple->getId());
                     insertUndef(insertResult);
-                    Tuple* saving0 = factory.addNewInternalTuple({U,Cost},&_body_0);
-                    const auto& insertResult = saving0->setStatus(Undef);
-                    if(insertResult.second){
-                        factory.removeFromCollisionsList(saving0->getId());
-                        insertUndef(insertResult);
-                    }
                 }
             }
+            levelToIntLiterals.erase(currentDecisionLevel);
+            currentDecisionLevel--;
         }
+        clearConflictReason();
+        falseLits.clear();
     }
-    std::cout<<"Component 2"<<std::endl;
-    {
-        const std::vector<int>* tuples = &pbody_0_.getValuesVec({});
-        const std::vector<int>* tuplesU = &ubody_0_.getValuesVec({});
-        for(unsigned i = 0; i < tuples->size() + tuplesU->size(); i++){
-            Tuple* tuple = NULL;
-            if(i<tuples->size()) tuple=factory.getTupleFromInternalID(tuples->at(i));
-            else tuple=factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-            int U = tuple->at(0);
-            int Cost = tuple->at(1);
-            Tuple* saving1 = factory.addNewInternalTuple({U,Cost},&_costs);
-            const auto& insertResult = saving1->setStatus(Undef);
-            if(insertResult.second){
-                factory.removeFromCollisionsList(saving1->getId());
-                insertUndef(insertResult);
+    void Executor::executeProgramOnFacts(const std::vector<aspc::Literal*> & facts) {}
+    void Executor::executeProgramOnFacts(const std::vector<int> & facts,std::vector<int>& propagatedLiterals,bool fromPropagator) {
+        int decisionLevel = facts[0];
+        currentDecisionLevel=solver->getCurrentDecisionLevel();
+        clearPropagations();
+        std::vector<int> propagationStack;
+        for(unsigned i=1;i<facts.size();i++) {
+            int factVar = facts[i]>0 ? facts[i] : -facts[i];
+            int minus = facts[i]<0 ? -1 : 1;
+            if(!fromPropagator){
+                onLiteralTrue(facts[i]);
+                propagationStack.push_back(minus*(int)factory.getTupleFromWASPID(factVar)->getId());
+                remainingPropagatingLiterals.erase(facts[i]);
+            }else{
+                propUndefined(factory.getTupleFromInternalID(factVar),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
             }
         }
-    }
-    std::cout<<"Component 1"<<std::endl;
-    {
-        const std::vector<int>* tuples = &pbody_0_.getValuesVec({});
-        const std::vector<int>* tuplesU = &ubody_0_.getValuesVec({});
-        for(unsigned i = 0; i < tuples->size() + tuplesU->size(); i++){
-            Tuple* tuple = NULL;
-            if(i<tuples->size()) tuple=factory.getTupleFromInternalID(tuples->at(i));
-            else tuple=factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-            int U = tuple->at(0);
-            int Cost = tuple->at(1);
-            Tuple* aggr_id = factory.addNewInternalTuple({U,Cost},&_agg_id_1);
-            const auto& insertResult = aggr_id->setStatus(Undef);
-            if(insertResult.second){
-                factory.removeFromCollisionsList(aggr_id->getId());
-                insertUndef(insertResult);
-            }
-        }
-    }
-    std::cout<<"Component 0"<<std::endl;
-    {
-        const std::vector<int>* tuples = &pbody_0_.getValuesVec({});
-        const std::vector<int>* tuplesU = &ubody_0_.getValuesVec({});
-        for(unsigned i = 0; i < tuples->size() + tuplesU->size(); i++){
-            Tuple* tuple = NULL;
-            if(i<tuples->size()) tuple=factory.getTupleFromInternalID(tuples->at(i));
-            else tuple=factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-            int U = tuple->at(0);
-            int Cost = tuple->at(1);
-            Tuple* aggr_id = factory.addNewInternalTuple({U,Cost},&_agg_id_0);
-            const auto& insertResult = aggr_id->setStatus(Undef);
-            if(insertResult.second){
-                factory.removeFromCollisionsList(aggr_id->getId());
-                insertUndef(insertResult);
-            }
-        }
-    }
-    std::vector<int> ordered_ids;
-    std::vector<int> tuplesIdOrdered;
-    std::map<int, Tuple*> idToTuples;
-    int currentIdIndex=0;
-    {
-        const IndexedSet tuples = uagg_set_0_.getValuesSet({});
-        ordered_ids.reserve(tuples.size());
-        tuplesIdOrdered.reserve(tuples.size());
-        for(int id :tuples){
-            tuplesIdOrdered.push_back(id);
-            ordered_ids.push_back(id);
-            idToTuples[id]=factory.getTupleFromInternalID(id);
-            factory.removeFromCollisionsList(id);
-            idToTuples[id]->setStatus(UNKNOWN);
-        }
-        std::stable_sort(tuplesIdOrdered.begin(),tuplesIdOrdered.end(),compTuple);
-        for(int id: tuplesIdOrdered){
-            Tuple* t=idToTuples[id];
-            factory.setId(t,ordered_ids[currentIdIndex++]);
-            const auto& insertResult = t->setStatus(Undef);
-            if (insertResult.second) {
-                factory.removeFromCollisionsList(t->getId());
-                insertUndef(insertResult);
-            }
-        }
-        ordered_ids.clear();
-        tuplesIdOrdered.clear();
-        idToTuples.clear();
-        currentIdIndex=0;
-    }
-    {
-        const std::vector<int>* tuples = &pagg_id_0_.getValuesVec({});
-        const std::vector<int>* tuplesU = &uagg_id_0_.getValuesVec({});
-        for(unsigned i = 0; i < tuples->size() + tuplesU->size(); i++){
-            Tuple* aggr_id = NULL;
-            if(i<tuples->size()) aggr_id=factory.getTupleFromInternalID(tuples->at(i));
-            else aggr_id=factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-            int U = aggr_id->at(0);
-            int Cost = aggr_id->at(1);
-            const IndexedSet* aggrSet = &pagg_set_0_2_.getValuesSet({U});
-            const IndexedSet* aggrSetU = &uagg_set_0_2_.getValuesSet({U});
-            auto itTrue = aggrSet->begin();
-            auto itUndef = aggrSetU->begin();
-            int& sum = possibleSum[aggr_id->getId()];
-            while(itTrue!=aggrSet->end() || itUndef != aggrSetU->end()){
-                Tuple* tuple = NULL;
-                bool undefTuple = false;
-                if(itTrue!=aggrSet->end()){ tuple=factory.getTupleFromInternalID(*itTrue);itTrue++;}
-                else{ tuple=factory.getTupleFromInternalID(*itUndef);itUndef++;undefTuple=true;}
-                int P = tuple->at(0);
-                int C = tuple->at(1);
-                if(tuple->at(2) == U){
-                    sum+=P;
-                }
-            }
-        }
-    }
-    {
-        const std::vector<int>* tuples = &pagg_id_1_.getValuesVec({});
-        const std::vector<int>* tuplesU = &uagg_id_1_.getValuesVec({});
-        for(unsigned i = 0; i < tuples->size() + tuplesU->size(); i++){
-            Tuple* aggr_id = NULL;
-            if(i<tuples->size()) aggr_id=factory.getTupleFromInternalID(tuples->at(i));
-            else aggr_id=factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-            int U = aggr_id->at(0);
-            int Cost = aggr_id->at(1);
-            const IndexedSet* aggrSet = &pagg_set_0_2_.getValuesSet({U});
-            const IndexedSet* aggrSetU = &uagg_set_0_2_.getValuesSet({U});
-            auto itTrue = aggrSet->begin();
-            auto itUndef = aggrSetU->begin();
-            int& sum = possibleSum[aggr_id->getId()];
-            while(itTrue!=aggrSet->end() || itUndef != aggrSetU->end()){
-                Tuple* tuple = NULL;
-                bool undefTuple = false;
-                if(itTrue!=aggrSet->end()){ tuple=factory.getTupleFromInternalID(*itTrue);itTrue++;}
-                else{ tuple=factory.getTupleFromInternalID(*itUndef);itUndef++;undefTuple=true;}
-                int P = tuple->at(0);
-                int C = tuple->at(1);
-                if(tuple->at(2) == U){
-                    sum+=P;
-                }
-            }
-        }
-    }
-    visitedExplainLiteral.resize(2*factory.size());
-    explainLevel=1;
-}
-inline void Executor::addedVarName(int var, const std::string & atom) {
-    std::vector<int> terms;
-    const std::string* predicate = parseTuple(atom,terms);
-    Tuple* t = factory.addNewTuple(terms,predicate,var);
-}
-void Executor::clearPropagations() {
-    propagatedLiteralsAndReasons.clear();
-}
-void Executor::clear() {
-    failedConstraints.clear();
-}
-void Executor::init() {
-    stringToUniqueStringPointer["agg_id_0"] = &_agg_id_0;
-    stringToUniqueStringPointer["agg_id_1"] = &_agg_id_1;
-    stringToUniqueStringPointer["agg_set_0"] = &_agg_set_0;
-    stringToUniqueStringPointer["assign"] = &_assign;
-    stringToUniqueStringPointer["aux_0"] = &_aux_0;
-    stringToUniqueStringPointer["aux_val0"] = &_aux_val0;
-    stringToUniqueStringPointer["body_0"] = &_body_0;
-    stringToUniqueStringPointer["component"] = &_component;
-    stringToUniqueStringPointer["costs"] = &_costs;
-    stringToUniqueStringPointer["user"] = &_user;
-    factory.setIndexForAggregateSet(0,&_agg_set_0);
-}
-bool propUndefined(const Tuple* tupleU,bool isNegated,std::vector<int>& stack,bool asNegative,std::vector<int> & propagatedLiterals,std::unordered_set<int> & remainingPropagatingLiterals,const Solver* solver,PropComparator& propComparison,unsigned minConflict, unsigned minHeapSize, unsigned maxHeapSize, unsigned heapSize){
-    if(tupleU->getWaspID() == 0){
-        bool propagated=false;
-        Tuple* realTupleU=factory.find(*tupleU);
-        if(isNegated == asNegative){
-            if(realTupleU->isFalse()){
-                return true;
-            }else if(realTupleU->isUndef()){
-                const auto& insertResult = realTupleU->setStatus(True);
-                if (insertResult.second) {
-                    factory.removeFromCollisionsList(realTupleU->getId());
-                    insertTrue(insertResult);
-                    if(tupleU->getPredicateName() == &_agg_set_0){
-                        {
-                            const std::vector<int>* aggrIds = &pagg_id_0_0_.getValuesVec({tupleU->at(2)});
-                            for(unsigned i=0;i<aggrIds->size();i++){
-                                int itAggrId = aggrIds->at(i);
-                                actualSum[itAggrId]+=tupleU->at(0);
-                                possibleSum[itAggrId]-=tupleU->at(0);
-                            }
-                        }
-                        {
-                            const std::vector<int>* aggrIds = &uagg_id_0_0_.getValuesVec({tupleU->at(2)});
-                            for(unsigned i=0;i<aggrIds->size();i++){
-                                int itAggrId = aggrIds->at(i);
-                                actualSum[itAggrId]+=tupleU->at(0);
-                                possibleSum[itAggrId]-=tupleU->at(0);
-                            }
-                        }
-                        {
-                            const std::vector<int>* aggrIds = &fagg_id_0_0_.getValuesVec({tupleU->at(2)});
-                            for(unsigned i=0;i<aggrIds->size();i++){
-                                int itAggrId = aggrIds->at(i);
-                                actualSum[itAggrId]+=tupleU->at(0);
-                                possibleSum[itAggrId]-=tupleU->at(0);
-                            }
-                        }
-                    }
-                    if(tupleU->getPredicateName() == &_agg_set_0){
-                        {
-                            const std::vector<int>* aggrIds = &pagg_id_1_0_.getValuesVec({tupleU->at(2)});
-                            for(unsigned i=0;i<aggrIds->size();i++){
-                                int itAggrId = aggrIds->at(i);
-                                actualSum[itAggrId]+=tupleU->at(0);
-                                possibleSum[itAggrId]-=tupleU->at(0);
-                            }
-                        }
-                        {
-                            const std::vector<int>* aggrIds = &uagg_id_1_0_.getValuesVec({tupleU->at(2)});
-                            for(unsigned i=0;i<aggrIds->size();i++){
-                                int itAggrId = aggrIds->at(i);
-                                actualSum[itAggrId]+=tupleU->at(0);
-                                possibleSum[itAggrId]-=tupleU->at(0);
-                            }
-                        }
-                        {
-                            const std::vector<int>* aggrIds = &fagg_id_1_0_.getValuesVec({tupleU->at(2)});
-                            for(unsigned i=0;i<aggrIds->size();i++){
-                                int itAggrId = aggrIds->at(i);
-                                actualSum[itAggrId]+=tupleU->at(0);
-                                possibleSum[itAggrId]-=tupleU->at(0);
-                            }
-                        }
-                    }
-                    propagated = true;
-                }
-            }
-        }else{
-            if(realTupleU->isTrue()){
-                return true;
-            }else if(realTupleU->isUndef()){
-                const auto& insertResult = realTupleU->setStatus(False);
-                if (insertResult.second) {
-                    factory.removeFromCollisionsList(realTupleU->getId());
-                    falseLits.push_back(-realTupleU->getId());
-                    insertFalse(insertResult);
-                    if(tupleU->getPredicateName() == &_agg_set_0){
-                        {
-                            const std::vector<int>* aggrIds = &pagg_id_0_0_.getValuesVec({tupleU->at(2)});
-                            for(unsigned i=0;i<aggrIds->size();i++){
-                                int itAggrId = aggrIds->at(i);
-                                possibleSum[itAggrId]-=tupleU->at(0);
-                            }
-                        }
-                        {
-                            const std::vector<int>* aggrIds = &uagg_id_0_0_.getValuesVec({tupleU->at(2)});
-                            for(unsigned i=0;i<aggrIds->size();i++){
-                                int itAggrId = aggrIds->at(i);
-                                possibleSum[itAggrId]-=tupleU->at(0);
-                            }
-                        }
-                        {
-                            const std::vector<int>* aggrIds = &fagg_id_0_0_.getValuesVec({tupleU->at(2)});
-                            for(unsigned i=0;i<aggrIds->size();i++){
-                                int itAggrId = aggrIds->at(i);
-                                possibleSum[itAggrId]-=tupleU->at(0);
-                            }
-                        }
-                    }
-                    if(tupleU->getPredicateName() == &_agg_set_0){
-                        {
-                            const std::vector<int>* aggrIds = &pagg_id_1_0_.getValuesVec({tupleU->at(2)});
-                            for(unsigned i=0;i<aggrIds->size();i++){
-                                int itAggrId = aggrIds->at(i);
-                                possibleSum[itAggrId]-=tupleU->at(0);
-                            }
-                        }
-                        {
-                            const std::vector<int>* aggrIds = &uagg_id_1_0_.getValuesVec({tupleU->at(2)});
-                            for(unsigned i=0;i<aggrIds->size();i++){
-                                int itAggrId = aggrIds->at(i);
-                                possibleSum[itAggrId]-=tupleU->at(0);
-                            }
-                        }
-                        {
-                            const std::vector<int>* aggrIds = &fagg_id_1_0_.getValuesVec({tupleU->at(2)});
-                            for(unsigned i=0;i<aggrIds->size();i++){
-                                int itAggrId = aggrIds->at(i);
-                                possibleSum[itAggrId]-=tupleU->at(0);
-                            }
-                        }
-                    }
-                    propagated = true;
-                }
-            }
-        }
-        if(propagated){
-            int it = tupleU->getId();
-            int sign = isNegated != asNegative ? -1 : 1;
-            stack.push_back(sign*it);
-            levelToIntLiterals[currentDecisionLevel].push_back(sign*it);
-        }
-    }else{
-        int it = tupleU->getWaspID();
-        int sign = isNegated == asNegative ? 1 : -1;
-        if(remainingPropagatingLiterals.count(it*sign)==0){
-            remainingPropagatingLiterals.insert(it*sign);
-            propagatedLiterals.push_back(it*sign);
-            if(conflictCount > minConflict){
-                if(propagatedLiterals.size() > heapSize){
-                    int heapMinimum = propagatedLiterals.front();
-                    Activity heapMinimumWeight = solver->getActivityForLiteral(heapMinimum);
-                    Activity currentWeight = solver->getActivityForLiteral(propagatedLiterals.back());
-                    if(currentWeight > heapMinimumWeight){
-                        std::pop_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+heapSize,propComparison);
-                        std::swap(propagatedLiterals[heapSize-1],propagatedLiterals[propagatedLiterals.size()-1]);
-                        std::push_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+heapSize,propComparison);
-                    }
-                }else{
-                    std::push_heap(propagatedLiterals.begin(),propagatedLiterals.end(),propComparison);
-                }
-            }
-        }
-    }
-    return false;
-}
-inline void clearFalse(){
-}
-inline void clearTrue(){
-}
-inline void clearUndef(){
-}
-std::string Executor::printInternalLiterals(){
-    std::string trueConstraint = "";
-    for(int internalId : pcosts_.getValuesVec({})){
-        Tuple* tuple = factory.getTupleFromInternalID(internalId);
-        std::string tupleToString = tuple->size() > 0 ? "costs(" : "costs";
-        for(unsigned k=0; k<tuple->size();k++){
-            if(k>0) tupleToString+=",";
-            tupleToString+=ConstantsManager::getInstance().unmapConstant(tuple->at(k));
-        }
-        tupleToString+= tuple->size() > 0 ? ")" : "";
-        std::cout << tupleToString <<" ";
-    }
-    std::cout << std::endl;
-    TupleFactory lazyFactory;
-    clearUndef();
-    clearTrue();
-    clearFalse();
-    return trueConstraint;
-}
-void Executor::unRollToLevel(int decisionLevel){
-    conflictCount++;
-    for(int literealToProp : remainingPropagatingLiterals){
-        int var = literealToProp > 0 ? literealToProp : -literealToProp;
-        Tuple* literalNotPropagated = factory.getTupleFromWASPID(var);
-        int internalLit = literealToProp > 0 ? literalNotPropagated->getId() : -literalNotPropagated->getId();
-        if(literalNotPropagated!=NULL)
-            reasonForLiteral[internalLit].get()->clear();
-    }
-    remainingPropagatingLiterals.clear();
-    while(currentDecisionLevel > decisionLevel){
-        while(!levelToIntLiterals[currentDecisionLevel].empty()){
-            int var = levelToIntLiterals[currentDecisionLevel].back();
-            int uVar = var>0 ? var : -var;
-            Tuple* tuple = factory.getTupleFromInternalID(uVar);
-            levelToIntLiterals[currentDecisionLevel].pop_back();
-            reasonForLiteral[var].get()->clear();
-            const auto& insertResult = tuple->setStatus(Undef);
-            if (insertResult.second) {
-                factory.removeFromCollisionsList(tuple->getId());
-                insertUndef(insertResult);
-            }
-            if(tuple->getPredicateName() == &_agg_set_0){
-                {
-                    const std::vector<int>* aggrIds = &pagg_id_0_0_.getValuesVec({tuple->at(2)});
-                    for(unsigned i=0;i<aggrIds->size();i++){
-                        int itAggrId = aggrIds->at(i);
-                        if(var>0)
-                            actualSum[itAggrId]-=tuple->at(0);
-                        possibleSum[itAggrId]+=tuple->at(0);
-                    }
-                }
-                {
-                    const std::vector<int>* aggrIds = &uagg_id_0_0_.getValuesVec({tuple->at(2)});
-                    for(unsigned i=0;i<aggrIds->size();i++){
-                        int itAggrId = aggrIds->at(i);
-                        if(var>0)
-                            actualSum[itAggrId]-=tuple->at(0);
-                        possibleSum[itAggrId]+=tuple->at(0);
-                    }
-                }
-                {
-                    const std::vector<int>* aggrIds = &fagg_id_0_0_.getValuesVec({tuple->at(2)});
-                    for(unsigned i=0;i<aggrIds->size();i++){
-                        int itAggrId = aggrIds->at(i);
-                        if(var>0)
-                            actualSum[itAggrId]-=tuple->at(0);
-                        possibleSum[itAggrId]+=tuple->at(0);
-                    }
-                }
-            }
-            if(tuple->getPredicateName() == &_agg_set_0){
-                {
-                    const std::vector<int>* aggrIds = &pagg_id_1_0_.getValuesVec({tuple->at(2)});
-                    for(unsigned i=0;i<aggrIds->size();i++){
-                        int itAggrId = aggrIds->at(i);
-                        if(var>0)
-                            actualSum[itAggrId]-=tuple->at(0);
-                        possibleSum[itAggrId]+=tuple->at(0);
-                    }
-                }
-                {
-                    const std::vector<int>* aggrIds = &uagg_id_1_0_.getValuesVec({tuple->at(2)});
-                    for(unsigned i=0;i<aggrIds->size();i++){
-                        int itAggrId = aggrIds->at(i);
-                        if(var>0)
-                            actualSum[itAggrId]-=tuple->at(0);
-                        possibleSum[itAggrId]+=tuple->at(0);
-                    }
-                }
-                {
-                    const std::vector<int>* aggrIds = &fagg_id_1_0_.getValuesVec({tuple->at(2)});
-                    for(unsigned i=0;i<aggrIds->size();i++){
-                        int itAggrId = aggrIds->at(i);
-                        if(var>0)
-                            actualSum[itAggrId]-=tuple->at(0);
-                        possibleSum[itAggrId]+=tuple->at(0);
-                    }
-                }
-            }
-        }
-        levelToIntLiterals.erase(currentDecisionLevel);
-        currentDecisionLevel--;
-    }
-    clearConflictReason();
-    falseLits.clear();
-}
-void Executor::executeProgramOnFacts(const std::vector<aspc::Literal*> & facts) {}
-void Executor::executeProgramOnFacts(const std::vector<int> & facts,std::vector<int>& propagatedLiterals,bool fromPropagator) {
-    int decisionLevel = facts[0];
-    currentDecisionLevel=solver->getCurrentDecisionLevel();
-    clearPropagations();
-    std::vector<int> propagationStack;
-    for(unsigned i=1;i<facts.size();i++) {
-        int factVar = facts[i]>0 ? facts[i] : -facts[i];
-        int minus = facts[i]<0 ? -1 : 1;
-        if(!fromPropagator){
-            onLiteralTrue(facts[i]);
-            propagationStack.push_back(minus*(int)factory.getTupleFromWASPID(factVar)->getId());
-            remainingPropagatingLiterals.erase(facts[i]);
-        }else{
-            propUndefined(factory.getTupleFromInternalID(factVar),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-        }
-    }
-    if(decisionLevel == -1) {
-        {
+        if(decisionLevel == -1) {
             {
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const IndexedSet* tuples = &pagg_set_0_.getValuesSet({});
-                const IndexedSet* tuplesU = &EMPTY_TUPLES_SET;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &uagg_set_0_.getValuesSet({});
-                else if(tupleU->getPredicateName() == &_agg_set_0 && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                auto itTrue = tuples->begin();
-                auto itUndef = tuplesU->begin();
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_SET)
-                        tupleU = NULL;
-                    const Tuple* tuple0 = NULL;
-                    if(i<tuples->size()){
-                        tuple0 = factory.getTupleFromInternalID(*itTrue);
-                        itTrue++;
-                    }else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple0 = factory.getTupleFromInternalID(*itUndef);
-                        tupleUNegated=false;
-                        itUndef++;
-                    }else if(!undeRepeated.empty()){
-                        tuple0 = tupleU;
-                    }
-                    if(tuple0!=NULL){
-                        int P = tuple0->at(0);
-                        int C = tuple0->at(1);
-                        int U = tuple0->at(2);
-                        Tuple negativeTuple({C,U},&_assign);
-                        const Tuple* tuple1 = factory.find(negativeTuple);
-                        if(tuple1 == NULL)
-                            tuple1 = &negativeTuple;
-                        else{
-                            if(tuple1->isTrue())
-                                tuple1 = NULL;
-                            else if(tuple1->isUndef()){
-                                if(tupleU == NULL){
-                                    tupleU = tuple1;
-                                    tupleUNegated=true;
-                                }else{
-                                    if(tupleU->getPredicateName() != &_assign || !tupleUNegated || !(*tupleU == *tuple1))
-                                    tuple1=NULL;
+                {
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &psup_0_0_.getValuesVec({0});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &usup_0_0_.getValuesVec({0});
+                    else if(tupleU->getPredicateName() == &_sup_0 && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple0 = NULL;
+                        if(i<tuples->size())
+                            tuple0 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            if(tupleU->at(0) == 0)
+                                tuple0 = tupleU;
+                        }
+                        if(tuple0!=NULL){
+                            if(tuple0->at(0)==0){
+                                int N1 = tuple0->at(1);
+                                int N = tuple0->at(2);
+                                Tuple negativeTuple({0,N1,N},&_on);
+                                const Tuple* tuple1 = factory.find(negativeTuple);
+                                if(tuple1 == NULL)
+                                    tuple1 = &negativeTuple;
+                                else{
+                                    if(tuple1->isTrue())
+                                        tuple1 = NULL;
+                                    else if(tuple1->isUndef()){
+                                        if(tupleU == NULL){
+                                            tupleU = tuple1;
+                                            tupleUNegated=true;
+                                        }else{
+                                            if(tupleU->getPredicateName() != &_on || !tupleUNegated || !(*tupleU == *tuple1))
+                                            tuple1=NULL;
+                                        }
+                                    }
+                                }
+                                if(tuple1!=NULL){
+                                    if(tupleU != NULL){
+                                        if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                        else internalProps.push_back({tupleU,tupleUNegated});
+                                    }else{
+                                        propagatedLiterals.push_back(1);
+                                    }
                                 }
                             }
                         }
-                        if(tuple1!=NULL){
-                            if(tupleU != NULL){
-                                if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                else internalProps.push_back({tupleU,tupleUNegated});
-                            }else{
-                                propagatedLiterals.push_back(1);
-                            }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                const std::vector<int>* trueHeads = &psup_0_.getValuesVec({});
+                for(unsigned i = 0;i < trueHeads->size(); i++){
+                    const Tuple* currentHead = factory.getTupleFromInternalID(trueHeads->at(i));
+                    if(eagerFacts.count(currentHead->getId())!=0) continue;
+                    if(currentHead->at(0) == 0){
+                        int N1 = currentHead->at(1);
+                        int N = currentHead->at(2);
+                        Tuple* currentBody = factory.find({N,N1}, &_on0);
+                        if(!currentBody->isUndef() && !currentBody->isTrue()){
+                            propagatedLiterals.push_back(1);
+                            return;
+                        }else if(currentBody->isUndef()){
+                            propUndefined(currentBody,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
                         }
                     }
                 }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            {
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const IndexedSet* tuples = &pagg_set_0_.getValuesSet({});
-                const IndexedSet* tuplesU = &EMPTY_TUPLES_SET;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &uagg_set_0_.getValuesSet({});
-                else if(tupleU->getPredicateName() == &_agg_set_0 && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                auto itTrue = tuples->begin();
-                auto itUndef = tuplesU->begin();
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_SET)
-                        tupleU = NULL;
-                    const Tuple* tuple0 = NULL;
-                    if(i<tuples->size()){
-                        tuple0 = factory.getTupleFromInternalID(*itTrue);
-                        itTrue++;
-                    }else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple0 = factory.getTupleFromInternalID(*itUndef);
-                        tupleUNegated=false;
-                        itUndef++;
-                    }else if(!undeRepeated.empty()){
-                        tuple0 = tupleU;
+                const std::vector<int>* falseHeads = &fsup_0_.getValuesVec({});
+                for(unsigned i = 0;i < falseHeads->size(); i++){
+                    const Tuple* currentHead = factory.getTupleFromInternalID(falseHeads->at(i));
+                    if(currentHead->at(0) == 0){
+                        int N1 = currentHead->at(1);
+                        int N = currentHead->at(2);
+                        Tuple* currentBody = factory.find({N,N1}, &_on0);
+                        if(currentBody->isTrue()){
+                            propagatedLiterals.push_back(1);
+                            return;
+                        }else if(currentBody->isUndef()){
+                            propUndefined(currentBody,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                        }
                     }
-                    if(tuple0!=NULL){
-                        int P = tuple0->at(0);
-                        int C = tuple0->at(1);
-                        int U = tuple0->at(2);
-                        Tuple negativeTuple({C,P},&_component);
-                        const Tuple* tuple1 = factory.find(negativeTuple);
-                        if(tuple1 == NULL)
-                            tuple1 = &negativeTuple;
-                        else{
-                            if(tuple1->isTrue())
-                                tuple1 = NULL;
-                            else if(tuple1->isUndef()){
-                                if(tupleU == NULL){
-                                    tupleU = tuple1;
-                                    tupleUNegated=true;
-                                }else{
-                                    if(tupleU->getPredicateName() != &_component || !tupleUNegated || !(*tupleU == *tuple1))
-                                    tuple1=NULL;
+                }
+                const std::vector<int>* undefHeads = &usup_0_.getValuesVec({});
+                for(unsigned i = 0; i < undefHeads->size();){
+                    const Tuple* currentHead = factory.getTupleFromInternalID(undefHeads->at(i));
+                    if(currentHead->at(0) == 0){
+                        int N1 = currentHead->at(1);
+                        int N = currentHead->at(2);
+                        const Tuple* currentBody = factory.find({N, N1}, &_on0);
+                        if(currentBody == NULL || (!currentBody->isTrue() && !currentBody->isUndef()))
+                            propUndefined(currentHead,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                        else if(currentBody!=NULL && currentBody->isTrue())
+                            propUndefined(currentHead,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                        else i++;
+                    }
+                }
+            }
+            {
+                {
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &psup_1_.getValuesVec({});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &usup_1_.getValuesVec({});
+                    else if(tupleU->getPredicateName() == &_sup_1 && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple0 = NULL;
+                        if(i<tuples->size())
+                            tuple0 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            tuple0 = tupleU;
+                        }
+                        if(tuple0!=NULL){
+                            int TP1 = tuple0->at(0);
+                            int N1 = tuple0->at(1);
+                            int N = tuple0->at(2);
+                            Tuple negativeTuple({TP1,N1,N},&_on);
+                            const Tuple* tuple1 = factory.find(negativeTuple);
+                            if(tuple1 == NULL)
+                                tuple1 = &negativeTuple;
+                            else{
+                                if(tuple1->isTrue())
+                                    tuple1 = NULL;
+                                else if(tuple1->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple1;
+                                        tupleUNegated=true;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_on || !tupleUNegated || !(*tupleU == *tuple1))
+                                        tuple1=NULL;
+                                    }
                                 }
-                            }
-                        }
-                        if(tuple1!=NULL){
-                            if(tupleU != NULL){
-                                if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                else internalProps.push_back({tupleU,tupleUNegated});
-                            }else{
-                                propagatedLiterals.push_back(1);
-                            }
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            {
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &passign_.getValuesVec({});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &uassign_.getValuesVec({});
-                else if(tupleU->getPredicateName() == &_assign && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple0 = NULL;
-                    if(i<tuples->size())
-                        tuple0 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        tuple0 = tupleU;
-                    }
-                    if(tuple0!=NULL){
-                        int C = tuple0->at(0);
-                        int U = tuple0->at(1);
-                        const std::vector<int>* tuples = &pcomponent_0_.getValuesVec({C});
-                        const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                        std::vector<const Tuple*> undeRepeated;
-                        if(tupleU == NULL)
-                            tuplesU = &ucomponent_0_.getValuesVec({C});
-                        else if(tupleU->getPredicateName() == &_component && !tupleUNegated)
-                            undeRepeated.push_back(tupleU);
-                        for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                            if(tuplesU!=&EMPTY_TUPLES_VEC)
-                                tupleU = NULL;
-                            const Tuple* tuple1 = NULL;
-                            if(i<tuples->size())
-                                tuple1 = factory.getTupleFromInternalID(tuples->at(i));
-                            else if(i<tuples->size()+tuplesU->size()){
-                                tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                                tupleUNegated=false;
-                            }else if(!undeRepeated.empty()){
-                                if(tupleU->at(0) == C)
-                                    tuple1 = tupleU;
                             }
                             if(tuple1!=NULL){
-                                int P = tuple1->at(1);
-                                Tuple negativeTuple({P,C,U},&_agg_set_0);
+                                if(tupleU != NULL){
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                }else{
+                                    propagatedLiterals.push_back(1);
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                {
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &psup_2_.getValuesVec({});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &usup_2_.getValuesVec({});
+                    else if(tupleU->getPredicateName() == &_sup_2 && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple0 = NULL;
+                        if(i<tuples->size())
+                            tuple0 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            tuple0 = tupleU;
+                        }
+                        if(tuple0!=NULL){
+                            int TP1 = tuple0->at(0);
+                            int N = tuple0->at(1);
+                            int N1 = tuple0->at(2);
+                            Tuple negativeTuple({TP1,N,N1},&_on);
+                            const Tuple* tuple1 = factory.find(negativeTuple);
+                            if(tuple1 == NULL)
+                                tuple1 = &negativeTuple;
+                            else{
+                                if(tuple1->isTrue())
+                                    tuple1 = NULL;
+                                else if(tuple1->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple1;
+                                        tupleUNegated=true;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_on || !tupleUNegated || !(*tupleU == *tuple1))
+                                        tuple1=NULL;
+                                    }
+                                }
+                            }
+                            if(tuple1!=NULL){
+                                if(tupleU != NULL){
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                }else{
+                                    propagatedLiterals.push_back(1);
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                {
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &ponG_.getValuesVec({});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uonG_.getValuesVec({});
+                    else if(tupleU->getPredicateName() == &_onG && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple0 = NULL;
+                        if(i<tuples->size())
+                            tuple0 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            tuple0 = tupleU;
+                        }
+                        if(tuple0!=NULL){
+                            int K = tuple0->at(0);
+                            int N = tuple0->at(1);
+                            int N1 = tuple0->at(2);
+                            Tuple negativeTuple({K,N,N1},&_on);
+                            const Tuple* tuple1 = factory.find(negativeTuple);
+                            if(tuple1 == NULL)
+                                tuple1 = &negativeTuple;
+                            else{
+                                if(tuple1->isTrue())
+                                    tuple1 = NULL;
+                                else if(tuple1->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple1;
+                                        tupleUNegated=true;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_on || !tupleUNegated || !(*tupleU == *tuple1))
+                                        tuple1=NULL;
+                                    }
+                                }
+                            }
+                            if(tuple1!=NULL){
+                                const Tuple* tuple2 = factory.find({K},&_steps);
+                                if(tuple2!=NULL){
+                                    if(tuple2->isFalse())
+                                    tuple2=NULL;
+                                    else if(tuple2->isUndef()){
+                                        if(tupleU == NULL){
+                                            tupleU = tuple2;
+                                            tupleUNegated=false;
+                                        }else{
+                                            if(tupleU->getPredicateName() != &_steps || tupleUNegated || !(*tupleU == *tuple2))
+                                            tuple2=NULL;
+                                        }
+                                    }
+                                }
+                                if(tuple2!=NULL){
+                                    if(tupleU != NULL){
+                                        if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                        else internalProps.push_back({tupleU,tupleUNegated});
+                                    }else{
+                                        propagatedLiterals.push_back(1);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                {
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &pon_.getValuesVec({});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uon_.getValuesVec({});
+                    else if(tupleU->getPredicateName() == &_on && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple0 = NULL;
+                        if(i<tuples->size())
+                            tuple0 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            tuple0 = tupleU;
+                        }
+                        if(tuple0!=NULL){
+                            int K = tuple0->at(0);
+                            int N = tuple0->at(1);
+                            int N1 = tuple0->at(2);
+                            Tuple negativeTuple({K,N,N1},&_onG);
+                            const Tuple* tuple1 = factory.find(negativeTuple);
+                            if(tuple1 == NULL)
+                                tuple1 = &negativeTuple;
+                            else{
+                                if(tuple1->isTrue())
+                                    tuple1 = NULL;
+                                else if(tuple1->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple1;
+                                        tupleUNegated=true;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_onG || !tupleUNegated || !(*tupleU == *tuple1))
+                                        tuple1=NULL;
+                                    }
+                                }
+                            }
+                            if(tuple1!=NULL){
+                                const Tuple* tuple2 = factory.find({K},&_steps);
+                                if(tuple2!=NULL){
+                                    if(tuple2->isFalse())
+                                    tuple2=NULL;
+                                    else if(tuple2->isUndef()){
+                                        if(tupleU == NULL){
+                                            tupleU = tuple2;
+                                            tupleUNegated=false;
+                                        }else{
+                                            if(tupleU->getPredicateName() != &_steps || tupleUNegated || !(*tupleU == *tuple2))
+                                            tuple2=NULL;
+                                        }
+                                    }
+                                }
+                                if(tuple2!=NULL){
+                                    if(tupleU != NULL){
+                                        if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                        else internalProps.push_back({tupleU,tupleUNegated});
+                                    }else{
+                                        propagatedLiterals.push_back(1);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                {
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &ptime_.getValuesVec({});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &utime_.getValuesVec({});
+                    else if(tupleU->getPredicateName() == &_time && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple0 = NULL;
+                        if(i<tuples->size())
+                            tuple0 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            tuple0 = tupleU;
+                        }
+                        if(tuple0!=NULL){
+                            int T = tuple0->at(0);
+                            const std::vector<int>* tuples = &pon_0_.getValuesVec({T});
+                            const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                            std::vector<const Tuple*> undeRepeated;
+                            if(tupleU == NULL)
+                                tuplesU = &uon_0_.getValuesVec({T});
+                            else if(tupleU->getPredicateName() == &_on && !tupleUNegated)
+                                undeRepeated.push_back(tupleU);
+                            for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                                if(tuplesU!=&EMPTY_TUPLES_VEC)
+                                    tupleU = NULL;
+                                const Tuple* tuple1 = NULL;
+                                if(i<tuples->size())
+                                    tuple1 = factory.getTupleFromInternalID(tuples->at(i));
+                                else if(i<tuples->size()+tuplesU->size()){
+                                    tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                                    tupleUNegated=false;
+                                }else if(!undeRepeated.empty()){
+                                    if(tupleU->at(0) == T)
+                                        tuple1 = tupleU;
+                                }
+                                if(tuple1!=NULL){
+                                    int N1 = tuple1->at(1);
+                                    int N = tuple1->at(2);
+                                    if(N1 >= N){
+                                        if(tupleU != NULL){
+                                            if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                            else internalProps.push_back({tupleU,tupleUNegated});
+                                        }else{
+                                            propagatedLiterals.push_back(1);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                {
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &pon_.getValuesVec({});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uon_.getValuesVec({});
+                    else if(tupleU->getPredicateName() == &_on && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple0 = NULL;
+                        if(i<tuples->size())
+                            tuple0 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            tuple0 = tupleU;
+                        }
+                        if(tuple0!=NULL){
+                            int T = tuple0->at(0);
+                            int N = tuple0->at(1);
+                            int N1 = tuple0->at(2);
+                            const Tuple* tuple1 = factory.find({T,N},&_move);
+                            if(tuple1!=NULL){
+                                if(tuple1->isFalse())
+                                tuple1=NULL;
+                                else if(tuple1->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple1;
+                                        tupleUNegated=false;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_move || tupleUNegated || !(*tupleU == *tuple1))
+                                        tuple1=NULL;
+                                    }
+                                }
+                            }
+                            if(tuple1!=NULL){
+                                if(tupleU != NULL){
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                }else{
+                                    propagatedLiterals.push_back(1);
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                {
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &pon_.getValuesVec({});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uon_.getValuesVec({});
+                    else if(tupleU->getPredicateName() == &_on && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple0 = NULL;
+                        if(i<tuples->size())
+                            tuple0 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            tuple0 = tupleU;
+                        }
+                        if(tuple0!=NULL){
+                            int T = tuple0->at(0);
+                            int N = tuple0->at(1);
+                            int N1 = tuple0->at(2);
+                            const Tuple* tuple1 = factory.find({T,N},&_where);
+                            if(tuple1!=NULL){
+                                if(tuple1->isFalse())
+                                tuple1=NULL;
+                                else if(tuple1->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple1;
+                                        tupleUNegated=false;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_where || tupleUNegated || !(*tupleU == *tuple1))
+                                        tuple1=NULL;
+                                    }
+                                }
+                            }
+                            if(tuple1!=NULL){
+                                if(tupleU != NULL){
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                }else{
+                                    propagatedLiterals.push_back(1);
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                {
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &pon_.getValuesVec({});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uon_.getValuesVec({});
+                    else if(tupleU->getPredicateName() == &_on && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple0 = NULL;
+                        if(i<tuples->size())
+                            tuple0 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            tuple0 = tupleU;
+                        }
+                        if(tuple0!=NULL){
+                            int X0 = tuple0->at(0);
+                            int X1 = tuple0->at(1);
+                            int X2 = tuple0->at(2);
+                            Tuple negativeTuple({X0,X1,X2},&_sup_0);
+                            const Tuple* tuple1 = factory.find(negativeTuple);
+                            if(tuple1 == NULL)
+                                tuple1 = &negativeTuple;
+                            else{
+                                if(tuple1->isTrue())
+                                    tuple1 = NULL;
+                                else if(tuple1->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple1;
+                                        tupleUNegated=true;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_sup_0 || !tupleUNegated || !(*tupleU == *tuple1))
+                                        tuple1=NULL;
+                                    }
+                                }
+                            }
+                            if(tuple1!=NULL){
+                                Tuple negativeTuple({X0,X1,X2},&_sup_1);
                                 const Tuple* tuple2 = factory.find(negativeTuple);
                                 if(tuple2 == NULL)
                                     tuple2 = &negativeTuple;
@@ -1193,286 +1747,807 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts,std::vector<
                                             tupleU = tuple2;
                                             tupleUNegated=true;
                                         }else{
-                                            if(tupleU->getPredicateName() != &_agg_set_0 || !tupleUNegated || !(*tupleU == *tuple2))
+                                            if(tupleU->getPredicateName() != &_sup_1 || !tupleUNegated || !(*tupleU == *tuple2))
                                             tuple2=NULL;
                                         }
                                     }
                                 }
                                 if(tuple2!=NULL){
-                                    if(tupleU != NULL){
-                                        if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                        else internalProps.push_back({tupleU,tupleUNegated});
-                                    }else{
-                                        propagatedLiterals.push_back(1);
+                                    Tuple negativeTuple({X0,X1,X2},&_sup_2);
+                                    const Tuple* tuple3 = factory.find(negativeTuple);
+                                    if(tuple3 == NULL)
+                                        tuple3 = &negativeTuple;
+                                    else{
+                                        if(tuple3->isTrue())
+                                            tuple3 = NULL;
+                                        else if(tuple3->isUndef()){
+                                            if(tupleU == NULL){
+                                                tupleU = tuple3;
+                                                tupleUNegated=true;
+                                            }else{
+                                                if(tupleU->getPredicateName() != &_sup_2 || !tupleUNegated || !(*tupleU == *tuple3))
+                                                tuple3=NULL;
+                                            }
+                                        }
+                                    }
+                                    if(tuple3!=NULL){
+                                        if(tupleU != NULL){
+                                            if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                            else internalProps.push_back({tupleU,tupleUNegated});
+                                        }else{
+                                            propagatedLiterals.push_back(1);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
                 }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
             }
-        }
-        {
-            const std::vector<int>* tuples = &pagg_id_0_.getValuesVec({});
-            const std::vector<int>* tuplesU = &uagg_id_0_.getValuesVec({});
-            const std::vector<int>* tuplesF = &fagg_id_0_.getValuesVec({});
-            for(unsigned i = 0; i<tuples->size(); i++){
-                const Tuple* currentTuple = factory.getTupleFromInternalID(tuples->at(i));
-                int U = currentTuple->at(0);
-                int Cost = currentTuple->at(1);
-                std::vector<int> sharedVar({currentTuple->at(0)});
-                const IndexedSet* joinTuples = &pagg_set_0_2_.getValuesSet(sharedVar);
-                const IndexedSet* joinTuplesU = &uagg_set_0_2_.getValuesSet(sharedVar);
-                int aggrIdIt=tuples->at(i);
-                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                int& actSum = actualSum[aggrIdIt];
-                int& posSum = possibleSum[aggrIdIt];
-                if(actSum < Cost-posSum){
-                    propagatedLiterals.push_back(1);
-                }else{
-                    while(!joinTuplesU->empty()){
-                        const Tuple* currentJoinTuple = factory.getTupleFromInternalID(*joinTuplesU->begin());
-                        if(actSum >= Cost-posSum+currentJoinTuple->at(0)) {break;}
-                        int itProp = *joinTuplesU->begin();
-                        if(shared_reason.get()->empty() && currentDecisionLevel>0){
-                            const IndexedSet* joinTuplesF = &fagg_set_0_2_.getValuesSet(sharedVar);
-                            for(auto i = joinTuplesF->begin(); i != joinTuplesF->end(); i++){
-                                int it = *i;
-                                shared_reason.get()->insert(-it);
-                            }
-                            int itAggrId = tuples->at(i);
-                            shared_reason.get()->insert(itAggrId);
-                        }
-                        if(currentDecisionLevel > 0){
-                            auto itReason = reasonForLiteral.emplace(itProp,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        propUndefined(currentJoinTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                    }
-                }
-            }//close true for
-            for(unsigned i = 0; i<tuplesF->size(); i++){
-                const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesF->at(i));
-                int U = currentTuple->at(0);
-                int Cost = currentTuple->at(1);
-                std::vector<int> sharedVar({currentTuple->at(0)});
-                const IndexedSet* joinTuples = &pagg_set_0_2_.getValuesSet(sharedVar);
-                const IndexedSet* joinTuplesU = &uagg_set_0_2_.getValuesSet(sharedVar);
-                int aggrIdIt=tuplesF->at(i);
-                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                int& actSum = actualSum[aggrIdIt];
-                if(actSum >= Cost){
-                    propagatedLiterals.push_back(1);
-                }else{
-                    while(!joinTuplesU->empty()){
-                        int itProp = *joinTuplesU->begin();
-                        const Tuple* currentJoinTuple = factory.getTupleFromInternalID(itProp);
-                        if(actSum < Cost-currentJoinTuple->at(0))break;
-                        if(shared_reason.get()->empty() && currentDecisionLevel>0){
-                            for(auto i =joinTuples->begin(); i != joinTuples->end(); i++){
-                                int it = *i;
-                                shared_reason.get()->insert(it);
-                            }
-                            int it = tuplesF->at(i);
-                            shared_reason.get()->insert(-it);
-                        }
-                        if(currentDecisionLevel>0){
-                            auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        propUndefined(currentJoinTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                    }
-                }
-            }//close false for
-            for(unsigned i = 0; i<tuplesU->size();){
-                const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesU->at(i));
-                int U = currentTuple->at(0);
-                int Cost = currentTuple->at(1);
-                std::vector<int> sharedVar({currentTuple->at(0)});
-                const IndexedSet* joinTuples = &pagg_set_0_2_.getValuesSet(sharedVar);
-                const IndexedSet* joinTuplesU = &uagg_set_0_2_.getValuesSet(sharedVar);
-                int aggrIdIt=tuplesU->at(i);
-                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                int& actSum = actualSum[aggrIdIt];
-                int& posSum = possibleSum[aggrIdIt];
-                if(actSum >= Cost){
-                    if(currentDecisionLevel>0){
-                        int itProp = tuplesU->at(i);
-                        for(auto j = joinTuples->begin(); j != joinTuples->end(); j++){
-                            int it = *j;
-                            shared_reason.get()->insert(it);
-                        }
-                        auto itReason = reasonForLiteral.emplace(itProp,shared_reason);
-                        if(!itReason.second && itReason.first->second.get()->empty())
-                            itReason.first->second=shared_reason;
-                    }
-                    propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                }else if(actSum < Cost - posSum){
-                    int itProp = tuplesU->at(i);
-                    if(currentDecisionLevel>0){
-                        const IndexedSet* joinTuplesF = &fagg_set_0_2_.getValuesSet(sharedVar);
-                        for(auto j = joinTuplesF->begin(); j != joinTuplesF->end(); j++){
-                            int it = *j;
-                            shared_reason.get()->insert(-it);
-                        }
-                        auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);
-                        if(!itReason.second && itReason.first->second.get()->empty())
-                            itReason.first->second=shared_reason;
-                    }
-                    propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                }else{
-                    i++;
-                }
-            }//close undef for
-        }//close aggr set starter
-        {
-            const std::vector<int>* tuples = &pagg_id_1_.getValuesVec({});
-            const std::vector<int>* tuplesU = &uagg_id_1_.getValuesVec({});
-            const std::vector<int>* tuplesF = &fagg_id_1_.getValuesVec({});
-            for(unsigned i = 0; i<tuples->size(); i++){
-                const Tuple* currentTuple = factory.getTupleFromInternalID(tuples->at(i));
-                int U = currentTuple->at(0);
-                int Cost = currentTuple->at(1);
-                std::vector<int> sharedVar({currentTuple->at(0)});
-                const IndexedSet* joinTuples = &pagg_set_0_2_.getValuesSet(sharedVar);
-                const IndexedSet* joinTuplesU = &uagg_set_0_2_.getValuesSet(sharedVar);
-                int aggrIdIt=tuples->at(i);
-                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                int& actSum = actualSum[aggrIdIt];
-                int& posSum = possibleSum[aggrIdIt];
-                if(actSum < Cost+1-posSum){
-                    propagatedLiterals.push_back(1);
-                }else{
-                    while(!joinTuplesU->empty()){
-                        const Tuple* currentJoinTuple = factory.getTupleFromInternalID(*joinTuplesU->begin());
-                        if(actSum >= Cost+1-posSum+currentJoinTuple->at(0)) {break;}
-                        int itProp = *joinTuplesU->begin();
-                        if(shared_reason.get()->empty() && currentDecisionLevel>0){
-                            const IndexedSet* joinTuplesF = &fagg_set_0_2_.getValuesSet(sharedVar);
-                            for(auto i = joinTuplesF->begin(); i != joinTuplesF->end(); i++){
-                                int it = *i;
-                                shared_reason.get()->insert(-it);
-                            }
-                            int itAggrId = tuples->at(i);
-                            shared_reason.get()->insert(itAggrId);
-                        }
-                        if(currentDecisionLevel > 0){
-                            auto itReason = reasonForLiteral.emplace(itProp,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        propUndefined(currentJoinTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                    }
-                }
-            }//close true for
-            for(unsigned i = 0; i<tuplesF->size(); i++){
-                const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesF->at(i));
-                int U = currentTuple->at(0);
-                int Cost = currentTuple->at(1);
-                std::vector<int> sharedVar({currentTuple->at(0)});
-                const IndexedSet* joinTuples = &pagg_set_0_2_.getValuesSet(sharedVar);
-                const IndexedSet* joinTuplesU = &uagg_set_0_2_.getValuesSet(sharedVar);
-                int aggrIdIt=tuplesF->at(i);
-                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                int& actSum = actualSum[aggrIdIt];
-                if(actSum >= Cost+1){
-                    propagatedLiterals.push_back(1);
-                }else{
-                    while(!joinTuplesU->empty()){
-                        int itProp = *joinTuplesU->begin();
-                        const Tuple* currentJoinTuple = factory.getTupleFromInternalID(itProp);
-                        if(actSum < Cost+1-currentJoinTuple->at(0))break;
-                        if(shared_reason.get()->empty() && currentDecisionLevel>0){
-                            for(auto i =joinTuples->begin(); i != joinTuples->end(); i++){
-                                int it = *i;
-                                shared_reason.get()->insert(it);
-                            }
-                            int it = tuplesF->at(i);
-                            shared_reason.get()->insert(-it);
-                        }
-                        if(currentDecisionLevel>0){
-                            auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        propUndefined(currentJoinTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                    }
-                }
-            }//close false for
-            for(unsigned i = 0; i<tuplesU->size();){
-                const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesU->at(i));
-                int U = currentTuple->at(0);
-                int Cost = currentTuple->at(1);
-                std::vector<int> sharedVar({currentTuple->at(0)});
-                const IndexedSet* joinTuples = &pagg_set_0_2_.getValuesSet(sharedVar);
-                const IndexedSet* joinTuplesU = &uagg_set_0_2_.getValuesSet(sharedVar);
-                int aggrIdIt=tuplesU->at(i);
-                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                int& actSum = actualSum[aggrIdIt];
-                int& posSum = possibleSum[aggrIdIt];
-                if(actSum >= Cost+1){
-                    if(currentDecisionLevel>0){
-                        int itProp = tuplesU->at(i);
-                        for(auto j = joinTuples->begin(); j != joinTuples->end(); j++){
-                            int it = *j;
-                            shared_reason.get()->insert(it);
-                        }
-                        auto itReason = reasonForLiteral.emplace(itProp,shared_reason);
-                        if(!itReason.second && itReason.first->second.get()->empty())
-                            itReason.first->second=shared_reason;
-                    }
-                    propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                }else if(actSum < Cost+1 - posSum){
-                    int itProp = tuplesU->at(i);
-                    if(currentDecisionLevel>0){
-                        const IndexedSet* joinTuplesF = &fagg_set_0_2_.getValuesSet(sharedVar);
-                        for(auto j = joinTuplesF->begin(); j != joinTuplesF->end(); j++){
-                            int it = *j;
-                            shared_reason.get()->insert(-it);
-                        }
-                        auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);
-                        if(!itReason.second && itReason.first->second.get()->empty())
-                            itReason.first->second=shared_reason;
-                    }
-                    propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                }else{
-                    i++;
-                }
-            }//close undef for
-        }//close aggr set starter
-        {
             {
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &pcosts_.getValuesVec({});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &ucosts_.getValuesVec({});
-                else if(tupleU->getPredicateName() == &_costs && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple0 = NULL;
-                    if(i<tuples->size())
-                        tuple0 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        tuple0 = tupleU;
+                {
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &ptime_.getValuesVec({});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &utime_.getValuesVec({});
+                    else if(tupleU->getPredicateName() == &_time && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple0 = NULL;
+                        if(i<tuples->size())
+                            tuple0 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            tuple0 = tupleU;
+                        }
+                        if(tuple0!=NULL){
+                            int T = tuple0->at(0);
+                            int TP1 = T + 1;
+                            const std::vector<int>* tuples = &psteps_.getValuesVec({});
+                            const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                            std::vector<const Tuple*> undeRepeated;
+                            if(tupleU == NULL)
+                                tuplesU = &usteps_.getValuesVec({});
+                            else if(tupleU->getPredicateName() == &_steps && !tupleUNegated)
+                                undeRepeated.push_back(tupleU);
+                            for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                                if(tuplesU!=&EMPTY_TUPLES_VEC)
+                                    tupleU = NULL;
+                                const Tuple* tuple2 = NULL;
+                                if(i<tuples->size())
+                                    tuple2 = factory.getTupleFromInternalID(tuples->at(i));
+                                else if(i<tuples->size()+tuplesU->size()){
+                                    tupleU = tuple2 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                                    tupleUNegated=false;
+                                }else if(!undeRepeated.empty()){
+                                    tuple2 = tupleU;
+                                }
+                                if(tuple2!=NULL){
+                                    int K = tuple2->at(0);
+                                    if(T < K){
+                                        const std::vector<int>* tuples = &pon_0_.getValuesVec({T});
+                                        const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                                        std::vector<const Tuple*> undeRepeated;
+                                        if(tupleU == NULL)
+                                            tuplesU = &uon_0_.getValuesVec({T});
+                                        else if(tupleU->getPredicateName() == &_on && !tupleUNegated)
+                                            undeRepeated.push_back(tupleU);
+                                        for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                                            if(tuplesU!=&EMPTY_TUPLES_VEC)
+                                                tupleU = NULL;
+                                            const Tuple* tuple4 = NULL;
+                                            if(i<tuples->size())
+                                                tuple4 = factory.getTupleFromInternalID(tuples->at(i));
+                                            else if(i<tuples->size()+tuplesU->size()){
+                                                tupleU = tuple4 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                                                tupleUNegated=false;
+                                            }else if(!undeRepeated.empty()){
+                                                if(tupleU->at(0) == T)
+                                                    tuple4 = tupleU;
+                                            }
+                                            if(tuple4!=NULL){
+                                                int N = tuple4->at(1);
+                                                int N1 = tuple4->at(2);
+                                                Tuple negativeTuple({T,N1},&_move);
+                                                const Tuple* tuple5 = factory.find(negativeTuple);
+                                                if(tuple5 == NULL)
+                                                    tuple5 = &negativeTuple;
+                                                else{
+                                                    if(tuple5->isTrue())
+                                                        tuple5 = NULL;
+                                                    else if(tuple5->isUndef()){
+                                                        if(tupleU == NULL){
+                                                            tupleU = tuple5;
+                                                            tupleUNegated=true;
+                                                        }else{
+                                                            if(tupleU->getPredicateName() != &_move || !tupleUNegated || !(*tupleU == *tuple5))
+                                                            tuple5=NULL;
+                                                        }
+                                                    }
+                                                }
+                                                if(tuple5!=NULL){
+                                                    Tuple negativeTuple({TP1,N,N1,T,K},&_aux_1);
+                                                    const Tuple* tuple6 = factory.find(negativeTuple);
+                                                    if(tuple6 == NULL)
+                                                        tuple6 = &negativeTuple;
+                                                    else{
+                                                        if(tuple6->isTrue())
+                                                            tuple6 = NULL;
+                                                        else if(tuple6->isUndef()){
+                                                            if(tupleU == NULL){
+                                                                tupleU = tuple6;
+                                                                tupleUNegated=true;
+                                                            }else{
+                                                                if(tupleU->getPredicateName() != &_aux_1 || !tupleUNegated || !(*tupleU == *tuple6))
+                                                                tuple6=NULL;
+                                                            }
+                                                        }
+                                                    }
+                                                    if(tuple6!=NULL){
+                                                        if(tupleU != NULL){
+                                                            if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                                            else internalProps.push_back({tupleU,tupleUNegated});
+                                                        }else{
+                                                            propagatedLiterals.push_back(1);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
-                    if(tuple0!=NULL){
-                        int U = tuple0->at(0);
-                        int Cost = tuple0->at(1);
-                        Tuple negativeTuple({U,Cost},&_body_0);
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                {
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &paux_1_.getValuesVec({});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uaux_1_.getValuesVec({});
+                    else if(tupleU->getPredicateName() == &_aux_1 && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple0 = NULL;
+                        if(i<tuples->size())
+                            tuple0 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            tuple0 = tupleU;
+                        }
+                        if(tuple0!=NULL){
+                            int TP1 = tuple0->at(0);
+                            int N = tuple0->at(1);
+                            int N1 = tuple0->at(2);
+                            int T = tuple0->at(3);
+                            int K = tuple0->at(4);
+                            const Tuple* tuple1 = factory.find({T,N1},&_move);
+                            if(tuple1!=NULL){
+                                if(tuple1->isFalse())
+                                tuple1=NULL;
+                                else if(tuple1->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple1;
+                                        tupleUNegated=false;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_move || tupleUNegated || !(*tupleU == *tuple1))
+                                        tuple1=NULL;
+                                    }
+                                }
+                            }
+                            if(tuple1!=NULL){
+                                if(tupleU != NULL){
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                }else{
+                                    propagatedLiterals.push_back(1);
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                {
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &paux_1_.getValuesVec({});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uaux_1_.getValuesVec({});
+                    else if(tupleU->getPredicateName() == &_aux_1 && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple0 = NULL;
+                        if(i<tuples->size())
+                            tuple0 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            tuple0 = tupleU;
+                        }
+                        if(tuple0!=NULL){
+                            int TP1 = tuple0->at(0);
+                            int N = tuple0->at(1);
+                            int N1 = tuple0->at(2);
+                            int T = tuple0->at(3);
+                            int K = tuple0->at(4);
+                            Tuple negativeTuple({T,N,N1},&_on);
+                            const Tuple* tuple1 = factory.find(negativeTuple);
+                            if(tuple1 == NULL)
+                                tuple1 = &negativeTuple;
+                            else{
+                                if(tuple1->isTrue())
+                                    tuple1 = NULL;
+                                else if(tuple1->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple1;
+                                        tupleUNegated=true;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_on || !tupleUNegated || !(*tupleU == *tuple1))
+                                        tuple1=NULL;
+                                    }
+                                }
+                            }
+                            if(tuple1!=NULL){
+                                if(tupleU != NULL){
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                }else{
+                                    propagatedLiterals.push_back(1);
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                {
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &paux_1_.getValuesVec({});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uaux_1_.getValuesVec({});
+                    else if(tupleU->getPredicateName() == &_aux_1 && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple0 = NULL;
+                        if(i<tuples->size())
+                            tuple0 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            tuple0 = tupleU;
+                        }
+                        if(tuple0!=NULL){
+                            int TP1 = tuple0->at(0);
+                            int N = tuple0->at(1);
+                            int N1 = tuple0->at(2);
+                            int T = tuple0->at(3);
+                            int K = tuple0->at(4);
+                            Tuple negativeTuple({K},&_steps);
+                            const Tuple* tuple1 = factory.find(negativeTuple);
+                            if(tuple1 == NULL)
+                                tuple1 = &negativeTuple;
+                            else{
+                                if(tuple1->isTrue())
+                                    tuple1 = NULL;
+                                else if(tuple1->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple1;
+                                        tupleUNegated=true;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_steps || !tupleUNegated || !(*tupleU == *tuple1))
+                                        tuple1=NULL;
+                                    }
+                                }
+                            }
+                            if(tuple1!=NULL){
+                                if(tupleU != NULL){
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                }else{
+                                    propagatedLiterals.push_back(1);
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                {
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &paux_1_.getValuesVec({});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uaux_1_.getValuesVec({});
+                    else if(tupleU->getPredicateName() == &_aux_1 && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple0 = NULL;
+                        if(i<tuples->size())
+                            tuple0 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            tuple0 = tupleU;
+                        }
+                        if(tuple0!=NULL){
+                            int TP1 = tuple0->at(0);
+                            int N = tuple0->at(1);
+                            int N1 = tuple0->at(2);
+                            int T = tuple0->at(3);
+                            int K = tuple0->at(4);
+                            Tuple negativeTuple({T},&_time);
+                            const Tuple* tuple1 = factory.find(negativeTuple);
+                            if(tuple1 == NULL)
+                                tuple1 = &negativeTuple;
+                            else{
+                                if(tuple1->isTrue())
+                                    tuple1 = NULL;
+                                else if(tuple1->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple1;
+                                        tupleUNegated=true;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_time || !tupleUNegated || !(*tupleU == *tuple1))
+                                        tuple1=NULL;
+                                    }
+                                }
+                            }
+                            if(tuple1!=NULL){
+                                if(tupleU != NULL){
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                }else{
+                                    propagatedLiterals.push_back(1);
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                {
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &pmove_.getValuesVec({});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &umove_.getValuesVec({});
+                    else if(tupleU->getPredicateName() == &_move && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple0 = NULL;
+                        if(i<tuples->size())
+                            tuple0 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            tuple0 = tupleU;
+                        }
+                        if(tuple0!=NULL){
+                            int T = tuple0->at(0);
+                            int N = tuple0->at(1);
+                            int TP1 = T + 1;
+                            const std::vector<int>* tuples = &pwhere_0_.getValuesVec({T});
+                            const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                            std::vector<const Tuple*> undeRepeated;
+                            if(tupleU == NULL)
+                                tuplesU = &uwhere_0_.getValuesVec({T});
+                            else if(tupleU->getPredicateName() == &_where && !tupleUNegated)
+                                undeRepeated.push_back(tupleU);
+                            for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                                if(tuplesU!=&EMPTY_TUPLES_VEC)
+                                    tupleU = NULL;
+                                const Tuple* tuple2 = NULL;
+                                if(i<tuples->size())
+                                    tuple2 = factory.getTupleFromInternalID(tuples->at(i));
+                                else if(i<tuples->size()+tuplesU->size()){
+                                    tupleU = tuple2 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                                    tupleUNegated=false;
+                                }else if(!undeRepeated.empty()){
+                                    if(tupleU->at(0) == T)
+                                        tuple2 = tupleU;
+                                }
+                                if(tuple2!=NULL){
+                                    int N1 = tuple2->at(1);
+                                    Tuple negativeTuple({TP1,N1,N,T},&_aux_0);
+                                    const Tuple* tuple3 = factory.find(negativeTuple);
+                                    if(tuple3 == NULL)
+                                        tuple3 = &negativeTuple;
+                                    else{
+                                        if(tuple3->isTrue())
+                                            tuple3 = NULL;
+                                        else if(tuple3->isUndef()){
+                                            if(tupleU == NULL){
+                                                tupleU = tuple3;
+                                                tupleUNegated=true;
+                                            }else{
+                                                if(tupleU->getPredicateName() != &_aux_0 || !tupleUNegated || !(*tupleU == *tuple3))
+                                                tuple3=NULL;
+                                            }
+                                        }
+                                    }
+                                    if(tuple3!=NULL){
+                                        if(tupleU != NULL){
+                                            if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                            else internalProps.push_back({tupleU,tupleUNegated});
+                                        }else{
+                                            propagatedLiterals.push_back(1);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                {
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &paux_0_.getValuesVec({});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uaux_0_.getValuesVec({});
+                    else if(tupleU->getPredicateName() == &_aux_0 && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple0 = NULL;
+                        if(i<tuples->size())
+                            tuple0 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            tuple0 = tupleU;
+                        }
+                        if(tuple0!=NULL){
+                            int TP1 = tuple0->at(0);
+                            int N1 = tuple0->at(1);
+                            int N = tuple0->at(2);
+                            int T = tuple0->at(3);
+                            Tuple negativeTuple({T,N1},&_where);
+                            const Tuple* tuple1 = factory.find(negativeTuple);
+                            if(tuple1 == NULL)
+                                tuple1 = &negativeTuple;
+                            else{
+                                if(tuple1->isTrue())
+                                    tuple1 = NULL;
+                                else if(tuple1->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple1;
+                                        tupleUNegated=true;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_where || !tupleUNegated || !(*tupleU == *tuple1))
+                                        tuple1=NULL;
+                                    }
+                                }
+                            }
+                            if(tuple1!=NULL){
+                                if(tupleU != NULL){
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                }else{
+                                    propagatedLiterals.push_back(1);
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                {
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &paux_0_.getValuesVec({});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uaux_0_.getValuesVec({});
+                    else if(tupleU->getPredicateName() == &_aux_0 && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple0 = NULL;
+                        if(i<tuples->size())
+                            tuple0 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            tuple0 = tupleU;
+                        }
+                        if(tuple0!=NULL){
+                            int TP1 = tuple0->at(0);
+                            int N1 = tuple0->at(1);
+                            int N = tuple0->at(2);
+                            int T = tuple0->at(3);
+                            Tuple negativeTuple({T,N},&_move);
+                            const Tuple* tuple1 = factory.find(negativeTuple);
+                            if(tuple1 == NULL)
+                                tuple1 = &negativeTuple;
+                            else{
+                                if(tuple1->isTrue())
+                                    tuple1 = NULL;
+                                else if(tuple1->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple1;
+                                        tupleUNegated=true;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_move || !tupleUNegated || !(*tupleU == *tuple1))
+                                        tuple1=NULL;
+                                    }
+                                }
+                            }
+                            if(tuple1!=NULL){
+                                if(tupleU != NULL){
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                }else{
+                                    propagatedLiterals.push_back(1);
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                const std::vector<int>* trueHeads = &psup_1_.getValuesVec({});
+                for(unsigned i = 0;i < trueHeads->size(); i++){
+                    const Tuple* currentHead = factory.getTupleFromInternalID(trueHeads->at(i));
+                    if(eagerFacts.count(currentHead->getId())!=0) continue;
+                    int TP1 = currentHead->at(0);
+                    int N1 = currentHead->at(1);
+                    int N = currentHead->at(2);
+                    const std::vector<int>* tuples = &paux_0_0_1_2_.getValuesVec({TP1, N1, N});
+                    const std::vector<int>* tuplesU = &uaux_0_0_1_2_.getValuesVec({TP1, N1, N});
+                    if(tuples->size()==0){
+                        if(tuplesU->size() == 0){
+                            propagatedLiterals.push_back(1);
+                            return;
+                        }else if(tuplesU->size()==1){
+                            const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesU->at(0));
+                            propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                        }
+                    }
+                }
+                const std::vector<int>* falseHeads = &fsup_1_.getValuesVec({});
+                for(unsigned i = 0;i < falseHeads->size(); i++){
+                    const Tuple* currentHead = factory.getTupleFromInternalID(falseHeads->at(i));
+                    int TP1 = currentHead->at(0);
+                    int N1 = currentHead->at(1);
+                    int N = currentHead->at(2);
+                    const std::vector<int>* tuples = &paux_0_0_1_2_.getValuesVec({TP1, N1, N});
+                    const std::vector<int>* tuplesU = &uaux_0_0_1_2_.getValuesVec({TP1, N1, N});
+                    if(tuples->size()>0){
+                        propagatedLiterals.push_back(1);
+                        return;
+                    }else{
+                        while(!tuplesU->empty()){
+                            propUndefined(factory.getTupleFromInternalID(tuplesU->back()),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                        }
+                    }
+                }
+                const std::vector<int>* undefHeads = &usup_1_.getValuesVec({});
+                for(unsigned i = 0; i < undefHeads->size();){
+                    const Tuple* currentHead = factory.getTupleFromInternalID(undefHeads->at(i));
+                    int TP1 = currentHead->at(0);
+                    int N1 = currentHead->at(1);
+                    int N = currentHead->at(2);
+                    const std::vector<int>* tuples = &paux_0_0_1_2_.getValuesVec({TP1, N1, N});
+                    const std::vector<int>* tuplesU = &uaux_0_0_1_2_.getValuesVec({TP1, N1, N});
+                    if(tuples->size() > 0)
+                        propUndefined(currentHead,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                    else if(tuplesU->size()==0)
+                        propUndefined(currentHead,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                    else i++;
+                }
+            }
+            {
+                const std::vector<int>* trueHeads = &psup_2_.getValuesVec({});
+                for(unsigned i = 0;i < trueHeads->size(); i++){
+                    const Tuple* currentHead = factory.getTupleFromInternalID(trueHeads->at(i));
+                    if(eagerFacts.count(currentHead->getId())!=0) continue;
+                    int TP1 = currentHead->at(0);
+                    int N = currentHead->at(1);
+                    int N1 = currentHead->at(2);
+                    const std::vector<int>* tuples = &paux_1_0_1_2_.getValuesVec({TP1, N, N1});
+                    const std::vector<int>* tuplesU = &uaux_1_0_1_2_.getValuesVec({TP1, N, N1});
+                    if(tuples->size()==0){
+                        if(tuplesU->size() == 0){
+                            propagatedLiterals.push_back(1);
+                            return;
+                        }else if(tuplesU->size()==1){
+                            const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesU->at(0));
+                            propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                        }
+                    }
+                }
+                const std::vector<int>* falseHeads = &fsup_2_.getValuesVec({});
+                for(unsigned i = 0;i < falseHeads->size(); i++){
+                    const Tuple* currentHead = factory.getTupleFromInternalID(falseHeads->at(i));
+                    int TP1 = currentHead->at(0);
+                    int N = currentHead->at(1);
+                    int N1 = currentHead->at(2);
+                    const std::vector<int>* tuples = &paux_1_0_1_2_.getValuesVec({TP1, N, N1});
+                    const std::vector<int>* tuplesU = &uaux_1_0_1_2_.getValuesVec({TP1, N, N1});
+                    if(tuples->size()>0){
+                        propagatedLiterals.push_back(1);
+                        return;
+                    }else{
+                        while(!tuplesU->empty()){
+                            propUndefined(factory.getTupleFromInternalID(tuplesU->back()),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                        }
+                    }
+                }
+                const std::vector<int>* undefHeads = &usup_2_.getValuesVec({});
+                for(unsigned i = 0; i < undefHeads->size();){
+                    const Tuple* currentHead = factory.getTupleFromInternalID(undefHeads->at(i));
+                    int TP1 = currentHead->at(0);
+                    int N = currentHead->at(1);
+                    int N1 = currentHead->at(2);
+                    const std::vector<int>* tuples = &paux_1_0_1_2_.getValuesVec({TP1, N, N1});
+                    const std::vector<int>* tuplesU = &uaux_1_0_1_2_.getValuesVec({TP1, N, N1});
+                    if(tuples->size() > 0)
+                        propUndefined(currentHead,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                    else if(tuplesU->size()==0)
+                        propUndefined(currentHead,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                    else i++;
+                }
+            }
+        }//close decision level == -1
+        std::vector<int> propagated;
+        while(!propagationStack.empty()){
+            int startVar = propagationStack.back();
+            propagated.push_back(startVar);
+            int uStartVar = startVar<0 ? -startVar : startVar;
+            Tuple starter (*factory.getTupleFromInternalID(uStartVar));
+            std::string minus = startVar < 0 ? "not " : "";
+            propagationStack.pop_back();
+            {
+                if(starter.getPredicateName() == &_on && startVar < 0){
+                    if(0 == starter[0]){
+                        int N1 = starter[1];
+                        int N = starter[2];
+                        const Tuple* tupleU = NULL;
+                        bool tupleUNegated = false;
+                        std::vector<std::pair<const Tuple*,bool>> internalProps;
+                        const Tuple* tuple1 = factory.find({0,N1,N},&_sup_0);
+                        if(tuple1!=NULL){
+                            if(tuple1->isFalse())
+                            tuple1=NULL;
+                            else if(tuple1->isUndef()){
+                                if(tupleU == NULL){
+                                    tupleU = tuple1;
+                                    tupleUNegated=false;
+                                }else{
+                                    if(tupleU->getPredicateName() != &_sup_0 || tupleUNegated || !(*tupleU == *tuple1))
+                                    tuple1=NULL;
+                                }
+                            }
+                        }
+                        if(tuple1!=NULL){
+                            if(tupleU != NULL){
+                                int itUndef = tupleU->getId();
+                                int var = tupleUNegated ? 1 : -1;
+                                var*=itUndef;
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    {
+                                        int it = starter.getId();
+                                        shared_reason.get()->insert(it*-1);
+                                    }
+                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                    if(!itReason.second && itReason.first->second.get()->empty())
+                                        itReason.first->second=shared_reason;
+                                }
+                                if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                else internalProps.push_back({tupleU,tupleUNegated});
+                            }else{
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    if(tuple1!=NULL){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    reasonForLiteral[-startVar]=shared_reason;
+                                    handleConflict(-startVar, propagatedLiterals);
+                                }else propagatedLiterals.push_back(1);
+                                return;
+                            }
+                        }
+                        for(auto pair : internalProps)
+                            propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                    }
+                }
+                if(starter.getPredicateName() == &_sup_0 && startVar > 0){
+                    if(0 == starter[0]){
+                        int N1 = starter[1];
+                        int N = starter[2];
+                        const Tuple* tupleU = NULL;
+                        bool tupleUNegated = false;
+                        std::vector<std::pair<const Tuple*,bool>> internalProps;
+                        Tuple negativeTuple({0,N1,N},&_on);
                         const Tuple* tuple1 = factory.find(negativeTuple);
                         if(tuple1 == NULL)
                             tuple1 = &negativeTuple;
@@ -1484,184 +2559,2512 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts,std::vector<
                                     tupleU = tuple1;
                                     tupleUNegated=true;
                                 }else{
-                                    if(tupleU->getPredicateName() != &_body_0 || !tupleUNegated || !(*tupleU == *tuple1))
+                                    if(tupleU->getPredicateName() != &_on || !tupleUNegated || !(*tupleU == *tuple1))
                                     tuple1=NULL;
                                 }
                             }
                         }
                         if(tuple1!=NULL){
                             if(tupleU != NULL){
-                                if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
+                                int itUndef = tupleU->getId();
+                                int var = tupleUNegated ? 1 : -1;
+                                var*=itUndef;
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    {
+                                        int it = starter.getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*-1);
+                                    }
+                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                    if(!itReason.second && itReason.first->second.get()->empty())
+                                        itReason.first->second=shared_reason;
+                                }
+                                if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
                                     bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
                                 else internalProps.push_back({tupleU,tupleUNegated});
                             }else{
-                                propagatedLiterals.push_back(1);
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    if(tuple1!=NULL){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*-1);
+                                    }
+                                    reasonForLiteral[-startVar]=shared_reason;
+                                    handleConflict(-startVar, propagatedLiterals);
+                                }else propagatedLiterals.push_back(1);
+                                return;
                             }
+                        }
+                        for(auto pair : internalProps)
+                            propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                    }
+                }
+            }
+            if(starter.getPredicateName() == &_on0){
+                int N = starter.at(0);
+                int N1 = starter.at(1);
+                Tuple* head = factory.find({0,N1,N}, &_sup_0);
+                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                if(startVar > 0){
+                    if(head == NULL || (!head->isTrue() && !head->isUndef())){
+                        if(currentDecisionLevel>0){
+                            int it = head->getId();
+                            shared_reason.get()->insert(startVar);
+                            reasonForLiteral[it]=shared_reason;
+                            handleConflict(it, propagatedLiterals);
+                        }else propagatedLiterals.push_back(1);
+                        return;
+                    }else if(head !=NULL && head->isUndef()){
+                        if(currentDecisionLevel>0){
+                            int it = head->getId();
+                            shared_reason.get()->insert(startVar);
+                            auto itReason = reasonForLiteral.emplace(it,shared_reason);
+                            if(!itReason.second && itReason.first->second.get()->empty())
+                                itReason.first->second=shared_reason;
+                        }
+                        propUndefined(head,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                    }
+                }else{
+                    if(head != NULL && head->isTrue()){
+                        if(currentDecisionLevel>0){
+                            int it = head->getId();
+                            shared_reason.get()->insert(startVar);
+                            reasonForLiteral[-it]=shared_reason;
+                            handleConflict(-it, propagatedLiterals);
+                        }else propagatedLiterals.push_back(1);
+                        return;
+                    }else{
+                        if(head != NULL && head->isUndef()){
+                            if(currentDecisionLevel>0){
+                                int it = head->getId();
+                                shared_reason.get()->insert(startVar);
+                                auto itReason = reasonForLiteral.emplace(-it,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            propUndefined(head,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
                         }
                     }
                 }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            {
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &pcosts_.getValuesVec({});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &ucosts_.getValuesVec({});
-                else if(tupleU->getPredicateName() == &_costs && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple0 = NULL;
-                    if(i<tuples->size())
-                        tuple0 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        tuple0 = tupleU;
+            }else if(starter.getPredicateName() == &_sup_0){
+                if(starter.at(0) == 0){
+                    int N1 = starter.at(1);
+                    int N = starter.at(2);
+                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                    Tuple* currentBody = factory.find({N,N1}, &_on0);
+                    if(startVar > 0){
+                        if(currentBody->isFalse()){
+                            if(currentDecisionLevel>0){
+                                int it = currentBody->getId();
+                                shared_reason.get()->insert(startVar);
+                                reasonForLiteral[it]=shared_reason;
+                                handleConflict(it, propagatedLiterals);
+                            } else propagatedLiterals.push_back(1);
+                            return;
+                        }else if(currentBody->isUndef()){
+                            if(currentDecisionLevel>0){
+                                int it = currentBody->getId();
+                                shared_reason.get()->insert(startVar);
+                                auto itReason = reasonForLiteral.emplace(it,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            propUndefined(currentBody,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                        }
+                    }else{
+                        if(currentBody->isTrue()){
+                            if(currentDecisionLevel>0){
+                                int it = currentBody->getId();
+                                shared_reason.get()->insert(startVar);
+                                reasonForLiteral[-it]=shared_reason;
+                                handleConflict(-it, propagatedLiterals);
+                            }else propagatedLiterals.push_back(1);
+                            return;
+                        }else if(currentBody->isUndef()){
+                            if(currentDecisionLevel>0){
+                                int it = currentBody->getId();
+                                shared_reason.get()->insert(startVar);
+                                auto itReason = reasonForLiteral.emplace(-it,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            propUndefined(currentBody,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                        }
                     }
-                    if(tuple0!=NULL){
-                        int U = tuple0->at(0);
-                        int Cost = tuple0->at(1);
-                        Tuple negativeTuple({U,Cost},&_agg_id_0);
-                        const Tuple* tuple1 = factory.find(negativeTuple);
-                        if(tuple1 == NULL)
-                            tuple1 = &negativeTuple;
-                        else{
-                            if(tuple1->isTrue())
-                                tuple1 = NULL;
-                            else if(tuple1->isUndef()){
+                }
+            }
+            {
+                if(starter.getPredicateName() == &_on && startVar < 0){
+                    int TP1 = starter[0];
+                    int N1 = starter[1];
+                    int N = starter[2];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const Tuple* tuple1 = factory.find({TP1,N1,N},&_sup_1);
+                    if(tuple1!=NULL){
+                        if(tuple1->isFalse())
+                        tuple1=NULL;
+                        else if(tuple1->isUndef()){
+                            if(tupleU == NULL){
+                                tupleU = tuple1;
+                                tupleUNegated=false;
+                            }else{
+                                if(tupleU->getPredicateName() != &_sup_1 || tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
+                            }
+                        }
+                    }
+                    if(tuple1!=NULL){
+                        if(tupleU != NULL){
+                            int itUndef = tupleU->getId();
+                            int var = tupleUNegated ? 1 : -1;
+                            var*=itUndef;
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                {
+                                    int it = starter.getId();
+                                    shared_reason.get()->insert(it*-1);
+                                }
+                                if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                            else internalProps.push_back({tupleU,tupleUNegated});
+                        }else{
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                if(tuple1!=NULL){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                reasonForLiteral[-startVar]=shared_reason;
+                                handleConflict(-startVar, propagatedLiterals);
+                            }else propagatedLiterals.push_back(1);
+                            return;
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+                if(starter.getPredicateName() == &_sup_1 && startVar > 0){
+                    int TP1 = starter[0];
+                    int N1 = starter[1];
+                    int N = starter[2];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    Tuple negativeTuple({TP1,N1,N},&_on);
+                    const Tuple* tuple1 = factory.find(negativeTuple);
+                    if(tuple1 == NULL)
+                        tuple1 = &negativeTuple;
+                    else{
+                        if(tuple1->isTrue())
+                            tuple1 = NULL;
+                        else if(tuple1->isUndef()){
+                            if(tupleU == NULL){
+                                tupleU = tuple1;
+                                tupleUNegated=true;
+                            }else{
+                                if(tupleU->getPredicateName() != &_on || !tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
+                            }
+                        }
+                    }
+                    if(tuple1!=NULL){
+                        if(tupleU != NULL){
+                            int itUndef = tupleU->getId();
+                            int var = tupleUNegated ? 1 : -1;
+                            var*=itUndef;
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                {
+                                    int it = starter.getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*-1);
+                                }
+                                auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                            else internalProps.push_back({tupleU,tupleUNegated});
+                        }else{
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                if(tuple1!=NULL){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*-1);
+                                }
+                                reasonForLiteral[-startVar]=shared_reason;
+                                handleConflict(-startVar, propagatedLiterals);
+                            }else propagatedLiterals.push_back(1);
+                            return;
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            if(starter.getPredicateName() == &_aux_0){
+                int TP1 = starter.at(0);
+                int N1 = starter.at(1);
+                int N = starter.at(2);
+                int T = starter.at(3);
+                Tuple* head = factory.find({TP1,N1,N}, &_sup_1);
+                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                if(startVar > 0){
+                    if(head == NULL || (!head->isTrue() && !head->isUndef())){
+                        if(currentDecisionLevel>0){
+                            int it = head->getId();
+                            shared_reason.get()->insert(startVar);
+                            reasonForLiteral[it]=shared_reason;
+                            handleConflict(it, propagatedLiterals);
+                        }else propagatedLiterals.push_back(1);
+                        return;
+                    }else if(head !=NULL && head->isUndef()){
+                        if(currentDecisionLevel>0){
+                            int it = head->getId();
+                            shared_reason.get()->insert(startVar);
+                            auto itReason = reasonForLiteral.emplace(it,shared_reason);
+                            if(!itReason.second && itReason.first->second.get()->empty())
+                                itReason.first->second=shared_reason;
+                        }
+                        propUndefined(head,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                    }
+                }else{
+                    const std::vector<int>* tuples = &paux_0_0_1_2_.getValuesVec({TP1, N1, N});
+                    const std::vector<int>* tuplesU = &uaux_0_0_1_2_.getValuesVec({TP1, N1, N});
+                    if(head != NULL && head->isTrue()){
+                        if(tuples->size() == 0 && tuplesU->size() == 0){
+                            if(currentDecisionLevel>0){
+                                int itHead = head->getId();
+                                const std::vector<int>* tuplesF = &faux_0_0_1_2_.getValuesVec({TP1, N1, N});
+                                for(unsigned i=0;i<tuplesF->size();i++){
+                                    int it = tuplesF->at(i);
+                                    shared_reason.get()->insert(-it);
+                                }
+                                reasonForLiteral[-itHead]=shared_reason;
+                                handleConflict(-itHead, propagatedLiterals);
+                            }else propagatedLiterals.push_back(1);
+                            return;
+                        }else if(tuples->size() == 0 && tuplesU->size() == 1){
+                            if(currentDecisionLevel>0){
+                                int itProp = tuplesU->at(0);
+                                const std::vector<int>* tuplesF = &faux_0_0_1_2_.getValuesVec({TP1, N1, N});
+                                for(unsigned i=0;i<tuplesF->size();i++){
+                                    int it = tuplesF->at(i);
+                                    shared_reason.get()->insert(-it);
+                                }
+                                int it = head->getId();
+                                shared_reason.get()->insert(it);
+                                auto itReason = reasonForLiteral.emplace(itProp,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            propUndefined(factory.getTupleFromInternalID(tuplesU->at(0)),false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                        }
+                    }else if( head != NULL && head->isUndef() ){
+                        if(tuples->size() == 0 && tuplesU->size() == 0){
+                            if(currentDecisionLevel>0){
+                                int itHead = head->getId();
+                                const std::vector<int>* tuplesF = &faux_0_0_1_2_.getValuesVec({TP1, N1, N});
+                                for(unsigned i=0;i<tuplesF->size();i++){
+                                    int it = tuplesF->at(i);
+                                    shared_reason.get()->insert(-it);
+                                }
+                                auto itReason = reasonForLiteral.emplace(-itHead,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            propUndefined(head,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                        }
+                    }
+                }
+            }else if(starter.getPredicateName() == &_sup_1){
+                int TP1 = starter.at(0);
+                int N1 = starter.at(1);
+                int N = starter.at(2);
+                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                const std::vector<int>* tuples = &paux_0_0_1_2_.getValuesVec({TP1,N1,N});
+                const std::vector<int>* tuplesU = &uaux_0_0_1_2_.getValuesVec({TP1,N1,N});
+                if(startVar > 0){
+                    if(tuples->size()==0){
+                        if(tuplesU->size() == 0){
+                            if(currentDecisionLevel>0){
+                                const std::vector<int>* tuplesF = &faux_0_0_1_2_.getValuesVec({TP1,N1,N});
+                                for(unsigned i=0; i<tuplesF->size(); i++){
+                                    int it = tuplesF->at(i);
+                                    shared_reason.get()->insert(-it);
+                                }
+                                reasonForLiteral[-startVar]=shared_reason;
+                                handleConflict(-startVar, propagatedLiterals);
+                            }else propagatedLiterals.push_back(1);
+                            return;
+                        }else if(tuplesU->size()==1){
+                            const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesU->at(0));
+                            if(currentDecisionLevel>0){
+                                int itProp = currentTuple->getId();
+                                const std::vector<int>* tuplesF = &faux_0_0_1_2_.getValuesVec({TP1,N1,N});
+                                for(unsigned i=0; i<tuplesF->size(); i++){
+                                    int it = tuplesF->at(i);
+                                    shared_reason.get()->insert(-it);
+                                }
+                                shared_reason.get()->insert(startVar);
+                                auto itReason = reasonForLiteral.emplace(itProp,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                        }
+                    }
+                }else{
+                    if(tuples->size()>0){
+                        if(currentDecisionLevel>0){
+                            int it = tuples->at(0);
+                            shared_reason.get()->insert(startVar);
+                            reasonForLiteral[-it]=shared_reason;
+                            handleConflict(-it, propagatedLiterals);
+                        }else propagatedLiterals.push_back(1);
+                        return;
+                    }else{
+                        shared_reason.get()->insert(startVar);
+                        while(!tuplesU->empty()){
+                            int it = tuplesU->back();
+                            if(currentDecisionLevel>0){
+                                auto itReason = reasonForLiteral.emplace(-it,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            propUndefined(factory.getTupleFromInternalID(it),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                        }
+                    }
+                }
+            }
+            {
+                if(starter.getPredicateName() == &_move && startVar < 0){
+                    int T = starter[0];
+                    int N = starter[1];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &paux_0_2_3_.getValuesVec({N,T});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uaux_0_2_3_.getValuesVec({N,T});
+                    else if(tupleU->getPredicateName() == &_aux_0 && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple1 = NULL;
+                        if(i<tuples->size())
+                            tuple1 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            if(tupleU->at(2) == N && tupleU->at(3) == T)
+                                tuple1 = tupleU;
+                        }
+                        if(tuple1!=NULL){
+                            int TP1 = tuple1->at(0);
+                            int N1 = tuple1->at(1);
+                            if(tupleU != NULL){
+                                int itUndef = tupleU->getId();
+                                int var = tupleUNegated ? 1 : -1;
+                                var*=itUndef;
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    {
+                                        int it = starter.getId();
+                                        shared_reason.get()->insert(it*-1);
+                                    }
+                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                    if(!itReason.second && itReason.first->second.get()->empty())
+                                        itReason.first->second=shared_reason;
+                                }
+                                if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                else internalProps.push_back({tupleU,tupleUNegated});
+                            }else{
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    if(tuple1!=NULL){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    reasonForLiteral[-startVar]=shared_reason;
+                                    handleConflict(-startVar, propagatedLiterals);
+                                }else propagatedLiterals.push_back(1);
+                                return;
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+                if(starter.getPredicateName() == &_aux_0 && startVar > 0){
+                    int TP1 = starter[0];
+                    int N1 = starter[1];
+                    int N = starter[2];
+                    int T = starter[3];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    Tuple negativeTuple({T,N},&_move);
+                    const Tuple* tuple1 = factory.find(negativeTuple);
+                    if(tuple1 == NULL)
+                        tuple1 = &negativeTuple;
+                    else{
+                        if(tuple1->isTrue())
+                            tuple1 = NULL;
+                        else if(tuple1->isUndef()){
+                            if(tupleU == NULL){
+                                tupleU = tuple1;
+                                tupleUNegated=true;
+                            }else{
+                                if(tupleU->getPredicateName() != &_move || !tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
+                            }
+                        }
+                    }
+                    if(tuple1!=NULL){
+                        if(tupleU != NULL){
+                            int itUndef = tupleU->getId();
+                            int var = tupleUNegated ? 1 : -1;
+                            var*=itUndef;
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                {
+                                    int it = starter.getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*-1);
+                                }
+                                auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                            else internalProps.push_back({tupleU,tupleUNegated});
+                        }else{
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                if(tuple1!=NULL){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*-1);
+                                }
+                                reasonForLiteral[-startVar]=shared_reason;
+                                handleConflict(-startVar, propagatedLiterals);
+                            }else propagatedLiterals.push_back(1);
+                            return;
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                if(starter.getPredicateName() == &_where && startVar < 0){
+                    int T = starter[0];
+                    int N1 = starter[1];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &paux_0_1_3_.getValuesVec({N1,T});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uaux_0_1_3_.getValuesVec({N1,T});
+                    else if(tupleU->getPredicateName() == &_aux_0 && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple1 = NULL;
+                        if(i<tuples->size())
+                            tuple1 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            if(tupleU->at(1) == N1 && tupleU->at(3) == T)
+                                tuple1 = tupleU;
+                        }
+                        if(tuple1!=NULL){
+                            int TP1 = tuple1->at(0);
+                            int N = tuple1->at(2);
+                            if(tupleU != NULL){
+                                int itUndef = tupleU->getId();
+                                int var = tupleUNegated ? 1 : -1;
+                                var*=itUndef;
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    {
+                                        int it = starter.getId();
+                                        shared_reason.get()->insert(it*-1);
+                                    }
+                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                    if(!itReason.second && itReason.first->second.get()->empty())
+                                        itReason.first->second=shared_reason;
+                                }
+                                if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                else internalProps.push_back({tupleU,tupleUNegated});
+                            }else{
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    if(tuple1!=NULL){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    reasonForLiteral[-startVar]=shared_reason;
+                                    handleConflict(-startVar, propagatedLiterals);
+                                }else propagatedLiterals.push_back(1);
+                                return;
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+                if(starter.getPredicateName() == &_aux_0 && startVar > 0){
+                    int TP1 = starter[0];
+                    int N1 = starter[1];
+                    int N = starter[2];
+                    int T = starter[3];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    Tuple negativeTuple({T,N1},&_where);
+                    const Tuple* tuple1 = factory.find(negativeTuple);
+                    if(tuple1 == NULL)
+                        tuple1 = &negativeTuple;
+                    else{
+                        if(tuple1->isTrue())
+                            tuple1 = NULL;
+                        else if(tuple1->isUndef()){
+                            if(tupleU == NULL){
+                                tupleU = tuple1;
+                                tupleUNegated=true;
+                            }else{
+                                if(tupleU->getPredicateName() != &_where || !tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
+                            }
+                        }
+                    }
+                    if(tuple1!=NULL){
+                        if(tupleU != NULL){
+                            int itUndef = tupleU->getId();
+                            int var = tupleUNegated ? 1 : -1;
+                            var*=itUndef;
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                {
+                                    int it = starter.getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*-1);
+                                }
+                                auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                            else internalProps.push_back({tupleU,tupleUNegated});
+                        }else{
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                if(tuple1!=NULL){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*-1);
+                                }
+                                reasonForLiteral[-startVar]=shared_reason;
+                                handleConflict(-startVar, propagatedLiterals);
+                            }else propagatedLiterals.push_back(1);
+                            return;
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                if(starter.getPredicateName() == &_aux_0 && startVar < 0){
+                    int TP1 = starter[0];
+                    int N1 = starter[1];
+                    int N = starter[2];
+                    int T = starter[3];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    if(TP1 == T + 1){
+                        const Tuple* tuple2 = factory.find({T,N},&_move);
+                        if(tuple2!=NULL){
+                            if(tuple2->isFalse())
+                            tuple2=NULL;
+                            else if(tuple2->isUndef()){
                                 if(tupleU == NULL){
-                                    tupleU = tuple1;
+                                    tupleU = tuple2;
+                                    tupleUNegated=false;
+                                }else{
+                                    if(tupleU->getPredicateName() != &_move || tupleUNegated || !(*tupleU == *tuple2))
+                                    tuple2=NULL;
+                                }
+                            }
+                        }
+                        if(tuple2!=NULL){
+                            const Tuple* tuple3 = factory.find({T,N1},&_where);
+                            if(tuple3!=NULL){
+                                if(tuple3->isFalse())
+                                tuple3=NULL;
+                                else if(tuple3->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple3;
+                                        tupleUNegated=false;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_where || tupleUNegated || !(*tupleU == *tuple3))
+                                        tuple3=NULL;
+                                    }
+                                }
+                            }
+                            if(tuple3!=NULL){
+                                if(tupleU != NULL){
+                                    int itUndef = tupleU->getId();
+                                    int var = tupleUNegated ? 1 : -1;
+                                    var*=itUndef;
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        {
+                                            int it = starter.getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
+                                            int it = tuple2->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(factory.find(*tuple3) != NULL && tuple3!=tupleU){
+                                            int it = tuple3->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                        if(!itReason.second && itReason.first->second.get()->empty())
+                                            itReason.first->second=shared_reason;
+                                    }
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                }else{
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        if(tuple2!=NULL){
+                                            int it = tuple2->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(tuple3!=NULL){
+                                            int it = tuple3->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        reasonForLiteral[-startVar]=shared_reason;
+                                        handleConflict(-startVar, propagatedLiterals);
+                                    }else propagatedLiterals.push_back(1);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+                if(starter.getPredicateName() == &_where && startVar > 0){
+                    int T = starter[0];
+                    int N1 = starter[1];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    int TP1 = T + 1;
+                    const std::vector<int>* tuples = &pmove_0_.getValuesVec({T});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &umove_0_.getValuesVec({T});
+                    else if(tupleU->getPredicateName() == &_move && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple2 = NULL;
+                        if(i<tuples->size())
+                            tuple2 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple2 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            if(tupleU->at(0) == T)
+                                tuple2 = tupleU;
+                        }
+                        if(tuple2!=NULL){
+                            int N = tuple2->at(1);
+                            Tuple negativeTuple({TP1,N1,N,T},&_aux_0);
+                            const Tuple* tuple3 = factory.find(negativeTuple);
+                            if(tuple3 == NULL)
+                                tuple3 = &negativeTuple;
+                            else{
+                                if(tuple3->isTrue())
+                                    tuple3 = NULL;
+                                else if(tuple3->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple3;
+                                        tupleUNegated=true;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_aux_0 || !tupleUNegated || !(*tupleU == *tuple3))
+                                        tuple3=NULL;
+                                    }
+                                }
+                            }
+                            if(tuple3!=NULL){
+                                if(tupleU != NULL){
+                                    int itUndef = tupleU->getId();
+                                    int var = tupleUNegated ? 1 : -1;
+                                    var*=itUndef;
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        {
+                                            int it = starter.getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
+                                            int it = tuple2->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(factory.find(*tuple3) != NULL && tuple3!=tupleU){
+                                            int it = tuple3->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                        if(!itReason.second && itReason.first->second.get()->empty())
+                                            itReason.first->second=shared_reason;
+                                    }
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                }else{
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        if(tuple2!=NULL){
+                                            int it = tuple2->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(tuple3!=NULL){
+                                            int it = tuple3->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        reasonForLiteral[-startVar]=shared_reason;
+                                        handleConflict(-startVar, propagatedLiterals);
+                                    }else propagatedLiterals.push_back(1);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+                if(starter.getPredicateName() == &_move && startVar > 0){
+                    int T = starter[0];
+                    int N = starter[1];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    int TP1 = T + 1;
+                    const std::vector<int>* tuples = &pwhere_0_.getValuesVec({T});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uwhere_0_.getValuesVec({T});
+                    else if(tupleU->getPredicateName() == &_where && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple2 = NULL;
+                        if(i<tuples->size())
+                            tuple2 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple2 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            if(tupleU->at(0) == T)
+                                tuple2 = tupleU;
+                        }
+                        if(tuple2!=NULL){
+                            int N1 = tuple2->at(1);
+                            Tuple negativeTuple({TP1,N1,N,T},&_aux_0);
+                            const Tuple* tuple3 = factory.find(negativeTuple);
+                            if(tuple3 == NULL)
+                                tuple3 = &negativeTuple;
+                            else{
+                                if(tuple3->isTrue())
+                                    tuple3 = NULL;
+                                else if(tuple3->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple3;
+                                        tupleUNegated=true;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_aux_0 || !tupleUNegated || !(*tupleU == *tuple3))
+                                        tuple3=NULL;
+                                    }
+                                }
+                            }
+                            if(tuple3!=NULL){
+                                if(tupleU != NULL){
+                                    int itUndef = tupleU->getId();
+                                    int var = tupleUNegated ? 1 : -1;
+                                    var*=itUndef;
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        {
+                                            int it = starter.getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
+                                            int it = tuple2->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(factory.find(*tuple3) != NULL && tuple3!=tupleU){
+                                            int it = tuple3->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                        if(!itReason.second && itReason.first->second.get()->empty())
+                                            itReason.first->second=shared_reason;
+                                    }
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                }else{
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        if(tuple2!=NULL){
+                                            int it = tuple2->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(tuple3!=NULL){
+                                            int it = tuple3->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        reasonForLiteral[-startVar]=shared_reason;
+                                        handleConflict(-startVar, propagatedLiterals);
+                                    }else propagatedLiterals.push_back(1);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                if(starter.getPredicateName() == &_on && startVar < 0){
+                    int TP1 = starter[0];
+                    int N = starter[1];
+                    int N1 = starter[2];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const Tuple* tuple1 = factory.find({TP1,N,N1},&_sup_2);
+                    if(tuple1!=NULL){
+                        if(tuple1->isFalse())
+                        tuple1=NULL;
+                        else if(tuple1->isUndef()){
+                            if(tupleU == NULL){
+                                tupleU = tuple1;
+                                tupleUNegated=false;
+                            }else{
+                                if(tupleU->getPredicateName() != &_sup_2 || tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
+                            }
+                        }
+                    }
+                    if(tuple1!=NULL){
+                        if(tupleU != NULL){
+                            int itUndef = tupleU->getId();
+                            int var = tupleUNegated ? 1 : -1;
+                            var*=itUndef;
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                {
+                                    int it = starter.getId();
+                                    shared_reason.get()->insert(it*-1);
+                                }
+                                if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                            else internalProps.push_back({tupleU,tupleUNegated});
+                        }else{
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                if(tuple1!=NULL){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                reasonForLiteral[-startVar]=shared_reason;
+                                handleConflict(-startVar, propagatedLiterals);
+                            }else propagatedLiterals.push_back(1);
+                            return;
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+                if(starter.getPredicateName() == &_sup_2 && startVar > 0){
+                    int TP1 = starter[0];
+                    int N = starter[1];
+                    int N1 = starter[2];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    Tuple negativeTuple({TP1,N,N1},&_on);
+                    const Tuple* tuple1 = factory.find(negativeTuple);
+                    if(tuple1 == NULL)
+                        tuple1 = &negativeTuple;
+                    else{
+                        if(tuple1->isTrue())
+                            tuple1 = NULL;
+                        else if(tuple1->isUndef()){
+                            if(tupleU == NULL){
+                                tupleU = tuple1;
+                                tupleUNegated=true;
+                            }else{
+                                if(tupleU->getPredicateName() != &_on || !tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
+                            }
+                        }
+                    }
+                    if(tuple1!=NULL){
+                        if(tupleU != NULL){
+                            int itUndef = tupleU->getId();
+                            int var = tupleUNegated ? 1 : -1;
+                            var*=itUndef;
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                {
+                                    int it = starter.getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*-1);
+                                }
+                                auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                            else internalProps.push_back({tupleU,tupleUNegated});
+                        }else{
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                if(tuple1!=NULL){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*-1);
+                                }
+                                reasonForLiteral[-startVar]=shared_reason;
+                                handleConflict(-startVar, propagatedLiterals);
+                            }else propagatedLiterals.push_back(1);
+                            return;
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            if(starter.getPredicateName() == &_aux_1){
+                int TP1 = starter.at(0);
+                int N = starter.at(1);
+                int N1 = starter.at(2);
+                int T = starter.at(3);
+                int K = starter.at(4);
+                Tuple* head = factory.find({TP1,N,N1}, &_sup_2);
+                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                if(startVar > 0){
+                    if(head == NULL || (!head->isTrue() && !head->isUndef())){
+                        if(currentDecisionLevel>0){
+                            int it = head->getId();
+                            shared_reason.get()->insert(startVar);
+                            reasonForLiteral[it]=shared_reason;
+                            handleConflict(it, propagatedLiterals);
+                        }else propagatedLiterals.push_back(1);
+                        return;
+                    }else if(head !=NULL && head->isUndef()){
+                        if(currentDecisionLevel>0){
+                            int it = head->getId();
+                            shared_reason.get()->insert(startVar);
+                            auto itReason = reasonForLiteral.emplace(it,shared_reason);
+                            if(!itReason.second && itReason.first->second.get()->empty())
+                                itReason.first->second=shared_reason;
+                        }
+                        propUndefined(head,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                    }
+                }else{
+                    const std::vector<int>* tuples = &paux_1_0_1_2_.getValuesVec({TP1, N, N1});
+                    const std::vector<int>* tuplesU = &uaux_1_0_1_2_.getValuesVec({TP1, N, N1});
+                    if(head != NULL && head->isTrue()){
+                        if(tuples->size() == 0 && tuplesU->size() == 0){
+                            if(currentDecisionLevel>0){
+                                int itHead = head->getId();
+                                const std::vector<int>* tuplesF = &faux_1_0_1_2_.getValuesVec({TP1, N, N1});
+                                for(unsigned i=0;i<tuplesF->size();i++){
+                                    int it = tuplesF->at(i);
+                                    shared_reason.get()->insert(-it);
+                                }
+                                reasonForLiteral[-itHead]=shared_reason;
+                                handleConflict(-itHead, propagatedLiterals);
+                            }else propagatedLiterals.push_back(1);
+                            return;
+                        }else if(tuples->size() == 0 && tuplesU->size() == 1){
+                            if(currentDecisionLevel>0){
+                                int itProp = tuplesU->at(0);
+                                const std::vector<int>* tuplesF = &faux_1_0_1_2_.getValuesVec({TP1, N, N1});
+                                for(unsigned i=0;i<tuplesF->size();i++){
+                                    int it = tuplesF->at(i);
+                                    shared_reason.get()->insert(-it);
+                                }
+                                int it = head->getId();
+                                shared_reason.get()->insert(it);
+                                auto itReason = reasonForLiteral.emplace(itProp,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            propUndefined(factory.getTupleFromInternalID(tuplesU->at(0)),false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                        }
+                    }else if( head != NULL && head->isUndef() ){
+                        if(tuples->size() == 0 && tuplesU->size() == 0){
+                            if(currentDecisionLevel>0){
+                                int itHead = head->getId();
+                                const std::vector<int>* tuplesF = &faux_1_0_1_2_.getValuesVec({TP1, N, N1});
+                                for(unsigned i=0;i<tuplesF->size();i++){
+                                    int it = tuplesF->at(i);
+                                    shared_reason.get()->insert(-it);
+                                }
+                                auto itReason = reasonForLiteral.emplace(-itHead,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            propUndefined(head,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                        }
+                    }
+                }
+            }else if(starter.getPredicateName() == &_sup_2){
+                int TP1 = starter.at(0);
+                int N = starter.at(1);
+                int N1 = starter.at(2);
+                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                const std::vector<int>* tuples = &paux_1_0_1_2_.getValuesVec({TP1,N,N1});
+                const std::vector<int>* tuplesU = &uaux_1_0_1_2_.getValuesVec({TP1,N,N1});
+                if(startVar > 0){
+                    if(tuples->size()==0){
+                        if(tuplesU->size() == 0){
+                            if(currentDecisionLevel>0){
+                                const std::vector<int>* tuplesF = &faux_1_0_1_2_.getValuesVec({TP1,N,N1});
+                                for(unsigned i=0; i<tuplesF->size(); i++){
+                                    int it = tuplesF->at(i);
+                                    shared_reason.get()->insert(-it);
+                                }
+                                reasonForLiteral[-startVar]=shared_reason;
+                                handleConflict(-startVar, propagatedLiterals);
+                            }else propagatedLiterals.push_back(1);
+                            return;
+                        }else if(tuplesU->size()==1){
+                            const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesU->at(0));
+                            if(currentDecisionLevel>0){
+                                int itProp = currentTuple->getId();
+                                const std::vector<int>* tuplesF = &faux_1_0_1_2_.getValuesVec({TP1,N,N1});
+                                for(unsigned i=0; i<tuplesF->size(); i++){
+                                    int it = tuplesF->at(i);
+                                    shared_reason.get()->insert(-it);
+                                }
+                                shared_reason.get()->insert(startVar);
+                                auto itReason = reasonForLiteral.emplace(itProp,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                        }
+                    }
+                }else{
+                    if(tuples->size()>0){
+                        if(currentDecisionLevel>0){
+                            int it = tuples->at(0);
+                            shared_reason.get()->insert(startVar);
+                            reasonForLiteral[-it]=shared_reason;
+                            handleConflict(-it, propagatedLiterals);
+                        }else propagatedLiterals.push_back(1);
+                        return;
+                    }else{
+                        shared_reason.get()->insert(startVar);
+                        while(!tuplesU->empty()){
+                            int it = tuplesU->back();
+                            if(currentDecisionLevel>0){
+                                auto itReason = reasonForLiteral.emplace(-it,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            propUndefined(factory.getTupleFromInternalID(it),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                        }
+                    }
+                }
+            }
+            {
+                if(starter.getPredicateName() == &_time && startVar < 0){
+                    int T = starter[0];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &paux_1_3_.getValuesVec({T});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uaux_1_3_.getValuesVec({T});
+                    else if(tupleU->getPredicateName() == &_aux_1 && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple1 = NULL;
+                        if(i<tuples->size())
+                            tuple1 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            if(tupleU->at(3) == T)
+                                tuple1 = tupleU;
+                        }
+                        if(tuple1!=NULL){
+                            int TP1 = tuple1->at(0);
+                            int N = tuple1->at(1);
+                            int N1 = tuple1->at(2);
+                            int K = tuple1->at(4);
+                            if(tupleU != NULL){
+                                int itUndef = tupleU->getId();
+                                int var = tupleUNegated ? 1 : -1;
+                                var*=itUndef;
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    {
+                                        int it = starter.getId();
+                                        shared_reason.get()->insert(it*-1);
+                                    }
+                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                    if(!itReason.second && itReason.first->second.get()->empty())
+                                        itReason.first->second=shared_reason;
+                                }
+                                if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                else internalProps.push_back({tupleU,tupleUNegated});
+                            }else{
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    if(tuple1!=NULL){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    reasonForLiteral[-startVar]=shared_reason;
+                                    handleConflict(-startVar, propagatedLiterals);
+                                }else propagatedLiterals.push_back(1);
+                                return;
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+                if(starter.getPredicateName() == &_aux_1 && startVar > 0){
+                    int TP1 = starter[0];
+                    int N = starter[1];
+                    int N1 = starter[2];
+                    int T = starter[3];
+                    int K = starter[4];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    Tuple negativeTuple({T},&_time);
+                    const Tuple* tuple1 = factory.find(negativeTuple);
+                    if(tuple1 == NULL)
+                        tuple1 = &negativeTuple;
+                    else{
+                        if(tuple1->isTrue())
+                            tuple1 = NULL;
+                        else if(tuple1->isUndef()){
+                            if(tupleU == NULL){
+                                tupleU = tuple1;
+                                tupleUNegated=true;
+                            }else{
+                                if(tupleU->getPredicateName() != &_time || !tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
+                            }
+                        }
+                    }
+                    if(tuple1!=NULL){
+                        if(tupleU != NULL){
+                            int itUndef = tupleU->getId();
+                            int var = tupleUNegated ? 1 : -1;
+                            var*=itUndef;
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                {
+                                    int it = starter.getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*-1);
+                                }
+                                auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                            else internalProps.push_back({tupleU,tupleUNegated});
+                        }else{
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                if(tuple1!=NULL){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*-1);
+                                }
+                                reasonForLiteral[-startVar]=shared_reason;
+                                handleConflict(-startVar, propagatedLiterals);
+                            }else propagatedLiterals.push_back(1);
+                            return;
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                if(starter.getPredicateName() == &_steps && startVar < 0){
+                    int K = starter[0];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &paux_1_4_.getValuesVec({K});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uaux_1_4_.getValuesVec({K});
+                    else if(tupleU->getPredicateName() == &_aux_1 && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple1 = NULL;
+                        if(i<tuples->size())
+                            tuple1 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            if(tupleU->at(4) == K)
+                                tuple1 = tupleU;
+                        }
+                        if(tuple1!=NULL){
+                            int TP1 = tuple1->at(0);
+                            int N = tuple1->at(1);
+                            int N1 = tuple1->at(2);
+                            int T = tuple1->at(3);
+                            if(tupleU != NULL){
+                                int itUndef = tupleU->getId();
+                                int var = tupleUNegated ? 1 : -1;
+                                var*=itUndef;
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    {
+                                        int it = starter.getId();
+                                        shared_reason.get()->insert(it*-1);
+                                    }
+                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                    if(!itReason.second && itReason.first->second.get()->empty())
+                                        itReason.first->second=shared_reason;
+                                }
+                                if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                else internalProps.push_back({tupleU,tupleUNegated});
+                            }else{
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    if(tuple1!=NULL){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    reasonForLiteral[-startVar]=shared_reason;
+                                    handleConflict(-startVar, propagatedLiterals);
+                                }else propagatedLiterals.push_back(1);
+                                return;
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+                if(starter.getPredicateName() == &_aux_1 && startVar > 0){
+                    int TP1 = starter[0];
+                    int N = starter[1];
+                    int N1 = starter[2];
+                    int T = starter[3];
+                    int K = starter[4];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    Tuple negativeTuple({K},&_steps);
+                    const Tuple* tuple1 = factory.find(negativeTuple);
+                    if(tuple1 == NULL)
+                        tuple1 = &negativeTuple;
+                    else{
+                        if(tuple1->isTrue())
+                            tuple1 = NULL;
+                        else if(tuple1->isUndef()){
+                            if(tupleU == NULL){
+                                tupleU = tuple1;
+                                tupleUNegated=true;
+                            }else{
+                                if(tupleU->getPredicateName() != &_steps || !tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
+                            }
+                        }
+                    }
+                    if(tuple1!=NULL){
+                        if(tupleU != NULL){
+                            int itUndef = tupleU->getId();
+                            int var = tupleUNegated ? 1 : -1;
+                            var*=itUndef;
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                {
+                                    int it = starter.getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*-1);
+                                }
+                                auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                            else internalProps.push_back({tupleU,tupleUNegated});
+                        }else{
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                if(tuple1!=NULL){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*-1);
+                                }
+                                reasonForLiteral[-startVar]=shared_reason;
+                                handleConflict(-startVar, propagatedLiterals);
+                            }else propagatedLiterals.push_back(1);
+                            return;
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                if(starter.getPredicateName() == &_on && startVar < 0){
+                    int T = starter[0];
+                    int N = starter[1];
+                    int N1 = starter[2];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &paux_1_1_2_3_.getValuesVec({N,N1,T});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uaux_1_1_2_3_.getValuesVec({N,N1,T});
+                    else if(tupleU->getPredicateName() == &_aux_1 && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple1 = NULL;
+                        if(i<tuples->size())
+                            tuple1 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            if(tupleU->at(1) == N && tupleU->at(2) == N1 && tupleU->at(3) == T)
+                                tuple1 = tupleU;
+                        }
+                        if(tuple1!=NULL){
+                            int TP1 = tuple1->at(0);
+                            int K = tuple1->at(4);
+                            if(tupleU != NULL){
+                                int itUndef = tupleU->getId();
+                                int var = tupleUNegated ? 1 : -1;
+                                var*=itUndef;
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    {
+                                        int it = starter.getId();
+                                        shared_reason.get()->insert(it*-1);
+                                    }
+                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                    if(!itReason.second && itReason.first->second.get()->empty())
+                                        itReason.first->second=shared_reason;
+                                }
+                                if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                else internalProps.push_back({tupleU,tupleUNegated});
+                            }else{
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    if(tuple1!=NULL){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    reasonForLiteral[-startVar]=shared_reason;
+                                    handleConflict(-startVar, propagatedLiterals);
+                                }else propagatedLiterals.push_back(1);
+                                return;
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+                if(starter.getPredicateName() == &_aux_1 && startVar > 0){
+                    int TP1 = starter[0];
+                    int N = starter[1];
+                    int N1 = starter[2];
+                    int T = starter[3];
+                    int K = starter[4];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    Tuple negativeTuple({T,N,N1},&_on);
+                    const Tuple* tuple1 = factory.find(negativeTuple);
+                    if(tuple1 == NULL)
+                        tuple1 = &negativeTuple;
+                    else{
+                        if(tuple1->isTrue())
+                            tuple1 = NULL;
+                        else if(tuple1->isUndef()){
+                            if(tupleU == NULL){
+                                tupleU = tuple1;
+                                tupleUNegated=true;
+                            }else{
+                                if(tupleU->getPredicateName() != &_on || !tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
+                            }
+                        }
+                    }
+                    if(tuple1!=NULL){
+                        if(tupleU != NULL){
+                            int itUndef = tupleU->getId();
+                            int var = tupleUNegated ? 1 : -1;
+                            var*=itUndef;
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                {
+                                    int it = starter.getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*-1);
+                                }
+                                auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                            else internalProps.push_back({tupleU,tupleUNegated});
+                        }else{
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                if(tuple1!=NULL){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*-1);
+                                }
+                                reasonForLiteral[-startVar]=shared_reason;
+                                handleConflict(-startVar, propagatedLiterals);
+                            }else propagatedLiterals.push_back(1);
+                            return;
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                if(starter.getPredicateName() == &_move && startVar > 0){
+                    int T = starter[0];
+                    int N1 = starter[1];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &paux_1_2_3_.getValuesVec({N1,T});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uaux_1_2_3_.getValuesVec({N1,T});
+                    else if(tupleU->getPredicateName() == &_aux_1 && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple1 = NULL;
+                        if(i<tuples->size())
+                            tuple1 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            if(tupleU->at(2) == N1 && tupleU->at(3) == T)
+                                tuple1 = tupleU;
+                        }
+                        if(tuple1!=NULL){
+                            int TP1 = tuple1->at(0);
+                            int N = tuple1->at(1);
+                            int K = tuple1->at(4);
+                            if(tupleU != NULL){
+                                int itUndef = tupleU->getId();
+                                int var = tupleUNegated ? 1 : -1;
+                                var*=itUndef;
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    {
+                                        int it = starter.getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                    if(!itReason.second && itReason.first->second.get()->empty())
+                                        itReason.first->second=shared_reason;
+                                }
+                                if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                else internalProps.push_back({tupleU,tupleUNegated});
+                            }else{
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    if(tuple1!=NULL){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    reasonForLiteral[-startVar]=shared_reason;
+                                    handleConflict(-startVar, propagatedLiterals);
+                                }else propagatedLiterals.push_back(1);
+                                return;
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+                if(starter.getPredicateName() == &_aux_1 && startVar > 0){
+                    int TP1 = starter[0];
+                    int N = starter[1];
+                    int N1 = starter[2];
+                    int T = starter[3];
+                    int K = starter[4];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const Tuple* tuple1 = factory.find({T,N1},&_move);
+                    if(tuple1!=NULL){
+                        if(tuple1->isFalse())
+                        tuple1=NULL;
+                        else if(tuple1->isUndef()){
+                            if(tupleU == NULL){
+                                tupleU = tuple1;
+                                tupleUNegated=false;
+                            }else{
+                                if(tupleU->getPredicateName() != &_move || tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
+                            }
+                        }
+                    }
+                    if(tuple1!=NULL){
+                        if(tupleU != NULL){
+                            int itUndef = tupleU->getId();
+                            int var = tupleUNegated ? 1 : -1;
+                            var*=itUndef;
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                {
+                                    int it = starter.getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                            else internalProps.push_back({tupleU,tupleUNegated});
+                        }else{
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                if(tuple1!=NULL){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                reasonForLiteral[-startVar]=shared_reason;
+                                handleConflict(-startVar, propagatedLiterals);
+                            }else propagatedLiterals.push_back(1);
+                            return;
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                if(starter.getPredicateName() == &_aux_1 && startVar < 0){
+                    int TP1 = starter[0];
+                    int N = starter[1];
+                    int N1 = starter[2];
+                    int T = starter[3];
+                    int K = starter[4];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    if(T < K){
+                        if(TP1 == T + 1){
+                            const Tuple* tuple3 = factory.find({T},&_time);
+                            if(tuple3!=NULL){
+                                if(tuple3->isFalse())
+                                tuple3=NULL;
+                                else if(tuple3->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple3;
+                                        tupleUNegated=false;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_time || tupleUNegated || !(*tupleU == *tuple3))
+                                        tuple3=NULL;
+                                    }
+                                }
+                            }
+                            if(tuple3!=NULL){
+                                const Tuple* tuple4 = factory.find({K},&_steps);
+                                if(tuple4!=NULL){
+                                    if(tuple4->isFalse())
+                                    tuple4=NULL;
+                                    else if(tuple4->isUndef()){
+                                        if(tupleU == NULL){
+                                            tupleU = tuple4;
+                                            tupleUNegated=false;
+                                        }else{
+                                            if(tupleU->getPredicateName() != &_steps || tupleUNegated || !(*tupleU == *tuple4))
+                                            tuple4=NULL;
+                                        }
+                                    }
+                                }
+                                if(tuple4!=NULL){
+                                    const Tuple* tuple5 = factory.find({T,N,N1},&_on);
+                                    if(tuple5!=NULL){
+                                        if(tuple5->isFalse())
+                                        tuple5=NULL;
+                                        else if(tuple5->isUndef()){
+                                            if(tupleU == NULL){
+                                                tupleU = tuple5;
+                                                tupleUNegated=false;
+                                            }else{
+                                                if(tupleU->getPredicateName() != &_on || tupleUNegated || !(*tupleU == *tuple5))
+                                                tuple5=NULL;
+                                            }
+                                        }
+                                    }
+                                    if(tuple5!=NULL){
+                                        Tuple negativeTuple({T,N1},&_move);
+                                        const Tuple* tuple6 = factory.find(negativeTuple);
+                                        if(tuple6 == NULL)
+                                            tuple6 = &negativeTuple;
+                                        else{
+                                            if(tuple6->isTrue())
+                                                tuple6 = NULL;
+                                            else if(tuple6->isUndef()){
+                                                if(tupleU == NULL){
+                                                    tupleU = tuple6;
+                                                    tupleUNegated=true;
+                                                }else{
+                                                    if(tupleU->getPredicateName() != &_move || !tupleUNegated || !(*tupleU == *tuple6))
+                                                    tuple6=NULL;
+                                                }
+                                            }
+                                        }
+                                        if(tuple6!=NULL){
+                                            if(tupleU != NULL){
+                                                int itUndef = tupleU->getId();
+                                                int var = tupleUNegated ? 1 : -1;
+                                                var*=itUndef;
+                                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                                if(currentDecisionLevel>0){
+                                                    {
+                                                        int it = starter.getId();
+                                                        shared_reason.get()->insert(it*-1);
+                                                    }
+                                                    if(factory.find(*tuple3) != NULL && tuple3!=tupleU){
+                                                        int it = tuple3->getId();
+                                                        shared_reason.get()->insert(it*1);
+                                                    }
+                                                    if(factory.find(*tuple4) != NULL && tuple4!=tupleU){
+                                                        int it = tuple4->getId();
+                                                        shared_reason.get()->insert(it*1);
+                                                    }
+                                                    if(factory.find(*tuple5) != NULL && tuple5!=tupleU){
+                                                        int it = tuple5->getId();
+                                                        shared_reason.get()->insert(it*1);
+                                                    }
+                                                    if(factory.find(*tuple6) != NULL && tuple6!=tupleU){
+                                                        int it = tuple6->getId();
+                                                        shared_reason.get()->insert(it*-1);
+                                                    }
+                                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                                    if(!itReason.second && itReason.first->second.get()->empty())
+                                                        itReason.first->second=shared_reason;
+                                                }
+                                                if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                                else internalProps.push_back({tupleU,tupleUNegated});
+                                            }else{
+                                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                                if(currentDecisionLevel>0){
+                                                    if(tuple3!=NULL){
+                                                        int it = tuple3->getId();
+                                                        shared_reason.get()->insert(it*1);
+                                                    }
+                                                    if(tuple4!=NULL){
+                                                        int it = tuple4->getId();
+                                                        shared_reason.get()->insert(it*1);
+                                                    }
+                                                    if(tuple5!=NULL){
+                                                        int it = tuple5->getId();
+                                                        shared_reason.get()->insert(it*1);
+                                                    }
+                                                    if(tuple6!=NULL){
+                                                        int it = tuple6->getId();
+                                                        shared_reason.get()->insert(it*-1);
+                                                    }
+                                                    reasonForLiteral[-startVar]=shared_reason;
+                                                    handleConflict(-startVar, propagatedLiterals);
+                                                }else propagatedLiterals.push_back(1);
+                                                return;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+                if(starter.getPredicateName() == &_move && startVar < 0){
+                    int T = starter[0];
+                    int N1 = starter[1];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    int TP1 = T + 1;
+                    const Tuple* tuple2 = factory.find({T},&_time);
+                    if(tuple2!=NULL){
+                        if(tuple2->isFalse())
+                        tuple2=NULL;
+                        else if(tuple2->isUndef()){
+                            if(tupleU == NULL){
+                                tupleU = tuple2;
+                                tupleUNegated=false;
+                            }else{
+                                if(tupleU->getPredicateName() != &_time || tupleUNegated || !(*tupleU == *tuple2))
+                                tuple2=NULL;
+                            }
+                        }
+                    }
+                    if(tuple2!=NULL){
+                        const std::vector<int>* tuples = &psteps_.getValuesVec({});
+                        const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                        std::vector<const Tuple*> undeRepeated;
+                        if(tupleU == NULL)
+                            tuplesU = &usteps_.getValuesVec({});
+                        else if(tupleU->getPredicateName() == &_steps && !tupleUNegated)
+                            undeRepeated.push_back(tupleU);
+                        for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                            if(tuplesU!=&EMPTY_TUPLES_VEC)
+                                tupleU = NULL;
+                            const Tuple* tuple3 = NULL;
+                            if(i<tuples->size())
+                                tuple3 = factory.getTupleFromInternalID(tuples->at(i));
+                            else if(i<tuples->size()+tuplesU->size()){
+                                tupleU = tuple3 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                                tupleUNegated=false;
+                            }else if(!undeRepeated.empty()){
+                                tuple3 = tupleU;
+                            }
+                            if(tuple3!=NULL){
+                                int K = tuple3->at(0);
+                                if(T < K){
+                                    const std::vector<int>* tuples = &pon_0_2_.getValuesVec({T,N1});
+                                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                                    std::vector<const Tuple*> undeRepeated;
+                                    if(tupleU == NULL)
+                                        tuplesU = &uon_0_2_.getValuesVec({T,N1});
+                                    else if(tupleU->getPredicateName() == &_on && !tupleUNegated)
+                                        undeRepeated.push_back(tupleU);
+                                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                                            tupleU = NULL;
+                                        const Tuple* tuple5 = NULL;
+                                        if(i<tuples->size())
+                                            tuple5 = factory.getTupleFromInternalID(tuples->at(i));
+                                        else if(i<tuples->size()+tuplesU->size()){
+                                            tupleU = tuple5 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                                            tupleUNegated=false;
+                                        }else if(!undeRepeated.empty()){
+                                            if(tupleU->at(0) == T && tupleU->at(2) == N1)
+                                                tuple5 = tupleU;
+                                        }
+                                        if(tuple5!=NULL){
+                                            int N = tuple5->at(1);
+                                            Tuple negativeTuple({TP1,N,N1,T,K},&_aux_1);
+                                            const Tuple* tuple6 = factory.find(negativeTuple);
+                                            if(tuple6 == NULL)
+                                                tuple6 = &negativeTuple;
+                                            else{
+                                                if(tuple6->isTrue())
+                                                    tuple6 = NULL;
+                                                else if(tuple6->isUndef()){
+                                                    if(tupleU == NULL){
+                                                        tupleU = tuple6;
+                                                        tupleUNegated=true;
+                                                    }else{
+                                                        if(tupleU->getPredicateName() != &_aux_1 || !tupleUNegated || !(*tupleU == *tuple6))
+                                                        tuple6=NULL;
+                                                    }
+                                                }
+                                            }
+                                            if(tuple6!=NULL){
+                                                if(tupleU != NULL){
+                                                    int itUndef = tupleU->getId();
+                                                    int var = tupleUNegated ? 1 : -1;
+                                                    var*=itUndef;
+                                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                                    if(currentDecisionLevel>0){
+                                                        {
+                                                            int it = starter.getId();
+                                                            shared_reason.get()->insert(it*-1);
+                                                        }
+                                                        if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
+                                                            int it = tuple2->getId();
+                                                            shared_reason.get()->insert(it*1);
+                                                        }
+                                                        if(factory.find(*tuple3) != NULL && tuple3!=tupleU){
+                                                            int it = tuple3->getId();
+                                                            shared_reason.get()->insert(it*1);
+                                                        }
+                                                        if(factory.find(*tuple5) != NULL && tuple5!=tupleU){
+                                                            int it = tuple5->getId();
+                                                            shared_reason.get()->insert(it*1);
+                                                        }
+                                                        if(factory.find(*tuple6) != NULL && tuple6!=tupleU){
+                                                            int it = tuple6->getId();
+                                                            shared_reason.get()->insert(it*-1);
+                                                        }
+                                                        auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                                        if(!itReason.second && itReason.first->second.get()->empty())
+                                                            itReason.first->second=shared_reason;
+                                                    }
+                                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                                }else{
+                                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                                    if(currentDecisionLevel>0){
+                                                        if(tuple2!=NULL){
+                                                            int it = tuple2->getId();
+                                                            shared_reason.get()->insert(it*1);
+                                                        }
+                                                        if(tuple3!=NULL){
+                                                            int it = tuple3->getId();
+                                                            shared_reason.get()->insert(it*1);
+                                                        }
+                                                        if(tuple5!=NULL){
+                                                            int it = tuple5->getId();
+                                                            shared_reason.get()->insert(it*1);
+                                                        }
+                                                        if(tuple6!=NULL){
+                                                            int it = tuple6->getId();
+                                                            shared_reason.get()->insert(it*-1);
+                                                        }
+                                                        reasonForLiteral[-startVar]=shared_reason;
+                                                        handleConflict(-startVar, propagatedLiterals);
+                                                    }else propagatedLiterals.push_back(1);
+                                                    return;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+                if(starter.getPredicateName() == &_on && startVar > 0){
+                    int T = starter[0];
+                    int N = starter[1];
+                    int N1 = starter[2];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    int TP1 = T + 1;
+                    const Tuple* tuple2 = factory.find({T},&_time);
+                    if(tuple2!=NULL){
+                        if(tuple2->isFalse())
+                        tuple2=NULL;
+                        else if(tuple2->isUndef()){
+                            if(tupleU == NULL){
+                                tupleU = tuple2;
+                                tupleUNegated=false;
+                            }else{
+                                if(tupleU->getPredicateName() != &_time || tupleUNegated || !(*tupleU == *tuple2))
+                                tuple2=NULL;
+                            }
+                        }
+                    }
+                    if(tuple2!=NULL){
+                        Tuple negativeTuple({T,N1},&_move);
+                        const Tuple* tuple3 = factory.find(negativeTuple);
+                        if(tuple3 == NULL)
+                            tuple3 = &negativeTuple;
+                        else{
+                            if(tuple3->isTrue())
+                                tuple3 = NULL;
+                            else if(tuple3->isUndef()){
+                                if(tupleU == NULL){
+                                    tupleU = tuple3;
                                     tupleUNegated=true;
                                 }else{
-                                    if(tupleU->getPredicateName() != &_agg_id_0 || !tupleUNegated || !(*tupleU == *tuple1))
-                                    tuple1=NULL;
+                                    if(tupleU->getPredicateName() != &_move || !tupleUNegated || !(*tupleU == *tuple3))
+                                    tuple3=NULL;
                                 }
                             }
                         }
-                        if(tuple1!=NULL){
-                            if(tupleU != NULL){
-                                if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                else internalProps.push_back({tupleU,tupleUNegated});
-                            }else{
-                                propagatedLiterals.push_back(1);
-                            }
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            {
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &pcosts_.getValuesVec({});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &ucosts_.getValuesVec({});
-                else if(tupleU->getPredicateName() == &_costs && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple0 = NULL;
-                    if(i<tuples->size())
-                        tuple0 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        tuple0 = tupleU;
-                    }
-                    if(tuple0!=NULL){
-                        int U = tuple0->at(0);
-                        int Cost = tuple0->at(1);
-                        const Tuple* tuple1 = factory.find({U,Cost},&_agg_id_1);
-                        if(tuple1!=NULL){
-                            if(tuple1->isFalse())
-                            tuple1=NULL;
-                            else if(tuple1->isUndef()){
-                                if(tupleU == NULL){
-                                    tupleU = tuple1;
+                        if(tuple3!=NULL){
+                            const std::vector<int>* tuples = &psteps_.getValuesVec({});
+                            const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                            std::vector<const Tuple*> undeRepeated;
+                            if(tupleU == NULL)
+                                tuplesU = &usteps_.getValuesVec({});
+                            else if(tupleU->getPredicateName() == &_steps && !tupleUNegated)
+                                undeRepeated.push_back(tupleU);
+                            for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                                if(tuplesU!=&EMPTY_TUPLES_VEC)
+                                    tupleU = NULL;
+                                const Tuple* tuple4 = NULL;
+                                if(i<tuples->size())
+                                    tuple4 = factory.getTupleFromInternalID(tuples->at(i));
+                                else if(i<tuples->size()+tuplesU->size()){
+                                    tupleU = tuple4 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
                                     tupleUNegated=false;
-                                }else{
-                                    if(tupleU->getPredicateName() != &_agg_id_1 || tupleUNegated || !(*tupleU == *tuple1))
-                                    tuple1=NULL;
+                                }else if(!undeRepeated.empty()){
+                                    tuple4 = tupleU;
+                                }
+                                if(tuple4!=NULL){
+                                    int K = tuple4->at(0);
+                                    if(T < K){
+                                        Tuple negativeTuple({TP1,N,N1,T,K},&_aux_1);
+                                        const Tuple* tuple6 = factory.find(negativeTuple);
+                                        if(tuple6 == NULL)
+                                            tuple6 = &negativeTuple;
+                                        else{
+                                            if(tuple6->isTrue())
+                                                tuple6 = NULL;
+                                            else if(tuple6->isUndef()){
+                                                if(tupleU == NULL){
+                                                    tupleU = tuple6;
+                                                    tupleUNegated=true;
+                                                }else{
+                                                    if(tupleU->getPredicateName() != &_aux_1 || !tupleUNegated || !(*tupleU == *tuple6))
+                                                    tuple6=NULL;
+                                                }
+                                            }
+                                        }
+                                        if(tuple6!=NULL){
+                                            if(tupleU != NULL){
+                                                int itUndef = tupleU->getId();
+                                                int var = tupleUNegated ? 1 : -1;
+                                                var*=itUndef;
+                                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                                if(currentDecisionLevel>0){
+                                                    {
+                                                        int it = starter.getId();
+                                                        shared_reason.get()->insert(it*1);
+                                                    }
+                                                    if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
+                                                        int it = tuple2->getId();
+                                                        shared_reason.get()->insert(it*1);
+                                                    }
+                                                    if(factory.find(*tuple3) != NULL && tuple3!=tupleU){
+                                                        int it = tuple3->getId();
+                                                        shared_reason.get()->insert(it*-1);
+                                                    }
+                                                    if(factory.find(*tuple4) != NULL && tuple4!=tupleU){
+                                                        int it = tuple4->getId();
+                                                        shared_reason.get()->insert(it*1);
+                                                    }
+                                                    if(factory.find(*tuple6) != NULL && tuple6!=tupleU){
+                                                        int it = tuple6->getId();
+                                                        shared_reason.get()->insert(it*-1);
+                                                    }
+                                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                                    if(!itReason.second && itReason.first->second.get()->empty())
+                                                        itReason.first->second=shared_reason;
+                                                }
+                                                if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                                else internalProps.push_back({tupleU,tupleUNegated});
+                                            }else{
+                                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                                if(currentDecisionLevel>0){
+                                                    if(tuple2!=NULL){
+                                                        int it = tuple2->getId();
+                                                        shared_reason.get()->insert(it*1);
+                                                    }
+                                                    if(tuple3!=NULL){
+                                                        int it = tuple3->getId();
+                                                        shared_reason.get()->insert(it*-1);
+                                                    }
+                                                    if(tuple4!=NULL){
+                                                        int it = tuple4->getId();
+                                                        shared_reason.get()->insert(it*1);
+                                                    }
+                                                    if(tuple6!=NULL){
+                                                        int it = tuple6->getId();
+                                                        shared_reason.get()->insert(it*-1);
+                                                    }
+                                                    reasonForLiteral[-startVar]=shared_reason;
+                                                    handleConflict(-startVar, propagatedLiterals);
+                                                }else propagatedLiterals.push_back(1);
+                                                return;
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
-                        if(tuple1!=NULL){
-                            if(tupleU != NULL){
-                                if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                else internalProps.push_back({tupleU,tupleUNegated});
-                            }else{
-                                propagatedLiterals.push_back(1);
-                            }
-                        }
                     }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
                 }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            {
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &pbody_0_.getValuesVec({});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &ubody_0_.getValuesVec({});
-                else if(tupleU->getPredicateName() == &_body_0 && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple0 = NULL;
-                    if(i<tuples->size())
-                        tuple0 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        tuple0 = tupleU;
-                    }
-                    if(tuple0!=NULL){
-                        int U = tuple0->at(0);
-                        int Cost = tuple0->at(1);
-                        const Tuple* tuple1 = factory.find({U,Cost},&_agg_id_0);
+                if(starter.getPredicateName() == &_steps && startVar > 0){
+                    int K = starter[0];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &ptime_.getValuesVec({});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &utime_.getValuesVec({});
+                    else if(tupleU->getPredicateName() == &_time && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple1 = NULL;
+                        if(i<tuples->size())
+                            tuple1 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            tuple1 = tupleU;
+                        }
                         if(tuple1!=NULL){
-                            if(tuple1->isFalse())
-                            tuple1=NULL;
-                            else if(tuple1->isUndef()){
-                                if(tupleU == NULL){
-                                    tupleU = tuple1;
-                                    tupleUNegated=false;
-                                }else{
-                                    if(tupleU->getPredicateName() != &_agg_id_0 || tupleUNegated || !(*tupleU == *tuple1))
-                                    tuple1=NULL;
+                            int T = tuple1->at(0);
+                            if(T < K){
+                                int TP1 = T + 1;
+                                const std::vector<int>* tuples = &pon_0_.getValuesVec({T});
+                                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                                std::vector<const Tuple*> undeRepeated;
+                                if(tupleU == NULL)
+                                    tuplesU = &uon_0_.getValuesVec({T});
+                                else if(tupleU->getPredicateName() == &_on && !tupleUNegated)
+                                    undeRepeated.push_back(tupleU);
+                                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                                    if(tuplesU!=&EMPTY_TUPLES_VEC)
+                                        tupleU = NULL;
+                                    const Tuple* tuple4 = NULL;
+                                    if(i<tuples->size())
+                                        tuple4 = factory.getTupleFromInternalID(tuples->at(i));
+                                    else if(i<tuples->size()+tuplesU->size()){
+                                        tupleU = tuple4 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                                        tupleUNegated=false;
+                                    }else if(!undeRepeated.empty()){
+                                        if(tupleU->at(0) == T)
+                                            tuple4 = tupleU;
+                                    }
+                                    if(tuple4!=NULL){
+                                        int N = tuple4->at(1);
+                                        int N1 = tuple4->at(2);
+                                        Tuple negativeTuple({T,N1},&_move);
+                                        const Tuple* tuple5 = factory.find(negativeTuple);
+                                        if(tuple5 == NULL)
+                                            tuple5 = &negativeTuple;
+                                        else{
+                                            if(tuple5->isTrue())
+                                                tuple5 = NULL;
+                                            else if(tuple5->isUndef()){
+                                                if(tupleU == NULL){
+                                                    tupleU = tuple5;
+                                                    tupleUNegated=true;
+                                                }else{
+                                                    if(tupleU->getPredicateName() != &_move || !tupleUNegated || !(*tupleU == *tuple5))
+                                                    tuple5=NULL;
+                                                }
+                                            }
+                                        }
+                                        if(tuple5!=NULL){
+                                            Tuple negativeTuple({TP1,N,N1,T,K},&_aux_1);
+                                            const Tuple* tuple6 = factory.find(negativeTuple);
+                                            if(tuple6 == NULL)
+                                                tuple6 = &negativeTuple;
+                                            else{
+                                                if(tuple6->isTrue())
+                                                    tuple6 = NULL;
+                                                else if(tuple6->isUndef()){
+                                                    if(tupleU == NULL){
+                                                        tupleU = tuple6;
+                                                        tupleUNegated=true;
+                                                    }else{
+                                                        if(tupleU->getPredicateName() != &_aux_1 || !tupleUNegated || !(*tupleU == *tuple6))
+                                                        tuple6=NULL;
+                                                    }
+                                                }
+                                            }
+                                            if(tuple6!=NULL){
+                                                if(tupleU != NULL){
+                                                    int itUndef = tupleU->getId();
+                                                    int var = tupleUNegated ? 1 : -1;
+                                                    var*=itUndef;
+                                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                                    if(currentDecisionLevel>0){
+                                                        {
+                                                            int it = starter.getId();
+                                                            shared_reason.get()->insert(it*1);
+                                                        }
+                                                        if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                                            int it = tuple1->getId();
+                                                            shared_reason.get()->insert(it*1);
+                                                        }
+                                                        if(factory.find(*tuple4) != NULL && tuple4!=tupleU){
+                                                            int it = tuple4->getId();
+                                                            shared_reason.get()->insert(it*1);
+                                                        }
+                                                        if(factory.find(*tuple5) != NULL && tuple5!=tupleU){
+                                                            int it = tuple5->getId();
+                                                            shared_reason.get()->insert(it*-1);
+                                                        }
+                                                        if(factory.find(*tuple6) != NULL && tuple6!=tupleU){
+                                                            int it = tuple6->getId();
+                                                            shared_reason.get()->insert(it*-1);
+                                                        }
+                                                        auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                                        if(!itReason.second && itReason.first->second.get()->empty())
+                                                            itReason.first->second=shared_reason;
+                                                    }
+                                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                                }else{
+                                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                                    if(currentDecisionLevel>0){
+                                                        if(tuple1!=NULL){
+                                                            int it = tuple1->getId();
+                                                            shared_reason.get()->insert(it*1);
+                                                        }
+                                                        if(tuple4!=NULL){
+                                                            int it = tuple4->getId();
+                                                            shared_reason.get()->insert(it*1);
+                                                        }
+                                                        if(tuple5!=NULL){
+                                                            int it = tuple5->getId();
+                                                            shared_reason.get()->insert(it*-1);
+                                                        }
+                                                        if(tuple6!=NULL){
+                                                            int it = tuple6->getId();
+                                                            shared_reason.get()->insert(it*-1);
+                                                        }
+                                                        reasonForLiteral[-startVar]=shared_reason;
+                                                        handleConflict(-startVar, propagatedLiterals);
+                                                    }else propagatedLiterals.push_back(1);
+                                                    return;
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+                if(starter.getPredicateName() == &_time && startVar > 0){
+                    int T = starter[0];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    int TP1 = T + 1;
+                    const std::vector<int>* tuples = &psteps_.getValuesVec({});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &usteps_.getValuesVec({});
+                    else if(tupleU->getPredicateName() == &_steps && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple2 = NULL;
+                        if(i<tuples->size())
+                            tuple2 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple2 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            tuple2 = tupleU;
+                        }
+                        if(tuple2!=NULL){
+                            int K = tuple2->at(0);
+                            if(T < K){
+                                const std::vector<int>* tuples = &pon_0_.getValuesVec({T});
+                                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                                std::vector<const Tuple*> undeRepeated;
+                                if(tupleU == NULL)
+                                    tuplesU = &uon_0_.getValuesVec({T});
+                                else if(tupleU->getPredicateName() == &_on && !tupleUNegated)
+                                    undeRepeated.push_back(tupleU);
+                                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                                    if(tuplesU!=&EMPTY_TUPLES_VEC)
+                                        tupleU = NULL;
+                                    const Tuple* tuple4 = NULL;
+                                    if(i<tuples->size())
+                                        tuple4 = factory.getTupleFromInternalID(tuples->at(i));
+                                    else if(i<tuples->size()+tuplesU->size()){
+                                        tupleU = tuple4 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                                        tupleUNegated=false;
+                                    }else if(!undeRepeated.empty()){
+                                        if(tupleU->at(0) == T)
+                                            tuple4 = tupleU;
+                                    }
+                                    if(tuple4!=NULL){
+                                        int N = tuple4->at(1);
+                                        int N1 = tuple4->at(2);
+                                        Tuple negativeTuple({T,N1},&_move);
+                                        const Tuple* tuple5 = factory.find(negativeTuple);
+                                        if(tuple5 == NULL)
+                                            tuple5 = &negativeTuple;
+                                        else{
+                                            if(tuple5->isTrue())
+                                                tuple5 = NULL;
+                                            else if(tuple5->isUndef()){
+                                                if(tupleU == NULL){
+                                                    tupleU = tuple5;
+                                                    tupleUNegated=true;
+                                                }else{
+                                                    if(tupleU->getPredicateName() != &_move || !tupleUNegated || !(*tupleU == *tuple5))
+                                                    tuple5=NULL;
+                                                }
+                                            }
+                                        }
+                                        if(tuple5!=NULL){
+                                            Tuple negativeTuple({TP1,N,N1,T,K},&_aux_1);
+                                            const Tuple* tuple6 = factory.find(negativeTuple);
+                                            if(tuple6 == NULL)
+                                                tuple6 = &negativeTuple;
+                                            else{
+                                                if(tuple6->isTrue())
+                                                    tuple6 = NULL;
+                                                else if(tuple6->isUndef()){
+                                                    if(tupleU == NULL){
+                                                        tupleU = tuple6;
+                                                        tupleUNegated=true;
+                                                    }else{
+                                                        if(tupleU->getPredicateName() != &_aux_1 || !tupleUNegated || !(*tupleU == *tuple6))
+                                                        tuple6=NULL;
+                                                    }
+                                                }
+                                            }
+                                            if(tuple6!=NULL){
+                                                if(tupleU != NULL){
+                                                    int itUndef = tupleU->getId();
+                                                    int var = tupleUNegated ? 1 : -1;
+                                                    var*=itUndef;
+                                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                                    if(currentDecisionLevel>0){
+                                                        {
+                                                            int it = starter.getId();
+                                                            shared_reason.get()->insert(it*1);
+                                                        }
+                                                        if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
+                                                            int it = tuple2->getId();
+                                                            shared_reason.get()->insert(it*1);
+                                                        }
+                                                        if(factory.find(*tuple4) != NULL && tuple4!=tupleU){
+                                                            int it = tuple4->getId();
+                                                            shared_reason.get()->insert(it*1);
+                                                        }
+                                                        if(factory.find(*tuple5) != NULL && tuple5!=tupleU){
+                                                            int it = tuple5->getId();
+                                                            shared_reason.get()->insert(it*-1);
+                                                        }
+                                                        if(factory.find(*tuple6) != NULL && tuple6!=tupleU){
+                                                            int it = tuple6->getId();
+                                                            shared_reason.get()->insert(it*-1);
+                                                        }
+                                                        auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                                        if(!itReason.second && itReason.first->second.get()->empty())
+                                                            itReason.first->second=shared_reason;
+                                                    }
+                                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                                }else{
+                                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                                    if(currentDecisionLevel>0){
+                                                        if(tuple2!=NULL){
+                                                            int it = tuple2->getId();
+                                                            shared_reason.get()->insert(it*1);
+                                                        }
+                                                        if(tuple4!=NULL){
+                                                            int it = tuple4->getId();
+                                                            shared_reason.get()->insert(it*1);
+                                                        }
+                                                        if(tuple5!=NULL){
+                                                            int it = tuple5->getId();
+                                                            shared_reason.get()->insert(it*-1);
+                                                        }
+                                                        if(tuple6!=NULL){
+                                                            int it = tuple6->getId();
+                                                            shared_reason.get()->insert(it*-1);
+                                                        }
+                                                        reasonForLiteral[-startVar]=shared_reason;
+                                                        handleConflict(-startVar, propagatedLiterals);
+                                                    }else propagatedLiterals.push_back(1);
+                                                    return;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                if(starter.getPredicateName() == &_steps && startVar > 0){
+                    int K = starter[0];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &ponG_0_.getValuesVec({K});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uonG_0_.getValuesVec({K});
+                    else if(tupleU->getPredicateName() == &_onG && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple1 = NULL;
+                        if(i<tuples->size())
+                            tuple1 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            if(tupleU->at(0) == K)
+                                tuple1 = tupleU;
+                        }
                         if(tuple1!=NULL){
-                            Tuple negativeTuple({U,Cost},&_agg_id_1);
+                            int N = tuple1->at(1);
+                            int N1 = tuple1->at(2);
+                            Tuple negativeTuple({K,N,N1},&_on);
                             const Tuple* tuple2 = factory.find(negativeTuple);
                             if(tuple2 == NULL)
                                 tuple2 = &negativeTuple;
@@ -1673,967 +5076,355 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts,std::vector<
                                         tupleU = tuple2;
                                         tupleUNegated=true;
                                     }else{
-                                        if(tupleU->getPredicateName() != &_agg_id_1 || !tupleUNegated || !(*tupleU == *tuple2))
+                                        if(tupleU->getPredicateName() != &_on || !tupleUNegated || !(*tupleU == *tuple2))
                                         tuple2=NULL;
                                     }
                                 }
                             }
                             if(tuple2!=NULL){
-                                Tuple negativeTuple({U,Cost},&_costs);
-                                const Tuple* tuple3 = factory.find(negativeTuple);
-                                if(tuple3 == NULL)
-                                    tuple3 = &negativeTuple;
-                                else{
-                                    if(tuple3->isTrue())
-                                        tuple3 = NULL;
-                                    else if(tuple3->isUndef()){
-                                        if(tupleU == NULL){
-                                            tupleU = tuple3;
-                                            tupleUNegated=true;
-                                        }else{
-                                            if(tupleU->getPredicateName() != &_costs || !tupleUNegated || !(*tupleU == *tuple3))
-                                            tuple3=NULL;
+                                if(tupleU != NULL){
+                                    int itUndef = tupleU->getId();
+                                    int var = tupleUNegated ? 1 : -1;
+                                    var*=itUndef;
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        {
+                                            int it = starter.getId();
+                                            shared_reason.get()->insert(it*1);
                                         }
+                                        if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                            int it = tuple1->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
+                                            int it = tuple2->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                        if(!itReason.second && itReason.first->second.get()->empty())
+                                            itReason.first->second=shared_reason;
                                     }
-                                }
-                                if(tuple3!=NULL){
-                                    if(tupleU != NULL){
-                                        if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                        else internalProps.push_back({tupleU,tupleUNegated});
-                                    }else{
-                                        propagatedLiterals.push_back(1);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            {
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &puser_.getValuesVec({});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &uuser_.getValuesVec({});
-                else if(tupleU->getPredicateName() == &_user && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple0 = NULL;
-                    if(i<tuples->size())
-                        tuple0 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        tuple0 = tupleU;
-                    }
-                    if(tuple0!=NULL){
-                        int U = tuple0->at(0);
-                        int MIN = tuple0->at(1);
-                        int MAX = tuple0->at(2);
-                        const std::vector<int>* tuples = &pcosts_0_.getValuesVec({U});
-                        const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                        std::vector<const Tuple*> undeRepeated;
-                        if(tupleU == NULL)
-                            tuplesU = &ucosts_0_.getValuesVec({U});
-                        else if(tupleU->getPredicateName() == &_costs && !tupleUNegated)
-                            undeRepeated.push_back(tupleU);
-                        for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                            if(tuplesU!=&EMPTY_TUPLES_VEC)
-                                tupleU = NULL;
-                            const Tuple* tuple1 = NULL;
-                            if(i<tuples->size())
-                                tuple1 = factory.getTupleFromInternalID(tuples->at(i));
-                            else if(i<tuples->size()+tuplesU->size()){
-                                tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                                tupleUNegated=false;
-                            }else if(!undeRepeated.empty()){
-                                if(tupleU->at(0) == U)
-                                    tuple1 = tupleU;
-                            }
-                            if(tuple1!=NULL){
-                                int Cost = tuple1->at(1);
-                                if(Cost < MIN){
-                                    if(tupleU != NULL){
-                                        if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                        else internalProps.push_back({tupleU,tupleUNegated});
-                                    }else{
-                                        propagatedLiterals.push_back(1);
-                                    }
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                }else{
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        if(tuple1!=NULL){
+                                            int it = tuple1->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(tuple2!=NULL){
+                                            int it = tuple2->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        reasonForLiteral[-startVar]=shared_reason;
+                                        handleConflict(-startVar, propagatedLiterals);
+                                    }else propagatedLiterals.push_back(1);
+                                    return;
                                 }
                             }
                         }
                     }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
                 }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            {
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &puser_.getValuesVec({});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &uuser_.getValuesVec({});
-                else if(tupleU->getPredicateName() == &_user && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple0 = NULL;
-                    if(i<tuples->size())
-                        tuple0 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        tuple0 = tupleU;
-                    }
-                    if(tuple0!=NULL){
-                        int U = tuple0->at(0);
-                        int MIN = tuple0->at(1);
-                        int MAX = tuple0->at(2);
-                        const std::vector<int>* tuples = &pcosts_0_.getValuesVec({U});
-                        const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                        std::vector<const Tuple*> undeRepeated;
-                        if(tupleU == NULL)
-                            tuplesU = &ucosts_0_.getValuesVec({U});
-                        else if(tupleU->getPredicateName() == &_costs && !tupleUNegated)
-                            undeRepeated.push_back(tupleU);
-                        for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                            if(tuplesU!=&EMPTY_TUPLES_VEC)
-                                tupleU = NULL;
-                            const Tuple* tuple1 = NULL;
-                            if(i<tuples->size())
-                                tuple1 = factory.getTupleFromInternalID(tuples->at(i));
-                            else if(i<tuples->size()+tuplesU->size()){
-                                tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                                tupleUNegated=false;
-                            }else if(!undeRepeated.empty()){
-                                if(tupleU->at(0) == U)
-                                    tuple1 = tupleU;
-                            }
-                            if(tuple1!=NULL){
-                                int Cost = tuple1->at(1);
-                                if(Cost > MAX){
-                                    if(tupleU != NULL){
-                                        if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                        else internalProps.push_back({tupleU,tupleUNegated});
-                                    }else{
-                                        propagatedLiterals.push_back(1);
-                                    }
-                                }
+                if(starter.getPredicateName() == &_onG && startVar > 0){
+                    int K = starter[0];
+                    int N = starter[1];
+                    int N1 = starter[2];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    Tuple negativeTuple({K,N,N1},&_on);
+                    const Tuple* tuple1 = factory.find(negativeTuple);
+                    if(tuple1 == NULL)
+                        tuple1 = &negativeTuple;
+                    else{
+                        if(tuple1->isTrue())
+                            tuple1 = NULL;
+                        else if(tuple1->isUndef()){
+                            if(tupleU == NULL){
+                                tupleU = tuple1;
+                                tupleUNegated=true;
+                            }else{
+                                if(tupleU->getPredicateName() != &_on || !tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
                             }
                         }
                     }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            {
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &puser_.getValuesVec({});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &uuser_.getValuesVec({});
-                else if(tupleU->getPredicateName() == &_user && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple0 = NULL;
-                    if(i<tuples->size())
-                        tuple0 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        tuple0 = tupleU;
+                    if(tuple1!=NULL){
+                        const Tuple* tuple2 = factory.find({K},&_steps);
+                        if(tuple2!=NULL){
+                            if(tuple2->isFalse())
+                            tuple2=NULL;
+                            else if(tuple2->isUndef()){
+                                if(tupleU == NULL){
+                                    tupleU = tuple2;
+                                    tupleUNegated=false;
+                                }else{
+                                    if(tupleU->getPredicateName() != &_steps || tupleUNegated || !(*tupleU == *tuple2))
+                                    tuple2=NULL;
+                                }
+                            }
+                        }
+                        if(tuple2!=NULL){
+                            if(tupleU != NULL){
+                                int itUndef = tupleU->getId();
+                                int var = tupleUNegated ? 1 : -1;
+                                var*=itUndef;
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    {
+                                        int it = starter.getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*-1);
+                                    }
+                                    if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
+                                        int it = tuple2->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                    if(!itReason.second && itReason.first->second.get()->empty())
+                                        itReason.first->second=shared_reason;
+                                }
+                                if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                else internalProps.push_back({tupleU,tupleUNegated});
+                            }else{
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    if(tuple1!=NULL){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*-1);
+                                    }
+                                    if(tuple2!=NULL){
+                                        int it = tuple2->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    reasonForLiteral[-startVar]=shared_reason;
+                                    handleConflict(-startVar, propagatedLiterals);
+                                }else propagatedLiterals.push_back(1);
+                                return;
+                            }
+                        }
                     }
-                    if(tuple0!=NULL){
-                        int U = tuple0->at(0);
-                        int MIN = tuple0->at(1);
-                        int MAX = tuple0->at(2);
-                        const std::vector<int>* tuples = &paux_val0_.getValuesVec({});
-                        const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                        std::vector<const Tuple*> undeRepeated;
-                        if(tupleU == NULL)
-                            tuplesU = &uaux_val0_.getValuesVec({});
-                        else if(tupleU->getPredicateName() == &_aux_val0 && !tupleUNegated)
-                            undeRepeated.push_back(tupleU);
-                        for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                            if(tuplesU!=&EMPTY_TUPLES_VEC)
-                                tupleU = NULL;
-                            const Tuple* tuple1 = NULL;
-                            if(i<tuples->size())
-                                tuple1 = factory.getTupleFromInternalID(tuples->at(i));
-                            else if(i<tuples->size()+tuplesU->size()){
-                                tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+                if(starter.getPredicateName() == &_on && startVar < 0){
+                    int K = starter[0];
+                    int N = starter[1];
+                    int N1 = starter[2];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const Tuple* tuple1 = factory.find({K,N,N1},&_onG);
+                    if(tuple1!=NULL){
+                        if(tuple1->isFalse())
+                        tuple1=NULL;
+                        else if(tuple1->isUndef()){
+                            if(tupleU == NULL){
+                                tupleU = tuple1;
                                 tupleUNegated=false;
-                            }else if(!undeRepeated.empty()){
+                            }else{
+                                if(tupleU->getPredicateName() != &_onG || tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
+                            }
+                        }
+                    }
+                    if(tuple1!=NULL){
+                        const Tuple* tuple2 = factory.find({K},&_steps);
+                        if(tuple2!=NULL){
+                            if(tuple2->isFalse())
+                            tuple2=NULL;
+                            else if(tuple2->isUndef()){
+                                if(tupleU == NULL){
+                                    tupleU = tuple2;
+                                    tupleUNegated=false;
+                                }else{
+                                    if(tupleU->getPredicateName() != &_steps || tupleUNegated || !(*tupleU == *tuple2))
+                                    tuple2=NULL;
+                                }
+                            }
+                        }
+                        if(tuple2!=NULL){
+                            if(tupleU != NULL){
+                                int itUndef = tupleU->getId();
+                                int var = tupleUNegated ? 1 : -1;
+                                var*=itUndef;
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    {
+                                        int it = starter.getId();
+                                        shared_reason.get()->insert(it*-1);
+                                    }
+                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
+                                        int it = tuple2->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                    if(!itReason.second && itReason.first->second.get()->empty())
+                                        itReason.first->second=shared_reason;
+                                }
+                                if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                else internalProps.push_back({tupleU,tupleUNegated});
+                            }else{
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    if(tuple1!=NULL){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    if(tuple2!=NULL){
+                                        int it = tuple2->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    reasonForLiteral[-startVar]=shared_reason;
+                                    handleConflict(-startVar, propagatedLiterals);
+                                }else propagatedLiterals.push_back(1);
+                                return;
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                if(starter.getPredicateName() == &_steps && startVar > 0){
+                    int K = starter[0];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &pon_0_.getValuesVec({K});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uon_0_.getValuesVec({K});
+                    else if(tupleU->getPredicateName() == &_on && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple1 = NULL;
+                        if(i<tuples->size())
+                            tuple1 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            if(tupleU->at(0) == K)
                                 tuple1 = tupleU;
-                            }
-                            if(tuple1!=NULL){
-                                int Cost = tuple1->at(0);
-                                Tuple negativeTuple({U,Cost,MIN,MAX},&_aux_0);
-                                const Tuple* tuple2 = factory.find(negativeTuple);
-                                if(tuple2 == NULL)
-                                    tuple2 = &negativeTuple;
-                                else{
-                                    if(tuple2->isTrue())
-                                        tuple2 = NULL;
-                                    else if(tuple2->isUndef()){
-                                        if(tupleU == NULL){
-                                            tupleU = tuple2;
-                                            tupleUNegated=true;
-                                        }else{
-                                            if(tupleU->getPredicateName() != &_aux_0 || !tupleUNegated || !(*tupleU == *tuple2))
-                                            tuple2=NULL;
-                                        }
-                                    }
-                                }
-                                if(tuple2!=NULL){
-                                    if(tupleU != NULL){
-                                        if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                        else internalProps.push_back({tupleU,tupleUNegated});
+                        }
+                        if(tuple1!=NULL){
+                            int N = tuple1->at(1);
+                            int N1 = tuple1->at(2);
+                            Tuple negativeTuple({K,N,N1},&_onG);
+                            const Tuple* tuple2 = factory.find(negativeTuple);
+                            if(tuple2 == NULL)
+                                tuple2 = &negativeTuple;
+                            else{
+                                if(tuple2->isTrue())
+                                    tuple2 = NULL;
+                                else if(tuple2->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple2;
+                                        tupleUNegated=true;
                                     }else{
-                                        propagatedLiterals.push_back(1);
+                                        if(tupleU->getPredicateName() != &_onG || !tupleUNegated || !(*tupleU == *tuple2))
+                                        tuple2=NULL;
                                     }
                                 }
                             }
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            {
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &paux_0_.getValuesVec({});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &uaux_0_.getValuesVec({});
-                else if(tupleU->getPredicateName() == &_aux_0 && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple0 = NULL;
-                    if(i<tuples->size())
-                        tuple0 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        tuple0 = tupleU;
-                    }
-                    if(tuple0!=NULL){
-                        int U = tuple0->at(0);
-                        int Cost = tuple0->at(1);
-                        int MIN = tuple0->at(2);
-                        int MAX = tuple0->at(3);
-                        Tuple negativeTuple({Cost},&_aux_val0);
-                        const Tuple* tuple1 = factory.find(negativeTuple);
-                        if(tuple1 == NULL)
-                            tuple1 = &negativeTuple;
-                        else{
-                            if(tuple1->isTrue())
-                                tuple1 = NULL;
-                            else if(tuple1->isUndef()){
-                                if(tupleU == NULL){
-                                    tupleU = tuple1;
-                                    tupleUNegated=true;
+                            if(tuple2!=NULL){
+                                if(tupleU != NULL){
+                                    int itUndef = tupleU->getId();
+                                    int var = tupleUNegated ? 1 : -1;
+                                    var*=itUndef;
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        {
+                                            int it = starter.getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                            int it = tuple1->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
+                                            int it = tuple2->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                        if(!itReason.second && itReason.first->second.get()->empty())
+                                            itReason.first->second=shared_reason;
+                                    }
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
                                 }else{
-                                    if(tupleU->getPredicateName() != &_aux_val0 || !tupleUNegated || !(*tupleU == *tuple1))
-                                    tuple1=NULL;
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        if(tuple1!=NULL){
+                                            int it = tuple1->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(tuple2!=NULL){
+                                            int it = tuple2->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        reasonForLiteral[-startVar]=shared_reason;
+                                        handleConflict(-startVar, propagatedLiterals);
+                                    }else propagatedLiterals.push_back(1);
+                                    return;
                                 }
                             }
                         }
-                        if(tuple1!=NULL){
-                            if(tupleU != NULL){
-                                if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                else internalProps.push_back({tupleU,tupleUNegated});
-                            }else{
-                                propagatedLiterals.push_back(1);
-                            }
-                        }
                     }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
                 }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            {
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &paux_0_.getValuesVec({});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &uaux_0_.getValuesVec({});
-                else if(tupleU->getPredicateName() == &_aux_0 && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple0 = NULL;
-                    if(i<tuples->size())
-                        tuple0 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple0 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        tuple0 = tupleU;
-                    }
-                    if(tuple0!=NULL){
-                        int U = tuple0->at(0);
-                        int Cost = tuple0->at(1);
-                        int MIN = tuple0->at(2);
-                        int MAX = tuple0->at(3);
-                        Tuple negativeTuple({U,MIN,MAX},&_user);
-                        const Tuple* tuple1 = factory.find(negativeTuple);
-                        if(tuple1 == NULL)
-                            tuple1 = &negativeTuple;
-                        else{
-                            if(tuple1->isTrue())
-                                tuple1 = NULL;
-                            else if(tuple1->isUndef()){
-                                if(tupleU == NULL){
-                                    tupleU = tuple1;
-                                    tupleUNegated=true;
-                                }else{
-                                    if(tupleU->getPredicateName() != &_user || !tupleUNegated || !(*tupleU == *tuple1))
-                                    tuple1=NULL;
-                                }
-                            }
-                        }
-                        if(tuple1!=NULL){
-                            if(tupleU != NULL){
-                                if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                else internalProps.push_back({tupleU,tupleUNegated});
-                            }else{
-                                propagatedLiterals.push_back(1);
-                            }
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            const std::vector<int>* trueHeads = &pbody_0_.getValuesVec({});
-            for(unsigned i = 0;i < trueHeads->size(); i++){
-                const Tuple* currentHead = factory.getTupleFromInternalID(trueHeads->at(i));
-                if(eagerFacts.count(currentHead->getId())!=0) continue;
-                int U = currentHead->at(0);
-                int Cost = currentHead->at(1);
-                const std::vector<int>* tuples = &paux_0_0_1_.getValuesVec({U, Cost});
-                const std::vector<int>* tuplesU = &uaux_0_0_1_.getValuesVec({U, Cost});
-                if(tuples->size()==0){
-                    if(tuplesU->size() == 0){
-                        propagatedLiterals.push_back(1);
-                        return;
-                    }else if(tuplesU->size()==1){
-                        const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesU->at(0));
-                        propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                    }
-                }
-            }
-            const std::vector<int>* falseHeads = &fbody_0_.getValuesVec({});
-            for(unsigned i = 0;i < falseHeads->size(); i++){
-                const Tuple* currentHead = factory.getTupleFromInternalID(falseHeads->at(i));
-                int U = currentHead->at(0);
-                int Cost = currentHead->at(1);
-                const std::vector<int>* tuples = &paux_0_0_1_.getValuesVec({U, Cost});
-                const std::vector<int>* tuplesU = &uaux_0_0_1_.getValuesVec({U, Cost});
-                if(tuples->size()>0){
-                    propagatedLiterals.push_back(1);
-                    return;
-                }else{
-                    while(!tuplesU->empty()){
-                        propUndefined(factory.getTupleFromInternalID(tuplesU->back()),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                    }
-                }
-            }
-            const std::vector<int>* undefHeads = &ubody_0_.getValuesVec({});
-            for(unsigned i = 0; i < undefHeads->size();){
-                const Tuple* currentHead = factory.getTupleFromInternalID(undefHeads->at(i));
-                int U = currentHead->at(0);
-                int Cost = currentHead->at(1);
-                const std::vector<int>* tuples = &paux_0_0_1_.getValuesVec({U, Cost});
-                const std::vector<int>* tuplesU = &uaux_0_0_1_.getValuesVec({U, Cost});
-                if(tuples->size() > 0)
-                    propUndefined(currentHead,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                else if(tuplesU->size()==0)
-                    propUndefined(currentHead,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                else i++;
-            }
-        }
-    }//close decision level == -1
-    std::vector<int> propagated;
-    while(!propagationStack.empty()){
-        int startVar = propagationStack.back();
-        propagated.push_back(startVar);
-        int uStartVar = startVar<0 ? -startVar : startVar;
-        Tuple starter (*factory.getTupleFromInternalID(uStartVar));
-        std::string minus = startVar < 0 ? "not " : "";
-        propagationStack.pop_back();
-        if(starter.getPredicateName() == &_aux_0){
-            int U = starter.at(0);
-            int Cost = starter.at(1);
-            int MIN = starter.at(2);
-            int MAX = starter.at(3);
-            Tuple* head = factory.find({U,Cost}, &_body_0);
-            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-            if(startVar > 0){
-                if(head == NULL || (!head->isTrue() && !head->isUndef())){
-                    if(currentDecisionLevel>0){
-                        int it = head->getId();
-                        shared_reason.get()->insert(startVar);
-                        reasonForLiteral[it]=shared_reason;
-                        handleConflict(it, propagatedLiterals);
-                    }else propagatedLiterals.push_back(1);
-                    return;
-                }else if(head !=NULL && head->isUndef()){
-                    if(currentDecisionLevel>0){
-                        int it = head->getId();
-                        shared_reason.get()->insert(startVar);
-                        auto itReason = reasonForLiteral.emplace(it,shared_reason);
-                        if(!itReason.second && itReason.first->second.get()->empty())
-                            itReason.first->second=shared_reason;
-                    }
-                    propUndefined(head,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                }
-            }else{
-                const std::vector<int>* tuples = &paux_0_0_1_.getValuesVec({U, Cost});
-                const std::vector<int>* tuplesU = &uaux_0_0_1_.getValuesVec({U, Cost});
-                if(head != NULL && head->isTrue()){
-                    if(tuples->size() == 0 && tuplesU->size() == 0){
-                        if(currentDecisionLevel>0){
-                            int itHead = head->getId();
-                            const std::vector<int>* tuplesF = &faux_0_0_1_.getValuesVec({U, Cost});
-                            for(unsigned i=0;i<tuplesF->size();i++){
-                                int it = tuplesF->at(i);
-                                shared_reason.get()->insert(-it);
-                            }
-                            reasonForLiteral[-itHead]=shared_reason;
-                            handleConflict(-itHead, propagatedLiterals);
-                        }else propagatedLiterals.push_back(1);
-                        return;
-                    }else if(tuples->size() == 0 && tuplesU->size() == 1){
-                        if(currentDecisionLevel>0){
-                            int itProp = tuplesU->at(0);
-                            const std::vector<int>* tuplesF = &faux_0_0_1_.getValuesVec({U, Cost});
-                            for(unsigned i=0;i<tuplesF->size();i++){
-                                int it = tuplesF->at(i);
-                                shared_reason.get()->insert(-it);
-                            }
-                            int it = head->getId();
-                            shared_reason.get()->insert(it);
-                            auto itReason = reasonForLiteral.emplace(itProp,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        propUndefined(factory.getTupleFromInternalID(tuplesU->at(0)),false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                    }
-                }else if( head != NULL && head->isUndef() ){
-                    if(tuples->size() == 0 && tuplesU->size() == 0){
-                        if(currentDecisionLevel>0){
-                            int itHead = head->getId();
-                            const std::vector<int>* tuplesF = &faux_0_0_1_.getValuesVec({U, Cost});
-                            for(unsigned i=0;i<tuplesF->size();i++){
-                                int it = tuplesF->at(i);
-                                shared_reason.get()->insert(-it);
-                            }
-                            auto itReason = reasonForLiteral.emplace(-itHead,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        propUndefined(head,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                    }
-                }
-            }
-        }else if(starter.getPredicateName() == &_body_0){
-            int U = starter.at(0);
-            int Cost = starter.at(1);
-            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-            const std::vector<int>* tuples = &paux_0_0_1_.getValuesVec({U,Cost});
-            const std::vector<int>* tuplesU = &uaux_0_0_1_.getValuesVec({U,Cost});
-            if(startVar > 0){
-                if(tuples->size()==0){
-                    if(tuplesU->size() == 0){
-                        if(currentDecisionLevel>0){
-                            const std::vector<int>* tuplesF = &faux_0_0_1_.getValuesVec({U,Cost});
-                            for(unsigned i=0; i<tuplesF->size(); i++){
-                                int it = tuplesF->at(i);
-                                shared_reason.get()->insert(-it);
-                            }
-                            reasonForLiteral[-startVar]=shared_reason;
-                            handleConflict(-startVar, propagatedLiterals);
-                        }else propagatedLiterals.push_back(1);
-                        return;
-                    }else if(tuplesU->size()==1){
-                        const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesU->at(0));
-                        if(currentDecisionLevel>0){
-                            int itProp = currentTuple->getId();
-                            const std::vector<int>* tuplesF = &faux_0_0_1_.getValuesVec({U,Cost});
-                            for(unsigned i=0; i<tuplesF->size(); i++){
-                                int it = tuplesF->at(i);
-                                shared_reason.get()->insert(-it);
-                            }
-                            shared_reason.get()->insert(startVar);
-                            auto itReason = reasonForLiteral.emplace(itProp,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                    }
-                }
-            }else{
-                if(tuples->size()>0){
-                    if(currentDecisionLevel>0){
-                        int it = tuples->at(0);
-                        shared_reason.get()->insert(startVar);
-                        reasonForLiteral[-it]=shared_reason;
-                        handleConflict(-it, propagatedLiterals);
-                    }else propagatedLiterals.push_back(1);
-                    return;
-                }else{
-                    shared_reason.get()->insert(startVar);
-                    while(!tuplesU->empty()){
-                        int it = tuplesU->back();
-                        if(currentDecisionLevel>0){
-                            auto itReason = reasonForLiteral.emplace(-it,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        propUndefined(factory.getTupleFromInternalID(it),false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                    }
-                }
-            }
-        }
-        {
-            if(starter.getPredicateName() == &_user && startVar < 0){
-                int U = starter[0];
-                int MIN = starter[1];
-                int MAX = starter[2];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &paux_0_0_2_3_.getValuesVec({U,MIN,MAX});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &uaux_0_0_2_3_.getValuesVec({U,MIN,MAX});
-                else if(tupleU->getPredicateName() == &_aux_0 && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple1 = NULL;
-                    if(i<tuples->size())
-                        tuple1 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        if(tupleU->at(0) == U && tupleU->at(2) == MIN && tupleU->at(3) == MAX)
-                            tuple1 = tupleU;
-                    }
+                if(starter.getPredicateName() == &_onG && startVar < 0){
+                    int K = starter[0];
+                    int N = starter[1];
+                    int N1 = starter[2];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const Tuple* tuple1 = factory.find({K,N,N1},&_on);
                     if(tuple1!=NULL){
-                        int Cost = tuple1->at(1);
-                        if(tupleU != NULL){
-                            int itUndef = tupleU->getId();
-                            int var = tupleUNegated ? 1 : -1;
-                            var*=itUndef;
-                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                            if(currentDecisionLevel>0){
-                                {
-                                    int it = starter.getId();
-                                    shared_reason.get()->insert(it*-1);
-                                }
-                                if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                    int it = tuple1->getId();
-                                    shared_reason.get()->insert(it*1);
-                                }
-                                auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                                if(!itReason.second && itReason.first->second.get()->empty())
-                                    itReason.first->second=shared_reason;
-                            }
-                            if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                            else internalProps.push_back({tupleU,tupleUNegated});
-                        }else{
-                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                            if(currentDecisionLevel>0){
-                                if(tuple1!=NULL){
-                                    int it = tuple1->getId();
-                                    shared_reason.get()->insert(it*1);
-                                }
-                                reasonForLiteral[-startVar]=shared_reason;
-                                handleConflict(-startVar, propagatedLiterals);
-                            }else propagatedLiterals.push_back(1);
-                            return;
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-            if(starter.getPredicateName() == &_aux_0 && startVar > 0){
-                int U = starter[0];
-                int Cost = starter[1];
-                int MIN = starter[2];
-                int MAX = starter[3];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                Tuple negativeTuple({U,MIN,MAX},&_user);
-                const Tuple* tuple1 = factory.find(negativeTuple);
-                if(tuple1 == NULL)
-                    tuple1 = &negativeTuple;
-                else{
-                    if(tuple1->isTrue())
-                        tuple1 = NULL;
-                    else if(tuple1->isUndef()){
-                        if(tupleU == NULL){
-                            tupleU = tuple1;
-                            tupleUNegated=true;
-                        }else{
-                            if(tupleU->getPredicateName() != &_user || !tupleUNegated || !(*tupleU == *tuple1))
-                            tuple1=NULL;
-                        }
-                    }
-                }
-                if(tuple1!=NULL){
-                    if(tupleU != NULL){
-                        int itUndef = tupleU->getId();
-                        int var = tupleUNegated ? 1 : -1;
-                        var*=itUndef;
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            {
-                                int it = starter.getId();
-                                shared_reason.get()->insert(it*1);
-                            }
-                            if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*-1);
-                            }
-                            auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                        else internalProps.push_back({tupleU,tupleUNegated});
-                    }else{
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            if(tuple1!=NULL){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*-1);
-                            }
-                            reasonForLiteral[-startVar]=shared_reason;
-                            handleConflict(-startVar, propagatedLiterals);
-                        }else propagatedLiterals.push_back(1);
-                        return;
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            if(starter.getPredicateName() == &_aux_val0 && startVar < 0){
-                int Cost = starter[0];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &paux_0_1_.getValuesVec({Cost});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &uaux_0_1_.getValuesVec({Cost});
-                else if(tupleU->getPredicateName() == &_aux_0 && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple1 = NULL;
-                    if(i<tuples->size())
-                        tuple1 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        if(tupleU->at(1) == Cost)
-                            tuple1 = tupleU;
-                    }
-                    if(tuple1!=NULL){
-                        int U = tuple1->at(0);
-                        int MIN = tuple1->at(2);
-                        int MAX = tuple1->at(3);
-                        if(tupleU != NULL){
-                            int itUndef = tupleU->getId();
-                            int var = tupleUNegated ? 1 : -1;
-                            var*=itUndef;
-                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                            if(currentDecisionLevel>0){
-                                {
-                                    int it = starter.getId();
-                                    shared_reason.get()->insert(it*-1);
-                                }
-                                if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                    int it = tuple1->getId();
-                                    shared_reason.get()->insert(it*1);
-                                }
-                                auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                                if(!itReason.second && itReason.first->second.get()->empty())
-                                    itReason.first->second=shared_reason;
-                            }
-                            if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                            else internalProps.push_back({tupleU,tupleUNegated});
-                        }else{
-                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                            if(currentDecisionLevel>0){
-                                if(tuple1!=NULL){
-                                    int it = tuple1->getId();
-                                    shared_reason.get()->insert(it*1);
-                                }
-                                reasonForLiteral[-startVar]=shared_reason;
-                                handleConflict(-startVar, propagatedLiterals);
-                            }else propagatedLiterals.push_back(1);
-                            return;
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-            if(starter.getPredicateName() == &_aux_0 && startVar > 0){
-                int U = starter[0];
-                int Cost = starter[1];
-                int MIN = starter[2];
-                int MAX = starter[3];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                Tuple negativeTuple({Cost},&_aux_val0);
-                const Tuple* tuple1 = factory.find(negativeTuple);
-                if(tuple1 == NULL)
-                    tuple1 = &negativeTuple;
-                else{
-                    if(tuple1->isTrue())
-                        tuple1 = NULL;
-                    else if(tuple1->isUndef()){
-                        if(tupleU == NULL){
-                            tupleU = tuple1;
-                            tupleUNegated=true;
-                        }else{
-                            if(tupleU->getPredicateName() != &_aux_val0 || !tupleUNegated || !(*tupleU == *tuple1))
-                            tuple1=NULL;
-                        }
-                    }
-                }
-                if(tuple1!=NULL){
-                    if(tupleU != NULL){
-                        int itUndef = tupleU->getId();
-                        int var = tupleUNegated ? 1 : -1;
-                        var*=itUndef;
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            {
-                                int it = starter.getId();
-                                shared_reason.get()->insert(it*1);
-                            }
-                            if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*-1);
-                            }
-                            auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                        else internalProps.push_back({tupleU,tupleUNegated});
-                    }else{
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            if(tuple1!=NULL){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*-1);
-                            }
-                            reasonForLiteral[-startVar]=shared_reason;
-                            handleConflict(-startVar, propagatedLiterals);
-                        }else propagatedLiterals.push_back(1);
-                        return;
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            if(starter.getPredicateName() == &_aux_0 && startVar < 0){
-                int U = starter[0];
-                int Cost = starter[1];
-                int MIN = starter[2];
-                int MAX = starter[3];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const Tuple* tuple1 = factory.find({U,MIN,MAX},&_user);
-                if(tuple1!=NULL){
-                    if(tuple1->isFalse())
-                    tuple1=NULL;
-                    else if(tuple1->isUndef()){
-                        if(tupleU == NULL){
-                            tupleU = tuple1;
-                            tupleUNegated=false;
-                        }else{
-                            if(tupleU->getPredicateName() != &_user || tupleUNegated || !(*tupleU == *tuple1))
-                            tuple1=NULL;
-                        }
-                    }
-                }
-                if(tuple1!=NULL){
-                    const Tuple* tuple2 = factory.find({Cost},&_aux_val0);
-                    if(tuple2!=NULL){
-                        if(tuple2->isFalse())
-                        tuple2=NULL;
-                        else if(tuple2->isUndef()){
+                        if(tuple1->isFalse())
+                        tuple1=NULL;
+                        else if(tuple1->isUndef()){
                             if(tupleU == NULL){
-                                tupleU = tuple2;
+                                tupleU = tuple1;
                                 tupleUNegated=false;
                             }else{
-                                if(tupleU->getPredicateName() != &_aux_val0 || tupleUNegated || !(*tupleU == *tuple2))
-                                tuple2=NULL;
+                                if(tupleU->getPredicateName() != &_on || tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
                             }
                         }
-                    }
-                    if(tuple2!=NULL){
-                        if(tupleU != NULL){
-                            int itUndef = tupleU->getId();
-                            int var = tupleUNegated ? 1 : -1;
-                            var*=itUndef;
-                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                            if(currentDecisionLevel>0){
-                                {
-                                    int it = starter.getId();
-                                    shared_reason.get()->insert(it*-1);
-                                }
-                                if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                    int it = tuple1->getId();
-                                    shared_reason.get()->insert(it*1);
-                                }
-                                if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
-                                    int it = tuple2->getId();
-                                    shared_reason.get()->insert(it*1);
-                                }
-                                auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                                if(!itReason.second && itReason.first->second.get()->empty())
-                                    itReason.first->second=shared_reason;
-                            }
-                            if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                            else internalProps.push_back({tupleU,tupleUNegated});
-                        }else{
-                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                            if(currentDecisionLevel>0){
-                                if(tuple1!=NULL){
-                                    int it = tuple1->getId();
-                                    shared_reason.get()->insert(it*1);
-                                }
-                                if(tuple2!=NULL){
-                                    int it = tuple2->getId();
-                                    shared_reason.get()->insert(it*1);
-                                }
-                                reasonForLiteral[-startVar]=shared_reason;
-                                handleConflict(-startVar, propagatedLiterals);
-                            }else propagatedLiterals.push_back(1);
-                            return;
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-            if(starter.getPredicateName() == &_aux_val0 && startVar > 0){
-                int Cost = starter[0];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &puser_.getValuesVec({});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &uuser_.getValuesVec({});
-                else if(tupleU->getPredicateName() == &_user && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple1 = NULL;
-                    if(i<tuples->size())
-                        tuple1 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        tuple1 = tupleU;
                     }
                     if(tuple1!=NULL){
-                        int U = tuple1->at(0);
-                        int MIN = tuple1->at(1);
-                        int MAX = tuple1->at(2);
-                        Tuple negativeTuple({U,Cost,MIN,MAX},&_aux_0);
-                        const Tuple* tuple2 = factory.find(negativeTuple);
-                        if(tuple2 == NULL)
-                            tuple2 = &negativeTuple;
-                        else{
-                            if(tuple2->isTrue())
-                                tuple2 = NULL;
+                        const Tuple* tuple2 = factory.find({K},&_steps);
+                        if(tuple2!=NULL){
+                            if(tuple2->isFalse())
+                            tuple2=NULL;
                             else if(tuple2->isUndef()){
                                 if(tupleU == NULL){
                                     tupleU = tuple2;
-                                    tupleUNegated=true;
+                                    tupleUNegated=false;
                                 }else{
-                                    if(tupleU->getPredicateName() != &_aux_0 || !tupleUNegated || !(*tupleU == *tuple2))
+                                    if(tupleU->getPredicateName() != &_steps || tupleUNegated || !(*tupleU == *tuple2))
                                     tuple2=NULL;
                                 }
                             }
@@ -2647,1525 +5438,6 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts,std::vector<
                                 if(currentDecisionLevel>0){
                                     {
                                         int it = starter.getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
-                                        int it = tuple2->getId();
-                                        shared_reason.get()->insert(it*-1);
-                                    }
-                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                                    if(!itReason.second && itReason.first->second.get()->empty())
-                                        itReason.first->second=shared_reason;
-                                }
-                                if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                else internalProps.push_back({tupleU,tupleUNegated});
-                            }else{
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    if(tuple1!=NULL){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(tuple2!=NULL){
-                                        int it = tuple2->getId();
-                                        shared_reason.get()->insert(it*-1);
-                                    }
-                                    reasonForLiteral[-startVar]=shared_reason;
-                                    handleConflict(-startVar, propagatedLiterals);
-                                }else propagatedLiterals.push_back(1);
-                                return;
-                            }
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-            if(starter.getPredicateName() == &_user && startVar > 0){
-                int U = starter[0];
-                int MIN = starter[1];
-                int MAX = starter[2];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &paux_val0_.getValuesVec({});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &uaux_val0_.getValuesVec({});
-                else if(tupleU->getPredicateName() == &_aux_val0 && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple1 = NULL;
-                    if(i<tuples->size())
-                        tuple1 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        tuple1 = tupleU;
-                    }
-                    if(tuple1!=NULL){
-                        int Cost = tuple1->at(0);
-                        Tuple negativeTuple({U,Cost,MIN,MAX},&_aux_0);
-                        const Tuple* tuple2 = factory.find(negativeTuple);
-                        if(tuple2 == NULL)
-                            tuple2 = &negativeTuple;
-                        else{
-                            if(tuple2->isTrue())
-                                tuple2 = NULL;
-                            else if(tuple2->isUndef()){
-                                if(tupleU == NULL){
-                                    tupleU = tuple2;
-                                    tupleUNegated=true;
-                                }else{
-                                    if(tupleU->getPredicateName() != &_aux_0 || !tupleUNegated || !(*tupleU == *tuple2))
-                                    tuple2=NULL;
-                                }
-                            }
-                        }
-                        if(tuple2!=NULL){
-                            if(tupleU != NULL){
-                                int itUndef = tupleU->getId();
-                                int var = tupleUNegated ? 1 : -1;
-                                var*=itUndef;
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    {
-                                        int it = starter.getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
-                                        int it = tuple2->getId();
-                                        shared_reason.get()->insert(it*-1);
-                                    }
-                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                                    if(!itReason.second && itReason.first->second.get()->empty())
-                                        itReason.first->second=shared_reason;
-                                }
-                                if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                else internalProps.push_back({tupleU,tupleUNegated});
-                            }else{
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    if(tuple1!=NULL){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(tuple2!=NULL){
-                                        int it = tuple2->getId();
-                                        shared_reason.get()->insert(it*-1);
-                                    }
-                                    reasonForLiteral[-startVar]=shared_reason;
-                                    handleConflict(-startVar, propagatedLiterals);
-                                }else propagatedLiterals.push_back(1);
-                                return;
-                            }
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            if(starter.getPredicateName() == &_assign && startVar < 0){
-                int C = starter[0];
-                int U = starter[1];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const IndexedSet* tuples = &pagg_set_0_1_2_.getValuesSet({C,U});
-                const IndexedSet* tuplesU = &EMPTY_TUPLES_SET;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &uagg_set_0_1_2_.getValuesSet({C,U});
-                else if(tupleU->getPredicateName() == &_agg_set_0 && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                auto itTrue = tuples->begin();
-                auto itUndef = tuplesU->begin();
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_SET)
-                        tupleU = NULL;
-                    const Tuple* tuple1 = NULL;
-                    if(i<tuples->size()){
-                        tuple1 = factory.getTupleFromInternalID(*itTrue);
-                        itTrue++;
-                    }else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple1 = factory.getTupleFromInternalID(*itUndef);
-                        tupleUNegated=false;
-                        itUndef++;
-                    }else if(!undeRepeated.empty()){
-                        if(tupleU->at(1) == C && tupleU->at(2) == U)
-                            tuple1 = tupleU;
-                    }
-                    if(tuple1!=NULL){
-                        int P = tuple1->at(0);
-                        if(tupleU != NULL){
-                            int itUndef = tupleU->getId();
-                            int var = tupleUNegated ? 1 : -1;
-                            var*=itUndef;
-                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                            if(currentDecisionLevel>0){
-                                {
-                                    int it = starter.getId();
-                                    shared_reason.get()->insert(it*-1);
-                                }
-                                if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                    int it = tuple1->getId();
-                                    shared_reason.get()->insert(it*1);
-                                }
-                                auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                                if(!itReason.second && itReason.first->second.get()->empty())
-                                    itReason.first->second=shared_reason;
-                            }
-                            if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                            else internalProps.push_back({tupleU,tupleUNegated});
-                        }else{
-                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                            if(currentDecisionLevel>0){
-                                if(tuple1!=NULL){
-                                    int it = tuple1->getId();
-                                    shared_reason.get()->insert(it*1);
-                                }
-                                reasonForLiteral[-startVar]=shared_reason;
-                                handleConflict(-startVar, propagatedLiterals);
-                            }else propagatedLiterals.push_back(1);
-                            return;
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-            if(starter.getPredicateName() == &_agg_set_0 && startVar > 0){
-                int P = starter[0];
-                int C = starter[1];
-                int U = starter[2];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                Tuple negativeTuple({C,U},&_assign);
-                const Tuple* tuple1 = factory.find(negativeTuple);
-                if(tuple1 == NULL)
-                    tuple1 = &negativeTuple;
-                else{
-                    if(tuple1->isTrue())
-                        tuple1 = NULL;
-                    else if(tuple1->isUndef()){
-                        if(tupleU == NULL){
-                            tupleU = tuple1;
-                            tupleUNegated=true;
-                        }else{
-                            if(tupleU->getPredicateName() != &_assign || !tupleUNegated || !(*tupleU == *tuple1))
-                            tuple1=NULL;
-                        }
-                    }
-                }
-                if(tuple1!=NULL){
-                    if(tupleU != NULL){
-                        int itUndef = tupleU->getId();
-                        int var = tupleUNegated ? 1 : -1;
-                        var*=itUndef;
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            {
-                                int it = starter.getId();
-                                shared_reason.get()->insert(it*1);
-                            }
-                            if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*-1);
-                            }
-                            auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                        else internalProps.push_back({tupleU,tupleUNegated});
-                    }else{
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            if(tuple1!=NULL){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*-1);
-                            }
-                            reasonForLiteral[-startVar]=shared_reason;
-                            handleConflict(-startVar, propagatedLiterals);
-                        }else propagatedLiterals.push_back(1);
-                        return;
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            if(starter.getPredicateName() == &_component && startVar < 0){
-                int C = starter[0];
-                int P = starter[1];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const IndexedSet* tuples = &pagg_set_0_0_1_.getValuesSet({P,C});
-                const IndexedSet* tuplesU = &EMPTY_TUPLES_SET;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &uagg_set_0_0_1_.getValuesSet({P,C});
-                else if(tupleU->getPredicateName() == &_agg_set_0 && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                auto itTrue = tuples->begin();
-                auto itUndef = tuplesU->begin();
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_SET)
-                        tupleU = NULL;
-                    const Tuple* tuple1 = NULL;
-                    if(i<tuples->size()){
-                        tuple1 = factory.getTupleFromInternalID(*itTrue);
-                        itTrue++;
-                    }else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple1 = factory.getTupleFromInternalID(*itUndef);
-                        tupleUNegated=false;
-                        itUndef++;
-                    }else if(!undeRepeated.empty()){
-                        if(tupleU->at(0) == P && tupleU->at(1) == C)
-                            tuple1 = tupleU;
-                    }
-                    if(tuple1!=NULL){
-                        int U = tuple1->at(2);
-                        if(tupleU != NULL){
-                            int itUndef = tupleU->getId();
-                            int var = tupleUNegated ? 1 : -1;
-                            var*=itUndef;
-                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                            if(currentDecisionLevel>0){
-                                {
-                                    int it = starter.getId();
-                                    shared_reason.get()->insert(it*-1);
-                                }
-                                if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                    int it = tuple1->getId();
-                                    shared_reason.get()->insert(it*1);
-                                }
-                                auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                                if(!itReason.second && itReason.first->second.get()->empty())
-                                    itReason.first->second=shared_reason;
-                            }
-                            if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                            else internalProps.push_back({tupleU,tupleUNegated});
-                        }else{
-                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                            if(currentDecisionLevel>0){
-                                if(tuple1!=NULL){
-                                    int it = tuple1->getId();
-                                    shared_reason.get()->insert(it*1);
-                                }
-                                reasonForLiteral[-startVar]=shared_reason;
-                                handleConflict(-startVar, propagatedLiterals);
-                            }else propagatedLiterals.push_back(1);
-                            return;
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-            if(starter.getPredicateName() == &_agg_set_0 && startVar > 0){
-                int P = starter[0];
-                int C = starter[1];
-                int U = starter[2];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                Tuple negativeTuple({C,P},&_component);
-                const Tuple* tuple1 = factory.find(negativeTuple);
-                if(tuple1 == NULL)
-                    tuple1 = &negativeTuple;
-                else{
-                    if(tuple1->isTrue())
-                        tuple1 = NULL;
-                    else if(tuple1->isUndef()){
-                        if(tupleU == NULL){
-                            tupleU = tuple1;
-                            tupleUNegated=true;
-                        }else{
-                            if(tupleU->getPredicateName() != &_component || !tupleUNegated || !(*tupleU == *tuple1))
-                            tuple1=NULL;
-                        }
-                    }
-                }
-                if(tuple1!=NULL){
-                    if(tupleU != NULL){
-                        int itUndef = tupleU->getId();
-                        int var = tupleUNegated ? 1 : -1;
-                        var*=itUndef;
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            {
-                                int it = starter.getId();
-                                shared_reason.get()->insert(it*1);
-                            }
-                            if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*-1);
-                            }
-                            auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                        else internalProps.push_back({tupleU,tupleUNegated});
-                    }else{
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            if(tuple1!=NULL){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*-1);
-                            }
-                            reasonForLiteral[-startVar]=shared_reason;
-                            handleConflict(-startVar, propagatedLiterals);
-                        }else propagatedLiterals.push_back(1);
-                        return;
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            if(starter.getPredicateName() == &_agg_set_0 && startVar < 0){
-                int P = starter[0];
-                int C = starter[1];
-                int U = starter[2];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const Tuple* tuple1 = factory.find({C,U},&_assign);
-                if(tuple1!=NULL){
-                    if(tuple1->isFalse())
-                    tuple1=NULL;
-                    else if(tuple1->isUndef()){
-                        if(tupleU == NULL){
-                            tupleU = tuple1;
-                            tupleUNegated=false;
-                        }else{
-                            if(tupleU->getPredicateName() != &_assign || tupleUNegated || !(*tupleU == *tuple1))
-                            tuple1=NULL;
-                        }
-                    }
-                }
-                if(tuple1!=NULL){
-                    const Tuple* tuple2 = factory.find({C,P},&_component);
-                    if(tuple2!=NULL){
-                        if(tuple2->isFalse())
-                        tuple2=NULL;
-                        else if(tuple2->isUndef()){
-                            if(tupleU == NULL){
-                                tupleU = tuple2;
-                                tupleUNegated=false;
-                            }else{
-                                if(tupleU->getPredicateName() != &_component || tupleUNegated || !(*tupleU == *tuple2))
-                                tuple2=NULL;
-                            }
-                        }
-                    }
-                    if(tuple2!=NULL){
-                        if(tupleU != NULL){
-                            int itUndef = tupleU->getId();
-                            int var = tupleUNegated ? 1 : -1;
-                            var*=itUndef;
-                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                            if(currentDecisionLevel>0){
-                                {
-                                    int it = starter.getId();
-                                    shared_reason.get()->insert(it*-1);
-                                }
-                                if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                    int it = tuple1->getId();
-                                    shared_reason.get()->insert(it*1);
-                                }
-                                if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
-                                    int it = tuple2->getId();
-                                    shared_reason.get()->insert(it*1);
-                                }
-                                auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                                if(!itReason.second && itReason.first->second.get()->empty())
-                                    itReason.first->second=shared_reason;
-                            }
-                            if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                            else internalProps.push_back({tupleU,tupleUNegated});
-                        }else{
-                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                            if(currentDecisionLevel>0){
-                                if(tuple1!=NULL){
-                                    int it = tuple1->getId();
-                                    shared_reason.get()->insert(it*1);
-                                }
-                                if(tuple2!=NULL){
-                                    int it = tuple2->getId();
-                                    shared_reason.get()->insert(it*1);
-                                }
-                                reasonForLiteral[-startVar]=shared_reason;
-                                handleConflict(-startVar, propagatedLiterals);
-                            }else propagatedLiterals.push_back(1);
-                            return;
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-            if(starter.getPredicateName() == &_component && startVar > 0){
-                int C = starter[0];
-                int P = starter[1];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &passign_0_.getValuesVec({C});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &uassign_0_.getValuesVec({C});
-                else if(tupleU->getPredicateName() == &_assign && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple1 = NULL;
-                    if(i<tuples->size())
-                        tuple1 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        if(tupleU->at(0) == C)
-                            tuple1 = tupleU;
-                    }
-                    if(tuple1!=NULL){
-                        int U = tuple1->at(1);
-                        Tuple negativeTuple({P,C,U},&_agg_set_0);
-                        const Tuple* tuple2 = factory.find(negativeTuple);
-                        if(tuple2 == NULL)
-                            tuple2 = &negativeTuple;
-                        else{
-                            if(tuple2->isTrue())
-                                tuple2 = NULL;
-                            else if(tuple2->isUndef()){
-                                if(tupleU == NULL){
-                                    tupleU = tuple2;
-                                    tupleUNegated=true;
-                                }else{
-                                    if(tupleU->getPredicateName() != &_agg_set_0 || !tupleUNegated || !(*tupleU == *tuple2))
-                                    tuple2=NULL;
-                                }
-                            }
-                        }
-                        if(tuple2!=NULL){
-                            if(tupleU != NULL){
-                                int itUndef = tupleU->getId();
-                                int var = tupleUNegated ? 1 : -1;
-                                var*=itUndef;
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    {
-                                        int it = starter.getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
-                                        int it = tuple2->getId();
-                                        shared_reason.get()->insert(it*-1);
-                                    }
-                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                                    if(!itReason.second && itReason.first->second.get()->empty())
-                                        itReason.first->second=shared_reason;
-                                }
-                                if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                else internalProps.push_back({tupleU,tupleUNegated});
-                            }else{
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    if(tuple1!=NULL){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(tuple2!=NULL){
-                                        int it = tuple2->getId();
-                                        shared_reason.get()->insert(it*-1);
-                                    }
-                                    reasonForLiteral[-startVar]=shared_reason;
-                                    handleConflict(-startVar, propagatedLiterals);
-                                }else propagatedLiterals.push_back(1);
-                                return;
-                            }
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-            if(starter.getPredicateName() == &_assign && startVar > 0){
-                int C = starter[0];
-                int U = starter[1];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &pcomponent_0_.getValuesVec({C});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &ucomponent_0_.getValuesVec({C});
-                else if(tupleU->getPredicateName() == &_component && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple1 = NULL;
-                    if(i<tuples->size())
-                        tuple1 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        if(tupleU->at(0) == C)
-                            tuple1 = tupleU;
-                    }
-                    if(tuple1!=NULL){
-                        int P = tuple1->at(1);
-                        Tuple negativeTuple({P,C,U},&_agg_set_0);
-                        const Tuple* tuple2 = factory.find(negativeTuple);
-                        if(tuple2 == NULL)
-                            tuple2 = &negativeTuple;
-                        else{
-                            if(tuple2->isTrue())
-                                tuple2 = NULL;
-                            else if(tuple2->isUndef()){
-                                if(tupleU == NULL){
-                                    tupleU = tuple2;
-                                    tupleUNegated=true;
-                                }else{
-                                    if(tupleU->getPredicateName() != &_agg_set_0 || !tupleUNegated || !(*tupleU == *tuple2))
-                                    tuple2=NULL;
-                                }
-                            }
-                        }
-                        if(tuple2!=NULL){
-                            if(tupleU != NULL){
-                                int itUndef = tupleU->getId();
-                                int var = tupleUNegated ? 1 : -1;
-                                var*=itUndef;
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    {
-                                        int it = starter.getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
-                                        int it = tuple2->getId();
-                                        shared_reason.get()->insert(it*-1);
-                                    }
-                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                                    if(!itReason.second && itReason.first->second.get()->empty())
-                                        itReason.first->second=shared_reason;
-                                }
-                                if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                else internalProps.push_back({tupleU,tupleUNegated});
-                            }else{
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    if(tuple1!=NULL){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(tuple2!=NULL){
-                                        int it = tuple2->getId();
-                                        shared_reason.get()->insert(it*-1);
-                                    }
-                                    reasonForLiteral[-startVar]=shared_reason;
-                                    handleConflict(-startVar, propagatedLiterals);
-                                }else propagatedLiterals.push_back(1);
-                                return;
-                            }
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        if(starter.getPredicateName() == &_agg_id_0){
-            int U = starter[0];
-            int Cost = starter[1];
-            std::vector<int> sharedVar({starter[0]});
-            const IndexedSet* tuples = &pagg_set_0_2_.getValuesSet(sharedVar);
-            const IndexedSet* tuplesU = &uagg_set_0_2_.getValuesSet(sharedVar);
-            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-            if(startVar < 0){
-                int& actSum = actualSum[uStartVar];
-                if(actSum>=Cost){
-                    if(currentDecisionLevel > 0){
-                        for(auto i =tuples->begin(); i != tuples->end(); i++){
-                            int it = *i;
-                            shared_reason.get()->insert(it);
-                        }
-                        reasonForLiteral[-startVar]=shared_reason;
-                        handleConflict(-startVar, propagatedLiterals);
-                    }else propagatedLiterals.push_back(1);
-                    return;
-                }else{
-                    if(!tuplesU->empty() && currentDecisionLevel>0){
-                        for(auto i = tuples->begin(); i != tuples->end(); i++){
-                            int it = *i;
-                            shared_reason.get()->insert(it);
-                        }
-                        shared_reason.get()->insert(startVar);
-                    }
-                    while(!tuplesU->empty()){
-                        const Tuple* currentTuple = factory.getTupleFromInternalID(*tuplesU->begin());
-                        if(actSum >= Cost-currentTuple->at(0)){
-                            if(currentDecisionLevel > 0){
-                                int itProp =currentTuple->getId();
-                                auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);
-                                if(!itReason.second && itReason.first->second.get()->empty())
-                                    itReason.first->second=shared_reason;
-                            }
-                            propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                        }else break;
-                    }
-                }
-            }else{
-                int& actSum = actualSum[uStartVar];
-                int& posSum = possibleSum[uStartVar];
-                if(actSum+posSum < Cost){
-                    if(currentDecisionLevel > 0){
-                        const IndexedSet* tuplesF = &fagg_set_0_2_.getValuesSet(sharedVar);
-                        for(auto i = tuplesF->begin(); i != tuplesF->end(); i++){
-                            int it = *i;
-                            shared_reason.get()->insert(-it);
-                        }
-                        reasonForLiteral[-startVar]=shared_reason;
-                        handleConflict(-startVar, propagatedLiterals);
-                    }else propagatedLiterals.push_back(1);
-                    return;
-                }else{
-                    while(!tuplesU->empty()){
-                        const Tuple* currentTuple = factory.getTupleFromInternalID(*tuplesU->begin());
-                        if(actSum < Cost-posSum+currentTuple->at(0)){
-                            int itProp = *tuplesU->begin();
-                            if(shared_reason.get()->empty() && currentDecisionLevel>0){
-                                const IndexedSet* tuplesF = &fagg_set_0_2_.getValuesSet(sharedVar);
-                                for(auto i = tuplesF->begin(); i != tuplesF->end(); i++){
-                                    int it = *i;
-                                    shared_reason.get()->insert(-it);
-                                }
-                                shared_reason.get()->insert(startVar);
-                            }
-                            if(currentDecisionLevel > 0){
-                                auto itReason = reasonForLiteral.emplace(itProp,shared_reason);
-                                if(!itReason.second && itReason.first->second.get()->empty())
-                                    itReason.first->second=shared_reason;
-                            }
-                            propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                        }else break;
-                    }
-                }
-            }
-        }//close aggr id starter
-        if(starter.getPredicateName() == &_agg_set_0){
-            const std::vector<int>* tuples = &pagg_id_0_.getValuesVec({});
-            const std::vector<int>* tuplesU = &uagg_id_0_.getValuesVec({});
-            const std::vector<int>* tuplesF = &fagg_id_0_.getValuesVec({});
-            for(unsigned i = 0; i<tuples->size(); i++){
-                const Tuple* currentTuple = factory.getTupleFromInternalID(tuples->at(i));
-                int U = currentTuple->at(0);
-                int Cost = currentTuple->at(1);
-                std::vector<int> sharedVar({currentTuple->at(0)});
-                const IndexedSet* joinTuples = &pagg_set_0_2_.getValuesSet(sharedVar);
-                const IndexedSet* joinTuplesU = &uagg_set_0_2_.getValuesSet(sharedVar);
-                int aggrIdIt=tuples->at(i);
-                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                int& actSum = actualSum[aggrIdIt];
-                int& posSum = possibleSum[aggrIdIt];
-                if(actSum < Cost-posSum){
-                    if(currentDecisionLevel>0){
-                        int itProp = tuples->at(i);
-                        const IndexedSet* joinTuplesF = &fagg_set_0_2_.getValuesSet(sharedVar);
-                        for(auto j = joinTuplesF->begin(); j != joinTuplesF->end(); j++){
-                            int it = *j;
-                            shared_reason.get()->insert(-it);
-                        }
-                        reasonForLiteral[-itProp]=shared_reason;
-                        handleConflict(-itProp, propagatedLiterals);
-                    }else propagatedLiterals.push_back(1);
-                    return;
-                }else{
-                    while(!joinTuplesU->empty()){
-                        const Tuple* currentJoinTuple = factory.getTupleFromInternalID(*joinTuplesU->begin());
-                        if(actSum >= Cost-posSum+currentJoinTuple->at(0)) {break;}
-                        int itProp = *joinTuplesU->begin();
-                        if(shared_reason.get()->empty() && currentDecisionLevel>0){
-                            const IndexedSet* joinTuplesF = &fagg_set_0_2_.getValuesSet(sharedVar);
-                            for(auto i = joinTuplesF->begin(); i != joinTuplesF->end(); i++){
-                                int it = *i;
-                                shared_reason.get()->insert(-it);
-                            }
-                            int itAggrId = tuples->at(i);
-                            shared_reason.get()->insert(itAggrId);
-                        }
-                        if(currentDecisionLevel > 0){
-                            auto itReason = reasonForLiteral.emplace(itProp,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        propUndefined(currentJoinTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                    }
-                }
-            }//close true for
-            for(unsigned i = 0; i<tuplesF->size(); i++){
-                const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesF->at(i));
-                int U = currentTuple->at(0);
-                int Cost = currentTuple->at(1);
-                std::vector<int> sharedVar({currentTuple->at(0)});
-                const IndexedSet* joinTuples = &pagg_set_0_2_.getValuesSet(sharedVar);
-                const IndexedSet* joinTuplesU = &uagg_set_0_2_.getValuesSet(sharedVar);
-                int aggrIdIt=tuplesF->at(i);
-                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                int& actSum = actualSum[aggrIdIt];
-                if(actSum >= Cost){
-                    if(currentDecisionLevel > 0){
-                        int itProp = tuplesF->at(i);
-                        for(auto j =joinTuples->begin(); j != joinTuples->end(); j++){
-                            int it = *j;
-                            shared_reason.get()->insert(it);
-                        }
-                        reasonForLiteral[itProp]=shared_reason;
-                        handleConflict(itProp, propagatedLiterals);
-                    }else propagatedLiterals.push_back(1);
-                    return;
-                }else{
-                    while(!joinTuplesU->empty()){
-                        int itProp = *joinTuplesU->begin();
-                        const Tuple* currentJoinTuple = factory.getTupleFromInternalID(itProp);
-                        if(actSum < Cost-currentJoinTuple->at(0))break;
-                        if(shared_reason.get()->empty() && currentDecisionLevel>0){
-                            for(auto i =joinTuples->begin(); i != joinTuples->end(); i++){
-                                int it = *i;
-                                shared_reason.get()->insert(it);
-                            }
-                            int it = tuplesF->at(i);
-                            shared_reason.get()->insert(-it);
-                        }
-                        if(currentDecisionLevel>0){
-                            auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        propUndefined(currentJoinTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                    }
-                }
-            }//close false for
-            for(unsigned i = 0; i<tuplesU->size();){
-                const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesU->at(i));
-                int U = currentTuple->at(0);
-                int Cost = currentTuple->at(1);
-                std::vector<int> sharedVar({currentTuple->at(0)});
-                const IndexedSet* joinTuples = &pagg_set_0_2_.getValuesSet(sharedVar);
-                const IndexedSet* joinTuplesU = &uagg_set_0_2_.getValuesSet(sharedVar);
-                int aggrIdIt=tuplesU->at(i);
-                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                int& actSum = actualSum[aggrIdIt];
-                int& posSum = possibleSum[aggrIdIt];
-                if(actSum >= Cost){
-                    if(currentDecisionLevel>0){
-                        int itProp = tuplesU->at(i);
-                        for(auto j = joinTuples->begin(); j != joinTuples->end(); j++){
-                            int it = *j;
-                            shared_reason.get()->insert(it);
-                        }
-                        auto itReason = reasonForLiteral.emplace(itProp,shared_reason);
-                        if(!itReason.second && itReason.first->second.get()->empty())
-                            itReason.first->second=shared_reason;
-                    }
-                    propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                }else if(actSum < Cost - posSum){
-                    int itProp = tuplesU->at(i);
-                    if(currentDecisionLevel>0){
-                        const IndexedSet* joinTuplesF = &fagg_set_0_2_.getValuesSet(sharedVar);
-                        for(auto j = joinTuplesF->begin(); j != joinTuplesF->end(); j++){
-                            int it = *j;
-                            shared_reason.get()->insert(-it);
-                        }
-                        auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);
-                        if(!itReason.second && itReason.first->second.get()->empty())
-                            itReason.first->second=shared_reason;
-                    }
-                    propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                }else{
-                    i++;
-                }
-            }//close undef for
-        }//close aggr set starter
-        if(starter.getPredicateName() == &_agg_id_1){
-            int U = starter[0];
-            int Cost = starter[1];
-            std::vector<int> sharedVar({starter[0]});
-            const IndexedSet* tuples = &pagg_set_0_2_.getValuesSet(sharedVar);
-            const IndexedSet* tuplesU = &uagg_set_0_2_.getValuesSet(sharedVar);
-            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-            if(startVar < 0){
-                int& actSum = actualSum[uStartVar];
-                if(actSum>=Cost+1){
-                    if(currentDecisionLevel > 0){
-                        for(auto i =tuples->begin(); i != tuples->end(); i++){
-                            int it = *i;
-                            shared_reason.get()->insert(it);
-                        }
-                        reasonForLiteral[-startVar]=shared_reason;
-                        handleConflict(-startVar, propagatedLiterals);
-                    }else propagatedLiterals.push_back(1);
-                    return;
-                }else{
-                    if(!tuplesU->empty() && currentDecisionLevel>0){
-                        for(auto i = tuples->begin(); i != tuples->end(); i++){
-                            int it = *i;
-                            shared_reason.get()->insert(it);
-                        }
-                        shared_reason.get()->insert(startVar);
-                    }
-                    while(!tuplesU->empty()){
-                        const Tuple* currentTuple = factory.getTupleFromInternalID(*tuplesU->begin());
-                        if(actSum >= Cost+1-currentTuple->at(0)){
-                            if(currentDecisionLevel > 0){
-                                int itProp =currentTuple->getId();
-                                auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);
-                                if(!itReason.second && itReason.first->second.get()->empty())
-                                    itReason.first->second=shared_reason;
-                            }
-                            propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                        }else break;
-                    }
-                }
-            }else{
-                int& actSum = actualSum[uStartVar];
-                int& posSum = possibleSum[uStartVar];
-                if(actSum+posSum < Cost+1){
-                    if(currentDecisionLevel > 0){
-                        const IndexedSet* tuplesF = &fagg_set_0_2_.getValuesSet(sharedVar);
-                        for(auto i = tuplesF->begin(); i != tuplesF->end(); i++){
-                            int it = *i;
-                            shared_reason.get()->insert(-it);
-                        }
-                        reasonForLiteral[-startVar]=shared_reason;
-                        handleConflict(-startVar, propagatedLiterals);
-                    }else propagatedLiterals.push_back(1);
-                    return;
-                }else{
-                    while(!tuplesU->empty()){
-                        const Tuple* currentTuple = factory.getTupleFromInternalID(*tuplesU->begin());
-                        if(actSum < Cost+1-posSum+currentTuple->at(0)){
-                            int itProp = *tuplesU->begin();
-                            if(shared_reason.get()->empty() && currentDecisionLevel>0){
-                                const IndexedSet* tuplesF = &fagg_set_0_2_.getValuesSet(sharedVar);
-                                for(auto i = tuplesF->begin(); i != tuplesF->end(); i++){
-                                    int it = *i;
-                                    shared_reason.get()->insert(-it);
-                                }
-                                shared_reason.get()->insert(startVar);
-                            }
-                            if(currentDecisionLevel > 0){
-                                auto itReason = reasonForLiteral.emplace(itProp,shared_reason);
-                                if(!itReason.second && itReason.first->second.get()->empty())
-                                    itReason.first->second=shared_reason;
-                            }
-                            propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                        }else break;
-                    }
-                }
-            }
-        }//close aggr id starter
-        if(starter.getPredicateName() == &_agg_set_0){
-            const std::vector<int>* tuples = &pagg_id_1_.getValuesVec({});
-            const std::vector<int>* tuplesU = &uagg_id_1_.getValuesVec({});
-            const std::vector<int>* tuplesF = &fagg_id_1_.getValuesVec({});
-            for(unsigned i = 0; i<tuples->size(); i++){
-                const Tuple* currentTuple = factory.getTupleFromInternalID(tuples->at(i));
-                int U = currentTuple->at(0);
-                int Cost = currentTuple->at(1);
-                std::vector<int> sharedVar({currentTuple->at(0)});
-                const IndexedSet* joinTuples = &pagg_set_0_2_.getValuesSet(sharedVar);
-                const IndexedSet* joinTuplesU = &uagg_set_0_2_.getValuesSet(sharedVar);
-                int aggrIdIt=tuples->at(i);
-                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                int& actSum = actualSum[aggrIdIt];
-                int& posSum = possibleSum[aggrIdIt];
-                if(actSum < Cost+1-posSum){
-                    if(currentDecisionLevel>0){
-                        int itProp = tuples->at(i);
-                        const IndexedSet* joinTuplesF = &fagg_set_0_2_.getValuesSet(sharedVar);
-                        for(auto j = joinTuplesF->begin(); j != joinTuplesF->end(); j++){
-                            int it = *j;
-                            shared_reason.get()->insert(-it);
-                        }
-                        reasonForLiteral[-itProp]=shared_reason;
-                        handleConflict(-itProp, propagatedLiterals);
-                    }else propagatedLiterals.push_back(1);
-                    return;
-                }else{
-                    while(!joinTuplesU->empty()){
-                        const Tuple* currentJoinTuple = factory.getTupleFromInternalID(*joinTuplesU->begin());
-                        if(actSum >= Cost+1-posSum+currentJoinTuple->at(0)) {break;}
-                        int itProp = *joinTuplesU->begin();
-                        if(shared_reason.get()->empty() && currentDecisionLevel>0){
-                            const IndexedSet* joinTuplesF = &fagg_set_0_2_.getValuesSet(sharedVar);
-                            for(auto i = joinTuplesF->begin(); i != joinTuplesF->end(); i++){
-                                int it = *i;
-                                shared_reason.get()->insert(-it);
-                            }
-                            int itAggrId = tuples->at(i);
-                            shared_reason.get()->insert(itAggrId);
-                        }
-                        if(currentDecisionLevel > 0){
-                            auto itReason = reasonForLiteral.emplace(itProp,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        propUndefined(currentJoinTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                    }
-                }
-            }//close true for
-            for(unsigned i = 0; i<tuplesF->size(); i++){
-                const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesF->at(i));
-                int U = currentTuple->at(0);
-                int Cost = currentTuple->at(1);
-                std::vector<int> sharedVar({currentTuple->at(0)});
-                const IndexedSet* joinTuples = &pagg_set_0_2_.getValuesSet(sharedVar);
-                const IndexedSet* joinTuplesU = &uagg_set_0_2_.getValuesSet(sharedVar);
-                int aggrIdIt=tuplesF->at(i);
-                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                int& actSum = actualSum[aggrIdIt];
-                if(actSum >= Cost+1){
-                    if(currentDecisionLevel > 0){
-                        int itProp = tuplesF->at(i);
-                        for(auto j =joinTuples->begin(); j != joinTuples->end(); j++){
-                            int it = *j;
-                            shared_reason.get()->insert(it);
-                        }
-                        reasonForLiteral[itProp]=shared_reason;
-                        handleConflict(itProp, propagatedLiterals);
-                    }else propagatedLiterals.push_back(1);
-                    return;
-                }else{
-                    while(!joinTuplesU->empty()){
-                        int itProp = *joinTuplesU->begin();
-                        const Tuple* currentJoinTuple = factory.getTupleFromInternalID(itProp);
-                        if(actSum < Cost+1-currentJoinTuple->at(0))break;
-                        if(shared_reason.get()->empty() && currentDecisionLevel>0){
-                            for(auto i =joinTuples->begin(); i != joinTuples->end(); i++){
-                                int it = *i;
-                                shared_reason.get()->insert(it);
-                            }
-                            int it = tuplesF->at(i);
-                            shared_reason.get()->insert(-it);
-                        }
-                        if(currentDecisionLevel>0){
-                            auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        propUndefined(currentJoinTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                    }
-                }
-            }//close false for
-            for(unsigned i = 0; i<tuplesU->size();){
-                const Tuple* currentTuple = factory.getTupleFromInternalID(tuplesU->at(i));
-                int U = currentTuple->at(0);
-                int Cost = currentTuple->at(1);
-                std::vector<int> sharedVar({currentTuple->at(0)});
-                const IndexedSet* joinTuples = &pagg_set_0_2_.getValuesSet(sharedVar);
-                const IndexedSet* joinTuplesU = &uagg_set_0_2_.getValuesSet(sharedVar);
-                int aggrIdIt=tuplesU->at(i);
-                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                int& actSum = actualSum[aggrIdIt];
-                int& posSum = possibleSum[aggrIdIt];
-                if(actSum >= Cost+1){
-                    if(currentDecisionLevel>0){
-                        int itProp = tuplesU->at(i);
-                        for(auto j = joinTuples->begin(); j != joinTuples->end(); j++){
-                            int it = *j;
-                            shared_reason.get()->insert(it);
-                        }
-                        auto itReason = reasonForLiteral.emplace(itProp,shared_reason);
-                        if(!itReason.second && itReason.first->second.get()->empty())
-                            itReason.first->second=shared_reason;
-                    }
-                    propUndefined(currentTuple,false,propagationStack,false,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                }else if(actSum < Cost+1 - posSum){
-                    int itProp = tuplesU->at(i);
-                    if(currentDecisionLevel>0){
-                        const IndexedSet* joinTuplesF = &fagg_set_0_2_.getValuesSet(sharedVar);
-                        for(auto j = joinTuplesF->begin(); j != joinTuplesF->end(); j++){
-                            int it = *j;
-                            shared_reason.get()->insert(-it);
-                        }
-                        auto itReason = reasonForLiteral.emplace(-itProp,shared_reason);
-                        if(!itReason.second && itReason.first->second.get()->empty())
-                            itReason.first->second=shared_reason;
-                    }
-                    propUndefined(currentTuple,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                }else{
-                    i++;
-                }
-            }//close undef for
-        }//close aggr set starter
-        {
-            if(starter.getPredicateName() == &_body_0 && startVar < 0){
-                int U = starter[0];
-                int Cost = starter[1];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const Tuple* tuple1 = factory.find({U,Cost},&_costs);
-                if(tuple1!=NULL){
-                    if(tuple1->isFalse())
-                    tuple1=NULL;
-                    else if(tuple1->isUndef()){
-                        if(tupleU == NULL){
-                            tupleU = tuple1;
-                            tupleUNegated=false;
-                        }else{
-                            if(tupleU->getPredicateName() != &_costs || tupleUNegated || !(*tupleU == *tuple1))
-                            tuple1=NULL;
-                        }
-                    }
-                }
-                if(tuple1!=NULL){
-                    if(tupleU != NULL){
-                        int itUndef = tupleU->getId();
-                        int var = tupleUNegated ? 1 : -1;
-                        var*=itUndef;
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            {
-                                int it = starter.getId();
-                                shared_reason.get()->insert(it*-1);
-                            }
-                            if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*1);
-                            }
-                            auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                        else internalProps.push_back({tupleU,tupleUNegated});
-                    }else{
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            if(tuple1!=NULL){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*1);
-                            }
-                            reasonForLiteral[-startVar]=shared_reason;
-                            handleConflict(-startVar, propagatedLiterals);
-                        }else propagatedLiterals.push_back(1);
-                        return;
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-            if(starter.getPredicateName() == &_costs && startVar > 0){
-                int U = starter[0];
-                int Cost = starter[1];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                Tuple negativeTuple({U,Cost},&_body_0);
-                const Tuple* tuple1 = factory.find(negativeTuple);
-                if(tuple1 == NULL)
-                    tuple1 = &negativeTuple;
-                else{
-                    if(tuple1->isTrue())
-                        tuple1 = NULL;
-                    else if(tuple1->isUndef()){
-                        if(tupleU == NULL){
-                            tupleU = tuple1;
-                            tupleUNegated=true;
-                        }else{
-                            if(tupleU->getPredicateName() != &_body_0 || !tupleUNegated || !(*tupleU == *tuple1))
-                            tuple1=NULL;
-                        }
-                    }
-                }
-                if(tuple1!=NULL){
-                    if(tupleU != NULL){
-                        int itUndef = tupleU->getId();
-                        int var = tupleUNegated ? 1 : -1;
-                        var*=itUndef;
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            {
-                                int it = starter.getId();
-                                shared_reason.get()->insert(it*1);
-                            }
-                            if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*-1);
-                            }
-                            auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                        else internalProps.push_back({tupleU,tupleUNegated});
-                    }else{
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            if(tuple1!=NULL){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*-1);
-                            }
-                            reasonForLiteral[-startVar]=shared_reason;
-                            handleConflict(-startVar, propagatedLiterals);
-                        }else propagatedLiterals.push_back(1);
-                        return;
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            if(starter.getPredicateName() == &_agg_id_0 && startVar < 0){
-                int U = starter[0];
-                int Cost = starter[1];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const Tuple* tuple1 = factory.find({U,Cost},&_costs);
-                if(tuple1!=NULL){
-                    if(tuple1->isFalse())
-                    tuple1=NULL;
-                    else if(tuple1->isUndef()){
-                        if(tupleU == NULL){
-                            tupleU = tuple1;
-                            tupleUNegated=false;
-                        }else{
-                            if(tupleU->getPredicateName() != &_costs || tupleUNegated || !(*tupleU == *tuple1))
-                            tuple1=NULL;
-                        }
-                    }
-                }
-                if(tuple1!=NULL){
-                    if(tupleU != NULL){
-                        int itUndef = tupleU->getId();
-                        int var = tupleUNegated ? 1 : -1;
-                        var*=itUndef;
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            {
-                                int it = starter.getId();
-                                shared_reason.get()->insert(it*-1);
-                            }
-                            if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*1);
-                            }
-                            auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                        else internalProps.push_back({tupleU,tupleUNegated});
-                    }else{
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            if(tuple1!=NULL){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*1);
-                            }
-                            reasonForLiteral[-startVar]=shared_reason;
-                            handleConflict(-startVar, propagatedLiterals);
-                        }else propagatedLiterals.push_back(1);
-                        return;
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-            if(starter.getPredicateName() == &_costs && startVar > 0){
-                int U = starter[0];
-                int Cost = starter[1];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                Tuple negativeTuple({U,Cost},&_agg_id_0);
-                const Tuple* tuple1 = factory.find(negativeTuple);
-                if(tuple1 == NULL)
-                    tuple1 = &negativeTuple;
-                else{
-                    if(tuple1->isTrue())
-                        tuple1 = NULL;
-                    else if(tuple1->isUndef()){
-                        if(tupleU == NULL){
-                            tupleU = tuple1;
-                            tupleUNegated=true;
-                        }else{
-                            if(tupleU->getPredicateName() != &_agg_id_0 || !tupleUNegated || !(*tupleU == *tuple1))
-                            tuple1=NULL;
-                        }
-                    }
-                }
-                if(tuple1!=NULL){
-                    if(tupleU != NULL){
-                        int itUndef = tupleU->getId();
-                        int var = tupleUNegated ? 1 : -1;
-                        var*=itUndef;
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            {
-                                int it = starter.getId();
-                                shared_reason.get()->insert(it*1);
-                            }
-                            if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*-1);
-                            }
-                            auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                        else internalProps.push_back({tupleU,tupleUNegated});
-                    }else{
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            if(tuple1!=NULL){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*-1);
-                            }
-                            reasonForLiteral[-startVar]=shared_reason;
-                            handleConflict(-startVar, propagatedLiterals);
-                        }else propagatedLiterals.push_back(1);
-                        return;
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            if(starter.getPredicateName() == &_agg_id_1 && startVar > 0){
-                int U = starter[0];
-                int Cost = starter[1];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const Tuple* tuple1 = factory.find({U,Cost},&_costs);
-                if(tuple1!=NULL){
-                    if(tuple1->isFalse())
-                    tuple1=NULL;
-                    else if(tuple1->isUndef()){
-                        if(tupleU == NULL){
-                            tupleU = tuple1;
-                            tupleUNegated=false;
-                        }else{
-                            if(tupleU->getPredicateName() != &_costs || tupleUNegated || !(*tupleU == *tuple1))
-                            tuple1=NULL;
-                        }
-                    }
-                }
-                if(tuple1!=NULL){
-                    if(tupleU != NULL){
-                        int itUndef = tupleU->getId();
-                        int var = tupleUNegated ? 1 : -1;
-                        var*=itUndef;
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            {
-                                int it = starter.getId();
-                                shared_reason.get()->insert(it*1);
-                            }
-                            if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*1);
-                            }
-                            auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                        else internalProps.push_back({tupleU,tupleUNegated});
-                    }else{
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            if(tuple1!=NULL){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*1);
-                            }
-                            reasonForLiteral[-startVar]=shared_reason;
-                            handleConflict(-startVar, propagatedLiterals);
-                        }else propagatedLiterals.push_back(1);
-                        return;
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-            if(starter.getPredicateName() == &_costs && startVar > 0){
-                int U = starter[0];
-                int Cost = starter[1];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const Tuple* tuple1 = factory.find({U,Cost},&_agg_id_1);
-                if(tuple1!=NULL){
-                    if(tuple1->isFalse())
-                    tuple1=NULL;
-                    else if(tuple1->isUndef()){
-                        if(tupleU == NULL){
-                            tupleU = tuple1;
-                            tupleUNegated=false;
-                        }else{
-                            if(tupleU->getPredicateName() != &_agg_id_1 || tupleUNegated || !(*tupleU == *tuple1))
-                            tuple1=NULL;
-                        }
-                    }
-                }
-                if(tuple1!=NULL){
-                    if(tupleU != NULL){
-                        int itUndef = tupleU->getId();
-                        int var = tupleUNegated ? 1 : -1;
-                        var*=itUndef;
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            {
-                                int it = starter.getId();
-                                shared_reason.get()->insert(it*1);
-                            }
-                            if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*1);
-                            }
-                            auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                            if(!itReason.second && itReason.first->second.get()->empty())
-                                itReason.first->second=shared_reason;
-                        }
-                        if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                            bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                        else internalProps.push_back({tupleU,tupleUNegated});
-                    }else{
-                        std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                        if(currentDecisionLevel>0){
-                            if(tuple1!=NULL){
-                                int it = tuple1->getId();
-                                shared_reason.get()->insert(it*1);
-                            }
-                            reasonForLiteral[-startVar]=shared_reason;
-                            handleConflict(-startVar, propagatedLiterals);
-                        }else propagatedLiterals.push_back(1);
-                        return;
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            if(starter.getPredicateName() == &_costs && startVar < 0){
-                int U = starter[0];
-                int Cost = starter[1];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const Tuple* tuple1 = factory.find({U,Cost},&_body_0);
-                if(tuple1!=NULL){
-                    if(tuple1->isFalse())
-                    tuple1=NULL;
-                    else if(tuple1->isUndef()){
-                        if(tupleU == NULL){
-                            tupleU = tuple1;
-                            tupleUNegated=false;
-                        }else{
-                            if(tupleU->getPredicateName() != &_body_0 || tupleUNegated || !(*tupleU == *tuple1))
-                            tuple1=NULL;
-                        }
-                    }
-                }
-                if(tuple1!=NULL){
-                    const Tuple* tuple2 = factory.find({U,Cost},&_agg_id_0);
-                    if(tuple2!=NULL){
-                        if(tuple2->isFalse())
-                        tuple2=NULL;
-                        else if(tuple2->isUndef()){
-                            if(tupleU == NULL){
-                                tupleU = tuple2;
-                                tupleUNegated=false;
-                            }else{
-                                if(tupleU->getPredicateName() != &_agg_id_0 || tupleUNegated || !(*tupleU == *tuple2))
-                                tuple2=NULL;
-                            }
-                        }
-                    }
-                    if(tuple2!=NULL){
-                        Tuple negativeTuple({U,Cost},&_agg_id_1);
-                        const Tuple* tuple3 = factory.find(negativeTuple);
-                        if(tuple3 == NULL)
-                            tuple3 = &negativeTuple;
-                        else{
-                            if(tuple3->isTrue())
-                                tuple3 = NULL;
-                            else if(tuple3->isUndef()){
-                                if(tupleU == NULL){
-                                    tupleU = tuple3;
-                                    tupleUNegated=true;
-                                }else{
-                                    if(tupleU->getPredicateName() != &_agg_id_1 || !tupleUNegated || !(*tupleU == *tuple3))
-                                    tuple3=NULL;
-                                }
-                            }
-                        }
-                        if(tuple3!=NULL){
-                            if(tupleU != NULL){
-                                int itUndef = tupleU->getId();
-                                int var = tupleUNegated ? 1 : -1;
-                                var*=itUndef;
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    {
-                                        int it = starter.getId();
                                         shared_reason.get()->insert(it*-1);
                                     }
                                     if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
@@ -4176,15 +5448,11 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts,std::vector<
                                         int it = tuple2->getId();
                                         shared_reason.get()->insert(it*1);
                                     }
-                                    if(factory.find(*tuple3) != NULL && tuple3!=tupleU){
-                                        int it = tuple3->getId();
-                                        shared_reason.get()->insert(it*-1);
-                                    }
                                     auto itReason = reasonForLiteral.emplace(var,shared_reason);
                                     if(!itReason.second && itReason.first->second.get()->empty())
                                         itReason.first->second=shared_reason;
                                 }
-                                if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
+                                if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
                                     bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
                                 else internalProps.push_back({tupleU,tupleUNegated});
                             }else{
@@ -4198,10 +5466,6 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts,std::vector<
                                         int it = tuple2->getId();
                                         shared_reason.get()->insert(it*1);
                                     }
-                                    if(tuple3!=NULL){
-                                        int it = tuple3->getId();
-                                        shared_reason.get()->insert(it*-1);
-                                    }
                                     reasonForLiteral[-startVar]=shared_reason;
                                     handleConflict(-startVar, propagatedLiterals);
                                 }else propagatedLiterals.push_back(1);
@@ -4209,176 +5473,256 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts,std::vector<
                             }
                         }
                     }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
                 }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-            if(starter.getPredicateName() == &_agg_id_1 && startVar < 0){
-                int U = starter[0];
-                int Cost = starter[1];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const Tuple* tuple1 = factory.find({U,Cost},&_body_0);
-                if(tuple1!=NULL){
-                    if(tuple1->isFalse())
-                    tuple1=NULL;
-                    else if(tuple1->isUndef()){
-                        if(tupleU == NULL){
-                            tupleU = tuple1;
-                            tupleUNegated=false;
-                        }else{
-                            if(tupleU->getPredicateName() != &_body_0 || tupleUNegated || !(*tupleU == *tuple1))
-                            tuple1=NULL;
-                        }
-                    }
-                }
-                if(tuple1!=NULL){
-                    const Tuple* tuple2 = factory.find({U,Cost},&_agg_id_0);
-                    if(tuple2!=NULL){
-                        if(tuple2->isFalse())
-                        tuple2=NULL;
-                        else if(tuple2->isUndef()){
-                            if(tupleU == NULL){
-                                tupleU = tuple2;
-                                tupleUNegated=false;
-                            }else{
-                                if(tupleU->getPredicateName() != &_agg_id_0 || tupleUNegated || !(*tupleU == *tuple2))
-                                tuple2=NULL;
-                            }
-                        }
-                    }
-                    if(tuple2!=NULL){
-                        Tuple negativeTuple({U,Cost},&_costs);
-                        const Tuple* tuple3 = factory.find(negativeTuple);
-                        if(tuple3 == NULL)
-                            tuple3 = &negativeTuple;
-                        else{
-                            if(tuple3->isTrue())
-                                tuple3 = NULL;
-                            else if(tuple3->isUndef()){
-                                if(tupleU == NULL){
-                                    tupleU = tuple3;
-                                    tupleUNegated=true;
-                                }else{
-                                    if(tupleU->getPredicateName() != &_costs || !tupleUNegated || !(*tupleU == *tuple3))
-                                    tuple3=NULL;
-                                }
-                            }
-                        }
-                        if(tuple3!=NULL){
-                            if(tupleU != NULL){
-                                int itUndef = tupleU->getId();
-                                int var = tupleUNegated ? 1 : -1;
-                                var*=itUndef;
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    {
-                                        int it = starter.getId();
-                                        shared_reason.get()->insert(it*-1);
-                                    }
-                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
-                                        int it = tuple2->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(factory.find(*tuple3) != NULL && tuple3!=tupleU){
-                                        int it = tuple3->getId();
-                                        shared_reason.get()->insert(it*-1);
-                                    }
-                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                                    if(!itReason.second && itReason.first->second.get()->empty())
-                                        itReason.first->second=shared_reason;
-                                }
-                                if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                else internalProps.push_back({tupleU,tupleUNegated});
-                            }else{
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    if(tuple1!=NULL){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(tuple2!=NULL){
-                                        int it = tuple2->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(tuple3!=NULL){
-                                        int it = tuple3->getId();
-                                        shared_reason.get()->insert(it*-1);
-                                    }
-                                    reasonForLiteral[-startVar]=shared_reason;
-                                    handleConflict(-startVar, propagatedLiterals);
-                                }else propagatedLiterals.push_back(1);
-                                return;
-                            }
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-            if(starter.getPredicateName() == &_agg_id_0 && startVar > 0){
-                int U = starter[0];
-                int Cost = starter[1];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const Tuple* tuple1 = factory.find({U,Cost},&_body_0);
-                if(tuple1!=NULL){
-                    if(tuple1->isFalse())
-                    tuple1=NULL;
-                    else if(tuple1->isUndef()){
-                        if(tupleU == NULL){
-                            tupleU = tuple1;
-                            tupleUNegated=false;
-                        }else{
-                            if(tupleU->getPredicateName() != &_body_0 || tupleUNegated || !(*tupleU == *tuple1))
-                            tuple1=NULL;
-                        }
-                    }
-                }
-                if(tuple1!=NULL){
-                    Tuple negativeTuple({U,Cost},&_agg_id_1);
-                    const Tuple* tuple2 = factory.find(negativeTuple);
-                    if(tuple2 == NULL)
-                        tuple2 = &negativeTuple;
+                if(starter.getPredicateName() == &_on && startVar > 0){
+                    int K = starter[0];
+                    int N = starter[1];
+                    int N1 = starter[2];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    Tuple negativeTuple({K,N,N1},&_onG);
+                    const Tuple* tuple1 = factory.find(negativeTuple);
+                    if(tuple1 == NULL)
+                        tuple1 = &negativeTuple;
                     else{
-                        if(tuple2->isTrue())
-                            tuple2 = NULL;
-                        else if(tuple2->isUndef()){
+                        if(tuple1->isTrue())
+                            tuple1 = NULL;
+                        else if(tuple1->isUndef()){
                             if(tupleU == NULL){
-                                tupleU = tuple2;
+                                tupleU = tuple1;
                                 tupleUNegated=true;
                             }else{
-                                if(tupleU->getPredicateName() != &_agg_id_1 || !tupleUNegated || !(*tupleU == *tuple2))
-                                tuple2=NULL;
+                                if(tupleU->getPredicateName() != &_onG || !tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
                             }
                         }
                     }
-                    if(tuple2!=NULL){
-                        Tuple negativeTuple({U,Cost},&_costs);
-                        const Tuple* tuple3 = factory.find(negativeTuple);
-                        if(tuple3 == NULL)
-                            tuple3 = &negativeTuple;
-                        else{
-                            if(tuple3->isTrue())
-                                tuple3 = NULL;
-                            else if(tuple3->isUndef()){
+                    if(tuple1!=NULL){
+                        const Tuple* tuple2 = factory.find({K},&_steps);
+                        if(tuple2!=NULL){
+                            if(tuple2->isFalse())
+                            tuple2=NULL;
+                            else if(tuple2->isUndef()){
                                 if(tupleU == NULL){
-                                    tupleU = tuple3;
-                                    tupleUNegated=true;
+                                    tupleU = tuple2;
+                                    tupleUNegated=false;
                                 }else{
-                                    if(tupleU->getPredicateName() != &_costs || !tupleUNegated || !(*tupleU == *tuple3))
-                                    tuple3=NULL;
+                                    if(tupleU->getPredicateName() != &_steps || tupleUNegated || !(*tupleU == *tuple2))
+                                    tuple2=NULL;
                                 }
                             }
                         }
-                        if(tuple3!=NULL){
+                        if(tuple2!=NULL){
+                            if(tupleU != NULL){
+                                int itUndef = tupleU->getId();
+                                int var = tupleUNegated ? 1 : -1;
+                                var*=itUndef;
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    {
+                                        int it = starter.getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*-1);
+                                    }
+                                    if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
+                                        int it = tuple2->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                    if(!itReason.second && itReason.first->second.get()->empty())
+                                        itReason.first->second=shared_reason;
+                                }
+                                if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                else internalProps.push_back({tupleU,tupleUNegated});
+                            }else{
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    if(tuple1!=NULL){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*-1);
+                                    }
+                                    if(tuple2!=NULL){
+                                        int it = tuple2->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    reasonForLiteral[-startVar]=shared_reason;
+                                    handleConflict(-startVar, propagatedLiterals);
+                                }else propagatedLiterals.push_back(1);
+                                return;
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                if(starter.getPredicateName() == &_on && startVar > 0){
+                    int T = starter[0];
+                    int N1 = starter[1];
+                    int N = starter[2];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    if(N1 >= N){
+                        const Tuple* tuple2 = factory.find({T},&_time);
+                        if(tuple2!=NULL){
+                            if(tuple2->isFalse())
+                            tuple2=NULL;
+                            else if(tuple2->isUndef()){
+                                if(tupleU == NULL){
+                                    tupleU = tuple2;
+                                    tupleUNegated=false;
+                                }else{
+                                    if(tupleU->getPredicateName() != &_time || tupleUNegated || !(*tupleU == *tuple2))
+                                    tuple2=NULL;
+                                }
+                            }
+                        }
+                        if(tuple2!=NULL){
+                            if(tupleU != NULL){
+                                int itUndef = tupleU->getId();
+                                int var = tupleUNegated ? 1 : -1;
+                                var*=itUndef;
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    {
+                                        int it = starter.getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
+                                        int it = tuple2->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                    if(!itReason.second && itReason.first->second.get()->empty())
+                                        itReason.first->second=shared_reason;
+                                }
+                                if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                else internalProps.push_back({tupleU,tupleUNegated});
+                            }else{
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    if(tuple2!=NULL){
+                                        int it = tuple2->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    reasonForLiteral[-startVar]=shared_reason;
+                                    handleConflict(-startVar, propagatedLiterals);
+                                }else propagatedLiterals.push_back(1);
+                                return;
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+                if(starter.getPredicateName() == &_time && startVar > 0){
+                    int T = starter[0];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &pon_0_.getValuesVec({T});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uon_0_.getValuesVec({T});
+                    else if(tupleU->getPredicateName() == &_on && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple1 = NULL;
+                        if(i<tuples->size())
+                            tuple1 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            if(tupleU->at(0) == T)
+                                tuple1 = tupleU;
+                        }
+                        if(tuple1!=NULL){
+                            int N1 = tuple1->at(1);
+                            int N = tuple1->at(2);
+                            if(N1 >= N){
+                                if(tupleU != NULL){
+                                    int itUndef = tupleU->getId();
+                                    int var = tupleUNegated ? 1 : -1;
+                                    var*=itUndef;
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        {
+                                            int it = starter.getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                            int it = tuple1->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                        if(!itReason.second && itReason.first->second.get()->empty())
+                                            itReason.first->second=shared_reason;
+                                    }
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                }else{
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        if(tuple1!=NULL){
+                                            int it = tuple1->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        reasonForLiteral[-startVar]=shared_reason;
+                                        handleConflict(-startVar, propagatedLiterals);
+                                    }else propagatedLiterals.push_back(1);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                if(starter.getPredicateName() == &_move && startVar > 0){
+                    int T = starter[0];
+                    int N = starter[1];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &pon_0_1_.getValuesVec({T,N});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uon_0_1_.getValuesVec({T,N});
+                    else if(tupleU->getPredicateName() == &_on && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple1 = NULL;
+                        if(i<tuples->size())
+                            tuple1 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            if(tupleU->at(0) == T && tupleU->at(1) == N)
+                                tuple1 = tupleU;
+                        }
+                        if(tuple1!=NULL){
+                            int N1 = tuple1->at(2);
                             if(tupleU != NULL){
                                 int itUndef = tupleU->getId();
                                 int var = tupleUNegated ? 1 : -1;
@@ -4393,19 +5737,11 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts,std::vector<
                                         int it = tuple1->getId();
                                         shared_reason.get()->insert(it*1);
                                     }
-                                    if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
-                                        int it = tuple2->getId();
-                                        shared_reason.get()->insert(it*-1);
-                                    }
-                                    if(factory.find(*tuple3) != NULL && tuple3!=tupleU){
-                                        int it = tuple3->getId();
-                                        shared_reason.get()->insert(it*-1);
-                                    }
                                     auto itReason = reasonForLiteral.emplace(var,shared_reason);
                                     if(!itReason.second && itReason.first->second.get()->empty())
                                         itReason.first->second=shared_reason;
                                 }
-                                if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
+                                if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
                                     bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
                                 else internalProps.push_back({tupleU,tupleUNegated});
                             }else{
@@ -4415,13 +5751,132 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts,std::vector<
                                         int it = tuple1->getId();
                                         shared_reason.get()->insert(it*1);
                                     }
-                                    if(tuple2!=NULL){
-                                        int it = tuple2->getId();
-                                        shared_reason.get()->insert(it*-1);
+                                    reasonForLiteral[-startVar]=shared_reason;
+                                    handleConflict(-startVar, propagatedLiterals);
+                                }else propagatedLiterals.push_back(1);
+                                return;
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+                if(starter.getPredicateName() == &_on && startVar > 0){
+                    int T = starter[0];
+                    int N = starter[1];
+                    int N1 = starter[2];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const Tuple* tuple1 = factory.find({T,N},&_move);
+                    if(tuple1!=NULL){
+                        if(tuple1->isFalse())
+                        tuple1=NULL;
+                        else if(tuple1->isUndef()){
+                            if(tupleU == NULL){
+                                tupleU = tuple1;
+                                tupleUNegated=false;
+                            }else{
+                                if(tupleU->getPredicateName() != &_move || tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
+                            }
+                        }
+                    }
+                    if(tuple1!=NULL){
+                        if(tupleU != NULL){
+                            int itUndef = tupleU->getId();
+                            int var = tupleUNegated ? 1 : -1;
+                            var*=itUndef;
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                {
+                                    int it = starter.getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                            else internalProps.push_back({tupleU,tupleUNegated});
+                        }else{
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                if(tuple1!=NULL){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                reasonForLiteral[-startVar]=shared_reason;
+                                handleConflict(-startVar, propagatedLiterals);
+                            }else propagatedLiterals.push_back(1);
+                            return;
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+            }
+            {
+                if(starter.getPredicateName() == &_where && startVar > 0){
+                    int T = starter[0];
+                    int N = starter[1];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const std::vector<int>* tuples = &pon_0_1_.getValuesVec({T,N});
+                    const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
+                    std::vector<const Tuple*> undeRepeated;
+                    if(tupleU == NULL)
+                        tuplesU = &uon_0_1_.getValuesVec({T,N});
+                    else if(tupleU->getPredicateName() == &_on && !tupleUNegated)
+                        undeRepeated.push_back(tupleU);
+                    for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
+                        if(tuplesU!=&EMPTY_TUPLES_VEC)
+                            tupleU = NULL;
+                        const Tuple* tuple1 = NULL;
+                        if(i<tuples->size())
+                            tuple1 = factory.getTupleFromInternalID(tuples->at(i));
+                        else if(i<tuples->size()+tuplesU->size()){
+                            tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
+                            tupleUNegated=false;
+                        }else if(!undeRepeated.empty()){
+                            if(tupleU->at(0) == T && tupleU->at(1) == N)
+                                tuple1 = tupleU;
+                        }
+                        if(tuple1!=NULL){
+                            int N1 = tuple1->at(2);
+                            if(tupleU != NULL){
+                                int itUndef = tupleU->getId();
+                                int var = tupleUNegated ? 1 : -1;
+                                var*=itUndef;
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    {
+                                        int it = starter.getId();
+                                        shared_reason.get()->insert(it*1);
                                     }
-                                    if(tuple3!=NULL){
-                                        int it = tuple3->getId();
-                                        shared_reason.get()->insert(it*-1);
+                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*1);
+                                    }
+                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                    if(!itReason.second && itReason.first->second.get()->empty())
+                                        itReason.first->second=shared_reason;
+                                }
+                                if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                else internalProps.push_back({tupleU,tupleUNegated});
+                            }else{
+                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                if(currentDecisionLevel>0){
+                                    if(tuple1!=NULL){
+                                        int it = tuple1->getId();
+                                        shared_reason.get()->insert(it*1);
                                     }
                                     reasonForLiteral[-startVar]=shared_reason;
                                     handleConflict(-startVar, propagatedLiterals);
@@ -4430,404 +5885,527 @@ void Executor::executeProgramOnFacts(const std::vector<int> & facts,std::vector<
                             }
                         }
                     }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
                 }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-            if(starter.getPredicateName() == &_body_0 && startVar > 0){
-                int U = starter[0];
-                int Cost = starter[1];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const Tuple* tuple1 = factory.find({U,Cost},&_agg_id_0);
-                if(tuple1!=NULL){
-                    if(tuple1->isFalse())
-                    tuple1=NULL;
-                    else if(tuple1->isUndef()){
-                        if(tupleU == NULL){
-                            tupleU = tuple1;
-                            tupleUNegated=false;
-                        }else{
-                            if(tupleU->getPredicateName() != &_agg_id_0 || tupleUNegated || !(*tupleU == *tuple1))
-                            tuple1=NULL;
+                if(starter.getPredicateName() == &_on && startVar > 0){
+                    int T = starter[0];
+                    int N = starter[1];
+                    int N1 = starter[2];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const Tuple* tuple1 = factory.find({T,N},&_where);
+                    if(tuple1!=NULL){
+                        if(tuple1->isFalse())
+                        tuple1=NULL;
+                        else if(tuple1->isUndef()){
+                            if(tupleU == NULL){
+                                tupleU = tuple1;
+                                tupleUNegated=false;
+                            }else{
+                                if(tupleU->getPredicateName() != &_where || tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
+                            }
                         }
                     }
+                    if(tuple1!=NULL){
+                        if(tupleU != NULL){
+                            int itUndef = tupleU->getId();
+                            int var = tupleUNegated ? 1 : -1;
+                            var*=itUndef;
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                {
+                                    int it = starter.getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                if(!itReason.second && itReason.first->second.get()->empty())
+                                    itReason.first->second=shared_reason;
+                            }
+                            if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                            else internalProps.push_back({tupleU,tupleUNegated});
+                        }else{
+                            std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                            if(currentDecisionLevel>0){
+                                if(tuple1!=NULL){
+                                    int it = tuple1->getId();
+                                    shared_reason.get()->insert(it*1);
+                                }
+                                reasonForLiteral[-startVar]=shared_reason;
+                                handleConflict(-startVar, propagatedLiterals);
+                            }else propagatedLiterals.push_back(1);
+                            return;
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
                 }
-                if(tuple1!=NULL){
-                    Tuple negativeTuple({U,Cost},&_agg_id_1);
-                    const Tuple* tuple2 = factory.find(negativeTuple);
-                    if(tuple2 == NULL)
-                        tuple2 = &negativeTuple;
-                    else{
-                        if(tuple2->isTrue())
-                            tuple2 = NULL;
-                        else if(tuple2->isUndef()){
+            }
+            {
+                if(starter.getPredicateName() == &_sup_2 && startVar < 0){
+                    int X0 = starter[0];
+                    int X1 = starter[1];
+                    int X2 = starter[2];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const Tuple* tuple1 = factory.find({X0,X1,X2},&_on);
+                    if(tuple1!=NULL){
+                        if(tuple1->isFalse())
+                        tuple1=NULL;
+                        else if(tuple1->isUndef()){
                             if(tupleU == NULL){
-                                tupleU = tuple2;
+                                tupleU = tuple1;
+                                tupleUNegated=false;
+                            }else{
+                                if(tupleU->getPredicateName() != &_on || tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
+                            }
+                        }
+                    }
+                    if(tuple1!=NULL){
+                        Tuple negativeTuple({X0,X1,X2},&_sup_0);
+                        const Tuple* tuple2 = factory.find(negativeTuple);
+                        if(tuple2 == NULL)
+                            tuple2 = &negativeTuple;
+                        else{
+                            if(tuple2->isTrue())
+                                tuple2 = NULL;
+                            else if(tuple2->isUndef()){
+                                if(tupleU == NULL){
+                                    tupleU = tuple2;
+                                    tupleUNegated=true;
+                                }else{
+                                    if(tupleU->getPredicateName() != &_sup_0 || !tupleUNegated || !(*tupleU == *tuple2))
+                                    tuple2=NULL;
+                                }
+                            }
+                        }
+                        if(tuple2!=NULL){
+                            Tuple negativeTuple({X0,X1,X2},&_sup_1);
+                            const Tuple* tuple3 = factory.find(negativeTuple);
+                            if(tuple3 == NULL)
+                                tuple3 = &negativeTuple;
+                            else{
+                                if(tuple3->isTrue())
+                                    tuple3 = NULL;
+                                else if(tuple3->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple3;
+                                        tupleUNegated=true;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_sup_1 || !tupleUNegated || !(*tupleU == *tuple3))
+                                        tuple3=NULL;
+                                    }
+                                }
+                            }
+                            if(tuple3!=NULL){
+                                if(tupleU != NULL){
+                                    int itUndef = tupleU->getId();
+                                    int var = tupleUNegated ? 1 : -1;
+                                    var*=itUndef;
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        {
+                                            int it = starter.getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                            int it = tuple1->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
+                                            int it = tuple2->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        if(factory.find(*tuple3) != NULL && tuple3!=tupleU){
+                                            int it = tuple3->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                        if(!itReason.second && itReason.first->second.get()->empty())
+                                            itReason.first->second=shared_reason;
+                                    }
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                }else{
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        if(tuple1!=NULL){
+                                            int it = tuple1->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(tuple2!=NULL){
+                                            int it = tuple2->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        if(tuple3!=NULL){
+                                            int it = tuple3->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        reasonForLiteral[-startVar]=shared_reason;
+                                        handleConflict(-startVar, propagatedLiterals);
+                                    }else propagatedLiterals.push_back(1);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+                if(starter.getPredicateName() == &_sup_1 && startVar < 0){
+                    int X0 = starter[0];
+                    int X1 = starter[1];
+                    int X2 = starter[2];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const Tuple* tuple1 = factory.find({X0,X1,X2},&_on);
+                    if(tuple1!=NULL){
+                        if(tuple1->isFalse())
+                        tuple1=NULL;
+                        else if(tuple1->isUndef()){
+                            if(tupleU == NULL){
+                                tupleU = tuple1;
+                                tupleUNegated=false;
+                            }else{
+                                if(tupleU->getPredicateName() != &_on || tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
+                            }
+                        }
+                    }
+                    if(tuple1!=NULL){
+                        Tuple negativeTuple({X0,X1,X2},&_sup_0);
+                        const Tuple* tuple2 = factory.find(negativeTuple);
+                        if(tuple2 == NULL)
+                            tuple2 = &negativeTuple;
+                        else{
+                            if(tuple2->isTrue())
+                                tuple2 = NULL;
+                            else if(tuple2->isUndef()){
+                                if(tupleU == NULL){
+                                    tupleU = tuple2;
+                                    tupleUNegated=true;
+                                }else{
+                                    if(tupleU->getPredicateName() != &_sup_0 || !tupleUNegated || !(*tupleU == *tuple2))
+                                    tuple2=NULL;
+                                }
+                            }
+                        }
+                        if(tuple2!=NULL){
+                            Tuple negativeTuple({X0,X1,X2},&_sup_2);
+                            const Tuple* tuple3 = factory.find(negativeTuple);
+                            if(tuple3 == NULL)
+                                tuple3 = &negativeTuple;
+                            else{
+                                if(tuple3->isTrue())
+                                    tuple3 = NULL;
+                                else if(tuple3->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple3;
+                                        tupleUNegated=true;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_sup_2 || !tupleUNegated || !(*tupleU == *tuple3))
+                                        tuple3=NULL;
+                                    }
+                                }
+                            }
+                            if(tuple3!=NULL){
+                                if(tupleU != NULL){
+                                    int itUndef = tupleU->getId();
+                                    int var = tupleUNegated ? 1 : -1;
+                                    var*=itUndef;
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        {
+                                            int it = starter.getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                            int it = tuple1->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
+                                            int it = tuple2->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        if(factory.find(*tuple3) != NULL && tuple3!=tupleU){
+                                            int it = tuple3->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                        if(!itReason.second && itReason.first->second.get()->empty())
+                                            itReason.first->second=shared_reason;
+                                    }
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                }else{
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        if(tuple1!=NULL){
+                                            int it = tuple1->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(tuple2!=NULL){
+                                            int it = tuple2->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        if(tuple3!=NULL){
+                                            int it = tuple3->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        reasonForLiteral[-startVar]=shared_reason;
+                                        handleConflict(-startVar, propagatedLiterals);
+                                    }else propagatedLiterals.push_back(1);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+                if(starter.getPredicateName() == &_sup_0 && startVar < 0){
+                    int X0 = starter[0];
+                    int X1 = starter[1];
+                    int X2 = starter[2];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    const Tuple* tuple1 = factory.find({X0,X1,X2},&_on);
+                    if(tuple1!=NULL){
+                        if(tuple1->isFalse())
+                        tuple1=NULL;
+                        else if(tuple1->isUndef()){
+                            if(tupleU == NULL){
+                                tupleU = tuple1;
+                                tupleUNegated=false;
+                            }else{
+                                if(tupleU->getPredicateName() != &_on || tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
+                            }
+                        }
+                    }
+                    if(tuple1!=NULL){
+                        Tuple negativeTuple({X0,X1,X2},&_sup_1);
+                        const Tuple* tuple2 = factory.find(negativeTuple);
+                        if(tuple2 == NULL)
+                            tuple2 = &negativeTuple;
+                        else{
+                            if(tuple2->isTrue())
+                                tuple2 = NULL;
+                            else if(tuple2->isUndef()){
+                                if(tupleU == NULL){
+                                    tupleU = tuple2;
+                                    tupleUNegated=true;
+                                }else{
+                                    if(tupleU->getPredicateName() != &_sup_1 || !tupleUNegated || !(*tupleU == *tuple2))
+                                    tuple2=NULL;
+                                }
+                            }
+                        }
+                        if(tuple2!=NULL){
+                            Tuple negativeTuple({X0,X1,X2},&_sup_2);
+                            const Tuple* tuple3 = factory.find(negativeTuple);
+                            if(tuple3 == NULL)
+                                tuple3 = &negativeTuple;
+                            else{
+                                if(tuple3->isTrue())
+                                    tuple3 = NULL;
+                                else if(tuple3->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple3;
+                                        tupleUNegated=true;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_sup_2 || !tupleUNegated || !(*tupleU == *tuple3))
+                                        tuple3=NULL;
+                                    }
+                                }
+                            }
+                            if(tuple3!=NULL){
+                                if(tupleU != NULL){
+                                    int itUndef = tupleU->getId();
+                                    int var = tupleUNegated ? 1 : -1;
+                                    var*=itUndef;
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        {
+                                            int it = starter.getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                            int it = tuple1->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
+                                            int it = tuple2->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        if(factory.find(*tuple3) != NULL && tuple3!=tupleU){
+                                            int it = tuple3->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                        if(!itReason.second && itReason.first->second.get()->empty())
+                                            itReason.first->second=shared_reason;
+                                    }
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                }else{
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        if(tuple1!=NULL){
+                                            int it = tuple1->getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(tuple2!=NULL){
+                                            int it = tuple2->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        if(tuple3!=NULL){
+                                            int it = tuple3->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        reasonForLiteral[-startVar]=shared_reason;
+                                        handleConflict(-startVar, propagatedLiterals);
+                                    }else propagatedLiterals.push_back(1);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                }
+                if(starter.getPredicateName() == &_on && startVar > 0){
+                    int X0 = starter[0];
+                    int X1 = starter[1];
+                    int X2 = starter[2];
+                    const Tuple* tupleU = NULL;
+                    bool tupleUNegated = false;
+                    std::vector<std::pair<const Tuple*,bool>> internalProps;
+                    Tuple negativeTuple({X0,X1,X2},&_sup_0);
+                    const Tuple* tuple1 = factory.find(negativeTuple);
+                    if(tuple1 == NULL)
+                        tuple1 = &negativeTuple;
+                    else{
+                        if(tuple1->isTrue())
+                            tuple1 = NULL;
+                        else if(tuple1->isUndef()){
+                            if(tupleU == NULL){
+                                tupleU = tuple1;
                                 tupleUNegated=true;
                             }else{
-                                if(tupleU->getPredicateName() != &_agg_id_1 || !tupleUNegated || !(*tupleU == *tuple2))
-                                tuple2=NULL;
+                                if(tupleU->getPredicateName() != &_sup_0 || !tupleUNegated || !(*tupleU == *tuple1))
+                                tuple1=NULL;
                             }
                         }
                     }
-                    if(tuple2!=NULL){
-                        Tuple negativeTuple({U,Cost},&_costs);
-                        const Tuple* tuple3 = factory.find(negativeTuple);
-                        if(tuple3 == NULL)
-                            tuple3 = &negativeTuple;
+                    if(tuple1!=NULL){
+                        Tuple negativeTuple({X0,X1,X2},&_sup_1);
+                        const Tuple* tuple2 = factory.find(negativeTuple);
+                        if(tuple2 == NULL)
+                            tuple2 = &negativeTuple;
                         else{
-                            if(tuple3->isTrue())
-                                tuple3 = NULL;
-                            else if(tuple3->isUndef()){
+                            if(tuple2->isTrue())
+                                tuple2 = NULL;
+                            else if(tuple2->isUndef()){
                                 if(tupleU == NULL){
-                                    tupleU = tuple3;
+                                    tupleU = tuple2;
                                     tupleUNegated=true;
                                 }else{
-                                    if(tupleU->getPredicateName() != &_costs || !tupleUNegated || !(*tupleU == *tuple3))
-                                    tuple3=NULL;
+                                    if(tupleU->getPredicateName() != &_sup_1 || !tupleUNegated || !(*tupleU == *tuple2))
+                                    tuple2=NULL;
                                 }
                             }
                         }
-                        if(tuple3!=NULL){
-                            if(tupleU != NULL){
-                                int itUndef = tupleU->getId();
-                                int var = tupleUNegated ? 1 : -1;
-                                var*=itUndef;
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    {
-                                        int it = starter.getId();
-                                        shared_reason.get()->insert(it*1);
+                        if(tuple2!=NULL){
+                            Tuple negativeTuple({X0,X1,X2},&_sup_2);
+                            const Tuple* tuple3 = factory.find(negativeTuple);
+                            if(tuple3 == NULL)
+                                tuple3 = &negativeTuple;
+                            else{
+                                if(tuple3->isTrue())
+                                    tuple3 = NULL;
+                                else if(tuple3->isUndef()){
+                                    if(tupleU == NULL){
+                                        tupleU = tuple3;
+                                        tupleUNegated=true;
+                                    }else{
+                                        if(tupleU->getPredicateName() != &_sup_2 || !tupleUNegated || !(*tupleU == *tuple3))
+                                        tuple3=NULL;
                                     }
-                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
-                                        int it = tuple2->getId();
-                                        shared_reason.get()->insert(it*-1);
-                                    }
-                                    if(factory.find(*tuple3) != NULL && tuple3!=tupleU){
-                                        int it = tuple3->getId();
-                                        shared_reason.get()->insert(it*-1);
-                                    }
-                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                                    if(!itReason.second && itReason.first->second.get()->empty())
-                                        itReason.first->second=shared_reason;
                                 }
-                                if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                else internalProps.push_back({tupleU,tupleUNegated});
-                            }else{
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    if(tuple1!=NULL){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
+                            }
+                            if(tuple3!=NULL){
+                                if(tupleU != NULL){
+                                    int itUndef = tupleU->getId();
+                                    int var = tupleUNegated ? 1 : -1;
+                                    var*=itUndef;
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        {
+                                            int it = starter.getId();
+                                            shared_reason.get()->insert(it*1);
+                                        }
+                                        if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
+                                            int it = tuple1->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        if(factory.find(*tuple2) != NULL && tuple2!=tupleU){
+                                            int it = tuple2->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        if(factory.find(*tuple3) != NULL && tuple3!=tupleU){
+                                            int it = tuple3->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        auto itReason = reasonForLiteral.emplace(var,shared_reason);
+                                        if(!itReason.second && itReason.first->second.get()->empty())
+                                            itReason.first->second=shared_reason;
                                     }
-                                    if(tuple2!=NULL){
-                                        int it = tuple2->getId();
-                                        shared_reason.get()->insert(it*-1);
-                                    }
-                                    if(tuple3!=NULL){
-                                        int it = tuple3->getId();
-                                        shared_reason.get()->insert(it*-1);
-                                    }
-                                    reasonForLiteral[-startVar]=shared_reason;
-                                    handleConflict(-startVar, propagatedLiterals);
-                                }else propagatedLiterals.push_back(1);
-                                return;
+                                    if(tupleU->getPredicateName() != &_on && tupleU->getPredicateName() != &_sup_0 && tupleU->getPredicateName() != &_sup_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_sup_2 && tupleU->getPredicateName() != &_aux_1)
+                                        bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
+                                    else internalProps.push_back({tupleU,tupleUNegated});
+                                }else{
+                                    std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
+                                    if(currentDecisionLevel>0){
+                                        if(tuple1!=NULL){
+                                            int it = tuple1->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        if(tuple2!=NULL){
+                                            int it = tuple2->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        if(tuple3!=NULL){
+                                            int it = tuple3->getId();
+                                            shared_reason.get()->insert(it*-1);
+                                        }
+                                        reasonForLiteral[-startVar]=shared_reason;
+                                        handleConflict(-startVar, propagatedLiterals);
+                                    }else propagatedLiterals.push_back(1);
+                                    return;
+                                }
                             }
                         }
                     }
+                    for(auto pair : internalProps)
+                        propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
                 }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
             }
         }
-        {
-            if(starter.getPredicateName() == &_costs && startVar > 0){
-                int U = starter[0];
-                int Cost = starter[1];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &puser_0_.getValuesVec({U});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &uuser_0_.getValuesVec({U});
-                else if(tupleU->getPredicateName() == &_user && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple1 = NULL;
-                    if(i<tuples->size())
-                        tuple1 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        if(tupleU->at(0) == U)
-                            tuple1 = tupleU;
-                    }
-                    if(tuple1!=NULL){
-                        int MIN = tuple1->at(1);
-                        int MAX = tuple1->at(2);
-                        if(Cost < MIN){
-                            if(tupleU != NULL){
-                                int itUndef = tupleU->getId();
-                                int var = tupleUNegated ? 1 : -1;
-                                var*=itUndef;
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    {
-                                        int it = starter.getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                                    if(!itReason.second && itReason.first->second.get()->empty())
-                                        itReason.first->second=shared_reason;
-                                }
-                                if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                else internalProps.push_back({tupleU,tupleUNegated});
-                            }else{
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    if(tuple1!=NULL){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    reasonForLiteral[-startVar]=shared_reason;
-                                    handleConflict(-startVar, propagatedLiterals);
-                                }else propagatedLiterals.push_back(1);
-                                return;
-                            }
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-            if(starter.getPredicateName() == &_user && startVar > 0){
-                int U = starter[0];
-                int MIN = starter[1];
-                int MAX = starter[2];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &pcosts_0_.getValuesVec({U});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &ucosts_0_.getValuesVec({U});
-                else if(tupleU->getPredicateName() == &_costs && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple1 = NULL;
-                    if(i<tuples->size())
-                        tuple1 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        if(tupleU->at(0) == U)
-                            tuple1 = tupleU;
-                    }
-                    if(tuple1!=NULL){
-                        int Cost = tuple1->at(1);
-                        if(Cost < MIN){
-                            if(tupleU != NULL){
-                                int itUndef = tupleU->getId();
-                                int var = tupleUNegated ? 1 : -1;
-                                var*=itUndef;
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    {
-                                        int it = starter.getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                                    if(!itReason.second && itReason.first->second.get()->empty())
-                                        itReason.first->second=shared_reason;
-                                }
-                                if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                else internalProps.push_back({tupleU,tupleUNegated});
-                            }else{
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    if(tuple1!=NULL){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    reasonForLiteral[-startVar]=shared_reason;
-                                    handleConflict(-startVar, propagatedLiterals);
-                                }else propagatedLiterals.push_back(1);
-                                return;
-                            }
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
-        {
-            if(starter.getPredicateName() == &_costs && startVar > 0){
-                int U = starter[0];
-                int Cost = starter[1];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &puser_0_.getValuesVec({U});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &uuser_0_.getValuesVec({U});
-                else if(tupleU->getPredicateName() == &_user && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple1 = NULL;
-                    if(i<tuples->size())
-                        tuple1 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        if(tupleU->at(0) == U)
-                            tuple1 = tupleU;
-                    }
-                    if(tuple1!=NULL){
-                        int MIN = tuple1->at(1);
-                        int MAX = tuple1->at(2);
-                        if(Cost > MAX){
-                            if(tupleU != NULL){
-                                int itUndef = tupleU->getId();
-                                int var = tupleUNegated ? 1 : -1;
-                                var*=itUndef;
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    {
-                                        int it = starter.getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                                    if(!itReason.second && itReason.first->second.get()->empty())
-                                        itReason.first->second=shared_reason;
-                                }
-                                if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                else internalProps.push_back({tupleU,tupleUNegated});
-                            }else{
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    if(tuple1!=NULL){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    reasonForLiteral[-startVar]=shared_reason;
-                                    handleConflict(-startVar, propagatedLiterals);
-                                }else propagatedLiterals.push_back(1);
-                                return;
-                            }
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-            if(starter.getPredicateName() == &_user && startVar > 0){
-                int U = starter[0];
-                int MIN = starter[1];
-                int MAX = starter[2];
-                const Tuple* tupleU = NULL;
-                bool tupleUNegated = false;
-                std::vector<std::pair<const Tuple*,bool>> internalProps;
-                const std::vector<int>* tuples = &pcosts_0_.getValuesVec({U});
-                const std::vector<int>* tuplesU = &EMPTY_TUPLES_VEC;
-                std::vector<const Tuple*> undeRepeated;
-                if(tupleU == NULL)
-                    tuplesU = &ucosts_0_.getValuesVec({U});
-                else if(tupleU->getPredicateName() == &_costs && !tupleUNegated)
-                    undeRepeated.push_back(tupleU);
-                for(unsigned i = 0; i<tuples->size()+tuplesU->size()+undeRepeated.size(); i++){
-                    if(tuplesU!=&EMPTY_TUPLES_VEC)
-                        tupleU = NULL;
-                    const Tuple* tuple1 = NULL;
-                    if(i<tuples->size())
-                        tuple1 = factory.getTupleFromInternalID(tuples->at(i));
-                    else if(i<tuples->size()+tuplesU->size()){
-                        tupleU = tuple1 = factory.getTupleFromInternalID(tuplesU->at(i-tuples->size()));
-                        tupleUNegated=false;
-                    }else if(!undeRepeated.empty()){
-                        if(tupleU->at(0) == U)
-                            tuple1 = tupleU;
-                    }
-                    if(tuple1!=NULL){
-                        int Cost = tuple1->at(1);
-                        if(Cost > MAX){
-                            if(tupleU != NULL){
-                                int itUndef = tupleU->getId();
-                                int var = tupleUNegated ? 1 : -1;
-                                var*=itUndef;
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    {
-                                        int it = starter.getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    if(factory.find(*tuple1) != NULL && tuple1!=tupleU){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    auto itReason = reasonForLiteral.emplace(var,shared_reason);
-                                    if(!itReason.second && itReason.first->second.get()->empty())
-                                        itReason.first->second=shared_reason;
-                                }
-                                if(tupleU->getPredicateName() != &_aux_val0 && tupleU->getPredicateName() != &_agg_id_0 && tupleU->getPredicateName() != &_body_0 && tupleU->getPredicateName() != &_agg_id_1 && tupleU->getPredicateName() != &_aux_0 && tupleU->getPredicateName() != &_costs && tupleU->getPredicateName() != &_agg_set_0)
-                                    bool conflict = propUndefined(tupleU,tupleUNegated,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-                                else internalProps.push_back({tupleU,tupleUNegated});
-                            }else{
-                                std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();
-                                if(currentDecisionLevel>0){
-                                    if(tuple1!=NULL){
-                                        int it = tuple1->getId();
-                                        shared_reason.get()->insert(it*1);
-                                    }
-                                    reasonForLiteral[-startVar]=shared_reason;
-                                    handleConflict(-startVar, propagatedLiterals);
-                                }else propagatedLiterals.push_back(1);
-                                return;
-                            }
-                        }
-                    }
-                }
-                for(auto pair : internalProps)
-                    propUndefined(pair.first,pair.second,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);
-            }
-        }
+        if(conflictCount > minConflict && propagatedLiterals.size() > 1){int currentHeapSize = propagatedLiterals.size() < heapSize ? propagatedLiterals.size() : heapSize; /*std::cout<<"sort heap: "<<currentHeapSize<<std::endl;*/ std::sort_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+currentHeapSize,propComparison);}
     }
-    if(conflictCount > minConflict && propagatedLiterals.size() > 1){int currentHeapSize = propagatedLiterals.size() < heapSize ? propagatedLiterals.size() : heapSize; /*std::cout<<"sort heap: "<<currentHeapSize<<std::endl;*/ std::sort_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+currentHeapSize,propComparison);}
-}
-}
+    }

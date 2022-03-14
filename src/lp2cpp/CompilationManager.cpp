@@ -1006,6 +1006,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 *out << ind << "std::cout<<\"Explain from wasp \";\n";
                 *out << ind << "factory.getTupleFromWASPID(uVar)->print();\n";
             #endif
+            #ifdef TRACE_REASON
+                *out << ind << "std::cout<<\"Explain from wasp \";\n";
+                *out << ind << "factory.getTupleFromWASPID(uVar)->print();\n";
+            #endif
 
         *out << --ind << "}\n";
         *out << ind << "std::vector<int> stack;\n";
@@ -1058,7 +1062,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 *out << ind << "starter->print();\n";
             #endif
         *out << --ind << "}\n";
-        #ifdef TRACE_PROPAGATOR
+        #ifdef TRACE_REASON
             *out << ind << "std::cout<<\"Reason for: \"<<var<<std::endl;\n";
             *out << ind++ << "for(unsigned i=0; i<reas.size(); i++){\n";
                 *out << ind << "Tuple* t = reas[i]>0 ? factory.getTupleFromWASPID(reas[i]) : factory.getTupleFromWASPID(-reas[i]);\n";
@@ -1516,7 +1520,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         }
                                         *out << ind << "Tuple* head = factory.find({"<<terms<<"},&_"<<head->getPredicateName()<<");\n";
 
-                                        *out << ind++ << "if(head!=NULL && foundnessFactory[head->getId()]<0){\n";
+                                        *out << ind++ << "if(head!=NULL && !head->isFalse() && foundnessFactory[head->getId()]<0){\n";
                                         closinPars++;
                                             #ifdef TRACE_PROPAGATOR
                                                 *out << ind << "std::cout<<\"       New Founded Literal to Propagate \"<<head->toString()<<std::endl;\n";
@@ -1638,7 +1642,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                             }
                                             *out << ind << "Tuple* head = factory.find({"<<terms<<"},&_"<<head->getPredicateName()<<");\n";
 
-                                            *out << ind++ << "if(head!=NULL && foundnessFactory[head->getId()]<0){\n";
+                                            *out << ind++ << "if(head!=NULL && !head->isFalse() && foundnessFactory[head->getId()]<0){\n";
                                             closinPars++;
                                                 #ifdef TRACE_PROPAGATOR
                                                     *out << ind << "std::cout<<\"       New Founded Aux to Propagate \"<<head->toString()<<std::endl;\n";
@@ -1684,7 +1688,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
                 #endif
                 // *out << ind << "auto t1_e = std::chrono::high_resolution_clock::now();\n";
-
+                *out << ind << "int unfoundedCount=0;\n";
                 *out << ind++ << "for(int id : unfoundedSetForComponent"<<componentId<<"){\n";
                     *out << ind << "Tuple* starter = factory.getTupleFromInternalID(id);\n";
 
@@ -1831,9 +1835,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                             }
                         }
                     }
-
+                    *out << ind++ << "if(!spFound) unfoundedSetForComponent"<<componentId<<"[unfoundedCount++]=id;\n";
                 *out << --ind << "} //close unfounded for\n";
-                // *out << ind << "for(int lit : founded) unfoundedSetForComponent"<<componentId<<".erase(lit);\n";
+                *out << ind << "unfoundedSetForComponent"<<componentId<<".resize(unfoundedCount);\n";
                 // *out << ind << "std::cout << \"Unfounded size: \"<<unfoundedSetForComponent"<<componentId<<".size()<<std::endl;\n";
                 #ifdef TRACE_PROPAGATOR
                     *out << ind << "if(unfoundedSetForComponent"<<componentId<<".empty()) std::cout << \"   No Unfounded\"<<std::endl;\n";
@@ -1841,7 +1845,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         *out << ind << "std::cout<<\"   Unfounded Literals\"<<std::endl;\n";
                         *out << ind++ << "for(int lit : unfoundedSetForComponent"<<componentId<<"){\n";
                             *out << ind << "Tuple* starter = factory.getTupleFromInternalID(lit);\n";
-                            *out << ind << "std::cout << \"     \"<<starter->toString()<<std::endl;\n";
+                            *out << ind << "if(foundnessFactory[lit]<0)std::cout << \"     \"<<starter->toString()<<std::endl;\n";
                         *out << --ind << "}\n";
                     *out << --ind << "}\n";
 
@@ -1857,6 +1861,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         *out << ind << "Tuple* starter = factory.getTupleFromInternalID(lit);\n";
                         *out << ind << "if(starter == NULL || starter->isFalse() || foundnessFactory[lit]>=0) continue;\n";
                         *out << ind << "foundnessFactory[lit]=1;\n";
+                        *out << ind << "bool propagated=false;\n";
+                        *out << ind << "bool reasonStored=false;\n";
                         *out << ind << "auto oldSP = sourcePointers"<<componentId<<".find(lit);\n";
                         *out << ind++ << "if(oldSP!=sourcePointers"<<componentId<<".end()){\n";
                             *out << ind << "supportedLiterals"<<componentId<<"[oldSP->second].push_back(lit);\n";
@@ -1919,10 +1925,13 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                 std::unordered_set<std::string> boundTerms;
                                                 if(head->getPredicateName()==predName){
                                                     *out << ind << "if(starter->isTrue() && conflictDetected==0) conflictDetected=-lit;\n";
-                                                    *out << ind << "propLiterals.push_back(-lit);\n";
+                                                    *out << ind++ << "if(!propagated){\n";
+                                                        *out << ind << "propLiterals.push_back(-lit);\n";
+                                                        *out << ind << "propagated=true;\n";
+                                                    *out << --ind << "}\n"; 
                                                 }
                                                 *out << ind++ << "if(currentDecisionLevel > 0){\n";
-                                                    *out << ind << "reasonForLiteral[-lit]=shared_reason;\n";
+                                                    *out << ind << "if(!reasonStored){reasonForLiteral[-lit]=shared_reason; reasonStored=true;}\n";
                                                 unsigned closinPars =2;
 
                                                 for(unsigned k = 0; k < head->getAriety(); k++){
@@ -2334,11 +2343,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                 *out << --ind << "}\n";
                             }
                         }
-                        #ifdef TRACE_PROPAGATOR
-                        *out << ind++ << "if(currentDecisionLevel <= 0){\n";
-                            *out << ind << "std::cout<<\" Literal propagated as True\";";
+                        #ifdef TRACE_REASON
+                            *out << ind << "std::cout<<\"Prop::Propagating Literal as True\";";
                             *out << ind << "tupleU->print();\n";
-                        *out << ind-- << "}\n";
                         #endif
 
                         *out << ind << "propagated = true;\n";
@@ -2409,11 +2416,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                 *out << --ind << "}\n";
                             }
                         }
-                        #ifdef TRACE_PROPAGATOR
-                        *out << ind++ << "if(currentDecisionLevel <= 0){\n";
-                        *out << ind << "std::cout<<currentDecisionLevel<<\" Literal propagated as False\";";
+                        #ifdef TRACE_REASON
+                        *out << ind << "std::cout<<\"Prop::Propagating Literal as False\";";
                         *out << ind << "tupleU->print();\n";
-                        *out << --ind << "}\n";
                         #endif
 
                         *out << ind << "propagated = true;\n";
@@ -2432,8 +2437,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind << "int it = tupleU->getWaspID();\n";
             *out << ind << "int sign = isNegated == asNegative ? 1 : -1;\n";
             *out << ind++ << "if(remainingPropagatingLiterals.count(it*sign)==0){\n";
-                #ifdef TRACE_PROPAGATOR
-                    *out << ind << "std::cout<<currentDecisionLevel<<\" Propagating external literal: \";\n";
+                #ifdef TRACE_REASON
+                    *out << ind << "std::cout<<\"Prop::Propagating external literal: \"<<sign;\n";
                     *out << ind << "tupleU->print();\n";
                 #endif
 
@@ -6486,6 +6491,11 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                         *out << ind << "auto itReason = reasonForLiteral.emplace(it,shared_reason);\n";
                         *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                             *out << ind-- << "itReason.first->second=shared_reason;\n";
+                        #ifdef TRACE_REASON
+                            *out << ind << "std::cout << \"Reason of \"<<head->toString()<<\": {\"<<std::endl;\n";
+                            *out << ind << "for(int i=0;i<itReason.first->second.get()->size();i++){if(i>0) std::cout <<\",\"; int id = itReason.first->second.get()->at(i) > 0 ? itReason.first->second.get()->at(i) : -itReason.first->second.get()->at(i); std::cout << factory.getTupleFromInternalID(id)->toString();}\n";
+                            *out << ind << "std::cout << \"}\"<<std::endl;\n";
+                        #endif
                     *out << --ind << "}\n";
                     #ifdef TRACE_PROPAGATOR
                         *out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -6527,6 +6537,11 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                 *out << ind << "auto itReason = reasonForLiteral.emplace(-it,shared_reason);\n";
                                 *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                                     *out << ind-- << "itReason.first->second=shared_reason;\n";
+                                #ifdef TRACE_REASON
+                                    *out << ind << "std::cout << \"Reason of \"<<head->toString()<<\": {\"<<std::endl;\n";
+                                    *out << ind << "for(int i=0;i<itReason.first->second.get()->size();i++){if(i>0) std::cout <<\",\"; int id = itReason.first->second.get()->at(i) > 0 ? itReason.first->second.get()->at(i) : -itReason.first->second.get()->at(i); std::cout << factory.getTupleFromInternalID(id)->toString();}\n";
+                                    *out << ind << "std::cout << \"}\"<<std::endl;\n";
+                                #endif
                             *out << --ind << "}\n";
                             #ifdef TRACE_PROPAGATOR
                                 *out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -6602,6 +6617,11 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                     *out << ind << "auto itReason = reasonForLiteral.emplace(itProp,shared_reason);\n";
                                     *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                                         *out << ind-- << "itReason.first->second=shared_reason;\n";
+                                    #ifdef TRACE_REASON
+                                        *out << ind << "std::cout << \"Reason of \"<<factory.getTupleFromInternalID(*tuplesU->begin())->toString()<<\": {\"<<std::endl;\n";
+                                        *out << ind << "for(int i=0;i<itReason.first->second.get()->size();i++){if(i>0) std::cout <<\",\"; int id = itReason.first->second.get()->at(i) > 0 ? itReason.first->second.get()->at(i) : -itReason.first->second.get()->at(i); std::cout << factory.getTupleFromInternalID(id)->toString();}\n";
+                                        *out << ind << "std::cout << \"}\"<<std::endl;\n";
+                                    #endif
                                 *out << --ind << "}\n";
                                 #ifdef TRACE_PROPAGATOR
                                     *out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -6620,6 +6640,11 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                     *out << ind << "auto itReason = reasonForLiteral.emplace(itProp,shared_reason);\n";
                                     *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                                         *out << ind-- << "itReason.first->second=shared_reason;\n";
+                                    #ifdef TRACE_REASON
+                                        *out << ind << "std::cout << \"Reason of \"<<factory.getTupleFromInternalID(tuplesU->at(0))->toString()<<\": {\"<<std::endl;\n";
+                                        *out << ind << "for(int i=0;i<itReason.first->second.get()->size();i++){if(i>0) std::cout <<\",\"; int id = itReason.first->second.get()->at(i) > 0 ? itReason.first->second.get()->at(i) : -itReason.first->second.get()->at(i); std::cout << factory.getTupleFromInternalID(id)->toString();}\n";
+                                        *out << ind << "std::cout << \"}\"<<std::endl;\n";
+                                    #endif
                                 *out << --ind << "}\n";
                                 #ifdef TRACE_PROPAGATOR
                                     *out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -6654,6 +6679,11 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                 *out << ind << "auto itReason = reasonForLiteral.emplace(-itHead,shared_reason);\n";
                                 *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                                     *out << ind-- << "itReason.first->second=shared_reason;\n";
+                                #ifdef TRACE_REASON
+                                    *out << ind << "std::cout << \"Reason of \"<<head->toString()<<\": {\"<<std::endl;\n";
+                            *out << ind << "for(int i=0;i<itReason.first->second.get()->size();i++){if(i>0) std::cout <<\",\"; int id = itReason.first->second.get()->at(i) > 0 ? itReason.first->second.get()->at(i) : -itReason.first->second.get()->at(i); std::cout << factory.getTupleFromInternalID(id)->toString();}\n";
+                                    *out << ind << "std::cout << \"}\"<<std::endl;\n";
+                                #endif
                             *out << --ind << "}\n";
                             #ifdef TRACE_PROPAGATOR
                                 *out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -6707,6 +6737,11 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                             *out << ind << "auto itReason = reasonForLiteral.emplace(it,shared_reason);\n";
                                 *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                                     *out << ind-- << "itReason.first->second=shared_reason;\n";
+                            #ifdef TRACE_REASON
+                                *out << ind << "std::cout << \"Reason of \"<<currentBody->toString()<<\": {\"<<std::endl;\n";
+                            *out << ind << "for(int i=0;i<itReason.first->second.get()->size();i++){if(i>0) std::cout <<\",\"; int id = itReason.first->second.get()->at(i) > 0 ? itReason.first->second.get()->at(i) : -itReason.first->second.get()->at(i); std::cout << factory.getTupleFromInternalID(id)->toString();}\n";
+                                *out << ind << "std::cout << \"}\"<<std::endl;\n";
+                            #endif
                         *out << --ind << "}\n";
                         #ifdef TRACE_PROPAGATOR
                             *out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -6734,6 +6769,11 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                             *out << ind << "auto itReason = reasonForLiteral.emplace(-it,shared_reason);\n";
                             *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                                 *out << ind-- << "itReason.first->second=shared_reason;\n";
+                            #ifdef TRACE_REASON
+                                *out << ind << "std::cout << \"Reason of \"<<currentBody->toString()<<\": {\"<<std::endl;\n";
+                            *out << ind << "for(int i=0;i<itReason.first->second.get()->size();i++){if(i>0) std::cout <<\",\"; int id = itReason.first->second.get()->at(i) > 0 ? itReason.first->second.get()->at(i) : -itReason.first->second.get()->at(i); std::cout << factory.getTupleFromInternalID(id)->toString();}\n";
+                                *out << ind << "std::cout << \"}\"<<std::endl;\n";
+                            #endif
                         *out << --ind << "}\n";
                             #ifdef TRACE_PROPAGATOR
                                 *out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -6805,6 +6845,11 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                     *out << ind << "auto itReason = reasonForLiteral.emplace(itProp,shared_reason);\n";
                                     *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                                         *out << ind-- << "itReason.first->second=shared_reason;\n";
+                                    #ifdef TRACE_REASON
+                                        *out << ind << "std::cout << \"Reason of \"<<currentTuple->toString()<<\": {\"<<std::endl;\n";
+                            *out << ind << "for(int i=0;i<itReason.first->second.get()->size();i++){if(i>0) std::cout <<\",\"; int id = itReason.first->second.get()->at(i) > 0 ? itReason.first->second.get()->at(i) : -itReason.first->second.get()->at(i); std::cout << factory.getTupleFromInternalID(id)->toString();}\n";
+                                        *out << ind << "std::cout << \"}\"<<std::endl;\n";
+                                    #endif
                                 *out << --ind << "}\n";
                                 #ifdef TRACE_PROPAGATOR
                                     *out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -6826,6 +6871,11 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                     *out << ind << "auto itReason = reasonForLiteral.emplace(itProp,shared_reason);\n";
                                     *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                                         *out << ind-- << "itReason.first->second=shared_reason;\n";
+                                    #ifdef TRACE_REASON
+                                        *out << ind << "std::cout << \"Reason of \"<<currentTuple->toString()<<\": {\"<<std::endl;\n";
+                            *out << ind << "for(int i=0;i<itReason.first->second.get()->size();i++){if(i>0) std::cout <<\",\"; int id = itReason.first->second.get()->at(i) > 0 ? itReason.first->second.get()->at(i) : -itReason.first->second.get()->at(i); std::cout << factory.getTupleFromInternalID(id)->toString();}\n";
+                                        *out << ind << "std::cout << \"}\"<<std::endl;\n";
+                                    #endif
                                 *out << --ind << "}\n";
                                 #ifdef TRACE_PROPAGATOR
                                     *out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -6863,6 +6913,11 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                         *out << ind << "auto itReason = reasonForLiteral.emplace(-it,shared_reason);\n";
                                         *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                                             *out << ind-- << "itReason.first->second=shared_reason;\n";
+                                        #ifdef TRACE_REASON
+                                            *out << ind << "std::cout << \"Reason of \"<<factory.getTupleFromInternalID(*tuplesU->begin())->toString()<<\": {\"<<std::endl;\n";
+                            *out << ind << "for(int i=0;i<itReason.first->second.get()->size();i++){if(i>0) std::cout <<\",\"; int id = itReason.first->second.get()->at(i) > 0 ? itReason.first->second.get()->at(i) : -itReason.first->second.get()->at(i); std::cout << factory.getTupleFromInternalID(id)->toString();}\n";
+                                            *out << ind << "std::cout << \"}\"<<std::endl;\n";
+                                        #endif
                                     *out << --ind << "}\n";
                                     #ifdef TRACE_PROPAGATOR
                                         *out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -6876,6 +6931,11 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                         *out << ind << "auto itReason = reasonForLiteral.emplace(-it,shared_reason);\n";
                                         *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                                             *out << ind-- << "itReason.first->second=shared_reason;\n";
+                                        #ifdef TRACE_REASON
+                                            *out << ind << "std::cout << \"Reason of \"<<factory.getTupleFromInternalID(it)->toString()<<\": {\"<<std::endl;\n";
+                                            *out << ind << "for(int i=0;i<itReason.first->second.get()->size();i++){if(i>0) std::cout <<\",\"; int id = itReason.first->second.get()->at(i) > 0 ? itReason.first->second.get()->at(i) : -itReason.first->second.get()->at(i); std::cout << factory.getTupleFromInternalID(id)->toString();}\n";
+                                            *out << ind << "std::cout << \"}\"<<std::endl;\n";
+                                        #endif
                                     *out << --ind << "}\n";
                                     #ifdef TRACE_PROPAGATOR
                                         *out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -6892,6 +6952,11 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                         *out << ind << "auto itReason = reasonForLiteral.emplace(-it,shared_reason);\n";
                                         *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                                             *out << ind-- << "itReason.first->second=shared_reason;\n";
+                                        #ifdef TRACE_REASON
+                                            *out << ind << "std::cout << \"Reason of \"<<factory.getTupleFromInternalID(it)->toString()<<\": {\"<<std::endl;\n";
+                            *out << ind << "for(int i=0;i<itReason.first->second.get()->size();i++){if(i>0) std::cout <<\",\"; int id = itReason.first->second.get()->at(i) > 0 ? itReason.first->second.get()->at(i) : -itReason.first->second.get()->at(i); std::cout << factory.getTupleFromInternalID(id)->toString();}\n";
+                                            *out << ind << "std::cout << \"}\"<<std::endl;\n";
+                                        #endif
                                     *out << --ind << "}\n";
                                     #ifdef TRACE_PROPAGATOR
                                         *out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -6905,6 +6970,11 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                         *out << ind << "auto itReason = reasonForLiteral.emplace(-it,shared_reason);\n";
                                         *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                                             *out << ind-- << "itReason.first->second=shared_reason;\n";
+                                        #ifdef TRACE_REASON
+                                            *out << ind << "std::cout << \"Reason of \"<<factory.getTupleFromInternalID(it)->toString()<<\": {\"<<std::endl;\n";
+                            *out << ind << "for(int i=0;i<itReason.first->second.get()->size();i++){if(i>0) std::cout <<\",\"; int id = itReason.first->second.get()->at(i) > 0 ? itReason.first->second.get()->at(i) : -itReason.first->second.get()->at(i); std::cout << factory.getTupleFromInternalID(id)->toString();}\n";
+                                            *out << ind << "std::cout << \"}\"<<std::endl;\n";
+                                        #endif
                                     *out << --ind << "}\n";
                                     #ifdef TRACE_PROPAGATOR
                                         *out << ind << "std::cout<<\"propagation from rule: "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -7486,7 +7556,11 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                         #endif
                         *out << ind++ << "if(!itReason.second && itReason.first->second.get()->empty())\n";
                             *out << ind-- << "itReason.first->second=shared_reason;\n";
-
+                        #ifdef TRACE_REASON
+                            *out << ind << "std::cout << \"Reason of \"<<tupleU->toString()<<\": {\"<<itReason.first->second.get()->size()<<std::endl;\n";
+                            *out << ind << "for(int i=0;i<itReason.first->second.get()->size();i++){if(i>0) std::cout <<\",\"; int id = itReason.first->second.get()->at(i) > 0 ? itReason.first->second.get()->at(i) : -itReason.first->second.get()->at(i); std::cout << factory.getTupleFromInternalID(id)->toString();}\n";
+                            *out << ind << "std::cout << \"}\"<<std::endl;\n";
+                        #endif
                     *out << --ind << "}\n";
                 }
                 #ifdef TRACE_PROPAGATOR
