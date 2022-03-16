@@ -2138,15 +2138,15 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     *out << ind++ << "void Executor::undefLiteralsReceived(){\n";
         // *out << ind << "exit(180);\n";
-        *out << ind++ << "if(undefinedLoaded)\n";
-            *out << ind-- << "return;\n";
+        *out << ind << "factory.setGenerated(true);\n";
 
         #ifdef TRACE_PROPAGATOR
         *out << ind << "std::cout<<\"Undef received\"<<std::endl;\n";
         #endif
         *out << ind << "undefinedLoaded=true;\n";
-        *out << ind << "std::cout<<\"Undef received\"<<std::endl;\n";
+        *out << ind << "std::cout<<\"Undef received \"<<factory.size()<<std::endl;\n";
         buildGenerator(builder,program);
+        *out << ind << "std::cout<<\"Generated\"<<factory.size()<<std::endl;\n";
         *out << ind << "visitedExplainLiteral.resize(2*factory.size());\n";
         *out << ind << "explainLevel=1;\n";
         // *out << ind++ << "{\n";
@@ -3328,6 +3328,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     if (mode == LAZY_MODE) {
     } else {
         *out << ind++ << "if(decisionLevel == -1) {\n";
+            *out << ind++ << "if(!factory.isGenerated()) undefLiteralsReceived();\n";
             #ifdef TRACE_PROPAGATOR
                 *out << ind << "std::cout<<\"level -1\"<<std::endl;\n";
             #endif

@@ -26,12 +26,13 @@
 #include <bitset>
 #include <cmath>
 
-const unsigned termsBit = /*sizeof(int)*CHAR_BIT;*/(2*sizeof(int)*CHAR_BIT) - sizeof(int)*CHAR_BIT/2; 
+const unsigned termsBit = (2*sizeof(int)*CHAR_BIT) - sizeof(int)*CHAR_BIT/2; 
 const size_t maskTerms = (std::pow(2,termsBit)-1);
     
 struct TuplePointerHash {
     inline std::size_t operator()(const TupleLight* v) const {
-        std::size_t seed = reinterpret_cast<size_t>(v->getPredicateName());
+        std::size_t pred = reinterpret_cast<size_t>(v->getPredicateName());
+        std::size_t seed=0;
         int size =v->size();
         bool even = size%2==1;
         int start= even ? 1 : 0;
@@ -56,6 +57,7 @@ class TupleFactory{
         std::unordered_map<int,TupleLight*> waspIDToTuple;
         std::list<TupleLight> storage;
         std::unordered_map<const std::string*,unsigned> aggregateSetToIndex;
+        bool generated;
 
     public:
         static TupleLight bufferTuple;
@@ -66,6 +68,7 @@ class TupleFactory{
             storage.push_back(TupleLight());
             internalIDToTuple.push_back(&storage.back());
             AggregateSetCmp::factory=this;
+            generated=false;
         }
         
         ~TupleFactory(){
@@ -264,6 +267,10 @@ class TupleFactory{
             
             return tupleToInternalVar.load_factor();
         }
+
+        bool isGenerated()const {return generated;}
+        void setGenerated(bool gen){this->generated=gen;}
+        
 };
 
 

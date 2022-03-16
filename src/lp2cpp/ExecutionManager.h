@@ -61,6 +61,7 @@ public:
     const std::vector<std::vector<aspc::Literal> > & getFailedConstraints();
     void executeProgramOnFacts(const std::vector<aspc::Literal*> & facts);
     void executeProgramOnFacts(const std::vector<int> & facts,std::vector<int>& propagatedLiterals);
+    void initPropagator(const std::vector<int> & facts);
     const aspc::Executor & getExecutor();
     void shuffleFailedConstraints();
     void onLiteralTrue(const aspc::Literal* l);

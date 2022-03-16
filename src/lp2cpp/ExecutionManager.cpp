@@ -232,7 +232,11 @@ void ExecutionManager::executeProgramOnFacts(const std::vector<aspc::Literal*> &
     executor->executeProgramOnFacts(facts);
 
 }
-
+void ExecutionManager::initPropagator(const std::vector<int> & facts) {
+    if(executor) {
+        executor->initPropagator(facts);
+    }
+}
 void ExecutionManager::executeProgramOnFacts(const std::vector<int> & facts,std::vector<int>& propagatedLiterals) {
     
     if(executor) {
