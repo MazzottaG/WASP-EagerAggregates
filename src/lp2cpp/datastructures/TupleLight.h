@@ -154,6 +154,7 @@ public:
     }
     
     bool operator==(const TupleLight& right) const {
+
         if (predicateName != right.predicateName || size_ != right.size_) {
             return false;
         }

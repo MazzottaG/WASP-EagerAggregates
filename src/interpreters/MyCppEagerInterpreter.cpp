@@ -67,12 +67,14 @@ void MyCppEagerInterpreter::callListMethod(const string& method_name, const vect
         
     } else if(method_name == method_plugins_onStartingSolver) {
         cout<<"Starting solver using CPP eager propagator on "<<eagerConstraint.getFilepath()<<endl;
-        eagerConstraint.notifyStartingSolver();
+        // eagerConstraint.notifyStartingSolver();
         
     } else if(method_name == method_plugins_simplifyAtLevelZero) {
         eagerConstraint.simplifyAtLevelZero(output);
     } else if(method_name == method_plugins_addedVars){
-        eagerConstraint.callGenerator();
+        // Generator is called into propagator call from simplifyAtLevel0
+        // eagerConstraint.callGenerator();
+
     }
 
 }

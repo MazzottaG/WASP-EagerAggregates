@@ -2197,6 +2197,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::vector<int> terms;\n";
         *out << ind << "const std::string* predicate = parseTuple(atom,terms);\n";
         *out << ind << "Tuple* t = factory.addNewTuple(terms,predicate,var);\n";
+
         //  *out << ind << "factory.addNewTuple(std::array<int>(terms.data()),predicate,var);\n";
     *out << --ind << "}\n";
     // ---------------------- end addedVarName(int var, const std::string & atom) --------------------------------------//
@@ -5156,6 +5157,7 @@ void CompilationManager::buildGeneratorForRecursiveComponent(std::vector<int> co
     findExitRuleForComponent(component,builder,exitRules,rules,stackPredicates);
     *out << ind++ << "{\n";
         *out << ind << "std::vector<int> generationStack;\n";
+
     for(aspc::Atom fact : builder->getFacts()){
         bool found =false;
         int id = rewrittenProgram->getGeneratorPredicateId(fact.getPredicateName());

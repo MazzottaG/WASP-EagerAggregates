@@ -31,14 +31,13 @@ const size_t maskTerms = (std::pow(2,termsBit)-1);
     
 struct TuplePointerHash {
     inline std::size_t operator()(const TupleLight* v) const {
-        std::size_t pred = reinterpret_cast<size_t>(v->getPredicateName());
-        std::size_t seed=0;
+        std::size_t seed=reinterpret_cast<size_t>(v->getPredicateName());;
         int size =v->size();
         bool even = size%2==1;
         int start= even ? 1 : 0;
         if(even)
             seed ^= v->at(0) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-        for (int i=start; i < size-1; i++) {
+        for (int i=start; i < size-1; i+=2) {
             seed ^= ((std::size_t)v->at(i)) + (((std::size_t)v->at(i+1))<<32) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         }
         return seed;
@@ -270,7 +269,6 @@ class TupleFactory{
 
         bool isGenerated()const {return generated;}
         void setGenerated(bool gen){this->generated=gen;}
-        
 };
 
 
