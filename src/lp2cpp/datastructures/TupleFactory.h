@@ -248,11 +248,6 @@ class TupleFactory{
                     break;
                 }
             }
-            // std::cout << "Min Bucket: "<<min_bucket<<std::endl;
-            // for(TupleLight* t : tupleToInternalVar){
-            //     if(tupleToInternalVar.bucket(t) == min_bucket)
-            //         t->print();
-            // }
             std::cout << "Avg Bucket: "<<avg_bucket<<" "<<buckets[avg_bucket]<<std::endl;
             for(TupleLight* t : tupleToInternalVar){
                 if(tupleToInternalVar.bucket(t) == avg_bucket)
@@ -266,7 +261,43 @@ class TupleFactory{
             
             return tupleToInternalVar.load_factor();
         }
+        void printStats(){
+            std::cout << "FACTORY::TupleCount "<<storage.size()<<std::endl;
+            std::cout << "FACTORY::BucketCount "<<tupleToInternalVar.bucket_count()<<std::endl;
+            std::vector<int> bucketsLoad(tupleToInternalVar.bucket_count(),0);
+            for(TupleLight* t : tupleToInternalVar){
+                bucketsLoad[tupleToInternalVar.bucket(t)]++;
+            }
+            float countNotEmptyBucket=0;
+            float avgLoadForNotEmptyBucket=0;
+            int mostLoadedBucket=0;
+            int maxLoad=0;
+            int minLoadedBucket=0;
+            int minLoad=0;
+            for(int i=0; i<tupleToInternalVar.bucket_count();i++){
+                if(bucketsLoad[i]>0){
+                    countNotEmptyBucket+=1;
+                    avgLoadForNotEmptyBucket+=bucketsLoad[i];
+                    if(bucketsLoad[i]>maxLoad){
+                        maxLoad=bucketsLoad[i];
+                        mostLoadedBucket=i;
+                    }
+                    if(bucketsLoad[i]<minLoad || minLoad ==0){
+                        minLoad=bucketsLoad[i];
+                        minLoadedBucket=i;
+                    }
+                }
 
+            }
+            avgLoadForNotEmptyBucket/=countNotEmptyBucket;
+
+            std::cout << "FACTORY::NonEmptyBucket% "<<(countNotEmptyBucket/(float)bucketsLoad.size())*100<<std::endl;
+            std::cout << "FACTORY::AvgLoadNonEmptyBucket "<<avgLoadForNotEmptyBucket<<std::endl;
+            
+            std::cout << "FACTORY::MinLoadedBucketSize "<<minLoad<<std::endl;
+            std::cout << "FACTORY::MaxLoadedBucketSize "<<maxLoad<<std::endl;
+
+        }
         bool isGenerated()const {return generated;}
         void setGenerated(bool gen){this->generated=gen;}
 };

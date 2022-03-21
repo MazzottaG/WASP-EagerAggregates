@@ -92,7 +92,7 @@ void ExecutionManager::launchExecutorOnFile(const char *filename) {
 void ExecutionManager::onLearning( const Solver& solver, Learning* strategy, Literal lit ){
     // std::cout << "onLearning" << lit.getId() <<std::endl;
     
-    UnorderedSet<int> reason;
+    std::vector<int> reason;
     // executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reason);
     executor->explainExternalLiteral(lit.getOppositeLiteral().getId(),reason);
     // sort(reason.begin(),reason.end());
@@ -111,7 +111,7 @@ Reason* ExecutionManager::getPostponedeReason(Literal lit){
         return this;
     }
     if(lit.getVariable()==1){
-        const UnorderedSet<int>* conflictReason = &executor->getConflictReason();
+        const std::vector<int>* conflictReason = &executor->getConflictReason();
         Clause* clause = new Clause();
         clause->addLiteral(Literal::null);
         for(int i=0;i<conflictReason->size();i++){
@@ -121,7 +121,7 @@ Reason* ExecutionManager::getPostponedeReason(Literal lit){
         return clause;
     }
 
-    UnorderedSet<int> reason;
+    std::vector<int> reason;
     // executor->explainAggrLiteral(lit.getId(),reason);
     executor->explainExternalLiteral(lit.getId(),reason);
     // sort(reason.begin(),reason.end());
@@ -140,7 +140,7 @@ Reason* ExecutionManager::getPostponedeReason(Literal lit){
 bool ExecutionManager::onNavigatingLiteralForAllMarked( const Solver& solver, Learning* strategy, Literal lit ) {
     // std::cout << "onNavigatingLiteralForAllMarked Execution Manager" <<std::endl;
 
-    UnorderedSet<int> reas ;
+    std::vector<int> reas ;
     // executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reas);
     executor->explainExternalLiteral(lit.getOppositeLiteral().getId(),reas);
     // for(int i=0;i<reas.size();i++){
@@ -163,7 +163,7 @@ ostream& ExecutionManager::print( ostream& out ) const{
 void ExecutionManager::onNavigatingForUnsatCore( const Solver& solver, vector< unsigned int >& visited, unsigned int numberOfCalls, Literal lit ){
     // std::cout << "onNavigatingForUnsatCore" <<std::endl;
     
-    UnorderedSet<int> reas ;
+    std::vector<int> reas ;
     // executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reas);
     executor->explainExternalLiteral(lit.getOppositeLiteral().getId(),reas);
     
@@ -185,7 +185,7 @@ void ExecutionManager::parseFactsAndExecute(const char *filename) {
 
 }
 
-#ifndef LP2CPP_DEBUG
+#ifndef STATIC_COMPILE
 
 void ExecutionManager::compileDynamicLibrary(const string & executablePath, bool fileHasChanged) {
 
@@ -208,7 +208,6 @@ void ExecutionManager::compileDynamicLibrary(const string & executablePath, bool
         fprintf(stderr, "%s\n", dlerror());
         exit(EXIT_FAILURE);
     }
-    #ifndef STATIC_COMPILE
         aspc::Executor * (*create)();
 
 
@@ -217,9 +216,6 @@ void ExecutionManager::compileDynamicLibrary(const string & executablePath, bool
         destroy = (void (*)(aspc::Executor*))dlsym(handle, "destroy_object");
 
         executor = (aspc::Executor*) create();
-    #else
-        executor = new aspc::Executor();
-    #endif
 }
 #else 
 

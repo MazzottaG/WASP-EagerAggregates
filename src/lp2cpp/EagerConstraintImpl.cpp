@@ -317,7 +317,6 @@ void EagerConstraintImpl::simplifyAtLevelZero(std::vector<int>& output) {
             inputInterpretation.push_back(fact);
         }
     }
-    executionManager.initPropagator(inputInterpretation);
     executionManager.executeProgramOnFacts(inputInterpretation,output);
     // executionManager.simplifyAtLevelZero(output);
     //executionManager.clearPropagations();
