@@ -702,9 +702,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "std::unordered_map<std::string, const std::string * > stringToUniqueStringPointer;\n";
 
     *out << ind << "TupleFactory factory;\n";
-
     *out << ind++ << "const std::string* parseTuple(const std::string & literalString,std::vector<int>& terms) {\n";
-
     *out << ind << "std::string predicateName;\n";
     *out << ind << "unsigned i = 0;\n";
     *out << ind++ << "for (i = 0; i < literalString.size(); i++) {\n";
@@ -1148,9 +1146,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "Tuple* tuple = factory.getTupleFromWASPID(uVar);\n";
         *out << ind << "std::string minus = var < 0 ? \"-\" : \"\";\n";
         // *out << ind << "trace_msg(eagerprop, 2, \"Literal true received \" << minus << tuple->toString());\n";
-        #if defined(TRACE_PROPAGATOR) || defined(TRACE_PROPAGATION)
-        *out << ind << "std::cout<<\"True \" << minus << tuple->toString()<<std::endl;\n";
-        #endif
+        
         *out << ind << "if(var<0) falseLits.push_back(-tuple->getId());\n";
         *out << ind << "std::unordered_map<const std::string*,int>::iterator sum_it;\n";
         *out << ind << "TruthStatus truth = var>0 ? True : False;\n";
@@ -1165,7 +1161,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 *out << ind << "insertFalse(insertResult);\n";
             *out << --ind << "}\n";
         *out << --ind << "}\n";
-
+        #if defined(TRACE_PROPAGATOR) || defined(TRACE_PROPAGATION)
+        // *out << ind << "std::cout<<\"True \" << minus << tuple->toString()<<std::endl;\n";
+        *out << ind << "std::cout<<\"True \";tuple->print();\n";
+        #endif
         for(int ruleId=0;ruleId < program.getRules().size(); ruleId++){
             const aspc::Rule* rule = &program.getRules()[ruleId];
             if(!rule->containsAggregate() || rule->isConstraint()) continue;
@@ -1246,13 +1245,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "if(reas!=reasonForLiteral.end())reas->second.get()->clear();\n";
         *out << ind << "std::string minus = var < 0 ? \"-\" : \"\";\n";
 
-        #if defined(TRACE_PROPAGATOR) || defined(TRACE_PROPAGATION)
-        *out << ind++ << "if(tuple == NULL)\n";
-            *out << ind-- << "std::cout<<\"Unable to find tuple \"<<var<<std::endl;\n";
-        *out << ind++ << "else\n";
-            *out << ind-- << "std::cout<<\"Undef \" <<var << \" \" << minus << tuple->toString()<<std::endl;\n";
-        #endif
-
+        
 #ifdef EAGER_DEBUG
         *out << ind << "std::cout<<\"on literal undef \";\n";
         *out << ind << "std::cout<<var<<\"\\n\";\n";
@@ -1266,8 +1259,16 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind << "factory.removeFromCollisionsList(tuple->getId());\n";
             *out << ind << "insertUndef(insertResult);\n";
         *out << --ind << "}\n";
+        #if defined(TRACE_PROPAGATOR) || defined(TRACE_PROPAGATION)
+        // *out << ind++ << "if(tuple == NULL)\n";
+        //     *out << ind-- << "std::cout<<\"Unable to find tuple \"<<var<<std::endl;\n";
+        // *out << ind++ << "else\n";
+        //     *out << ind-- << "std::cout<<\"Undef \" <<var << \" \" << minus << tuple->toString()<<std::endl;\n";
+        
+        *out << ind-- << "std::cout<<\"Undef \"; tuple->print();\n";
+        #endif
 
-        *out << ind++ << "if(currentDecisionLevel >= 0){\n";
+        *out << ind++ << "if(currentDecisionLevel > 0){\n";
         for(int ruleId=0; ruleId < program.getRules().size();ruleId++){
             const aspc::Rule* rule = &program.getRules()[ruleId];
             if(rule->isConstraint() || !rule->containsAggregate()) continue;
@@ -1848,30 +1849,41 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 #endif
                 *out << ind++ << "if(!unfoundedSetForComponent"<<componentId<<".empty()){\n";
                     *out << ind << "int conflictDetected=0;\n";
+                    *out << ind << "int currentExplainLevel = executor->getNextExplainLevel();\n";
                     *out << ind << "std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();\n";
                     *out << ind << "std::vector<int> propLiterals({currentDecisionLevel});\n";
-                    #ifdef TRACE_PROPAGATOR
-                        *out << ind << "std::cout << \" Computing Reason \"<<std::endl;\n";
-                    #endif
+                    *out << ind << "std::vector<int> reasonStack;\n";
                     *out << ind++ << "for(int lit : unfoundedSetForComponent"<<componentId<<"){\n";
                         *out << ind << "Tuple* starter = factory.getTupleFromInternalID(lit);\n";
                         *out << ind << "if(starter == NULL || starter->isFalse() || foundnessFactory[lit]>=0) continue;\n";
-                        *out << ind << "foundnessFactory[lit]=1;\n";
-                        *out << ind << "bool propagated=false;\n";
-                        *out << ind << "bool reasonStored=false;\n";
-                        *out << ind << "auto oldSP = sourcePointers"<<componentId<<".find(lit);\n";
-                        *out << ind++ << "if(oldSP!=sourcePointers"<<componentId<<".end()){\n";
-                            *out << ind << "supportedLiterals"<<componentId<<"[oldSP->second].push_back(lit);\n";
-                            #ifdef TRACE_PROPAGATOR
-                                *out << ind << "Tuple* spTuple = factory.getTupleFromInternalID(oldSP->second);\n";
-                                *out << ind << "Tuple* tuple = factory.getTupleFromInternalID(lit);\n";
-                                *out << ind << "std::cout << spTuple->toString() << \" supports \"<<tuple->toString()<<std::endl;\n";
-                            #endif
-
+                        *out << ind++ << "if(";
+                        for(int predId=0;predId < scc[componentId].size();predId++){
+                            std::string predName = program->getPredicateName(scc[componentId][predId]);
+                            if(predId > 0) *out << " || "; 
+                            *out << "starter->getPredicateName()==&_"<<predName;
+                        }
+                        *out << "){\n";
+                            *out << ind << "if(starter->isTrue() && conflictDetected==0) conflictDetected=-lit;\n";
+                            *out << ind << "propLiterals.push_back(-lit);\n";
+                            *out << ind << "int& visitedLevel = visitedExplainLiteral[lit];\n";
+                            *out << ind++ << "if(visitedLevel!=currentExplainLevel){\n";
+                                *out << ind << "visitedLevel = currentExplainLevel;\n";
+                                *out << ind << "reasonStack.push_back(lit);\n";
+                            *out << --ind << "}\n";
+                            *out << ind << "reasonForLiteral[-lit]=shared_reason;\n";
                         *out << --ind << "}\n";
-                        #ifdef TRACE_PROPAGATOR
-                        *out << ind << "else std::cout << \"No SP for : \"<<starter->toString()<<std::endl;\n";
-                        #endif
+                    *out << --ind << "}\n";
+                    #ifdef TRACE_PROPAGATOR
+                        *out << ind << "std::cout << \" Computing Reason \"<<std::endl;\n";
+                    #endif
+                    *out << ind++ << "if(currentDecisionLevel > 0){\n";
+                        *out << ind++ << "while(!reasonStack.empty()){\n";
+                            *out << ind << "int lit = reasonStack.back();\n";
+                            *out << ind << "reasonStack.pop_back();\n";
+                            *out << ind << "Tuple* starter = factory.getTupleFromInternalID(lit);\n";
+                            #ifdef TRACE_PROPAGATION
+                            *out << ind << "std::cout << \"Searching reason for: \";starter->print();\n";
+                            #endif
                             #ifdef TRACE_PROPAGATOR
                                 *out << ind << "std::cout << \"     Searching False Body for \"<<starter->toString()<<std::endl;\n";
                             #endif
@@ -1914,22 +1926,18 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                 }
                                             }
                                             if(head != NULL && body!=NULL){
+                                                // h:-b || :-sup, not h || h :- aux || sup:-b || sup :- aux
+                                                // for exit rule must be considered
+                                                //      h:-b
+                                                //      h:-aux
+                                                //      :-sup not h
                                                 if(isExitRule && head->getPredicateName()!=predName) continue;
+
                                                 std::string printElse = addElse ? "": "";
                                                 addElse=true;
                                                 *out << ind++ <<printElse<< "if(starter->getPredicateName() == &_"<<head->getPredicateName()<<"){\n";
                                                 std::unordered_set<std::string> boundTerms;
-                                                if(head->getPredicateName()==predName){
-                                                    *out << ind << "if(starter->isTrue() && conflictDetected==0) conflictDetected=-lit;\n";
-                                                    *out << ind++ << "if(!propagated){\n";
-                                                        *out << ind << "propLiterals.push_back(-lit);\n";
-                                                        *out << ind << "propagated=true;\n";
-                                                    *out << --ind << "}\n"; 
-                                                }
-                                                *out << ind++ << "if(currentDecisionLevel > 0){\n";
-                                                    *out << ind << "if(!reasonStored){reasonForLiteral[-lit]=shared_reason; reasonStored=true;}\n";
-                                                unsigned closinPars =2;
-
+                                                unsigned closinPars =1;
                                                 for(unsigned k = 0; k < head->getAriety(); k++){
                                                     std::string term = head->isVariableTermAt(k) || isInteger(head->getTermAt(k)) ? head->getTermAt(k) : "ConstantsManager::getInstance().mapConstant(\""+head->getTermAt(k)+"\")";
                                                     if(head->isVariableTermAt(k) && boundTerms.count(head->getTermAt(k))==0){
@@ -1940,7 +1948,12 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                         closinPars++;
                                                     }
                                                 }
+                                                // unfounded must be navigated only for recursive rule of the form
+                                                //      :-sup, not h
+                                                bool navigateUnfounded=!isExitRule && head->getPredicateName()==predName && builder->isSupPredicate(body->getPredicateName());
+                                                
                                                 if(body->isBoundedLiteral(boundTerms)){
+
                                                     std::string terms="";
                                                     for(unsigned k = 0; k < body->getAriety(); k++){
                                                         std::string term = body->isVariableTermAt(k) || isInteger(body->getTermAt(k)) ? body->getTermAt(k) : "ConstantsManager::getInstance().mapConstant(\""+body->getTermAt(k)+"\")";
@@ -1949,7 +1962,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                         terms+=term;
                                                     }
                                                     *out << ind << "Tuple* tuple = factory.find({"<<terms<<"},&_"<<body->getPredicateName()<<");\n";
-                                                    *out << ind++ << "if(tuple!=NULL && tuple->isFalse()){\n";
+                                                    *out << ind++ << "if(tuple!=NULL){\n";
                                                     closinPars++;
 
                                                 }else{
@@ -1969,18 +1982,42 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                         *out << k << "_";
                                                     }
                                                     *out << ".getValuesVec({"<<terms<<"});\n";
+                                                    if(navigateUnfounded){
+                                                        // undefined must be navigated only for recursive rule in the following cases
+                                                        //      :-sup, not h 
+                                                        //      h :- aux (it might be avoided since aux are not navigated)
+                                                        *out << ind << "const std::vector<int>* tuplesU = &u"<<body->getPredicateName()<<"_";
+                                                        for(unsigned k : boundIndices){
+                                                            *out << k << "_";
+                                                        }
+                                                        *out << ".getValuesVec({"<<terms<<"});\n";
 
-                                                    *out << ind++ << "for(unsigned i=0; i<tuplesF->size();i++){\n";
-                                                    closinPars++;
-                                                        *out << ind << "Tuple* tuple = factory.getTupleFromInternalID(tuplesF->at(i));\n";
+                                                        *out << ind++ << "for(unsigned i=0; i<tuplesF->size()+tuplesU->size();i++){\n";
+                                                        closinPars++;
+                                                            *out << ind << "Tuple* tuple = i<tupleF->size() ? factory.getTupleFromInternalID(tuplesF->at(i)) : factory.getTupleFromInternalID(tuplesU->at(i-tuplesF->size()));\n";
+                                                    }else{
+                                                        *out << ind++ << "for(unsigned i=0; i<tuplesF->size();i++){\n";
+                                                        closinPars++;
+                                                            *out << ind << "Tuple* tuple =factory.getTupleFromInternalID(tuplesF->at(i));\n";
+                                                    }
                                                         *out << ind++ << "if(tuple!=NULL){\n";
                                                         closinPars++;
                                                 }
                                                 #ifdef TRACE_PROPAGATOR
                                                     *out << ind << "std::cout << \"         Add To Reason ~\"<<tuple->toString()<<std::endl;\n";
                                                 #endif
-                                                *out << ind << "shared_reason.get()->insert(-tuple->getId());\n";
-
+                                                *out << ind++ << "if(tuple->isFalse())\n";
+                                                    *out << ind-- << "shared_reason.get()->insert(-tuple->getId());\n";
+                                                if(navigateUnfounded){
+                                                    *out << ind++ << "else if(foundnessFactory[tuple->getId()]<0){\n";
+                                                        *out << ind << "int& visitedLevel = visitedExplainLiteral[tuple->getId()];\n";
+                                                        *out << ind++ << "if(visitedLevel!=currentExplainLevel){\n";
+                                                            *out << ind << "visitedLevel = currentExplainLevel;\n";
+                                                            *out << ind << "reasonStack.push_back(tuple->getId());\n";
+                                                        *out << --ind << "}\n";
+                                                    *out << --ind << "}\n";
+                                                }
+                                                
                                                 while (closinPars>0){
                                                     *out << --ind << "}\n";
                                                     closinPars--;
@@ -1991,10 +2028,27 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                     }
                                 }
                             }
-                            // *out << ind << "else{ continue; }\n";
-
-
+                        *out << --ind << "}\n";
                     *out << --ind << "}\n";
+                    *out << ind++ << "for(int lit : unfoundedSetForComponent"<<componentId<<"){\n";
+                        *out << ind << "Tuple* starter = factory.getTupleFromInternalID(lit);\n";
+                        *out << ind << "if(starter == NULL || starter->isFalse() || foundnessFactory[lit]>=0) continue;\n";
+                        *out << ind << "foundnessFactory[lit]=1;\n";
+                        *out << ind << "auto oldSP = sourcePointers"<<componentId<<".find(lit);\n";
+                        *out << ind++ << "if(oldSP!=sourcePointers"<<componentId<<".end()){\n";
+                            *out << ind << "supportedLiterals"<<componentId<<"[oldSP->second].push_back(lit);\n";
+                            #ifdef TRACE_PROPAGATOR
+                                *out << ind << "Tuple* spTuple = factory.getTupleFromInternalID(oldSP->second);\n";
+                                *out << ind << "Tuple* tuple = factory.getTupleFromInternalID(lit);\n";
+                                *out << ind << "std::cout << spTuple->toString() << \" supports \"<<tuple->toString()<<std::endl;\n";
+                            #endif
+
+                        *out << --ind << "}\n";
+                        #ifdef TRACE_PROPAGATOR
+                        *out << ind << "else std::cout << \"No SP for : \"<<starter->toString()<<std::endl;\n";
+                        #endif
+                    *out << --ind << "}\n";
+
                     *out << ind++ << "if(conflictDetected!=0) {\n";
                         #ifdef TRACE_PROGATATOR
                             *out << ind << "std::cout << \" Conflict detected:  Unfounded literal already true\"<<tuple->toString()<<std::endl;\n";
@@ -2007,8 +2061,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                             *out << ind << "std::cout << \" Propagating Unfounded set\"<<std::endl;\n";
                         #endif
                         #ifdef TRACE_PROPAGATION
-                            *out << ind << "std::cout << \"Unfounded set reason: {\";\n";
-                            *out << ind << "for(int i =0; i<shared_reason.get()->size();i++){ int uVar = shared_reason.get()->at(i) > 0 ? shared_reason.get()->at(i) : -shared_reason.get()->at(i); std::cout << factory.getTupleFromInternalID(uVar)->toString() <<\" \";}\n";
+                            *out << ind << "std::cout << \"Unfounded set reason: {\"<<std::endl;\n";
+                            *out << ind << "for(int i =0; i<shared_reason.get()->size();i++){ int uVar = shared_reason.get()->at(i) > 0 ? shared_reason.get()->at(i) : -shared_reason.get()->at(i); std::cout <<\"   \";factory.getTupleFromInternalID(uVar)->print();}\n";
                             *out << ind << "std::cout << \"}\"<<std::endl;\n";
                         #endif
                             *out << ind << "executor->executeProgramOnFacts(propLiterals,literalToPropagate,true);\n";
@@ -2152,6 +2206,25 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::cout<<\"Undef received \"<<factory.size()<<std::endl;\n";
         buildGenerator(builder,program);
         *out << ind << "std::cout<<\"Generated\"<<factory.size()<<std::endl;\n";
+        // *out << ind << "factory.printStats();\n";
+        // *out << ind << "std::cout << \"Reach size: \" << ureachable_color_.getValuesVec({}).size()<<std::endl;\n";
+
+        // *out << ind << "for(int id : ureachable_color_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
+        // *out << ind << "for(int id : preachable_color_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
+        // *out << ind << "for(int id : ue_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
+        // *out << ind << "for(int id : pe_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
+        // *out << ind << "for(int id : uvertex_color_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
+        // *out << ind << "for(int id : pvertex_color_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
+        // *out << ind << "for(int id : ugtnumber_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
+        // *out << ind << "for(int id : pgtnumber_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
+        // *out << ind << "for(int id : ufirst_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
+        // *out << ind << "for(int id : pfirst_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
+        // *out << ind << "std::cout << \"reachable_color size:  \" << ureachable_color_.getValuesVec({}).size()+preachable_color_.getValuesVec({}).size()<<std::endl;\n";
+        // *out << ind << "std::cout << \"e size:                \" << ue_.getValuesVec({}).size()+pe_.getValuesVec({}).size()<<std::endl;\n";
+        // *out << ind << "std::cout << \"vertex_color size:     \" << uvertex_color_.getValuesVec({}).size()+pvertex_color_.getValuesVec({}).size()<<std::endl;\n";
+        // *out << ind << "std::cout << \"gtnumber size:         \" << ugtnumber_.getValuesVec({}).size()+pgtnumber_.getValuesVec({}).size()<<std::endl;\n";
+        // *out << ind << "std::cout << \"first size:            \" << ufirst_.getValuesVec({}).size()+pfirst_.getValuesVec({}).size()<<std::endl;\n";
+
         *out << ind << "visitedExplainLiteral.resize(2*factory.size());\n";
         *out << ind << "explainLevel=1;\n";
         // *out << ind++ << "{\n";
@@ -3280,11 +3353,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         // mode == EAGER_MODE
 
         //facts[0] is the decision level for eager mode (-1 is facts level)
-        *out << ind << "int decisionLevel = facts[0];\n";
-
         *out << ind << "currentDecisionLevel=solver->getCurrentDecisionLevel();\n";
-
         #ifdef TRACE_PROPAGATOR
+            *out << ind << "int decisionLevel = facts[0];\n";
             *out << ind << "std::cout<<\"Execute program on facts: decision level \"<<decisionLevel<<std::endl;\n";
             *out << ind << "std::cout<<\"Current Decision Level: \"<<currentDecisionLevel<<std::endl;\n";
         #endif
@@ -3305,7 +3376,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << --ind << "}\n";
     } else {
         // mode == EAGER_MODE
-
         #ifdef TRACE_PROPAGATOR
             *out << ind << "std::cout<<\"OnFacts \"<<facts.size()<<std::endl;\n";
             *out << ind << "std::cout<<\"facts read\"<<std::endl;\n";
@@ -3338,8 +3408,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     if (mode == LAZY_MODE) {
     } else {
-        *out << ind++ << "if(decisionLevel == -1) {\n";
-            *out << ind++ << "if(!factory.isGenerated()) undefLiteralsReceived();\n";
+        *out << ind++ << "if(!factory.isGenerated()) {\n";
+            *out << ind++ << "undefLiteralsReceived();\n";
             #ifdef TRACE_PROPAGATOR
                 *out << ind << "std::cout<<\"level -1\"<<std::endl;\n";
             #endif

@@ -308,6 +308,8 @@ public:
     }
     std::set<std::string> getBodyPredicates()const {return program.getBodyPredicates();}
     std::set<std::string> getHeadPredicates()const {return program.getHeadPredicates();}
+
+    bool isSupPredicate(const std::string& pred)const {return supPredicates.find(pred)!=supPredicates.end();}
 };
 
 #endif	/* ASPCORE2PROGRAMBUILDER_H */

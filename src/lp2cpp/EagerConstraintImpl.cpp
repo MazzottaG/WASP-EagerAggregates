@@ -310,6 +310,7 @@ void EagerConstraintImpl::addedVarName(int var, const std::string & literalStrin
 }
 
 void EagerConstraintImpl::simplifyAtLevelZero(std::vector<int>& output) {
+    std::cout << "simplifyAtLevelZero" << std::endl;
     std::vector<int> inputInterpretation;
     inputInterpretation.push_back(-1);
     for(int fact:facts) {

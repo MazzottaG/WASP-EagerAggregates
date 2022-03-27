@@ -127,6 +127,7 @@ namespace aspc {
         void clearConflictReason(){conflictReason.clear();}
         int getCurrentDecisionLevel()const {return solver->getCurrentDecisionLevel();}
         int getFactorySize()const;
+        int getNextExplainLevel() {return ++explainLevel;}
         
     private:
         unsigned minConflict;

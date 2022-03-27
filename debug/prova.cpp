@@ -148,7 +148,9 @@ void testReferenceHash(int threshold,const std::vector<const string*>& preds){
             std::cout << "STATS FACTORY Max load for non empty buckets: "<<max<<std::endl<<std::endl;
 
 }
-int main(){
+#include <stack>
+
+int mainBucketAnalysis(){
     const std::string a="a";
     TupleLight t({1,2},&a);
     TupleLight* v = &t;
@@ -192,5 +194,45 @@ int main(){
         testReferenceHash<TuplePointerHashPair>(threshold,preds);
         testReferenceHash<TuplePointerHashPredicate>(threshold,preds);
     }
+    return 0;
 }
+#include "../src/lp2cpp/datastructures/TupleFactoryTrie.h"
+#include "../src/lp2cpp/datastructures/TupleLight.h"
+#include <cstdlib>
+int main(){
+    const string a="a";
+    const string b="b";
+    const string c="c";
+    std::vector<const string*> preds({&a,&b,&c});
+    TupleFactoryTrie factory;
+    std::vector<TupleLight> storage;
+    for(int i=0; i<10;i++){
+        int size = (i%preds.size())+2;
+        std::vector<int> terms;
+        for(int j=0;j<size;j++){
+            terms.push_back(rand());
+        }
+        factory.addNewInternalTuple(terms,preds[i%preds.size()]);
+        TupleLight t(terms,preds[i%preds.size()]);
+        std::cout << i <<" " << t.toString() <<std::endl;
+        storage.push_back(t);
+    }
 
+    TupleLight* findById = factory.getTupleFromInternalID(7);
+    std::cout << findById->getId() <<" " << findById->toString() <<std::endl;
+
+    int id =rand()%storage.size();
+    if(id==0) id++;
+    TupleLight* findByValue = factory.find(storage[id]);
+    std::cout << storage[id].toString() << " " << findByValue->toString()<<std::endl;
+    
+    TupleLight* findByValue2 = factory.find(TupleLight({1804289383,2},&a));
+    if(findByValue2 == NULL) 
+    std::cout << "a(1804289383,2) not found"<<std::endl;
+    const string d="d";
+
+    TupleLight* findByValue3 = factory.find(TupleLight({1804289383,2},&d));
+    if(findByValue3 == NULL) 
+    std::cout << "d(1804289383,2) not found"<<std::endl;
+    
+}

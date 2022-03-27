@@ -7,7 +7,7 @@ cxxflags.debug = -Wall -Wextra -std=c++11
 linkflags.debug = -lm -ldl
 cxxflags.trace = -Wall -Wextra -std=c++11 -DTRACE_ON
 linkflags.trace = -lm -ldl
-cxxflags.tracerelease = -Wall -Wextra -std=c++17 -DTRACE_ON -DNDEBUG -O3
+cxxflags.tracerelease = -Wall -Wextra -std=c++17 -DTRACE_ON -DTRACE_PROPAGATION -DNDEBUG -O3
 linkflags.tracerelease = -lm -ldl
 cxxflags.release = -Wall -Wextra -std=c++17 -DNDEBUG -O3   
 linkflags.release = -lm -ldl
@@ -15,15 +15,16 @@ cxxflags.perf = -Wall -Wextra -std=c++17 -DNDEBUG -O3 -g -ggdb -fomit-frame-poin
 linkflags.perf = -lm -ldl
 cxxflags.parsing = -Wall -Wextra -std=c++11 -DNDEBUG -O3 -DTRACE_PARSING 
 linkflags.parsing = -lm -ldl
-cxxflags.gprof = -Wall -Wextra -std=c++11 -DNDEBUG -O3 -g -pg
+cxxflags.gprof = -Wall -Wextra -std=c++17 -DNDEBUG -DSTATIC_COMPILE -O3 -g -pg
 linkflags.gprof = -lm -g -pg -ldl
 cxxflags.estats = -Wall -Wextra -std=c++11 -DNDEBUG -DSTATS_ON -DESTATS_ON -O3
 linkflags.estats = -lm -ldl
-cxxflags.traceagerprop = -Wall -Wextra -std=c++17 -DNDEBUG -DTRACE_PROPAGATOR -O3
+cxxflags.traceagerprop = -Wall -Wextra -std=c++17 -DNDEBUG -DTRACE_PROPAGATION -O3
 linkflags.traceagerprop = -lm -ldl
 cxxflags.grounding = -Wall -Wextra -std=c++17 -DNDEBUG -DGROUNDING -O3
 linkflags.grounding = -lm -ldl
-
+cxxflags.constraints = -Wall -Wextra -std=c++17 -DNDEBUG -O3 -DPRINTCONSTRAINT 
+linkflags.constraints = -lm -ldl
 #for profiling eager
 cxxflags.prof = -Wall -Wextra -std=c++14 -DNDEBUG -DLP2CPP_DEBUG -O3 -g
 linkflags.prof = -DLP2CPP_DEBUG -g -ldl
