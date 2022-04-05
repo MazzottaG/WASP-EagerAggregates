@@ -26,19 +26,20 @@
 #include <variant>
 #include <bitset>
 #include <cmath>
-
 class TupleFactoryTrie{
     private:
-        TupleTrieSet tupleToInternalVar;
+        std::vector<TupleTrieSet> tupleToInternalVarSets;
         std::vector<TupleLight*> internalIDToTuple;
         std::unordered_map<int,TupleLight*> waspIDToTuple;
         std::list<TupleLight> storage;
-        std::unordered_map<const std::string*,unsigned> aggregateSetToIndex;
+        std::unordered_map<int,unsigned> aggregateSetToIndex;
         bool generated;
+        
+
 
     public:
         static TupleLight bufferTuple;
-        void setBufferedTupleStorage(int* vectorData,int size,const std::string* predName){
+        void setBufferedTupleStorage(int* vectorData,int size,int predName){
             bufferTuple.setContent(vectorData,size,predName);
         }
         TupleFactoryTrie(/* args */){
@@ -79,9 +80,13 @@ class TupleFactoryTrie{
                 }
             }
         }
+        void addPredicate(){
+            tupleToInternalVarSets.push_back(TupleTrieSet());
+        }
         //store new wasp tuple and return a smart reference to it
-        TupleLight* addNewTuple(std::vector<int> terms,const std::string* predName, unsigned id){
+        TupleLight* addNewTuple(std::vector<int> terms,int predName, unsigned id){
             bufferTuple.setContent(terms.data(),terms.size(),predName);
+            auto& tupleToInternalVar=tupleToInternalVarSets[predName];
             auto node = tupleToInternalVar.addNodeForTuple(&bufferTuple);
             if(!node->existsTuple()){
                 storage.push_back(bufferTuple);
@@ -101,8 +106,9 @@ class TupleFactoryTrie{
             return node->getTuple();
         }
         //store new internal tuple and return smart reference to it
-        TupleLight* addNewInternalTuple(std::vector<int> terms,const std::string* predName){
+        TupleLight* addNewInternalTuple(std::vector<int> terms,int predName){
             bufferTuple.setContent(terms.data(),terms.size(),predName);
+            auto& tupleToInternalVar=tupleToInternalVarSets[predName];
             auto node = tupleToInternalVar.addNodeForTuple(&bufferTuple);
             if(!node->existsTuple()){
                 storage.push_back(bufferTuple);
@@ -118,8 +124,9 @@ class TupleFactoryTrie{
             // assert(it->second == -1);
             return node->getTuple();
         }
-        TupleLight* find(std::vector<int> terms,const std::string* predName){
+        TupleLight* find(std::vector<int> terms,int predName){
             bufferTuple.setContent(terms.data(),terms.size(),predName);
+            auto& tupleToInternalVar=tupleToInternalVarSets[predName];
             auto it = tupleToInternalVar.find(&bufferTuple);
             if(it==NULL){
                 bufferTuple.clearContent();
@@ -131,6 +138,7 @@ class TupleFactoryTrie{
         }
         TupleLight* find(const TupleLight& t){
             TupleLight* tuple = const_cast<TupleLight *>(&t);
+            auto& tupleToInternalVar=tupleToInternalVarSets[t.getPredicateName()];
             return tupleToInternalVar.find(tuple);
         }
         TupleLight* getTupleFromWASPID(int id){
@@ -171,20 +179,21 @@ class TupleFactoryTrie{
         void printSize(){
             std::cout<<storage.size()<<std::endl;
         }
-        unsigned getIndexForAggrSet(const std::string* pred)const{
+        unsigned getIndexForAggrSet(int pred)const{
             auto it = aggregateSetToIndex.find(pred);
             if(it != aggregateSetToIndex.end()){
                 return it->second;
             }
             return 0;
         }
-        void setIndexForAggregateSet(unsigned index,const std::string* pred){
+        void setIndexForAggregateSet(unsigned index,int pred){
             aggregateSetToIndex.emplace(pred,index);
         }
         bool isGenerated()const {return generated;}
         void setGenerated(bool gen){this->generated=gen;}
         void printStats()const{
-            tupleToInternalVar.printStats();
+            for(int i=0;i<tupleToInternalVarSets.size();i++)
+                tupleToInternalVarSets[i].printStats();
         }
 };
 

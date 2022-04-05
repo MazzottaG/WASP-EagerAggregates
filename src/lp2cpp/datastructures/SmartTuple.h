@@ -59,7 +59,7 @@ class SmartTuple {
         int& at(unsigned i)const{
             return realTuple->operator[](i);
         }
-        const std::string* getPredicateName() const {
+        int getPredicateName() const {
             return realTuple->getPredicateName();
         }
 

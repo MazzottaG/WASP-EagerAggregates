@@ -175,6 +175,9 @@ private:
     std::unordered_set<std::string> internalPredicates;
     
     std::unordered_map<std::string,std::pair<int,std::unordered_set<std::string>>> auxForRecursiveComponent;
+    std::map<std::string,int> mapPredicateNames;
+    std::vector<std::string> predicateNames;
+        
 };
 
 #endif	/* COMPILATIONMANAGER_H */

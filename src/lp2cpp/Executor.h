@@ -70,6 +70,8 @@ namespace aspc {
     };
     class Executor {
     public:
+        static std::vector<std::string> predicateIds;
+
         Executor();
         virtual ~Executor();
         virtual void undefLiteralsReceived();
@@ -98,7 +100,6 @@ namespace aspc {
         virtual void setSolver(const Solver* s){
             solver=s;
             propComparison.s=s;
-
         }
         virtual const std::vector<std::vector<aspc::Literal> > & getFailedConstraints() {
             return failedConstraints;
@@ -128,7 +129,8 @@ namespace aspc {
         int getCurrentDecisionLevel()const {return solver->getCurrentDecisionLevel();}
         int getFactorySize()const;
         int getNextExplainLevel() {return ++explainLevel;}
-        
+        void updateReasonSize(int size){totalReasonSize+=size;reasonCount++;}
+        int getMeanReasonSize(){return reasonCount > 0 ? totalReasonSize/reasonCount : 0;}
     private:
         unsigned minConflict;
         unsigned minHeapSize;
@@ -145,7 +147,9 @@ namespace aspc {
         std::vector<std::string> bodyLiterals;
         PropComparator propComparison;  
         int explainLevel;
-        
+        int totalReasonSize;
+        int reasonCount;
     };
+    
 }
 #endif

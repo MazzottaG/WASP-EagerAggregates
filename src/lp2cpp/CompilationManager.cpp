@@ -129,7 +129,7 @@ void CompilationManager::writeNegativeReasonsFunctions(const aspc::Program & pro
         }
         if (modelGeneratorPredicates.count(lit.getPredicateName())) {
             if (lit.isGround()) {
-                *out << ind << "const auto& find = neg_w" << lit.getPredicateName() << ".find(Tuple(lit, &_" << lit.getPredicateName() << "));\n";
+                *out << ind << "const auto& find = neg_w" << lit.getPredicateName() << ".find(Tuple(lit, _" << lit.getPredicateName() << "));\n";
                 *out << ind++ << "if(find) {\n";
                 *out << ind << "output.push_back(find);\n";
                 *out << --ind << "}\n";
@@ -526,7 +526,7 @@ void CompilationManager::storePossibleSum(const std::string& auxValPred,std::str
         *out << ind << "std::unordered_set<int>* possibleSumsSet = &possibleValuesSet"<<auxValPred<<"[key];\n";
         *out << ind++ << "if(possibleSums->empty()){\n";
             *out << ind << "possibleSums->push_back(0);\n";
-            *out << ind << "Tuple* aux_val = factory.addNewInternalTuple({0},&_"<<auxValPred<<");\n";
+            *out << ind << "Tuple* aux_val = factory.addNewInternalTuple({0},_"<<auxValPred<<");\n";
             *out << ind << "const auto& insertResult = aux_val->setStatus(True);\n";
             *out << ind++ << "if(insertResult.second){\n";
                 *out << ind << "factory.removeFromCollisionsList(aux_val->getId());\n";
@@ -538,7 +538,7 @@ void CompilationManager::storePossibleSum(const std::string& auxValPred,std::str
             *out << ind++ << "if(possibleSumsSet->count(possibleSums->at(i)+"<<tupleName<<"->at("<<sumVar<<"))==0){\n";
                 *out << ind << "possibleSumsSet->insert(possibleSums->at(i)+"<<tupleName<<"->at("<<sumVar<<"));\n";
                 *out << ind << "possibleSums->push_back(possibleSums->at(i)+"<<tupleName<<"->at("<<sumVar<<"));\n";
-                *out << ind << "Tuple* aux_val = factory.addNewInternalTuple({possibleSums->back()},&_"<<auxValPred<<");\n";
+                *out << ind << "Tuple* aux_val = factory.addNewInternalTuple({possibleSums->back()},_"<<auxValPred<<");\n";
                 *out << ind << "const auto& insertResult = aux_val->setStatus(True);\n";
                 *out << ind++ << "if(insertResult.second){\n";
                     *out << ind << "factory.removeFromCollisionsList(aux_val->getId());\n";
@@ -573,7 +573,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "#include<ctime>\n\n";
     *out << ind << "#include<map>\n\n";
     *out << ind << "#include<memory>\n\n";
-
     #ifdef TRACE_ON
     // *out << ind << "extern wasp::TraceLevels wasp::Options::traceLevels;\n\n";
     #endif
@@ -593,6 +592,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         #ifdef TRACE_ON
         // *out << ind << "setTraceLevel(eagerprop,10);\n";
         #endif
+        *out << ind << "totalReasonSize=0;\n";
+        *out << ind << "reasonCount=0;\n";
     *out << --ind << "}\n";
 
     //typedefs
@@ -613,7 +614,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::unordered_map<std::string, PredicateWSet*> predicateWSetMap;\n";
         *out << ind << "std::unordered_map<std::string, PredicateWSet*> predicateFSetMap;\n";
     }
-
+    *out << ind << "std::vector<std::string> Executor::predicateIds;\n";
     if (mode == EAGER_MODE) {
 
         for(std::string pred : builder->getInternalPredicates()){
@@ -647,7 +648,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     for (const pair<std::string, unsigned>& predicate : predicates) {
         //*out << ind << "const std::string & "<< predicate.first << " = ConstantsManager::getInstance().getPredicateName("<< predicate.first <<");\n";
-        *out << ind << "const std::string _" << predicate.first << " = \"" << predicate.first << "\";\n";
+        mapPredicateNames[predicate.first]=predicateNames.size();
+        predicateNames.push_back(predicate.first);
+        *out << ind << "const int _" << predicate.first << " = " << mapPredicateNames[predicate.first] << ";\n";
 
     }
     const std::set< pair<std::string, unsigned> >& aggregatePredicates = program.getAggregatePredicates();
@@ -655,7 +658,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     for(const std::pair<std::string, unsigned>& predicate : aggregatePredicates){
 
         if(!predicates.count(predicate)){
-            *out << ind << "const std::string _" << predicate.first << " = \"" << predicate.first << "\";\n";
+            mapPredicateNames[predicate.first]=predicateNames.size();
+            predicateNames.push_back(predicate.first);
+            *out << ind << "const int _" << predicate.first << " = " << mapPredicateNames[predicate.first] << ";\n";
         }
     }
     std::set< pair<std::string, unsigned> > predicatesNotCompletion;
@@ -663,14 +668,18 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     for(const aspc::Rule& r :builder->getRuleWithoutCompletion()){
         for(const aspc::Literal& l : r.getBodyLiterals()){
             if(predicatesNotCompletion.count({l.getPredicateName(),l.getAriety()})==0 && aggregatePredicates.count({l.getPredicateName(),l.getAriety()})==0 && predicates.count({l.getPredicateName(),l.getAriety()})==0){
-                *out << ind << "const std::string _" << l.getPredicateName() << " = \"" << l.getPredicateName() << "\";\n";
+                mapPredicateNames[l.getPredicateName()]=predicateNames.size();
+                predicateNames.push_back(l.getPredicateName());
+                *out << ind << "const int _" << l.getPredicateName() << " = " << mapPredicateNames[l.getPredicateName()] << ";\n";
                 predicatesNotCompletion.insert({l.getPredicateName(),l.getAriety()});
             }
         }
         for(const aspc::ArithmeticRelationWithAggregate& aggrRelation:r.getArithmeticRelationsWithAggregate()){
             for(const aspc::Literal& l : aggrRelation.getAggregate().getAggregateLiterals()){
                 if(predicatesNotCompletion.count({l.getPredicateName(),l.getAriety()})==0 && aggregatePredicates.count({l.getPredicateName(),l.getAriety()})==0 && predicates.count({l.getPredicateName(),l.getAriety()})==0){
-                    *out << ind << "const std::string _" << l.getPredicateName() << " = \"" << l.getPredicateName() << "\";\n";
+                    mapPredicateNames[l.getPredicateName()]=predicateNames.size();
+                    predicateNames.push_back(l.getPredicateName());
+                    *out << ind << "const int _" << l.getPredicateName() << " = " << mapPredicateNames[l.getPredicateName()] << ";\n";
                     predicatesNotCompletion.insert({l.getPredicateName(),l.getAriety()});
                 }
             }
@@ -699,10 +708,19 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     *out << ind << "\n";
     *out << ind << "const std::vector<int> EMPTY_TUPLES_VEC;\n";
     *out << ind << "const IndexedSet EMPTY_TUPLES_SET;\n";
-    *out << ind << "std::unordered_map<std::string, const std::string * > stringToUniqueStringPointer;\n";
+    *out << ind << "std::unordered_map<std::string, int > stringToUniqueStringPointer;\n";
 
     *out << ind << "TupleFactory factory;\n";
-    *out << ind++ << "const std::string* parseTuple(const std::string & literalString,std::vector<int>& terms) {\n";
+    *out << ind++ << "void printTuple(const Tuple* t){\n";
+        *out << ind << "if(t->isFalse()) std::cout << \"not \";\n";
+        *out << ind << "std::cout << Executor::predicateIds[t->getPredicateName()] << \"(\";\n";
+        *out << ind++ << "for(int i=0;i<t->size();i++){\n";
+            *out << ind << "if(i>0) std::cout << \", \";\n";
+            *out << ind << "std::cout << ConstantsManager::getInstance().unmapConstant(t->at(i));\n";
+        *out << --ind << "}\n";
+        *out << ind << "std::cout << \")\"<<std::endl;\n";
+    *out << --ind << "}\n";
+    *out << ind++ << "int parseTuple(const std::string & literalString,std::vector<int>& terms) {\n";
     *out << ind << "std::string predicateName;\n";
     *out << ind << "unsigned i = 0;\n";
     *out << ind++ << "for (i = 0; i < literalString.size(); i++) {\n";
@@ -975,7 +993,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "explainExternalLiteral(-literal,conflictReason,true);\n";
         *out << ind << "propagatedLiterals.push_back(1);\n";
         *out << ind << "reasonForLiteral[literal].get()->clear();\n";
-
         #ifdef TRACE_PROPAGATOR
         *out << ind << "std::cout<<\"Conflict Reason\"<<std::endl;\n";
         *out << ind++ << "for(unsigned i =0; i<conflictReason.size();i++){\n";
@@ -991,7 +1008,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         #ifdef TRACE_PROPAGATOR
             *out << ind << "std::cout<<\"Explain \"<<var<<std::endl;\n";
         #endif
-        *out << ind << "int literalsCount = factory.size();\n";
+        *out << ind << "unsigned literalsCount = factory.size();\n";
         *out << ind++ << "if(!propagatorCall){\n";
             *out << ind << "int uVar = var>0 ? var : -var;\n";
             *out << ind << "Tuple* waspTuple = factory.getTupleFromWASPID(uVar);\n";
@@ -1000,6 +1017,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             // *out << ind << "int internalVar = factory.getTupleFromWASPID(uVar)->getId();\n";
             *out << ind << "var = var>0 ? internalVar : -internalVar;\n";
             *out << ind << "explainLevel++;\n";
+            *out << ind << "reas.reserve(factory.size());\n";
             #ifdef TRACE_PROPAGATOR
                 *out << ind << "std::cout<<\"Explain from wasp \";\n";
                 *out << ind << "factory.getTupleFromWASPID(uVar)->print();\n";
@@ -1015,6 +1033,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         #ifdef TRACE_PROPAGATOR
         *out << ind << "Tuple* starter = var > 0 ? factory.getTupleFromInternalID(var) : factory.getTupleFromInternalID(-var); starter->print();\n";
         #endif
+        *out << ind << "auto end=reasonForLiteral.end();\n";
         *out << ind++ << "while(!buildingReasonStack.empty()){\n";
             *out << ind << "int lit = buildingReasonStack.back();\n";
             #ifdef TRACE_PROPAGATOR
@@ -1024,10 +1043,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             #endif
             *out << ind << "buildingReasonStack.pop_back();\n";
             *out << ind << "auto itReason = reasonForLiteral.find(lit);\n";
-            *out << ind << "VectorAsSet<int>* currentReas = itReason != reasonForLiteral.end() ? itReason->second.get() : NULL;\n";
-            *out << ind << "unsigned currentReasonSize= itReason != reasonForLiteral.end() ? currentReas->size() : 0;\n";
+            *out << ind << "VectorAsSet<int>* currentReas = itReason != end ? itReason->second.get() : NULL;\n";
+            *out << ind << "unsigned currentReasonSize= currentReas != NULL ? currentReas->size() : 0;\n";
             *out << ind++ << "for(unsigned i = 0; i<currentReasonSize; i++){\n";
-                *out << ind << "int reasonLiteral=currentReas->at(i);\n";
+                *out << ind << "int& reasonLiteral=currentReas->at(i);\n";
                 *out << ind << "int& visitCount = reasonLiteral>=0 ? visitedExplainLiteral[reasonLiteral] : visitedExplainLiteral[literalsCount-reasonLiteral];\n";
                 *out << ind++ << "if(visitCount != explainLevel){\n";
                     *out << ind << "visitCount=explainLevel;\n";
@@ -1039,7 +1058,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     #endif
 
                     // *out << ind << "visitedLiteral.insert(reasonLiteral);\n";
-                    *out << ind++ << "if(literal->getWaspID()==0){\n";
+                    *out << ind++ << "if(literal->isInternalLiteral()){\n";
                         *out << ind << "buildingReasonStack.push_back(reasonLiteral);\n";
                         #ifdef TRACE_PROPAGATOR
                             *out << ind << "std::cout<<\"Internal lit\"<<std::endl;\n";
@@ -1098,7 +1117,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         unsigned predIndex=0;
             for(auto predicateToMaps : function_prefix.second.second){
                 std::string printElse = predIndex>0 ? "else " : "";
-                *out << ind++ << printElse << "if(insertResult.first->getPredicateName() == &_"<<predicateToMaps.first<<"){\n";
+                *out << ind++ << printElse << "if(insertResult.first->getPredicateName() == _"<<predicateToMaps.first<<"){\n";
                     for(auto mapName : predicateToMaps.second){
                         if(predicateToOrderdedAux.count(predicateToMaps.first)!=0){
                             *out << ind << function_prefix.second.first<<mapName<<".insert2Set(*insertResult.first);\n";
@@ -1126,7 +1145,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
     // ---------------------- onLiteralTrue(int var) --------------------------------------//
     *out << ind++ << "inline void Executor::onLiteralTrue(int var, const std::string& literalString) {\n";
         *out << ind << "std::vector<int> terms;\n";
-        *out << ind << "const std::string* predicate = parseTuple(literalString,terms);\n";
+        *out << ind << "int predicate = parseTuple(literalString,terms);\n";
         *out << ind << "Tuple* tuple = factory.addNewTuple(terms,predicate,var);\n";
         *out << ind << "TruthStatus truth = var>0 ? True : False;\n";
         *out << ind << "const auto& insertResult = tuple->setStatus(truth);\n";
@@ -1163,7 +1182,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << --ind << "}\n";
         #if defined(TRACE_PROPAGATOR) || defined(TRACE_PROPAGATION)
         // *out << ind << "std::cout<<\"True \" << minus << tuple->toString()<<std::endl;\n";
-        *out << ind << "std::cout<<\"True \";tuple->print();\n";
+        *out << ind << "std::cout<<\"True \";printTuple(tuple);\n";
         #endif
         for(int ruleId=0;ruleId < program.getRules().size(); ruleId++){
             const aspc::Rule* rule = &program.getRules()[ruleId];
@@ -1185,9 +1204,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     }
                 }
             }
-            *out << ind++ << "if(tuple->getPredicateName() == &_"<<aggrSetLit->getPredicateName()<<"){\n";
+            *out << ind++ << "if(tuple->getPredicateName() == _"<<aggrSetLit->getPredicateName()<<"){\n";
                 if(aggrId->getAriety() == 0){
-                    *out << ind << "int itAggrId = factory.find({},&_"<<aggrId->getPredicateName()<<")->getId();\n";
+                    *out << ind << "int itAggrId = factory.find({},_"<<aggrId->getPredicateName()<<")->getId();\n";
                     *out << ind++ << "if(var>0)\n";
                         *out << ind-- << "actualSum[itAggrId]+=tuple->at("<<sumVar<<");\n";
                     *out << ind << "possibleSum[itAggrId]-=tuple->at("<<sumVar<<");\n";
@@ -1265,7 +1284,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         // *out << ind++ << "else\n";
         //     *out << ind-- << "std::cout<<\"Undef \" <<var << \" \" << minus << tuple->toString()<<std::endl;\n";
         
-        *out << ind-- << "std::cout<<\"Undef \"; tuple->print();\n";
+        *out << ind-- << "std::cout<<\"Undef \"; printTuple(tuple);\n";
         #endif
 
         *out << ind++ << "if(currentDecisionLevel > 0){\n";
@@ -1288,9 +1307,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     }
                 }
             }
-            *out << ind++ << "if(tuple->getPredicateName() == &_"<<aggrSetLit->getPredicateName()<<"){\n";
+            *out << ind++ << "if(tuple->getPredicateName() == _"<<aggrSetLit->getPredicateName()<<"){\n";
                 if(aggrId->getAriety() == 0){
-                    *out << ind << "int itAggrId = factory.find({},&_"<<aggrId->getPredicateName()<<")->getId();\n";
+                    *out << ind << "int itAggrId = factory.find({},_"<<aggrId->getPredicateName()<<")->getId();\n";
                     *out << ind++ << "if(var>0)\n";
                         *out << ind-- << "actualSum[itAggrId]-=tuple->at("<<sumVar<<");\n";
                     *out << ind << "possibleSum[itAggrId]+=tuple->at("<<sumVar<<");\n";
@@ -1495,7 +1514,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         }
                                     }
                                     if(head != NULL && body!=NULL){
-                                        *out << ind++ << "if(starter->getPredicateName() == &_"<<body->getPredicateName()<<"){\n";
+                                        *out << ind++ << "if(starter->getPredicateName() == _"<<body->getPredicateName()<<"){\n";
                                         std::unordered_set<std::string> boundTerms;
                                         unsigned closinPars =1;
                                         for(unsigned k = 0; k < body->getAriety(); k++){
@@ -1515,7 +1534,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                 terms+=",";
                                             terms+=term;
                                         }
-                                        *out << ind << "Tuple* head = factory.find({"<<terms<<"},&_"<<head->getPredicateName()<<");\n";
+                                        *out << ind << "Tuple* head = factory.find({"<<terms<<"},_"<<head->getPredicateName()<<");\n";
 
                                         *out << ind++ << "if(head!=NULL && !head->isFalse() && foundnessFactory[head->getId()]<0){\n";
                                         closinPars++;
@@ -1539,7 +1558,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                             std::vector<unsigned> formulasIndexes;
                                             const auto & orderedBody = subRule.getOrderedBodyByStarter(starter);
                                             const aspc::Literal* startinLit = (const aspc::Literal*)orderedBody[0];
-                                            *out << ind++ << "if(starter->getPredicateName() == &_"<<startinLit->getPredicateName()<<"){\n";
+                                            *out << ind++ << "if(starter->getPredicateName() == _"<<startinLit->getPredicateName()<<"){\n";
                                             std::unordered_set<std::string> boundTerms;
                                             unsigned closinPars =1;
                                             for(unsigned k = 0; k < startinLit->getAriety(); k++){
@@ -1574,7 +1593,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                                 terms+=",";
                                                             terms+=term;
                                                         }
-                                                        *out << ind << "Tuple* tuple"<<fIndex<<" = factory.find({"<<terms<<"},&_"<<lit->getPredicateName()<<");\n";
+                                                        *out << ind << "Tuple* tuple"<<fIndex<<" = factory.find({"<<terms<<"},_"<<lit->getPredicateName()<<");\n";
                                                         if(lit->isPositiveLiteral()){
                                                             *out << ind++ << "if(tuple"<<fIndex<<"!=NULL && !tuple"<<fIndex<<"->isFalse()){\n";
                                                             closinPars++;
@@ -1637,7 +1656,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                     terms+=",";
                                                 terms+=term;
                                             }
-                                            *out << ind << "Tuple* head = factory.find({"<<terms<<"},&_"<<head->getPredicateName()<<");\n";
+                                            *out << ind << "Tuple* head = factory.find({"<<terms<<"},_"<<head->getPredicateName()<<");\n";
 
                                             *out << ind++ << "if(head!=NULL && !head->isFalse() && foundnessFactory[head->getId()]<0){\n";
                                             closinPars++;
@@ -1743,7 +1762,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                     }
                                     if(head != NULL && body!=NULL){
                                         if(isExitRule && head->getPredicateName()!=predName) continue;
-                                        *out << ind++ << "if(!spFound && starter->getPredicateName() == &_"<<head->getPredicateName()<<" && foundnessFactory[starter->getId()]<0){\n";
+                                        *out << ind++ << "if(!spFound && starter->getPredicateName() == _"<<head->getPredicateName()<<" && foundnessFactory[starter->getId()]<0){\n";
                                         std::unordered_set<std::string> boundTerms;
                                         unsigned closinPars =1;
                                         for(unsigned k = 0; k < head->getAriety(); k++){
@@ -1764,7 +1783,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                     terms+=",";
                                                 terms+=term;
                                             }
-                                            *out << ind << "Tuple* body = factory.find({"<<terms<<"},&_"<<body->getPredicateName()<<");\n";
+                                            *out << ind << "Tuple* body = factory.find({"<<terms<<"},_"<<body->getPredicateName()<<");\n";
                                             // *out << ind << "if(body!=NULL && body->isFalse()) shared_reason.get()->insert(-body->getId());\n";
                                             *out << ind++ << "if(body!=NULL && !body->isFalse()){\n";
                                             closinPars++;
@@ -1860,7 +1879,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         for(int predId=0;predId < scc[componentId].size();predId++){
                             std::string predName = program->getPredicateName(scc[componentId][predId]);
                             if(predId > 0) *out << " || "; 
-                            *out << "starter->getPredicateName()==&_"<<predName;
+                            *out << "starter->getPredicateName()==_"<<predName;
                         }
                         *out << "){\n";
                             *out << ind << "if(starter->isTrue() && conflictDetected==0) conflictDetected=-lit;\n";
@@ -1882,7 +1901,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                             *out << ind << "reasonStack.pop_back();\n";
                             *out << ind << "Tuple* starter = factory.getTupleFromInternalID(lit);\n";
                             #ifdef TRACE_PROPAGATION
-                            *out << ind << "std::cout << \"Searching reason for: \";starter->print();\n";
+                            *out << ind << "std::cout << \"Searching reason for: \";printTuple(starter);\n";
                             #endif
                             #ifdef TRACE_PROPAGATOR
                                 *out << ind << "std::cout << \"     Searching False Body for \"<<starter->toString()<<std::endl;\n";
@@ -1935,7 +1954,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
                                                 std::string printElse = addElse ? "": "";
                                                 addElse=true;
-                                                *out << ind++ <<printElse<< "if(starter->getPredicateName() == &_"<<head->getPredicateName()<<"){\n";
+                                                *out << ind++ <<printElse<< "if(starter->getPredicateName() == _"<<head->getPredicateName()<<"){\n";
                                                 std::unordered_set<std::string> boundTerms;
                                                 unsigned closinPars =1;
                                                 for(unsigned k = 0; k < head->getAriety(); k++){
@@ -1961,7 +1980,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                             terms+=",";
                                                         terms+=term;
                                                     }
-                                                    *out << ind << "Tuple* tuple = factory.find({"<<terms<<"},&_"<<body->getPredicateName()<<");\n";
+                                                    *out << ind << "Tuple* tuple = factory.find({"<<terms<<"},_"<<body->getPredicateName()<<");\n";
                                                     *out << ind++ << "if(tuple!=NULL){\n";
                                                     closinPars++;
 
@@ -2062,7 +2081,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         #endif
                         #ifdef TRACE_PROPAGATION
                             *out << ind << "std::cout << \"Unfounded set reason: {\"<<std::endl;\n";
-                            *out << ind << "for(int i =0; i<shared_reason.get()->size();i++){ int uVar = shared_reason.get()->at(i) > 0 ? shared_reason.get()->at(i) : -shared_reason.get()->at(i); std::cout <<\"   \";factory.getTupleFromInternalID(uVar)->print();}\n";
+                            *out << ind << "for(int i =0; i<shared_reason.get()->size();i++){ int uVar = shared_reason.get()->at(i) > 0 ? shared_reason.get()->at(i) : -shared_reason.get()->at(i); std::cout <<\"   \";printTuple(factory.getTupleFromInternalID(uVar));}\n";
                             *out << ind << "std::cout << \"}\"<<std::endl;\n";
                         #endif
                             *out << ind << "executor->executeProgramOnFacts(propLiterals,literalToPropagate,true);\n";
@@ -2194,7 +2213,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     // std::cout << "Unfounded Procedures Built"<<std::endl;
     // std::cout << "Building Generator"<<std::endl;
-
+    
     *out << ind++ << "void Executor::undefLiteralsReceived(){\n";
         // *out << ind << "exit(180);\n";
         *out << ind << "factory.setGenerated(true);\n";
@@ -2206,13 +2225,18 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "std::cout<<\"Undef received \"<<factory.size()<<std::endl;\n";
         buildGenerator(builder,program);
         *out << ind << "std::cout<<\"Generated\"<<factory.size()<<std::endl;\n";
+        *out << ind << "buildingReasonStack.reserve(2*factory.size());\n";
+        *out << ind << "conflictReason.reserve(factory.size());\n";
+
+        // *out << ind << "factory.printStats();\n";
+        // *out << ind << "factory.rehash();\n";
         // *out << ind << "factory.printStats();\n";
         // *out << ind << "std::cout << \"Reach size: \" << ureachable_color_.getValuesVec({}).size()<<std::endl;\n";
 
         // *out << ind << "for(int id : ureachable_color_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
         // *out << ind << "for(int id : preachable_color_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
-        // *out << ind << "for(int id : ue_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
-        // *out << ind << "for(int id : pe_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
+        // *out << ind << "for(int id : ue_.getValuesVec({})) printTuple(factory.getTupleFromInternalID(id));\n";
+        // *out << ind << "for(int id : pe_.getValuesVec({})) printTuple(factory.getTupleFromInternalID(id));\n";
         // *out << ind << "for(int id : uvertex_color_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
         // *out << ind << "for(int id : pvertex_color_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
         // *out << ind << "for(int id : ugtnumber_.getValuesVec({})) factory.getTupleFromInternalID(id)->print();\n";
@@ -2273,7 +2297,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
          *out << ind << "std::cout<<var<<\" \" << atom<<std::endl;\n";
         #endif
         *out << ind << "std::vector<int> terms;\n";
-        *out << ind << "const std::string* predicate = parseTuple(atom,terms);\n";
+        *out << ind << "int predicate = parseTuple(atom,terms);\n";
         *out << ind << "Tuple* t = factory.addNewTuple(terms,predicate,var);\n";
 
         //  *out << ind << "factory.addNewTuple(std::array<int>(terms.data()),predicate,var);\n";
@@ -2335,20 +2359,24 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     for (const pair<std::string, unsigned>& predicate : predicates) {
 
-        *out << ind << "stringToUniqueStringPointer[\"" << predicate.first << "\"] = &_" << predicate.first << ";\n";
+        *out << ind << "stringToUniqueStringPointer[\"" << predicate.first << "\"] = _" << predicate.first << ";\n";
     }
     for (const pair<std::string, unsigned>& predicate : aggregatePredicates) {
         if(predicates.count(predicate)==0){
-            *out << ind << "stringToUniqueStringPointer[\"" << predicate.first << "\"] = &_" << predicate.first << ";\n";
+            *out << ind << "stringToUniqueStringPointer[\"" << predicate.first << "\"] = _" << predicate.first << ";\n";
         }
     }
     for (const pair<std::string, unsigned>& predicate : predicatesNotCompletion) {
 
-        *out << ind << "stringToUniqueStringPointer[\"" << predicate.first << "\"] = &_" << predicate.first << ";\n";
+        *out << ind << "stringToUniqueStringPointer[\"" << predicate.first << "\"] = _" << predicate.first << ";\n";
+    }
+    for(std::string pred : predicateNames){
+        *out << ind << "Executor::predicateIds.push_back(\""<<pred<<"\");\n";
+        *out << ind << "factory.addPredicate();\n";
     }
 
     for(auto pair :predicateToOrderdedAux ){
-        *out << ind << "factory.setIndexForAggregateSet("<<pair.second<<",&_"<<pair.first<<");\n";
+        *out << ind << "factory.setIndexForAggregateSet("<<pair.second<<",_"<<pair.first<<");\n";
     }
     *out << --ind << "}\n";
 
@@ -2389,9 +2417,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                     }
                                 }
 
-                                *out << ind++ << "if(tupleU->getPredicateName() == &_"<<aggrSetLit->getPredicateName()<<"){\n";
+                                *out << ind++ << "if(tupleU->getPredicateName() == _"<<aggrSetLit->getPredicateName()<<"){\n";
                                     if(aggrId->getAriety() == 0){
-                                        *out << ind << "int itAggrId = factory.find({},&_"<<aggrId->getPredicateName()<<")->getId();\n";
+                                        *out << ind << "int itAggrId = factory.find({},_"<<aggrId->getPredicateName()<<")->getId();\n";
                                         *out << ind << "actualSum[itAggrId]+=tupleU->at("<<sumVar<<");\n";
                                         *out << ind << "possibleSum[itAggrId]-=tupleU->at("<<sumVar<<");\n";
                                     }else{
@@ -2424,7 +2452,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         }
                         #ifdef TRACE_PROPAGATION
                             *out << ind << "std::cout<<\"Prop::Propagating Literal as True at decisionLevel \"<<currentDecisionLevel;\n";
-                            *out << ind << "tupleU->print();\n";
+                            *out << ind << "printTuple(tupleU);\n";
                         #endif
 
                         *out << ind << "propagated = true;\n";
@@ -2434,7 +2462,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             ind++;
                 *out << ind++ << "if(realTupleU->isTrue()){\n";
                     #ifdef TRACE_PROPAGATION
-                        *out << ind << "std::cout<<\"Conflict: Literal is already true \";tupleU->print();std::cout<<std::endl;\n";
+                        *out << ind << "std::cout<<\"Conflict: Literal is already true \";printTuple(tupleU);\n";
                     #endif
                     *out << ind << "return true;\n";
                 *out << --ind << "}else if(realTupleU->isUndef()){\n";
@@ -2464,9 +2492,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         }
                                     }
                                 }
-                                *out << ind++ << "if(tupleU->getPredicateName() == &_"<<aggrSetLit->getPredicateName()<<"){\n";
+                                *out << ind++ << "if(tupleU->getPredicateName() == _"<<aggrSetLit->getPredicateName()<<"){\n";
                                     if(aggrId->getAriety() == 0){
-                                        *out << ind << "int itAggrId = factory.find({},&_"<<aggrId->getPredicateName()<<")->getId();\n";
+                                        *out << ind << "int itAggrId = factory.find({},_"<<aggrId->getPredicateName()<<")->getId();\n";
                                         *out << ind << "possibleSum[itAggrId]-=tupleU->at("<<sumVar<<");\n";
                                     }else{
                                         std::string terms = "";
@@ -2497,7 +2525,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         }
                         #ifdef TRACE_PROPAGATION
                         *out << ind << "std::cout<<\"Prop::Propagating Literal as False at decisionLevel \"<<currentDecisionLevel;\n";
-                        *out << ind << "tupleU->print();\n";
+                        *out << ind << "printTuple(tupleU);\n";
                         #endif
 
                         *out << ind << "propagated = true;\n";
@@ -2518,7 +2546,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind++ << "if(remainingPropagatingLiterals.count(it*sign)==0){\n";
                 #ifdef TRACE_PROPAGATION
                     *out << ind << "std::cout<<\"Prop::Propagating external literal: \"<<sign<<\" at decisionLevel \"<<currentDecisionLevel;\n";
-                    *out << ind << "tupleU->print();\n";
+                    *out << ind << "printTuple(tupleU);\n";
                 #endif
 
                 *out << ind << "remainingPropagatingLiterals.insert(it*sign);\n";
@@ -2687,7 +2715,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                 *out << term;
                             }
                             *out << "});\n";
-                            *out << ind << "Tuple* tupleHead = lazyFactory.addNewInternalTuple(head,&_"<<fact.getPredicateName()<<");\n";
+                            *out << ind << "Tuple* tupleHead = lazyFactory.addNewInternalTuple(head,_"<<fact.getPredicateName()<<");\n";
                             *out << ind << "const auto& insertResult = tupleHead->setStatus(True);\n";
                             *out << ind++ << "if (insertResult.second) {\n";
                                 *out << ind << "lazyFactory.removeFromCollisionsList(tupleHead->getId());\n";
@@ -2743,7 +2771,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                             *out << ",";
                                         *out << l->getTermAt(k);
                                     }
-                                    *out << "},&_"<<l->getPredicateName()<<");\n";
+                                    *out << "},_"<<l->getPredicateName()<<");\n";
                                     if(l->isNegated()){
                                         *out << ind++ << "if(boundTuple == NULL or boundTuple->isFalse()){\n";
                                         closingPars++;
@@ -2830,7 +2858,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                     *out << ",";
                                                 *out << l->getTermAt(k);
                                             }
-                                            *out << "},&_"<<l->getPredicateName()<<");\n";
+                                            *out << "},_"<<l->getPredicateName()<<");\n";
                                             if(l->isNegated()){
                                                 *out << ind++ << "if(boundTuple == NULL or boundTuple->isFalse()){\n";
                                                 localPars++;
@@ -2931,7 +2959,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         }
                         *out << "});\n";
                         if(lazyBodyPredicates.count(head->getPredicateName())!=0){
-                            *out << ind << "Tuple* tupleHead = lazyFactory.addNewInternalTuple(head,&_"<<head->getPredicateName()<<");\n";
+                            *out << ind << "Tuple* tupleHead = lazyFactory.addNewInternalTuple(head,_"<<head->getPredicateName()<<");\n";
                             *out << ind << "const auto& insertResult = tupleHead->setStatus(True);\n";
                             *out << ind++ << "if (insertResult.second) {\n";
                                 *out << ind << "lazyFactory.removeFromCollisionsList(tupleHead->getId());\n";
@@ -3000,7 +3028,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                         *out << ",";
                                                     *out << l->getTermAt(k);
                                                 }
-                                                *out << "},&_"<<l->getPredicateName()<<");\n";
+                                                *out << "},_"<<l->getPredicateName()<<");\n";
                                                 if(l->isNegated()){
                                                     *out << ind++ << "if(boundTuple == NULL or boundTuple->isFalse()){\n";
                                                     closingPars++;
@@ -3088,7 +3116,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                                                 *out << ",";
                                                             *out << l->getTermAt(k);
                                                         }
-                                                        *out << "},&_"<<l->getPredicateName()<<");\n";
+                                                        *out << "},_"<<l->getPredicateName()<<");\n";
                                                         if(l->isNegated()){
                                                             *out << ind++ << "if(boundTuple == NULL or boundTuple->isFalse()){\n";
                                                             localPars++;
@@ -3188,7 +3216,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                     }
                                     *out << "});\n";
 
-                                    *out << ind << "Tuple* tupleHead = lazyFactory.addNewInternalTuple(head,&_"<<head->getPredicateName()<<");\n";
+                                    *out << ind << "Tuple* tupleHead = lazyFactory.addNewInternalTuple(head,_"<<head->getPredicateName()<<");\n";
                                     *out << ind << "const auto& insertResult = tupleHead->setStatus(True);\n";
                                     *out << ind++ << "if (insertResult.second) {\n";
                                         *out << ind << "lazyFactory.removeFromCollisionsList(tupleHead->getId());\n";
@@ -3252,11 +3280,13 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << --ind << "}\n";
         *out << ind << "remainingPropagatingLiterals.clear();\n";
         *out << ind++ << "while(currentDecisionLevel > decisionLevel){\n";
-            *out << ind++ << "while(!levelToIntLiterals[currentDecisionLevel].empty()){\n";
-                *out << ind << "int var = levelToIntLiterals[currentDecisionLevel].back();\n";
+            *out << ind << "std::vector<int>& level=levelToIntLiterals[currentDecisionLevel];\n";
+            *out << ind << "unsigned size = level.size();\n";
+            *out << ind++ << "for(int i=0;i<size;i++){\n";
+                *out << ind << "int var = level[i];\n";
                 *out << ind << "int uVar = var>0 ? var : -var;\n";
                 *out << ind << "Tuple* tuple = factory.getTupleFromInternalID(uVar);\n";
-                *out << ind << "levelToIntLiterals[currentDecisionLevel].pop_back();\n";
+                // *out << ind << "levelToIntLiterals[currentDecisionLevel].pop_back();\n";
                  #ifdef TRACE_PROPAGATOR 
                     *out << ind << "std:: cout << var << tuple->toString()<<std::endl;\n";
                     *out << ind << "if(reasonForLiteral[var].get() == NULL) std::cout << \"NULL reason\"<<std::endl; else std::cout << \"ReasonFound\"<<reasonForLiteral[var].get()<<std::endl;\n";
@@ -3286,9 +3316,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                 }
                             }
                         }
-                        *out << ind++ << "if(tuple->getPredicateName() == &_"<<aggrSetLit->getPredicateName()<<"){\n";
+                        *out << ind++ << "if(tuple->getPredicateName() == _"<<aggrSetLit->getPredicateName()<<"){\n";
                             if(aggrId->getAriety() == 0){
-                                *out << ind << "int itAggrId = factory.find({},&_"<<aggrId->getPredicateName()<<")->getId();\n";
+                                *out << ind << "int itAggrId = factory.find({},_"<<aggrId->getPredicateName()<<")->getId();\n";
                                 *out << ind++ << "if(var>0)\n";
                                     *out << ind-- << "actualSum[itAggrId]-=tuple->at("<<sumVar<<");\n";
                                 *out << ind << "possibleSum[itAggrId]+=tuple->at("<<sumVar<<");\n";
@@ -3323,7 +3353,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     }
                 }
             *out << --ind << "}\n";
-            *out << ind << "levelToIntLiterals.erase(currentDecisionLevel);\n";
+            *out << ind << "level.clear();\n";
             *out << ind << "currentDecisionLevel--;\n";
 
         *out << --ind << "}\n";
@@ -3883,7 +3913,7 @@ unsigned CompilationManager::compileRuleBody(const std::vector<unsigned> body,un
                 }
                 *out << ind << "bool undef"<<i<<"=false;\n";
                 if(lit->isNegated()){
-                    *out << ind << "Tuple negativeTuple({"<<terms<<"},&_"<<lit->getPredicateName()<<");\n";
+                    *out << ind << "Tuple negativeTuple({"<<terms<<"},_"<<lit->getPredicateName()<<");\n";
 
                     *out << ind << "const Tuple* tuple"<<i<<"=NULL;\n";
                     *out << ind++ << "if(w"<<lit->getPredicateName()<<".find(negativeTuple) == NULL && u"<<lit->getPredicateName()<<".find(negativeTuple) == NULL)\n";
@@ -3899,7 +3929,7 @@ unsigned CompilationManager::compileRuleBody(const std::vector<unsigned> body,un
                     *out << --ind << "}\n";
                     *out << ind++ << "if(tuple"<<i<<"!=NULL){\n";
                 }else{
-                    *out << ind << "Tuple positiveTuple({"<<terms<<"},&_"<<lit->getPredicateName()<<");\n";
+                    *out << ind << "Tuple positiveTuple({"<<terms<<"},_"<<lit->getPredicateName()<<");\n";
                     *out << ind << "const Tuple* tuple"<<i<<"=w"<<lit->getPredicateName()<<".find(positiveTuple);\n";
                     if(searchOneUndef)
                         *out << ind++ << "if(tuple"<<i<<"==NULL && tupleU==NULL){\n";
@@ -4010,7 +4040,7 @@ unsigned CompilationManager::exploreLiteral(const aspc::Literal* lit,std::unorde
     }
     if(lit->isBoundedLiteral(boundVariables)){
         if(lit->isNegated()){
-            *out << ind << "Tuple negativeTuple({"<<boundTerms<<"},&_"<<lit->getPredicateName()<<");\n";
+            *out << ind << "Tuple negativeTuple({"<<boundTerms<<"},_"<<lit->getPredicateName()<<");\n";
             *out << ind << "const Tuple* tuple"<<currentLitIndex<<" = factory.find(negativeTuple);\n";
             *out << ind++ << "if(tuple"<<currentLitIndex<<" == NULL)\n";
                 *out << ind-- << "tuple"<<currentLitIndex<<" = &negativeTuple;\n";
@@ -4024,13 +4054,13 @@ unsigned CompilationManager::exploreLiteral(const aspc::Literal* lit,std::unorde
                         *out << ind << "tupleUNegated=true;\n";
                     *out << --ind << "}else{\n";
                     ind++;
-                        *out << ind++ << "if(tupleU->getPredicateName() != &_"<<lit->getPredicateName()<<" || !tupleUNegated || !(*tupleU == *tuple"<<currentLitIndex<<"))\n";
+                        *out << ind++ << "if(tupleU->getPredicateName() != _"<<lit->getPredicateName()<<" || !tupleUNegated || !(*tupleU == *tuple"<<currentLitIndex<<"))\n";
                             *out << --ind << "tuple"<<currentLitIndex<<"=NULL;\n";
                     *out << --ind << "}\n";
                 *out << --ind << "}\n";
             *out << --ind << "}\n";
         }else{
-            *out << ind << "const Tuple* tuple"<<currentLitIndex<<" = factory.find({"<<boundTerms<<"},&_"<<lit->getPredicateName()<<");\n";
+            *out << ind << "const Tuple* tuple"<<currentLitIndex<<" = factory.find({"<<boundTerms<<"},_"<<lit->getPredicateName()<<");\n";
             *out << ind++ << "if(tuple"<<currentLitIndex<<"!=NULL){\n";
                 *out << ind++ << "if(tuple"<<currentLitIndex<<"->isFalse())\n";
                     *out << --ind << "tuple"<<currentLitIndex<<"=NULL;\n";
@@ -4040,7 +4070,7 @@ unsigned CompilationManager::exploreLiteral(const aspc::Literal* lit,std::unorde
                         *out << ind << "tupleUNegated=false;\n";
                     *out << --ind << "}else{\n";
                     ind++;
-                        *out << ind++ << "if(tupleU->getPredicateName() != &_"<<lit->getPredicateName()<<" || tupleUNegated || !(*tupleU == *tuple"<<currentLitIndex<<"))\n";
+                        *out << ind++ << "if(tupleU->getPredicateName() != _"<<lit->getPredicateName()<<" || tupleUNegated || !(*tupleU == *tuple"<<currentLitIndex<<"))\n";
                             *out << --ind << "tuple"<<currentLitIndex<<"=NULL;\n";
                     *out << --ind << "}\n";
                 *out << --ind << "}\n";
@@ -4062,7 +4092,7 @@ unsigned CompilationManager::exploreLiteral(const aspc::Literal* lit,std::unorde
                 *out << k << "_";
             }
             *out << ".getValues"<<toStruct<<"({"<<boundTerms<<"});\n";
-        *out << ind++ << "else if(tupleU->getPredicateName() == &_"<<lit->getPredicateName()<<" && !tupleUNegated)\n";
+        *out << ind++ << "else if(tupleU->getPredicateName() == _"<<lit->getPredicateName()<<" && !tupleUNegated)\n";
             *out << ind-- << "undeRepeated.push_back(tupleU);\n";
 
         if(isSet){
@@ -4137,7 +4167,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
     if(fromStarter){
         {
 
-            *out << ind++ << "if(starter.getPredicateName() == &_"<<aggrIdAtom->getPredicateName()<<"){\n";
+            *out << ind++ << "if(starter.getPredicateName() == _"<<aggrIdAtom->getPredicateName()<<"){\n";
             #ifdef TRACE_PROP_GEN
             *out << ind << "std::cout<<\"Prop rule with aggr\"<<std::endl;\n";
             #endif
@@ -4523,7 +4553,7 @@ void CompilationManager::compileEagerRuleWithAggregate(const aspc::Rule& r,bool 
     }
     {
         if(fromStarter)
-            *out << ind++ << "if(starter.getPredicateName() == &_"<<aggrSetPred->getPredicateName()<<"){\n";
+            *out << ind++ << "if(starter.getPredicateName() == _"<<aggrSetPred->getPredicateName()<<"){\n";
         else *out << ind++ << "{\n";
         #ifdef TRACE_PROPAGATOR
             *out << ind << "std::cout<<\"Propagation start from aggr_set\"<<std::endl;\n";
@@ -5135,7 +5165,7 @@ void CompilationManager::findExitRuleForComponent(std::vector<int> component,Asp
 
 }
 unsigned CompilationManager::printStarter(const aspc::Literal* body,std::unordered_set<std::string>& boundTerms){
-    *out << ind++ << "if(starter->getPredicateName() == &_"<<body->getPredicateName()<<"){\n";
+    *out << ind++ << "if(starter->getPredicateName() == _"<<body->getPredicateName()<<"){\n";
     unsigned closingPars=1;
     for(unsigned k=0; k<body->getAriety(); k++){
         std::string term = body->isVariableTermAt(k) || isInteger(body->getTermAt(k)) ? body->getTermAt(k) : "ConstantsManager::getInstance().mapConstant(\""+body->getTermAt(k)+"\")";
@@ -5255,7 +5285,7 @@ void CompilationManager::buildGeneratorForRecursiveComponent(std::vector<int> co
                     *out << ",";
                 *out << term;
             }
-            *out << "},&_"<<fact.getPredicateName()<<");\n";
+            *out << "},_"<<fact.getPredicateName()<<");\n";
             *out << ind << "const auto& insertResult = fact->setStatus(True);\n";
             *out << ind++ << "if(insertResult.second){\n";
                 *out << ind << "factory.removeFromCollisionsList(fact->getId());\n";
@@ -5317,7 +5347,7 @@ void CompilationManager::buildGeneratorForRecursiveComponent(std::vector<int> co
     if(!rulesAggrSetBody.empty()){
         *out << ind << "std::map<std::vector<int>,std::vector<int>> possibleSumValues;\n";
         *out << ind << "std::map<std::vector<int>,std::unordered_set<int>> possibleSumValuesSet;\n";
-        *out << ind << "Tuple* auxVal = factory.addNewInternalTuple({0},&_"<<auxVal->getPredicateName()<<");\n";
+        *out << ind << "Tuple* auxVal = factory.addNewInternalTuple({0},_"<<auxVal->getPredicateName()<<");\n";
         *out << ind << "const auto& insertResult = auxVal->setStatus(True);\n";
         *out << ind++ << "if(insertResult.second){\n";
             *out << ind << "factory.removeFromCollisionsList(auxVal->getId());\n";
@@ -5504,14 +5534,14 @@ void CompilationManager::buildGeneratorForRecursiveComponent(std::vector<int> co
                 }
             }
             {//starting from body
-                *out << ind++ << "if(starter->getPredicateName() == &_"<<body->getPredicateName()<<"){\n";
+                *out << ind++ << "if(starter->getPredicateName() == _"<<body->getPredicateName()<<"){\n";
                     *out << ind << "Tuple* dom = factory.addNewInternalTuple({";
                     for(int k=0;k<body->getAriety();k++){
                         if(k>0)
                             *out << ",";
                         *out << "starter->at("<<k<<")";
                     }
-                    *out << "},&_"<<domain->getPredicateName()<<");\n";
+                    *out << "},_"<<domain->getPredicateName()<<");\n";
                     *out << ind << "const auto& insertResult = dom->setStatus(True);\n";
                     *out << ind++ << "if(insertResult.second){\n";
                         *out << ind << "factory.removeFromCollisionsList(dom->getId());\n";
@@ -5581,7 +5611,7 @@ void CompilationManager::buildGeneratorForRecursiveComponent(std::vector<int> co
                                 closingPars++;
                                     *out << ind << "possibleSumValues[sharedVars].push_back(currentSum);\n";
                                     *out << ind << "possibleSumValuesSet[sharedVars].insert(currentSum);\n";
-                                    *out << ind << "Tuple* auxVal = factory.addNewInternalTuple({currentSum},&_"<<auxVal->getPredicateName()<<");\n";
+                                    *out << ind << "Tuple* auxVal = factory.addNewInternalTuple({currentSum},_"<<auxVal->getPredicateName()<<");\n";
                                     *out << ind << "const auto& insertResult = auxVal->setStatus(True);\n";
                                     *out << ind++ << "if(insertResult.second){\n";
                                     closingPars++;
@@ -5653,7 +5683,7 @@ void CompilationManager::buildGeneratorForRecursiveComponent(std::vector<int> co
                         closingPars++;
                             *out << ind << "possibleSumValues[sharedVars].push_back(currentSum);\n";
                             *out << ind << "possibleSumValuesSet[sharedVars].insert(currentSum);\n";
-                            *out << ind << "Tuple* auxVal = factory.addNewInternalTuple({currentSum},&_"<<auxVal->getPredicateName()<<");\n";
+                            *out << ind << "Tuple* auxVal = factory.addNewInternalTuple({currentSum},_"<<auxVal->getPredicateName()<<");\n";
                             *out << ind << "const auto& insertResult = auxVal->setStatus(True);\n";
                             *out << ind++ << "if(insertResult.second){\n";
                             closingPars++;
@@ -5695,14 +5725,14 @@ void CompilationManager::buildGeneratorForRecursiveComponent(std::vector<int> co
 
             if(bodyPredicate==NULL){
                 //No body Literal and so ground head
-                *out << ind++ << "if(starter->getPredicateName() == &_"<<bodyPredicate->getPredicateName()<<"){\n";
+                *out << ind++ << "if(starter->getPredicateName() == _"<<bodyPredicate->getPredicateName()<<"){\n";
                 closingPars += 1+buildLiteralSaving(&r->getHead()[0],"saving"+std::to_string(litId));
                 while(closingPars>0){
                     *out << --ind << "}\n";
                     closingPars--;
                 }
             }else{
-                *out << ind++ << "if(starter->getPredicateName() == &_"<<bodyPredicate->getPredicateName()<<"){\n";
+                *out << ind++ << "if(starter->getPredicateName() == _"<<bodyPredicate->getPredicateName()<<"){\n";
                 closingPars++;
                 if(joinRule->isConstraint()){
                     //%%%%%%%%%%%%%%%%%%
@@ -5865,7 +5895,7 @@ unsigned CompilationManager::buildLiteralSaving(const aspc::Atom* head,std::stri
             headTerms+=",";
         headTerms+=term;
     }
-    *out << ind << "Tuple* "<< tupleName << " = factory.addNewInternalTuple({"<<headTerms<<"},&_"<<head->getPredicateName()<<");\n";
+    *out << ind << "Tuple* "<< tupleName << " = factory.addNewInternalTuple({"<<headTerms<<"},_"<<head->getPredicateName()<<");\n";
     if(asTrue)
         *out << ind << "const auto& insertResult = "<<tupleName<<"->setStatus(True);\n";
     else
@@ -5945,7 +5975,7 @@ unsigned CompilationManager::buildGeneratorForConstraint(aspc::Rule* joinRule,st
                         terms+=",";
                     terms+=term;
                 }
-                *out << ind << "Tuple* tuple"<<i<<" = factory.find({"<<terms<<"},&_"<<lit->getPredicateName()<<");\n";
+                *out << ind << "Tuple* tuple"<<i<<" = factory.find({"<<terms<<"},_"<<lit->getPredicateName()<<");\n";
                 if(lit->isNegated()){
                     *out << ind++ << "if(tuple"<<i<<"==NULL || !tuple"<<i<<"->isTrue()){\n";
                 }else{
@@ -6076,7 +6106,7 @@ void CompilationManager::buildAuxValGenerator(std::string predicate,int ruleId,a
         *out << ind++ << "if(possibleSumValues[sharedVars].empty()){ // init with 0\n";
             *out << ind << "possibleSumValues[sharedVars].push_back(0);\n";
             *out << ind << "possibleSumValuesSet[sharedVars].insert(0);\n";
-            *out << ind << "Tuple* auxVal = factory.addNewInternalTuple({0},&_"<<predicate<<");\n";
+            *out << ind << "Tuple* auxVal = factory.addNewInternalTuple({0},_"<<predicate<<");\n";
             *out << ind << "const auto& insertResult = auxVal->setStatus(True);\n";
             *out << ind++ << "if(insertResult.second){\n";
                 *out << ind << "factory.removeFromCollisionsList(auxVal->getId());\n";
@@ -6093,7 +6123,7 @@ void CompilationManager::buildAuxValGenerator(std::string predicate,int ruleId,a
             closingPars++;
                 *out << ind << "possibleSumValues[sharedVars].push_back(currentSum);\n";
                 *out << ind << "possibleSumValuesSet[sharedVars].insert(currentSum);\n";
-                *out << ind << "Tuple* auxVal = factory.addNewInternalTuple({currentSum},&_"<<predicate<<");\n";
+                *out << ind << "Tuple* auxVal = factory.addNewInternalTuple({currentSum},_"<<predicate<<");\n";
                 *out << ind << "const auto& insertResult = auxVal->setStatus(True);\n";
                 *out << ind++ << "if(insertResult.second){\n";
                 closingPars++;
@@ -6268,7 +6298,7 @@ void CompilationManager::buildGeneratorForNonRecursiveComponent(std::vector<int>
                     *out << ",";
                 *out << term;
             }
-            *out << "},&_"<<fact.getPredicateName()<<");\n";
+            *out << "},_"<<fact.getPredicateName()<<");\n";
             *out << ind << "const auto& insertResult = fact->setStatus(True);\n";
             *out << ind++ << "if(insertResult.second){\n";
                 *out << ind << "factory.removeFromCollisionsList(fact->getId());\n";
@@ -6321,7 +6351,7 @@ void CompilationManager::buildGeneratorForNonRecursiveComponent(std::vector<int>
                     if(body != NULL){
                         closingPars += buildGeneratorForSimpleRule(body,head,"aggr_id",sumAggrSetPredicates);
                     }else{
-                        *out << ind << "Tuple* aggr_id = factory.addNewInternalTuple({},&_"<<head->getPredicateName()<<");\n";
+                        *out << ind << "Tuple* aggr_id = factory.addNewInternalTuple({},_"<<head->getPredicateName()<<");\n";
                         *out << ind << "const auto& insertResult = aggr_id->setStatus(Undef);\n";
                         *out << ind++ << "if(insertResult.second){\n";
                         closingPars++;
@@ -6354,7 +6384,7 @@ void CompilationManager::buildGeneratorActualAndPossibleSum(AspCore2ProgramBuild
                 const aspc::Literal* aggrSet = &aggr->getAggregateLiterals()[0];
                 std::unordered_set<std::string> boundVars;
                 if(aggrId->getAriety()==0){
-                    *out << ind << "Tuple* aggr_id = factory.find({},&_"<<aggrId->getPredicateName()<<");\n";
+                    *out << ind << "Tuple* aggr_id = factory.find({},_"<<aggrId->getPredicateName()<<");\n";
                 }else{
                     *out << ind << "const std::vector<int>* tuples = &p"<<aggrId->getPredicateName()<<"_.getValuesVec({});\n";
                     *out << ind << "const std::vector<int>* tuplesU = &u"<<aggrId->getPredicateName()<<"_.getValuesVec({});\n";
@@ -6540,7 +6570,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
     const aspc::Atom* head = &r.getHead()[0];
 
     if(fromStarter){
-        *out << ind++ << "if(starter.getPredicateName() == &_"<<body->getPredicateName()<<"){\n";
+        *out << ind++ << "if(starter.getPredicateName() == _"<<body->getPredicateName()<<"){\n";
         {
             std::unordered_set<std::string> boundVariables;
             unsigned closingPars=0;
@@ -6552,7 +6582,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                     *out << ",";
                 *out << term;
             }
-            *out << "}, &_"<<head->getPredicateName()<<");\n";
+            *out << "}, _"<<head->getPredicateName()<<");\n";
             *out << ind << "std::shared_ptr<VectorAsSet<int>> shared_reason = std::make_shared<VectorAsSet<int>>();\n";
             *out << ind++ << "if(startVar > 0){\n";
                 //rule propagation starting from true body
@@ -6783,7 +6813,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
 
 
         }
-        *out << --ind << "}else if(starter.getPredicateName() == &_"<<head->getPredicateName()<<"){\n";
+        *out << --ind << "}else if(starter.getPredicateName() == _"<<head->getPredicateName()<<"){\n";
         ind++;
         {
             std::unordered_set<std::string> boundVariables;
@@ -6799,7 +6829,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                         *out << ",";
                     *out << term;
                 }
-                *out << "}, &_"<<body->getPredicateName()<<");\n";
+                *out << "}, _"<<body->getPredicateName()<<");\n";
                 *out << ind++ << "if(startVar > 0){\n";
                     *out << ind++ << "if(currentBody->isFalse()){\n";
                         #ifdef TRACE_PROPAGATOR
@@ -7095,7 +7125,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                 *out << ",";
                             *out << body->getTermAt(k);
                         }
-                        *out << "}, &_"<<body->getPredicateName()<<");\n";
+                        *out << "}, _"<<body->getPredicateName()<<");\n";
                         *out << ind++ << "if(!currentBody->isUndef() && !currentBody->isTrue()){\n";
                             #ifdef TRACE_PROPAGATOR
                                 *out << ind << "std::cout<<\"Conflict: at level -1 "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -7172,7 +7202,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                 *out << ",";
                             *out << body->getTermAt(k);
                         }
-                        *out << "}, &_"<<body->getPredicateName()<<");\n";
+                        *out << "}, _"<<body->getPredicateName()<<");\n";
                         *out << ind++ << "if(!currentBody->isUndef() && !currentBody->isTrue()){\n";
                             #ifdef TRACE_PROPAGATOR
                                 *out << ind << "std::cout<<\"Conflict: at level -1 "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -7251,7 +7281,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                 *out << ",";
                             *out << body->getTermAt(k);
                         }
-                        *out << "}, &_"<<body->getPredicateName()<<");\n";
+                        *out << "}, _"<<body->getPredicateName()<<");\n";
                         *out << ind++ << "if(currentBody->isTrue()){\n";
                             #ifdef TRACE_PROPAGATOR
                                 *out << ind << "std::cout<<\"Conflict: at level -1 "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -7337,7 +7367,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                 *out << ",";
                             *out << body->getTermAt(k);
                         }
-                        *out << "}, &_"<<body->getPredicateName()<<");\n";
+                        *out << "}, _"<<body->getPredicateName()<<");\n";
                         *out << ind++ << "if(currentBody->isTrue()){\n";
                             #ifdef TRACE_PROPAGATOR
                                 *out << ind << "std::cout<<\"Conflict: at level -1 "<<r.getRuleId()<<"\"<<std::endl;\n";
@@ -7429,7 +7459,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                 *out << ", ";
                             *out << body->getTermAt(i);
                         }
-                        *out << "}, &_"<<body->getPredicateName()<<");\n";
+                        *out << "}, _"<<body->getPredicateName()<<");\n";
                         *out << ind++ << "if(currentBody == NULL || (!currentBody->isTrue() && !currentBody->isUndef()))\n";
                             *out << ind-- << "props"<<r.getRuleId()<<".push_back({currentHead,true});\n";
                         *out << ind++ << "else if(currentBody!=NULL && currentBody->isTrue())\n";
@@ -7474,7 +7504,7 @@ void CompilationManager::compileEagerSimpleRule(const aspc::Rule& r,bool fromSta
                                 *out << ", ";
                             *out << body->getTermAt(i);
                         }
-                        *out << "}, &_"<<body->getPredicateName()<<");\n";
+                        *out << "}, _"<<body->getPredicateName()<<");\n";
                         *out << ind++ << "if(currentBody == NULL || (!currentBody->isTrue() && !currentBody->isUndef()))\n";
                             *out << ind-- << "propUndefined(currentHead,false,propagationStack,true,propagatedLiterals,remainingPropagatingLiterals, solver, propComparison, minConflict, minHeapSize, maxHeapSize, heapSize);\n";
                         *out << ind++ << "else if(currentBody!=NULL && currentBody->isTrue())\n";
@@ -7554,7 +7584,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                     start = &r.getHead()[0];
                 }
 
-                *out << ind++ << "if(starter.getPredicateName() == &_"<<start->getPredicateName()<<" && "<<sign<<"){\n";
+                *out << ind++ << "if(starter.getPredicateName() == _"<<start->getPredicateName()<<" && "<<sign<<"){\n";
                 //*out << ind << "trace_msg(eagerprop,5,\"Evaluating constraint: "<<r.getRuleId()<<"\");\n";
                 #ifdef TRACE_PROPAGATOR
                 *out << ind << "std::cout<<\"Constraint propagation\"<<std::endl;\n";
@@ -7657,7 +7687,7 @@ void CompilationManager::compileEagerRule(const aspc::Rule& r,bool fromStarter){
                     }else{
                         *out << " && ";
                     }
-                    *out << "tupleU->getPredicateName() != &_"<<pred;
+                    *out << "tupleU->getPredicateName() != _"<<pred;
                 }
                 if(conditions){
                     *out << ")\n";
@@ -7752,7 +7782,7 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const
                         bool appearsBefore = literalPredicateAppearsBeforeSameSign(body, joinOrder, i);
                         if(appearsBefore && l->isPositiveLiteral()) {
                             *out << ind << "const Tuple * tuple" << i << " = NULL;\n";
-                            *out << ind++ << "if(tupleU && tupleU->getPredicateName() == &_"<<l->getPredicateName()<<"){\n;";
+                            *out << ind++ << "if(tupleU && tupleU->getPredicateName() == _"<<l->getPredicateName()<<"){\n;";
                             *out << ind << "const Tuple * undefRepeatingTuple = (u" << l->getPredicateName() << ".find({";
                             printLiteralTuple(l);
                             *out << "}));\n";
@@ -7778,8 +7808,8 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const
                             *out << ind << "const Tuple * tuple" << i << " = NULL;\n";
                             *out << ind << "const Tuple negativeTuple = Tuple({";
                             printLiteralTuple(l);
-                            *out << "}, &_" << l->getPredicateName() << ", true);\n";
-                            *out << ind++ << "if(tupleU && tupleU->getPredicateName() == &_"<<l->getPredicateName()<<"){\n;";
+                            *out << "}, _" << l->getPredicateName() << ", true);\n";
+                            *out << ind++ << "if(tupleU && tupleU->getPredicateName() == _"<<l->getPredicateName()<<"){\n;";
                             *out << ind << "const Tuple * undefRepeatingTuple = (u" << l->getPredicateName() << ".find({";
                             printLiteralTuple(l);
                             *out << "}));\n";
@@ -7800,7 +7830,7 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const
                         else if (l->isNegated()) {
                             *out << ind << "const Tuple negativeTuple = Tuple({";
                             printLiteralTuple(l);
-                            *out << "}, &_" << l->getPredicateName() << ", true);\n";
+                            *out << "}, _" << l->getPredicateName() << ", true);\n";
                             *out << ind << "const Tuple * tuple" << i << " = &negativeTuple;\n";
                             *out << ind << "bool lTrue = (w" << l->getPredicateName() << ".find(negativeTuple)!=NULL);\n";
                             *out << ind << "const Tuple * undefTuple = u" << l->getPredicateName() << ".find(negativeTuple);\n";
@@ -7861,7 +7891,7 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const
                         if (appearsBefore) {
                             *out << ind++ << "else {\n";
                             //handle constants and equal cards?
-                            *out << ind++ << "if(tupleU && !tupleUNegated && tupleU->getPredicateName() == &_"<<l->getPredicateName()<<") {\n";
+                            *out << ind++ << "if(tupleU && !tupleUNegated && tupleU->getPredicateName() == _"<<l->getPredicateName()<<") {\n";
                             //check that bound variables have proper value
                             vector<unsigned> boundIndexes;
                             for(unsigned v = 0; v < l->getAriety(); v++) {
@@ -7984,7 +8014,7 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const
                 }
 
 
-                *out << "}, &_" << r.getHead().front().getPredicateName() << "));\n";
+                *out << "}, _" << r.getHead().front().getPredicateName() << "));\n";
                 *out << ind++ << "if(insertResult.second){\n";
 
                 if (p.hasConstraint()) {
@@ -7995,7 +8025,7 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const
                             aspc::Literal* l = (aspc::Literal*) body[joinOrder[i]];
                             *out << ind << "insertResult.first->addNegativeReason(Tuple({";
                             printLiteralTuple(l);
-                            *out << "}, &_" << l->getPredicateName() << ", true));\n";
+                            *out << "}, _" << l->getPredicateName() << ", true));\n";
                         }
                     }
                 }
@@ -8025,7 +8055,7 @@ void CompilationManager::compileRule(const aspc::Rule & r, unsigned start, const
                                 } else {
                                     *out << ind << "Tuple tuple" << i << " = Tuple({";
                                     printLiteralTuple(l);
-                                    *out << "}, &_" << l->getPredicateName() << ", true);\n";
+                                    *out << "}, _" << l->getPredicateName() << ", true);\n";
                                     *out << ind << "explainNegativeLiteral(&tuple" << i << ", open_set" << i << ", reasons);\n";
                                     //*out << ind << "failedConstraints.back().push_back(tupleToLiteral(Tuple({";
                                     //writeNegativeTuple(r, joinOrder, start, i);
