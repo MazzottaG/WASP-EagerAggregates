@@ -2049,9 +2049,15 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                             }
                         *out << --ind << "}\n";
                     *out << --ind << "}\n";
+                     #ifdef TRACE_UNFOUNDED
+                        *out << ind << "std::cout<<\"UnfoundedSet\"<<std::endl;\n";
+                    #endif
                     *out << ind++ << "for(int lit : unfoundedSetForComponent"<<componentId<<"){\n";
                         *out << ind << "Tuple* starter = factory.getTupleFromInternalID(lit);\n";
                         *out << ind << "if(starter == NULL || starter->isFalse() || foundnessFactory[lit]>=0) continue;\n";
+                        #ifdef TRACE_UNFOUNDED
+                            *out << ind << "std::cout<<\"   \";printTuple(starter);\n";
+                        #endif
                         *out << ind << "foundnessFactory[lit]=1;\n";
                         *out << ind << "auto oldSP = sourcePointers"<<componentId<<".find(lit);\n";
                         *out << ind++ << "if(oldSP!=sourcePointers"<<componentId<<".end()){\n";
@@ -2067,7 +2073,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                         *out << ind << "else std::cout << \"No SP for : \"<<starter->toString()<<std::endl;\n";
                         #endif
                     *out << --ind << "}\n";
-
                     *out << ind++ << "if(conflictDetected!=0) {\n";
                         #ifdef TRACE_PROGATATOR
                             *out << ind << "std::cout << \" Conflict detected:  Unfounded literal already true\"<<tuple->toString()<<std::endl;\n";
@@ -2659,7 +2664,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         #endif
 
         *out << ind << "TupleFactory lazyFactory;\n";
-
+        for(int i=0;i<predicateNames.size();i++){
+            *out << ind << "lazyFactory.addPredicate();\n";
+        }
         GraphWithTarjanAlgorithm* graphNoCompletion = &lazy.getPositiveDG();
         std::vector<std::vector<int>> sccNoCompletion = graphNoCompletion->SCC();
         std::vector<aspc::Rule> lazyRules = lazy.getRules();
@@ -3280,10 +3287,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << --ind << "}\n";
         *out << ind << "remainingPropagatingLiterals.clear();\n";
         *out << ind++ << "while(currentDecisionLevel > decisionLevel){\n";
-            *out << ind << "std::vector<int>& level=levelToIntLiterals[currentDecisionLevel];\n";
-            *out << ind << "unsigned size = level.size();\n";
-            *out << ind++ << "for(int i=0;i<size;i++){\n";
-                *out << ind << "int var = level[i];\n";
+            *out << ind++ << "while(!levelToIntLiterals[currentDecisionLevel].empty()){\n";
+                *out << ind << "int var = levelToIntLiterals[currentDecisionLevel].back();\n";
                 *out << ind << "int uVar = var>0 ? var : -var;\n";
                 *out << ind << "Tuple* tuple = factory.getTupleFromInternalID(uVar);\n";
                 // *out << ind << "levelToIntLiterals[currentDecisionLevel].pop_back();\n";
@@ -3295,7 +3300,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 
                 *out << ind << "const auto& insertResult = tuple->setStatus(Undef);\n";
                 *out << ind++ << "if (insertResult.second) {\n";
-                    *out << ind << "factory.removeFromCollisionsList(tuple->getId());\n";
+                    *out << ind << "factory.removeFromCollisionsList(uVar);\n";
                     *out << ind << "insertUndef(insertResult);\n";
                 *out << --ind << "}\n";
                 for(unsigned ruleId=0; ruleId < program.getRules().size(); ruleId++){
@@ -3353,9 +3358,8 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                     }
                 }
             *out << --ind << "}\n";
-            *out << ind << "level.clear();\n";
+            *out << ind << "levelToIntLiterals.erase(currentDecisionLevel);\n";
             *out << ind << "currentDecisionLevel--;\n";
-
         *out << --ind << "}\n";
         *out << ind << "clearConflictReason();\n";
         *out << ind << "falseLits.clear();\n";
