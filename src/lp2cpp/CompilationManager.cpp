@@ -3289,6 +3289,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind++ << "while(currentDecisionLevel > decisionLevel){\n";
             *out << ind++ << "while(!levelToIntLiterals[currentDecisionLevel].empty()){\n";
                 *out << ind << "int var = levelToIntLiterals[currentDecisionLevel].back();\n";
+                *out << ind << "levelToIntLiterals[currentDecisionLevel].pop_back();\n";
                 *out << ind << "int uVar = var>0 ? var : -var;\n";
                 *out << ind << "Tuple* tuple = factory.getTupleFromInternalID(uVar);\n";
                 // *out << ind << "levelToIntLiterals[currentDecisionLevel].pop_back();\n";
