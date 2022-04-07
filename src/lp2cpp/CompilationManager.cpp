@@ -993,6 +993,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << ind << "explainExternalLiteral(-literal,conflictReason,true);\n";
         *out << ind << "propagatedLiterals.push_back(1);\n";
         *out << ind << "reasonForLiteral[literal].get()->clear();\n";
+        *out << ind << "updateReasonSize(conflictReason.size());\n";
         #ifdef TRACE_PROPAGATOR
         *out << ind << "std::cout<<\"Conflict Reason\"<<std::endl;\n";
         *out << ind++ << "for(unsigned i =0; i<conflictReason.size();i++){\n";
@@ -1017,7 +1018,7 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             // *out << ind << "int internalVar = factory.getTupleFromWASPID(uVar)->getId();\n";
             *out << ind << "var = var>0 ? internalVar : -internalVar;\n";
             *out << ind << "explainLevel++;\n";
-            *out << ind << "reas.reserve(factory.size());\n";
+            *out << ind << "reas.reserve(getMeanReasonSize());\n";
             #ifdef TRACE_PROPAGATOR
                 *out << ind << "std::cout<<\"Explain from wasp \";\n";
                 *out << ind << "factory.getTupleFromWASPID(uVar)->print();\n";
@@ -3287,9 +3288,10 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
         *out << --ind << "}\n";
         *out << ind << "remainingPropagatingLiterals.clear();\n";
         *out << ind++ << "while(currentDecisionLevel > decisionLevel){\n";
-            *out << ind++ << "while(!levelToIntLiterals[currentDecisionLevel].empty()){\n";
-                *out << ind << "int var = levelToIntLiterals[currentDecisionLevel].back();\n";
-                *out << ind << "levelToIntLiterals[currentDecisionLevel].pop_back();\n";
+            *out << ind << "int size=levelToIntLiterals[currentDecisionLevel].size();\n";
+            *out << ind++ << "while(size-- >0){\n";
+                *out << ind << "int var = levelToIntLiterals[currentDecisionLevel][size];\n";
+                // *out << ind << "levelToIntLiterals[currentDecisionLevel].pop_back();\n";
                 *out << ind << "int uVar = var>0 ? var : -var;\n";
                 *out << ind << "Tuple* tuple = factory.getTupleFromInternalID(uVar);\n";
                 // *out << ind << "levelToIntLiterals[currentDecisionLevel].pop_back();\n";

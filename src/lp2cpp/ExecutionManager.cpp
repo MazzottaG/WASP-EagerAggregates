@@ -95,6 +95,7 @@ void ExecutionManager::onLearning( const Solver& solver, Learning* strategy, Lit
     std::vector<int> reason;
     // executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reason);
     executor->explainExternalLiteral(lit.getOppositeLiteral().getId(),reason);
+    executor->updateReasonSize(reason.size());
     // sort(reason.begin(),reason.end());
     // auto it = unique(reason.begin(),reason.end());
     // reason.resize(distance(reason.begin(),it));
@@ -124,6 +125,7 @@ Reason* ExecutionManager::getPostponedeReason(Literal lit){
     std::vector<int> reason;
     // executor->explainAggrLiteral(lit.getId(),reason);
     executor->explainExternalLiteral(lit.getId(),reason);
+    executor->updateReasonSize(reason.size());
     // sort(reason.begin(),reason.end());
     // auto it = unique(reason.begin(),reason.end());
     // reason.resize(distance(reason.begin(),it));
@@ -143,6 +145,7 @@ bool ExecutionManager::onNavigatingLiteralForAllMarked( const Solver& solver, Le
     std::vector<int> reas ;
     // executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reas);
     executor->explainExternalLiteral(lit.getOppositeLiteral().getId(),reas);
+    executor->updateReasonSize(reas.size());
     // for(int i=0;i<reas.size();i++){
     //     Literal l = Literal::createLiteralFromInt(-reas[i]);
     //     std::cout<<"Reas: "<<l<<" For lit: "<<lit<<std::endl;
@@ -166,7 +169,8 @@ void ExecutionManager::onNavigatingForUnsatCore( const Solver& solver, vector< u
     std::vector<int> reas ;
     // executor->explainAggrLiteral(lit.getOppositeLiteral().getId(),reas);
     executor->explainExternalLiteral(lit.getOppositeLiteral().getId(),reas);
-    
+    executor->updateReasonSize(reas.size());
+
     for(int i=0;i<reas.size();i++){
         Var v = reas[i]>0 ? reas[i] : -reas[i];
         if( solver.getDecisionLevel( v ) > 0 )

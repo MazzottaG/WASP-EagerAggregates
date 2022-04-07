@@ -130,7 +130,7 @@ namespace aspc {
         int getFactorySize()const;
         int getNextExplainLevel() {return ++explainLevel;}
         void updateReasonSize(int size){totalReasonSize+=size;reasonCount++;}
-        int getMeanReasonSize(){return reasonCount > 0 ? totalReasonSize/reasonCount : 0;}
+        int getMeanReasonSize(){return reasonCount > 0 ? totalReasonSize/reasonCount : 1;}
     private:
         unsigned minConflict;
         unsigned minHeapSize;
