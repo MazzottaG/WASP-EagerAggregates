@@ -129,7 +129,7 @@ namespace aspc {
         int getCurrentDecisionLevel()const {return solver->getCurrentDecisionLevel();}
         int getFactorySize()const;
         int getNextExplainLevel() {return ++explainLevel;}
-        void updateReasonSize(int size){totalReasonSize+=size;reasonCount++;}
+        void updateReasonSize(int size){if(totalReasonSize+size < 0) return; totalReasonSize+=size;reasonCount++;}
         int getMeanReasonSize(){return reasonCount > 0 ? totalReasonSize/reasonCount : 1;}
     private:
         unsigned minConflict;

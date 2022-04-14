@@ -64,6 +64,8 @@ const int _sup_0 = 6;
 const int _sup_1 = 7;
 const int _sup_2 = 8;
 const int _vertex_color = 9;
+const int _gtcolor = 10;
+const int _succ = 11;
 std::unordered_map<int,std::vector<int>> levelToIntLiterals;
 std::unordered_map<int,std::shared_ptr<VectorAsSet<int>>> reasonForLiteral;
 std::vector<int> visitedExplainLiteral;
@@ -184,6 +186,12 @@ AuxMap<64> faux_1_1_3_({1,3});
 AuxMap<32> preachable_color_1_({1});
 AuxMap<32> ureachable_color_1_({1});
 AuxMap<32> freachable_color_1_({1});
+AuxMap<0> pgtcolor_({});
+AuxMap<0> ugtcolor_({});
+AuxMap<0> fgtcolor_({});
+AuxMap<32> pvertex_color_1_({1});
+AuxMap<32> uvertex_color_1_({1});
+AuxMap<32> fvertex_color_1_({1});
 void Executor::handleConflict(int literal,std::vector<int>& propagatedLiterals){
     if(currentDecisionLevel <= 0){
         propagatedLiterals.push_back(1);
@@ -250,7 +258,10 @@ void Executor::executeFromFile(const char* filename) {
 }
 
 inline void insertFalse(const std::pair<const TupleLight *, bool>& insertResult){
-    if(insertResult.first->getPredicateName() == _aux_1){
+    if(insertResult.first->getPredicateName() == _gtcolor){
+        fgtcolor_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == _aux_1){
         faux_1_.insert2Vec(*insertResult.first);
         faux_1_0_1_.insert2Vec(*insertResult.first);
         faux_1_0_2_.insert2Vec(*insertResult.first);
@@ -265,6 +276,7 @@ inline void insertFalse(const std::pair<const TupleLight *, bool>& insertResult)
     }
     else if(insertResult.first->getPredicateName() == _vertex_color){
         fvertex_color_.insert2Vec(*insertResult.first);
+        fvertex_color_1_.insert2Vec(*insertResult.first);
     }
     else if(insertResult.first->getPredicateName() == _e){
         fe_.insert2Vec(*insertResult.first);
@@ -292,7 +304,10 @@ inline void insertFalse(const std::pair<const TupleLight *, bool>& insertResult)
     }
 }
 inline void insertTrue(const std::pair<const TupleLight *, bool>& insertResult){
-    if(insertResult.first->getPredicateName() == _aux_1){
+    if(insertResult.first->getPredicateName() == _gtcolor){
+        pgtcolor_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == _aux_1){
         paux_1_.insert2Vec(*insertResult.first);
         paux_1_0_1_.insert2Vec(*insertResult.first);
         paux_1_0_2_.insert2Vec(*insertResult.first);
@@ -307,6 +322,7 @@ inline void insertTrue(const std::pair<const TupleLight *, bool>& insertResult){
     }
     else if(insertResult.first->getPredicateName() == _vertex_color){
         pvertex_color_.insert2Vec(*insertResult.first);
+        pvertex_color_1_.insert2Vec(*insertResult.first);
     }
     else if(insertResult.first->getPredicateName() == _e){
         pe_.insert2Vec(*insertResult.first);
@@ -334,7 +350,10 @@ inline void insertTrue(const std::pair<const TupleLight *, bool>& insertResult){
     }
 }
 inline void insertUndef(const std::pair<const TupleLight *, bool>& insertResult){
-    if(insertResult.first->getPredicateName() == _aux_1){
+    if(insertResult.first->getPredicateName() == _gtcolor){
+        ugtcolor_.insert2Vec(*insertResult.first);
+    }
+    else if(insertResult.first->getPredicateName() == _aux_1){
         uaux_1_.insert2Vec(*insertResult.first);
         uaux_1_0_1_.insert2Vec(*insertResult.first);
         uaux_1_0_2_.insert2Vec(*insertResult.first);
@@ -349,6 +368,7 @@ inline void insertUndef(const std::pair<const TupleLight *, bool>& insertResult)
     }
     else if(insertResult.first->getPredicateName() == _vertex_color){
         uvertex_color_.insert2Vec(*insertResult.first);
+        uvertex_color_1_.insert2Vec(*insertResult.first);
     }
     else if(insertResult.first->getPredicateName() == _e){
         ue_.insert2Vec(*insertResult.first);
@@ -1110,6 +1130,8 @@ void unfoundedPropagatorForComponent0(std::vector<int>& literalToPropagate,Execu
         stringToUniqueStringPointer["sup_1"] = _sup_1;
         stringToUniqueStringPointer["sup_2"] = _sup_2;
         stringToUniqueStringPointer["vertex_color"] = _vertex_color;
+        stringToUniqueStringPointer["gtcolor"] = _gtcolor;
+        stringToUniqueStringPointer["succ"] = _succ;
         Executor::predicateIds.push_back("aux_0");
         factory.addPredicate();
         Executor::predicateIds.push_back("aux_1");
@@ -1129,6 +1151,10 @@ void unfoundedPropagatorForComponent0(std::vector<int>& literalToPropagate,Execu
         Executor::predicateIds.push_back("sup_2");
         factory.addPredicate();
         Executor::predicateIds.push_back("vertex_color");
+        factory.addPredicate();
+        Executor::predicateIds.push_back("gtcolor");
+        factory.addPredicate();
+        Executor::predicateIds.push_back("succ");
         factory.addPredicate();
     }
     bool propUndefined(const Tuple* tupleU,bool isNegated,std::vector<int>& stack,bool asNegative,std::vector<int> & propagatedLiterals,std::unordered_set<int> & remainingPropagatingLiterals,const Solver* solver,PropComparator& propComparison,unsigned minConflict, unsigned minHeapSize, unsigned maxHeapSize, unsigned heapSize){
@@ -1219,6 +1245,43 @@ void unfoundedPropagatorForComponent0(std::vector<int>& literalToPropagate,Execu
         lazyFactory.addPredicate();
         lazyFactory.addPredicate();
         lazyFactory.addPredicate();
+        lazyFactory.addPredicate();
+        lazyFactory.addPredicate();
+        {
+            {
+                std::set<std::vector<int>> trueHeads;
+                const std::vector<int>* tuples = &pgtcolor_.getValuesVec({});
+                for(unsigned i=0; i<tuples->size();i++){
+                    const Tuple* currentTuple = factory.getTupleFromInternalID(tuples->at(i));
+                    int V = currentTuple->at(0);
+                    int C = currentTuple->at(1);
+                    int C1 = C + 1;
+                    std::vector<int> head({C1});
+                    if(trueHeads.count(head)==0){
+                        trueHeads.insert(head);
+                        std::cout<<"usedcolor("<<ConstantsManager::getInstance().unmapConstant(head[0])<<")"<<std::endl;
+                    }
+                }
+                trueHeads.clear();
+            }
+            {
+                std::set<std::vector<int>> trueHeads;
+                const std::vector<int>* tuples = &pvertex_color_1_.getValuesVec({1});
+                for(unsigned i=0; i<tuples->size();i++){
+                    const Tuple* currentTuple = factory.getTupleFromInternalID(tuples->at(i));
+                    int V = currentTuple->at(0);
+                    Tuple* boundTuple = factory.find({V},_succ);
+                    if(boundTuple == NULL or boundTuple->isFalse()){
+                        std::vector<int> head({1});
+                        if(trueHeads.count(head)==0){
+                            trueHeads.insert(head);
+                            std::cout<<"usedcolor("<<ConstantsManager::getInstance().unmapConstant(head[0])<<")"<<std::endl;
+                        }
+                    }
+                }
+                trueHeads.clear();
+            }
+        }
         clearUndef();
         clearTrue();
         clearFalse();
