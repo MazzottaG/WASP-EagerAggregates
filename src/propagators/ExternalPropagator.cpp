@@ -280,9 +280,9 @@ ExternalPropagator::getReason(
    
     if( output.empty() )
     {
-        if( solver.getCurrentDecisionLevel() != 0 )
+        if( solver.getCurrentDecisionLevel() != 0 ){
             WaspErrorMessage::errorGeneric( "Reason is not well-formed: At least one of the literals in the reason must be inferred at the current decision level." );
-        else
+        }else
             return NULL;
     }
     
@@ -293,11 +293,11 @@ ExternalPropagator::getReason(
     {
         checkIdOfLiteral( solver, output[ i ] );
         Literal l = Literal::createLiteralFromInt( output[ i ] );
-        if( solver.isUndefined( l ) )
+        if( solver.isUndefined( l ) ){
             WaspErrorMessage::errorGeneric( "Reason is not well-formed: Literal with id " + to_string( l.getId() ) + " is undefined." );
-        if( solver.isTrue( l ) )
+        }if( solver.isTrue( l ) ){
             WaspErrorMessage::errorGeneric( "Reason is not well-formed: Literal with id " + to_string( l.getId() ) + " is true." );
-        if( solver.getDecisionLevel( l ) == 0 )
+        }if( solver.getDecisionLevel( l ) == 0 )
             continue;
         clause->addLiteral( l );
         unsigned int dl = solver.getDecisionLevel( l );
@@ -305,8 +305,9 @@ ExternalPropagator::getReason(
             max = dl;
     }
     
-    if( max < solver.getCurrentDecisionLevel() )
+    if( max < solver.getCurrentDecisionLevel() ){
         WaspErrorMessage::errorGeneric( "Reason is not well-formed: At least one of the literals in the reason must be inferred at the current decision level." );    
+    }
     return clause;
 }
 
@@ -611,11 +612,12 @@ ExternalPropagator::handleConflict(
         {
 
             Literal l = clause->getAt(i);
-            if( solver.isUndefined( l ) )
+            if( solver.isUndefined( l ) ){
+                // interpreter->callVoidMethod("#printStatus");
                 WaspErrorMessage::errorGeneric( "Reason is not well-formed: Literal with id " + to_string( l.getId() ) + " is undefined." );
-            if( solver.isTrue( l ) )
+            }if( solver.isTrue( l ) ){
                 WaspErrorMessage::errorGeneric( "Reason is not well-formed: Literal with id " + to_string( l.getId() ) + " is true." );
-            if( solver.getDecisionLevel( l ) == 0 )
+            }if( solver.getDecisionLevel( l ) == 0 )
                 continue;
             c2->addLiteral(l);
             unsigned int dl = solver.getDecisionLevel( l );

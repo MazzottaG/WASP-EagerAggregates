@@ -234,7 +234,7 @@ public:
         // }
         // std::cout << ",&_"<<Executor::predicateIds[predicateName]<<");" <<std::endl;
     }
-    bool isInternalLiteral(){
+    bool isInternalLiteral()const{
         return waspID==0;
     }
     int getWaspID()const{

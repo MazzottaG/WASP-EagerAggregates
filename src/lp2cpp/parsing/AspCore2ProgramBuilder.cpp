@@ -186,26 +186,29 @@ void AspCore2ProgramBuilder::onBuiltinAtom() {
 }
 
 void AspCore2ProgramBuilder::onChoiceAtom() {
-
+    std::cout << "onChoiceAtom" <<std::endl;
 }
 
 void AspCore2ProgramBuilder::onChoiceElement() {
-
+    std::cout << "onChoiceElement" <<std::endl;
 }
 
 void AspCore2ProgramBuilder::onChoiceElementAtom() {
-
+    std::cout << "onChoiceElementAtom" <<std::endl;
 }
 
 void AspCore2ProgramBuilder::onChoiceElementLiteral() {
+    std::cout << "onChoiceElementLiteral" <<std::endl;
 
 }
 
 void AspCore2ProgramBuilder::onChoiceLowerGuard() {
+    std::cout << "onChoiceLowerGuard" <<std::endl;
 
 }
 
 void AspCore2ProgramBuilder::onChoiceUpperGuard() {
+    std::cout << "onChoiceElement" <<std::endl;
 
 }
 // void AspCore2ProgramBuilder::onConstraintFirstRewriting() {
@@ -469,8 +472,8 @@ void AspCore2ProgramBuilder::onTermParams() {
 
 }
 
-void AspCore2ProgramBuilder::onTermRange(char*, char*) {
-
+void AspCore2ProgramBuilder::onTermRange(char* s, char* e) {
+    std::cout << s << ".." << e << std::endl;
 }
 
 void AspCore2ProgramBuilder::onUnequalOperator() {
@@ -1307,6 +1310,7 @@ void AspCore2ProgramBuilder::buildProgram(){
     }
 }
 aspc::Program & AspCore2ProgramBuilder::getProgram() {
+    std::cout << "Getting program" << std::endl;
     if(!rewritten){
         std::cout << "buildCompilablePrograms" << std::endl;
         buildCompilablePrograms();

@@ -62,6 +62,7 @@ private:
     
     //Input subprogram
     aspc::Program program;
+    
     aspc::Program compilableProgram;
     GraphWithTarjanAlgorithm graphWithTarjanAlgorithm;
     std::unordered_map<std::string, int> predicateIDs;

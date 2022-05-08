@@ -53,6 +53,7 @@ public:
     virtual void onFact(int var);
     virtual void onAnswerSet(const std::vector<int>& answerSet);
     virtual void endPropagation(std::vector<int>&);
+    virtual void printStatus();
     virtual void simplifyAtLevelZero(std::vector<int> & output);
     virtual void callGenerator(){executionManager.callGenerator();}
     virtual const std::vector<unsigned int> & getVariablesToFreeze();

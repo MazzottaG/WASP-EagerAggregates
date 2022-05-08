@@ -125,6 +125,7 @@ int
 InputDirector::parse(
         const char* fileName,
         FILE *file) {
+            std::cout << "Parsing"<<std::endl;
     yyin = file;
     parserFile = fileName;
     parserLine = 1;

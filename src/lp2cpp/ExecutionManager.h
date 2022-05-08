@@ -84,6 +84,7 @@ public:
     void unRollToLevel(int decisionLevel){executor->unRollToLevel(decisionLevel);}
     void undefReceived(){executor->undefLiteralsReceived();}
     string printInternalLiterals(){ return executor->printInternalLiterals();}
+    void printStatus(){executor->printStatus();}
     void checkUnfoundedSet(std::vector<int>& literalToPropagate){executor->checkUnfoundedSets(literalToPropagate,executor);}
     Reason* getPostponedeReason(Literal lit);
     virtual void onLearning( const Solver& solver, Learning* strategy, Literal lit );

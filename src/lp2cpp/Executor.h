@@ -87,6 +87,7 @@ namespace aspc {
         virtual void executeFromFile(const char* factsFile);
         virtual void init();
         virtual void clear();
+        virtual void printStatus();
         virtual void clearPropagations();
         virtual void explainAggrLiteral(int,UnorderedSet<int>&);
         virtual int explainExternalLiteral(int,std::vector<int>&,bool=false);

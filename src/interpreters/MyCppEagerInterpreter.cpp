@@ -38,7 +38,9 @@ MyCppEagerInterpreter::MyCppEagerInterpreter(char* filenameToCompile, const stri
 }
 
 void MyCppEagerInterpreter::callListMethod(const string& method_name, const vector<int>& parameters, vector<int>& output) {
-    if (method_name == method_plugins_endPropagation){
+    if(method_name == "#printStatus"){
+        eagerConstraint.printStatus();
+    }else if (method_name == method_plugins_endPropagation){
         eagerConstraint.endPropagation(output);
     
     }else if (method_name == method_plugins_onAnswerSet) {

@@ -216,6 +216,7 @@ class TupleFactory{
         void setIndexForAggregateSet(unsigned index,int pred){
             aggregateSetToIndex.emplace(pred,index);
         }
+        const std::vector<TupleLight*>& getTuples()const {return internalIDToTuple;}
         float loadFactor()const{
             // std::cout << "STATS FACTORY Bucket count: "<<tupleToInternalVar.bucket_count() << std::endl;
             // std::cout << "STATS FACTORY Total Tuple Count: "<<tupleToInternalVar.size() << std::endl;
