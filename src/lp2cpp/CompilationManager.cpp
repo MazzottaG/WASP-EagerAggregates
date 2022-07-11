@@ -2162,41 +2162,28 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                 *out << --ind << "}\n";
             #endif
             // *out << ind << "std::unordered_set<int> visited;\n";
-            *out << ind++ << "while(!falseLits.empty()){\n";
-                #ifdef TRACE_PROPAGATOR
-                *out << ind << "std::cout << \"Next Lit\" << std::endl;\n";
-                #endif
-                *out << ind << "int starter = falseLits.back();\n";
-                *out << ind << "int current = starter >= 0 ? starter : -starter;\n";
-                *out << ind << "falseLits.pop_back();\n";
+            if(!recursiveComponent.empty()){
+                *out << ind++ << "while(!falseLits.empty()){\n";
                     #ifdef TRACE_PROPAGATOR
-                        *out << ind << "const Tuple* tuple = factory.getTupleFromInternalID(current);\n";
-                        *out << ind << "if(tuple==NULL) std::cout << \"NULL\" <<std::endl;\n";
-                        *out << ind << "std::cout<<\"   Searching Literal supported by \"<<tuple->toString()<<std::endl;\n";
+                    *out << ind << "std::cout << \"Next Lit\" << std::endl;\n";
                     #endif
-                    for(int componentId : recursiveComponent){
-                        *out << ind++ << "{\n";
-                            *out << ind << "std::vector<int>& supported = supportedLiterals"<<componentId<<"[current];\n";
-                            *out << ind << "int saving=0;\n";
-                            *out << ind++ << "for(int i=0;i < supported.size(); i++){\n";
-                                *out << ind << "int lit = supported[i];\n";
-                                *out << ind << "Tuple* removingLit = factory.getTupleFromInternalID(lit);\n";
-                                *out << ind << "if(removingLit->isFalse()){supported[saving++]=supported[i]; continue;}\n";
-                                *out << ind++ << "if(foundnessFactory[lit]>=0){\n";
-                                    *out << ind << "foundnessFactory[lit]=-1;\n";
-                                    *out << ind << "unfoundedSetForComponent"<<componentId<<".push_back(lit);\n";
-                                    #ifdef TRACE_PROPAGATOR
-                                        *out << ind << "std::cout<<\"   Adding to Unfounded Set \"<<removingLit->toString()<<std::endl;\n";
-                                    #endif
-                                    *out << ind << "falseLits.push_back(lit);\n";
-                                *out << --ind << "}//close if\n";
-                            *out << --ind << "}//close for\n";
-                            *out << ind << "supported.resize(saving);\n";
-                            *out << ind++ << "if(current < supportedAux"<<componentId<<".size()){\n";
-                                *out << ind << "std::vector<int>& supAux = supportedAux"<<componentId<<"[current];\n";
-                                *out << ind++ << "for(int lit : supAux){\n";
+                    *out << ind << "int starter = falseLits.back();\n";
+                    *out << ind << "int current = starter >= 0 ? starter : -starter;\n";
+                    *out << ind << "falseLits.pop_back();\n";
+                        #ifdef TRACE_PROPAGATOR
+                            *out << ind << "const Tuple* tuple = factory.getTupleFromInternalID(current);\n";
+                            *out << ind << "if(tuple==NULL) std::cout << \"NULL\" <<std::endl;\n";
+                            *out << ind << "std::cout<<\"   Searching Literal supported by \"<<tuple->toString()<<std::endl;\n";
+                        #endif
+                        for(int componentId : recursiveComponent){
+                            *out << ind++ << "{\n";
+                                *out << ind << "std::vector<int>& supported = supportedLiterals"<<componentId<<"[current];\n";
+                                *out << ind << "int saving=0;\n";
+                                *out << ind++ << "for(int i=0;i < supported.size(); i++){\n";
+                                    *out << ind << "int lit = supported[i];\n";
                                     *out << ind << "Tuple* removingLit = factory.getTupleFromInternalID(lit);\n";
-                                    *out << ind++ << "if(!removingLit->isFalse() && foundnessFactory[lit]>=0){\n";
+                                    *out << ind << "if(removingLit->isFalse()){supported[saving++]=supported[i]; continue;}\n";
+                                    *out << ind++ << "if(foundnessFactory[lit]>=0){\n";
                                         *out << ind << "foundnessFactory[lit]=-1;\n";
                                         *out << ind << "unfoundedSetForComponent"<<componentId<<".push_back(lit);\n";
                                         #ifdef TRACE_PROPAGATOR
@@ -2205,11 +2192,27 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
                                         *out << ind << "falseLits.push_back(lit);\n";
                                     *out << --ind << "}//close if\n";
                                 *out << --ind << "}//close for\n";
-                            *out << --ind << "}\n";
-                        *out << --ind << "}//close local scope\n";
-                    }
-                // *out << --ind << "}//close if\n";
-            *out << --ind << "}//close while\n";
+                                *out << ind << "supported.resize(saving);\n";
+                                *out << ind++ << "if(current < supportedAux"<<componentId<<".size()){\n";
+                                    *out << ind << "std::vector<int>& supAux = supportedAux"<<componentId<<"[current];\n";
+                                    *out << ind++ << "for(int lit : supAux){\n";
+                                        *out << ind << "Tuple* removingLit = factory.getTupleFromInternalID(lit);\n";
+                                        *out << ind++ << "if(!removingLit->isFalse() && foundnessFactory[lit]>=0){\n";
+                                            *out << ind << "foundnessFactory[lit]=-1;\n";
+                                            *out << ind << "unfoundedSetForComponent"<<componentId<<".push_back(lit);\n";
+                                            #ifdef TRACE_PROPAGATOR
+                                                *out << ind << "std::cout<<\"   Adding to Unfounded Set \"<<removingLit->toString()<<std::endl;\n";
+                                            #endif
+                                            *out << ind << "falseLits.push_back(lit);\n";
+                                        *out << --ind << "}//close if\n";
+                                    *out << --ind << "}//close for\n";
+                                *out << --ind << "}\n";
+                            *out << --ind << "}//close local scope\n";
+                        }
+                    // *out << --ind << "}//close if\n";
+                *out << --ind << "}//close while\n";
+            }
+            
         *out << --ind << "}//close function\n";
         *out << ind++ << "void Executor::checkUnfoundedSets(std::vector<int>& literalsToPropagate,Executor* executor){\n";
             *out << ind << "checkFoundness();\n";
@@ -2297,7 +2300,6 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
             *out << ind << "std::cout<<\"exit undef received\"<<std::endl;\n";
         #endif
         //*out << ind << "trace_msg(eagerprop,2,\"Interna lUndefined Computed\");\n";
-
     *out << --ind << "}\n";
     // std::cout << "Generator Built"<<std::endl;
 
@@ -3542,9 +3544,9 @@ void CompilationManager::generateStratifiedCompilableProgram(aspc::Program & pro
 
     }
     *out << ind << "if(conflictCount > minConflict && propagatedLiterals.size() >= heapSize){/*std::cout<<\"sort heap\"<<std::endl;*/ std::sort_heap(propagatedLiterals.begin(),propagatedLiterals.begin()+heapSize,propComparison);}\n";
-#ifdef TRACE_PROP_GEN
-    *out << ind << "std::cout<<\"Out execute program on facts\"<<std::endl;\n";
-#endif
+    #ifdef TRACE_PROP_GEN
+        *out << ind << "std::cout<<\"Out execute program on facts\"<<std::endl;\n";
+    #endif
     // *out << ind << "*/\n";
     *out << --ind << "}\n";
     *out << ind << "}\n";
